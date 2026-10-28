@@ -33,7 +33,7 @@ Site.register({
     title:'Rockdrigo’s Upland Tools', subtitle:'Free tools for Upland players. Your data stays in your browser.',
     live:'Live', soon:'Coming soon', open:'Open →',
     optimizerName:'Rockdrigo’s Ornament Optimizer', optimizerDesc:'Type a username and get one ornament per season on every structure: what to apply today, which ornaments to move (with one-click links), and what is missing.',
-    grabberName:'Rockdrigo’s Freeloader', grabberDesc:'Which collection each property should sit in for the most monthly yield, which properties to borrow from (or lend to) friends to unlock more bonuses, and the cheapest properties for sale to finish the rest.',
+    grabberName:'Rockdrigo’s Collection Hoarder', grabberDesc:'How many collections you have and are missing, where each property should sit for the highest monthly yield, and the Freeloader: which properties to borrow from (or lend to) friends to unlock more bonuses.',
     horoscopeName:'Rockdrigo’s Property Horoscope', horoscopeDesc:'Your property’s fortune for the week, read from its street number and the alignment of nearby Uppies. Scientifically unproven. Legally distinct from advice.',
     pricesName:'Rockdrigo’s Cheapskate', pricesDesc:'Ornament prices: what they actually sell for in UPX, what they are listed at in UPX and USD, which showroom has them, and what your own ornaments are worth.'
   },
@@ -41,7 +41,7 @@ Site.register({
     title:'Herramientas de Upland de Rockdrigo', subtitle:'Herramientas gratis para jugadores de Upland. Tus datos se quedan en tu navegador.',
     live:'Disponible', soon:'Próximamente', open:'Abrir →',
     optimizerName:'Optimizador de Ornamentos de Rockdrigo', optimizerDesc:'Escribe un usuario y ten un ornamento por temporada en cada estructura: qué aplicar hoy, qué mover (con enlaces directos) y qué falta.',
-    grabberName:'El Gorrón de Rockdrigo', grabberDesc:'En qué colección debe ir cada propiedad para el mayor rendimiento mensual, qué propiedades pedir prestadas (o prestar) a tus amigos para desbloquear más bonos, y las propiedades en venta más baratas para terminar el resto.',
+    grabberName:'El Acaparador de Colecciones de Rockdrigo', grabberDesc:'Cuántas colecciones tienes y te faltan, dónde debe ir cada propiedad para el mayor rendimiento mensual, y El Gorrón: qué propiedades pedir prestadas (o prestar) a tus amigos para desbloquear más bonos.',
     horoscopeName:'El Horóscopo Inmobiliario de Rockdrigo', horoscopeDesc:'La suerte de tu propiedad esta semana, leída en su número de calle y la alineación de los Uppies cercanos. Sin respaldo científico. Legalmente no es un consejo.',
     pricesName:'El Codo de Rockdrigo', pricesDesc:'Precios de ornamentos: en cuánto se venden de verdad en UPX, a cuánto están listados en UPX y USD, en qué showroom están y cuánto valen los tuyos.'
   },
@@ -49,7 +49,7 @@ Site.register({
     subtitle:'Tools for Upland, a game about owning pretend land, which is the best kind of land.',
     live:'Exists', soon:'Not yet. Soon. Possibly.', open:'Go in →',
     optimizerName:'Rockdrigo’s Ornament Optimizer: A History of Putting Things on Houses', optimizerDesc:'Since the dawn of time, people have put things on houses. This tells you which things, which houses, and when.',
-    grabberName:'Rockdrigo’s Freeloader: A History of Borrowing Things', grabberDesc:'People have always borrowed things from friends and been vague about giving them back. This makes it profitable.',
+    grabberName:'Rockdrigo’s Collection Hoarder: A History of Wanting More', grabberDesc:'People have always wanted more than they have, including other people’s things. This counts it all, then helps you borrow the rest.',
     horoscopeName:'Rockdrigo’s Property Horoscope: The Stars, But for Land', horoscopeDesc:'Astrology has never been applied to real estate. There may be a reason. We intend to find out.',
     pricesName:'Rockdrigo’s Cheapskate: A History of Paying Less', pricesDesc:'Find out what things are worth, a question that has troubled economists since money.'
   },
@@ -57,7 +57,7 @@ Site.register({
     subtitle:'Herramientas para Upland, un juego de tener terrenos de mentira, que son los mejores terrenos.',
     live:'Existe', soon:'Todavía no. Pronto. Quizá.', open:'Entrar →',
     optimizerName:'El Optimizador de Ornamentos de Rockdrigo: una historia de ponerle cosas a las casas', optimizerDesc:'Desde el principio de los tiempos, la gente le ha puesto cosas a las casas. Esto te dice qué cosas, a qué casas y cuándo.',
-    grabberName:'El Gorrón de Rockdrigo: una historia de pedir prestado', grabberDesc:'La gente siempre le ha pedido cosas prestadas a sus amigos y ha sido vaga para devolverlas. Esto lo vuelve rentable.',
+    grabberName:'El Acaparador de Rockdrigo: una historia de querer más', grabberDesc:'La gente siempre ha querido más de lo que tiene, incluidas las cosas de otros. Esto lo cuenta todo y luego te ayuda a pedir prestado el resto.',
     horoscopeName:'El Horóscopo Inmobiliario de Rockdrigo: los astros, pero para terrenos', horoscopeDesc:'Nunca se ha aplicado la astrología a los bienes raíces. Quizá haya una razón. Pensamos averiguarlo.',
     pricesName:'El Codo de Rockdrigo: una historia de pagar menos', pricesDesc:'Averigua cuánto valen las cosas, una pregunta que inquieta a los economistas desde que existe el dinero.'
   }
@@ -66,7 +66,7 @@ Site.register({
 const TOOLS = [
   {key:'optimizer', href:'ornament-optimizer/', live:true},
   {key:'prices', href:'cheapskate/', live:true},
-  {key:'grabber', href:'freeloader/', live:true},
+  {key:'grabber', href:'hoarder/', live:true},
   {key:'horoscope', href:null, live:false}
 ];
 function render(){
