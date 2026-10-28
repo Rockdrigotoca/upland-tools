@@ -70,7 +70,12 @@ Site.register({
     keepH:'Keep these', nothing:'Nothing here.',
     almostNote:'Collections you’re 1–3 properties short of. The extra yield assumes the missing ones earn like your average property there.',
     shortBy:'{n} more needed', haveOf:'You have {h} of {a}', potential:'≈ +{x}/month if completed',
-    foot:'One property per collection at a time. Moving a property waits for its collection’s cooldown.'
+    foot:'One property per collection at a time. Moving a property waits for its collection’s cooldown.',
+    tBorrow:'Borrow', tLend:'Lend', owner:'Owner', you:'You',
+    borrowNote:'Collections you have never collected that you could complete by borrowing up to 3 properties from the group. Only properties the owner isn’t using in their own best arrangement are suggested. One-time rewards split 50/50.',
+    lendNote:'Your properties that would let a friend collect something they have never had. Suggested only when you aren’t using them in your own best arrangement.',
+    borrowSum:'Borrow {k} · {r} UPX reward · {h} UPX each', lendSum:'{f} borrows {k} of yours · {r} UPX reward · your half {h} UPX',
+    groupOnly:'Borrowing works between the group’s players, whose data is collected every 12 hours.', partialGroup:'Group data is still being collected ({n} of {t} properties), so more options will appear.'
   },
   es:{
     title:'El Gorrón de Rockdrigo', subtitle:'En qué colección debe ir cada propiedad para el mayor rendimiento mensual, y cuáles pedirle prestadas a tus amigos.',
@@ -88,7 +93,12 @@ Site.register({
     keepH:'Déjalas así', nothing:'Nada aquí.',
     almostNote:'Colecciones a las que te faltan 1–3 propiedades. El extra supone que las faltantes rinden como tu propiedad promedio ahí.',
     shortBy:'Faltan {n}', haveOf:'Tienes {h} de {a}', potential:'≈ +{x}/mes si la completas',
-    foot:'Una propiedad por colección a la vez. Mover una propiedad espera el cooldown de su colección.'
+    foot:'Una propiedad por colección a la vez. Mover una propiedad espera el cooldown de su colección.',
+    tBorrow:'Pedir prestado', tLend:'Prestar', owner:'Dueño', you:'Tú',
+    borrowNote:'Colecciones que nunca has cobrado y que podrías completar pidiendo prestadas hasta 3 propiedades al grupo. Solo se sugieren propiedades que su dueño no usa en su mejor acomodo. Los premios se reparten 50/50.',
+    lendNote:'Tus propiedades que dejarían a un amigo cobrar algo que nunca ha tenido. Solo cuando no las usas en tu mejor acomodo.',
+    borrowSum:'Pide {k} · premio {r} UPX · {h} UPX cada uno', lendSum:'{f} pide {k} tuyas · premio {r} UPX · tu mitad {h} UPX',
+    groupOnly:'Pedir prestado funciona entre los jugadores del grupo, cuyos datos se recolectan cada 12 horas.', partialGroup:'Los datos del grupo aún se están recolectando ({n} de {t} propiedades), así que aparecerán más opciones.'
   },
   en_cunk:{
     title:'Rockdrigo’s Freeloader: A History of Borrowing Things', subtitle:'Since the invention of land, people have wanted more of it, ideally someone else’s. This arranges that.',
@@ -98,7 +108,10 @@ Site.register({
     activateNote:'Collections that should exist but don’t. Properties are only allowed to move once their cooldown ends, like rotating crops, but slower.',
     releaseNote:'These properties are wasting their potential, like most people. Free them when allowed.',
     almostNote:'Collections you nearly have, which is like having them, but worse.',
-    foot:'One property per collection at a time. This is the law. Probably.'
+    foot:'One property per collection at a time. This is the law. Probably.',
+    tBorrow:'Ask nicely', tLend:'Be generous',
+    borrowNote:'Things you could own briefly, if your friends trust you. Rewards are split 50/50, which is the fairest number.',
+    lendNote:'Your friends need your land. Lend it to them and keep half the money, which is what friendship is.'
   },
   es_cunk:{
     title:'El Gorrón de Rockdrigo: una historia de pedir prestado', subtitle:'Desde que se inventó la tierra, la gente ha querido más, de preferencia la de otros. Esto lo acomoda.',
@@ -108,7 +121,10 @@ Site.register({
     activateNote:'Colecciones que deberían existir y no existen. Las propiedades solo se mueven cuando termina su cooldown, como rotar cultivos, pero más lento.',
     releaseNote:'Estas propiedades desperdician su potencial, como casi todos. Libéralas cuando se pueda.',
     almostNote:'Colecciones que casi tienes, que es como tenerlas, pero peor.',
-    foot:'Una propiedad por colección a la vez. Es la ley. Probablemente.'
+    foot:'Una propiedad por colección a la vez. Es la ley. Probablemente.',
+    tBorrow:'Pedir por favor', tLend:'Ser generoso',
+    borrowNote:'Cosas que podrías tener un ratito, si tus amigos confían en ti. Los premios van 50/50, que es el número más justo.',
+    lendNote:'Tus amigos necesitan tu tierra. Préstasela y quédate con la mitad del dinero, que es lo que es la amistad.'
   }
 });
 
@@ -146,8 +162,20 @@ async function precomputed(user){
     const [u, props, colls] = await Promise.all([Upland.getJSON(`../data/collections/users/${user.toLowerCase()}.json?v=${v}`),
       Upland.getJSON(`../data/collections/props.json?v=${v}`), Upland.getJSON(`../data/collections/collections.json?v=${v}`)]);
     for(const [id, p] of Object.entries(props)) if(!cachedProp(id)) store.set('fl:p:' + id, {...p, at: p.at * 1000});
-    return {u, colls: colls.rows};
+    return {u, colls: colls.rows, st, v, props};
   }catch(e){ return null; }
+}
+// Every group member's properties, active and collected collections, plus their own best arrangement.
+async function loadGroup(pre, user){
+  const members = await Promise.all(pre.st.group.map(async m => {
+    const u = m === user.toLowerCase() ? pre.u : await Upland.getJSON(`../data/collections/users/${m}.json?v=${pre.v}`).catch(() => null);
+    if(!u) return null;
+    const props = u.props.filter(id => pre.props[id]).map(id => ({id, ...pre.props[id], base: pre.props[id].y * MONTH}));
+    const me = {user:m, props, colls:pre.colls, total:u.props.length, active:new Set(u.active), collected:new Set(u.collected)};
+    me.ar = arrange(me);
+    return me;
+  }));
+  return members.filter(Boolean);
 }
 async function loadUser(user, progress){
   progress(t('readingProfile', {u:user}), 0);
@@ -174,7 +202,8 @@ async function loadUser(user, progress){
       progress(t('reading', {n:fetched, t:todo}) + (mins > 1 ? ' ' + t('eta', {m:mins}) : ''), fetched / Math.max(1, todo));
     }
   }
-  return {user, props, colls, live: !pre, total: prof.ids.length, active: new Set(prof.active), collected: new Set(prof.collected)};
+  const group = pre ? await loadGroup(pre, user) : null;
+  return {user, props, colls, live: !pre, group, total: prof.ids.length, active: new Set(prof.active), collected: new Set(prof.collected)};
 }
 
 // ---------- optimizer ----------
@@ -251,7 +280,53 @@ function analyse(D){
   return {base, ideal, idealGain:sum(ideal), nowGain:sum(now), almost,
     newRewards: ideal.picks.filter(x => status(x.c.id) === 'new').reduce((a, x) => a + (x.c.one_time_reward || 0), 0)};
 }
-let D = null, A = null;
+// ---------- borrowing ----------
+// Pick a set for a collection from own properties first, then friends' spare ones.
+function mixedSet(c, own, spare){
+  const pool = [...own, ...spare];
+  if(pool.length < c.amount) return null;
+  if(c.rule.k === 'any') return pool.slice(0, c.amount);
+  if(c.rule.k === 'diff'){
+    const seen = new Set(), out = [];
+    for(const p of pool){ const k = c.rule.key(p); if(!seen.has(k)){ seen.add(k); out.push(p); if(out.length === c.amount) return out; } }
+    return null;
+  }
+  let best = null, score = -1;
+  const groups = new Map();
+  for(const p of pool){ const k = c.rule.key(p); (groups.get(k) || groups.set(k, []).get(k)).push(p); }
+  for(const g of groups.values()) if(g.length >= c.amount){
+    const s = g.slice(0, c.amount), sc = s.filter(p => p.own).length * 1e9 + s.reduce((a, p) => a + p.base, 0);
+    if(sc > score){ score = sc; best = s; }
+  }
+  return best;
+}
+// Collections a member has never collected that they could finish with a few borrowed properties.
+function borrowFor(B, members, colls){
+  const out = [];
+  for(const c of colls){
+    if(B.active.has(c.id) || B.collected.has(c.id)) continue;
+    const own = B.props.filter(p => p.m.includes(c.id)).sort((a, b) => b.base - a.base).map(p => ({...p, owner:B.user, own:true}));
+    if(own.length >= c.amount && bestSet(c, own, new Set())) continue;   // can do it alone: shown in the other tabs
+    const spare = members.filter(L => L !== B).flatMap(L => L.props.filter(p => p.m.includes(c.id) && !L.ar.used.has(p.id)).map(p => ({...p, owner:L.user, own:false})))
+      .sort((a, b) => b.base - a.base);
+    const set = mixedSet(c, own, spare);
+    if(!set) continue;
+    const borrowed = set.filter(p => !p.own);
+    if(!borrowed.length || borrowed.length > 3) continue;
+    out.push({c, set, borrowed, borrower:B.user, reward:c.one_time_reward || 0, gain:set.reduce((a, p) => a + p.base, 0) * (c.yield_boost - 1)});
+  }
+  return out.sort((a, b) => b.reward - a.reward || a.borrowed.length - b.borrowed.length);
+}
+function analyseGroup(){
+  if(!D.group) return null;
+  const colls = D.colls.map(c => ({...c, rule:ruleOf(c.requirements)}));
+  const me = D.user.toLowerCase();
+  const all = D.group.map(B => borrowFor(B, D.group, colls)).flat();
+  const have = D.group.reduce((a, m) => a + m.props.length, 0), total = D.group.reduce((a, m) => a + m.total, 0);
+  return {borrow: all.filter(x => x.borrower === me), lend: all.filter(x => x.borrower !== me && x.borrowed.some(p => p.owner === me)), have, total, names: D.group.map(m => m.user)};
+}
+
+let D = null, A = null, G = null;
 const status = id => D.active.has(id) ? 'active' : D.collected.has(id) ? 'collected' : 'new';
 
 // ---------- rendering ----------
@@ -287,6 +362,7 @@ function render(){
   const release = D.colls.filter(c => D.active.has(c.id) && !idealIds.has(c.id));
   const shownRelease = D.props.length < D.total ? 0 : release.length;   // with partial data, active collections only look unfillable
   const tabs = [['best', t('tBest'), picks.length], ['changes', t('tChanges'), toActivate.length + shownRelease], ['almost', t('tAlmost'), A.almost.length]];
+  tabs.push(['borrow', t('tBorrow'), G ? G.borrow.length : 0], ['lend', t('tLend'), G ? G.lend.length : 0]);
   $('#tabs').innerHTML = tabs.map(([k, l, n]) => `<button data-tab="${k}" class="${ui.tab === k ? 'on' : ''}">${esc(l)}<span class="n">${n}</span></button>`).join('');
   let html = '';
   if(ui.tab === 'best') html = picks.map(x => collCard(x)).join('') || `<div class="card empty">${esc(t('nothing'))}</div>`;
@@ -298,6 +374,26 @@ function render(){
   if(ui.tab === 'almost'){
     html = `<p class="note">${esc(t('almostNote'))}</p>` + A.almost.map(x => collCard({c:x.c, set:x.all.slice(0, x.c.amount), body:`<p class="note">${esc(t('haveOf', {h:x.have, a:x.c.amount}))}</p>`},
       `${t('shortBy', {n:x.short})} · ${t('potential', {x:n0(x.potential)})}`)).join('');
+  }
+  if(ui.tab === 'borrow' || ui.tab === 'lend'){
+    if(!G) html = `<div class="card empty">${esc(t('groupOnly'))}</div>`;
+    else{
+      const me = D.user.toLowerCase();
+      const list = (ui.tab === 'borrow' ? G.borrow : G.lend).slice(0, 80);
+      const who = o => o === me ? t('you') : o;
+      html = `<p class="note">${esc(t(ui.tab === 'borrow' ? 'borrowNote' : 'lendNote'))}</p>`
+        + (G.have < G.total ? `<p class="note"><b>${esc(t('partialGroup', {n:n0(G.have), t:n0(G.total)}))}</b></p>` : '')
+        + (list.map(x => {
+          const half = n0(x.reward / 2);
+          const sum = ui.tab === 'borrow' ? t('borrowSum', {k:x.borrowed.length, r:n0(x.reward), h:half})
+            : t('lendSum', {f:x.borrower, k:x.borrowed.filter(p => p.owner === me).length, r:n0(x.reward), h:half});
+          const rows = x.set.map(p => `<tr><td>${esc(p.a)}</td><td>${esc(p.cn || '')}</td><td>${p.own ? esc(x.borrower === me ? t('you') : x.borrower) : `<b>${esc(who(p.owner))}</b>`}</td>
+            <td><a target="_blank" rel="noopener" href="https://play.upland.me/?prop_id=${p.id}">${esc(t('open'))} ↗</a></td></tr>`).join('');
+          return `<details class="coll" style="--c:var(--r${x.c.category})"><summary><span class="nm">${esc(x.c.name)}</span>${rar(x.c)}
+              <span class="small muted">${esc(t('needs', {a:x.c.amount}))} · ${esc(t('boost', {b:x.c.yield_boost}))}</span><span class="gain">${esc(sum)}</span></summary>
+            <div class="body"><div class="req">${esc(x.c.requirements || '')}</div><div class="tablewrap"><table><thead><tr><th>${esc(t('colAddress'))}</th><th>${esc(t('colCity'))}</th><th>${esc(t('owner'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div></details>`;
+        }).join('') || `<div class="card empty">${esc(t('nothing'))}</div>`);
+    }
   }
   $('#panel').innerHTML = html;
 }
@@ -312,6 +408,7 @@ async function run(user){
   try{
     D = await loadUser(user, (msg, f) => { setStatus(msg); bar.style.width = Math.round(f * 100) + '%'; });
     A = analyse(D);
+    G = analyseGroup();
     const at = new Date();
     setStatus(() => t('loaded', {p:n0(D.props.length), c:n0(A.ideal.colls.length), t:at.toLocaleTimeString(Site.locale(), {hour:'2-digit', minute:'2-digit'})})
       + (D.props.length < D.total ? ' ' + t('partial', {n:n0(D.props.length), t:n0(D.total)}) : ''));
