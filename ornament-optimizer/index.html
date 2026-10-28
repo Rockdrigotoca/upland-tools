@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ornament Season Planner</title>
+<title>Rockdrigo’s Ornament Optimizer</title>
 <meta name="description" content="Plan Upland structure ornaments for every season: what to apply now, which ornaments to move, and what is missing.">
 <link rel="stylesheet" href="../shared/theme.css">
 <style>
@@ -61,7 +61,7 @@ const ORN_TYPES = ['Micro House','Small Town House','Small Town House v2','Town 
 
 const T = {
   en:{
-    title:'Rockdrigo’s Ornament Season Planner', subtitle:'Upland structure ornaments, one per season on every structure',
+    title:'Rockdrigo’s Ornament Optimizer', subtitle:'Upland structure ornaments, one per season on every structure',
     userPh:'Upland username', load:'Load', refresh:'Refresh', loading:'Loading…',
     fetchOrn:'Reading ornaments…', fetchStr:'Reading structures…', fetchProps:'Checking {n} properties without listed structures…', fetchSeasons:'Looking up seasons for {n} designs…',
     loaded:'Loaded {o} ornaments and {s} structures for {u} · {t}', loadedFiles:'Loaded {o} ornaments and {s} structures from your files · {t}', since:'Since last refresh: {d} more slots set up.',
@@ -93,7 +93,7 @@ const T = {
     inferred:'(found on property)', copy:'Copy link', copied:'Copied!', cunk:'Cunk mode'
   },
   es:{
-    title:'Planificador de Ornamentos de Rockdrigo', subtitle:'Ornamentos de estructuras en Upland, uno por temporada en cada estructura',
+    title:'Optimizador de Ornamentos de Rockdrigo', subtitle:'Ornamentos de estructuras en Upland, uno por temporada en cada estructura',
     userPh:'Usuario de Upland', load:'Cargar', refresh:'Actualizar', loading:'Cargando…',
     fetchOrn:'Leyendo ornamentos…', fetchStr:'Leyendo estructuras…', fetchProps:'Revisando {n} propiedades sin estructuras listadas…', fetchSeasons:'Buscando temporadas de {n} diseños…',
     loaded:'{o} ornamentos y {s} estructuras de {u} · {t}', loadedFiles:'{o} ornamentos y {s} estructuras desde tus archivos · {t}', since:'Desde la última actualización: {d} espacios más listos.',
@@ -125,7 +125,7 @@ const T = {
     inferred:'(encontrada en la propiedad)', copy:'Copiar enlace', copied:'¡Copiado!', cunk:'Modo Cunk'
   },
   en_cunk:{
-    title:'Rockdrigo’s Ornaments: A History of Putting Things on Houses', subtitle:'Humanity has always wanted to decorate houses. This is the latest, and possibly last, attempt.',
+    title:'Rockdrigo’s Ornament Optimizer: A History of Putting Things on Houses', subtitle:'Humanity has always wanted to decorate houses. This is the latest, and possibly last, attempt.',
     userPh:'Your Upland name, the one you made up', load:'Find out', refresh:'Look again', loading:'Thinking…',
     fetchOrn:'Counting ornaments. An ornament is furniture that lives outside…', fetchStr:'Locating your structures, also known as houses that don’t need you…', fetchProps:'Knocking on {n} properties that forgot to mention they had a house…', fetchSeasons:'Asking Upland what season {n} things are. It knows. It always knows.',
     loaded:'Found {o} ornaments and {s} structures belonging to {u}. That is a lot of things · {t}', loadedFiles:'Found {o} ornaments and {s} structures in your files, which is where files keep things · {t}', since:'Since you last looked, {d} more slots became correct. Progress, like the wheel.',
@@ -157,7 +157,7 @@ const T = {
     inferred:'(we found it ourselves)', copy:'Copy link', copied:'Copied, somehow'
   },
   es_cunk:{
-    title:'Los ornamentos de Rockdrigo: una historia de ponerle cosas a las casas', subtitle:'La humanidad siempre ha querido decorar casas. Este es el intento más reciente, y quizá el último.',
+    title:'El Optimizador de Ornamentos de Rockdrigo: una historia de ponerle cosas a las casas', subtitle:'La humanidad siempre ha querido decorar casas. Este es el intento más reciente, y quizá el último.',
     userPh:'Tu nombre en Upland, el que te inventaste', load:'Averiguar', refresh:'Ver otra vez', loading:'Pensando…',
     fetchOrn:'Contando ornamentos. Un ornamento es un mueble que vive afuera…', fetchStr:'Buscando tus estructuras, o sea, casas que no te necesitan…', fetchProps:'Tocando la puerta de {n} propiedades que no avisaron que tenían casa…', fetchSeasons:'Preguntándole a Upland de qué temporada son {n} cosas. Sabe. Siempre sabe.',
     loaded:'Encontramos {o} ornamentos y {s} estructuras de {u}. Son muchas cosas · {t}', loadedFiles:'Encontramos {o} ornamentos y {s} estructuras en tus archivos, que es donde los archivos guardan cosas · {t}', since:'Desde la última vez, {d} espacios más quedaron bien. Progreso, como la rueda.',
