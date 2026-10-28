@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  actions: write   # lets the keep-alive step re-enable this schedule
 
 concurrency:
   group: collect-prices
@@ -42,3 +43,10 @@ jobs:
             git pull --rebase --autostash
             git push
           fi
+
+      # GitHub turns off schedules in public repos after 60 days without activity.
+      # Re-enabling the workflow on every run keeps the 12-hour collection going.
+      - name: Keep schedule alive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/collect-prices.yml/enable"

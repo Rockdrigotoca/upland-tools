@@ -81,10 +81,19 @@ def load(name, default):
 
 
 def save(name, obj):
+    """Write JSON with one entry per line, so git stores only what changed between runs."""
     path = os.path.join(DATA, name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
+    dump = lambda x: json.dumps(x, ensure_ascii=False, separators=(',', ':'))
+    if isinstance(obj, dict) and isinstance(obj.get('rows'), list):
+        head = ','.join(f'{dump(k)}:{dump(v)}' for k, v in obj.items() if k != 'rows')
+        text = '{' + head + (',' if head else '') + '"rows":[\n' + ',\n'.join(dump(r) for r in obj['rows']) + '\n]}\n'
+    elif isinstance(obj, dict):
+        text = '{\n' + ',\n'.join(f'{dump(k)}:{dump(v)}' for k, v in obj.items()) + '\n}\n'
+    else:
+        text = dump(obj) + '\n'
     with open(path, 'w') as f:
-        json.dump(obj, f, ensure_ascii=False, separators=(',', ':'))
+        f.write(text)
 
 
 # ---------- chain history ----------
@@ -369,9 +378,9 @@ def main():
 
     # 7) listings, summaries, state
     if listings is not None:
-        fields = ['shop', 'nft', 'key', 'mint', 'price', 'total', 'cur', 'seller', 'exp']
-        save('listings.json', {'at': iso(now_dt) + 'Z', 'fields': fields,
-                               'rows': [{k: r[k] for k in fields} | {'sellerAcct': r['sellerAcct']} for r in listings]})
+        fields = ['shop', 'nft', 'key', 'mint', 'total', 'cur', 'seller', 'sellerAcct']
+        rows = sorted(({k: r[k] for k in fields} for r in listings), key=lambda r: (r['key'] or '', r['total']))
+        save('listings.json', {'at': iso(now_dt) + 'Z', 'fields': fields, 'rows': rows})
         state['lastSnapshotAt'] = iso(now_dt)
     save('summary.json', summarize(months, int(now_dt.timestamp())))
     designs.save()

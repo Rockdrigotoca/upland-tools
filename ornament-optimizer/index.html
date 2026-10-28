@@ -48,6 +48,7 @@
 
 <script src="../shared/site.js"></script>
 <script src="../shared/upland.js"></script>
+<script src="../shared/prices.js"></script>
 <script>
 "use strict";
 const CATALOG = {"byId":{"1":"Harvest","19":"Harvest","91":"Wonderland","92":"Wonderland","93":"Wonderland","97":"Wonderland","98":"Wonderland","100":"Wonderland","105":"Wonderland","108":"Wonderland","111":"Wonderland","120":"Genesis","123":"Genesis","216":"Harvest","221":"Harvest","261":"Harvest","264":"Harvest","266":"Harvest","288":"Harvest","347":"Harvest","353":"Wonderland","355":"Wonderland","356":"Wonderland","357":"Wonderland","358":"Wonderland","359":"Wonderland","360":"Wonderland","399":"Frost","407":"Frost","526":"Harvest","527":"Harvest","538":"Wonderland","541":"Wonderland","550":"Wonderland","565":"Blossom","566":"Wonderland","583":"Blossom","584":"Blossom","586":"Blossom","600":"Frost","660":"Sizzle","675":"Harvest","676":"Frost","677":"Sizzle","710":"Harvest","726":"Harvest","741":"Harvest","790":"Blossom","792":"Blossom","793":"Genesis","795":"Wonderland","796":"Harvest","809":"Wonderland","818":"Frost","819":"Frost","847":"Frost","848":"Frost","849":"Frost","850":"Frost","851":"Frost","852":"Frost","853":"Frost","854":"Frost","855":"Frost","856":"Frost","857":"Frost","858":"Frost","859":"Frost","860":"Frost","861":"Frost","862":"Frost","867":"Frost","868":"Wonderland","893":"Wonderland","910":"Blossom","916":"Blossom","935":"Genesis","938":"Blossom","946":"Frost","958":"Blossom","965":"Genesis","989":"Wonderland","999":"Genesis","1018":"Blossom","1022":"Frost","1023":"Blossom","1024":"Sizzle","1025":"Genesis","1046":"Sizzle","1105":"Frost","1133":"Frost","1157":"Frost","1159":"Genesis","1160":"Blossom","1168":"Wonderland","1169":"Harvest","1170":"Wonderland","1172":"Blossom","1173":"Harvest","1174":"Frost","1175":"Frost","1177":"Blossom","1178":"Blossom","1179":"Genesis","1180":"Sizzle","1185":"Genesis","1186":"Genesis","1198":"Frost","1213":"Genesis","1243":"Frost","1299":"Harvest","1423":"Wonderland"},"byName":{"Lil Skelly":"Harvest","Wacky Mole Animatronic":"Harvest","LAND4LAND's Winter Windmill":"Wonderland","REDSKY's Winter Emporium":"Wonderland","RETRY_88's Winter Medley":"Wonderland","RETRY_88's Taste of Winter":"Wonderland","OBAY's Present Overload!":"Wonderland","BUNNYBE's Snowflake Fantasy":"Wonderland","LAND4LAND's Winter Mural":"Wonderland","Winter Wonderland '21":"Wonderland","RETRY_88's Spark Is Here!":"Genesis","RUPPEL_GROUP's Genesis Truck":"Genesis","Creepy Kid":"Harvest","Zombie":"Harvest","Roseate Metaskull":"Harvest","Creepy Kid v2":"Harvest","Unicef Winter Ornament - Apartment Building":"Wonderland","Unicef Winter Ornament - Luxury Ranch House":"Wonderland","Unicef Winter Ornament - Micro House":"Wonderland","Unicef Winter Ornament - Ranch House":"Wonderland","Unicef Winter Ornament - Small Townhouse":"Wonderland","Unicef Winter Ornament - Small Townhouse 2":"Wonderland","Unicef Winter Ornament - Town House":"Wonderland","Renovação do Timbal; Carnaval 2023":"Frost","Ara Ketu; Carnaval 2023":"Frost","Zombie Rising Apartment":"Harvest","Harvest Tractor":"Harvest","Gingerbread house | Apartment Building":"Wonderland","Gingerbread house | Town House":"Wonderland","Eye-Candy":"Wonderland","Sakura Serenity":"Blossom","Telephone Booth Christmas":"Wonderland","Blossom 2024 | Micro House":"Blossom","Blossom 2024 | Small Town House":"Blossom","Blossom 2024 | Ranch House":"Blossom","Block Party Fiesta":"Frost","Sizzle 2024 | Micro House":"Sizzle","The Fuzz Micro Station":"Harvest","Just Ice Box":"Frost","The Crown Jewels | Sizzle | Midnight Crest":"Sizzle","The Fuzz - Small Town House Station V2":"Harvest","Helipad - Harvest - Achini":"Harvest","Hungry Monster":"Harvest","Cosme Blossom 25 STH V2 Green":"Blossom","Cosme Blossom 25 Town House Green":"Blossom","Cosme Genesis 25 Town House Yellow":"Genesis","Cosme Wonderland 25 Town House Indigo":"Wonderland","Cosme Harvest 25 Town House Orange":"Harvest","ACE CREEPY CHRISTMAS":"Wonderland","Quailwood Greens - Hole 1":"Frost","Quailwood Greens - Hole 2":"Frost","Quailwood Greens - Hole 3":"Frost","Quailwood Greens - Hole 4":"Frost","Quailwood Greens - Hole 5":"Frost","Quailwood Greens - Hole 6":"Frost","Quailwood Greens - Hole 7":"Frost","Quailwood Greens - Hole 8":"Frost","Quailwood Greens - Hole 9":"Frost","Quailwood Greens - Hole 10":"Frost","Quailwood Greens - Hole 11":"Frost","Quailwood Greens - Hole 12":"Frost","Quailwood Greens - Hole 13":"Frost","Quailwood Greens - Hole 14":"Frost","Quailwood Greens - Hole 15":"Frost","Quailwood Greens - Hole 16":"Frost","Quailwood Greens - Hole 17":"Frost","Quailwood Greens - Hole 18":"Frost","FROST HB TOWNHOUSE":"Frost","Cosme Winter 25 Apartment":"Wonderland","ACE CREEPY CHRISTMAS WONDERLAND MICRO":"Wonderland","Cosme Luxury Ranch Blossom 25":"Blossom","Chloro Phill Box":"Blossom","Cosme France Micro House Genesis":"Genesis","Cosme Japan Hanami Micro House":"Blossom","Steelheart":"Frost","Cosme Cherry Blossom Hanami":"Blossom","RobotCity Genesis Tower":"Genesis","$SPARKLET Warz | Cyborgs Tokyo Town House":"Wonderland","RobotCity electric ion":"Genesis","Cherry Blossom Night Viewing Town House":"Blossom","ACE MICRO FROST":"Frost","ACE BLOSSOM MICRO":"Blossom","ACE SIZZLE MICRO":"Sizzle","ACE GENESIS MICRO":"Genesis","AAMH - LITTLE ROCK - SIZZLE":"Sizzle","Bavarian Frost Micro Chapel":"Frost","Montys Moo-bile":"Frost","The Udder Heights - Frost":"Frost","CyberMoo Guardian - Genesis":"Genesis","Algorithmic Quail - Blossom - Micro":"Blossom","Quail Santas Bag - Wonderland - Micro":"Wonderland","Quail O Lantern - Harvest - Micro":"Harvest","Giftwrapped Quail - Wonderland - Apartment":"Wonderland","Royal Quail Garden - Blossom - Apartment":"Blossom","Cow O Lantern - Harvest - Apartment":"Harvest","Snowfluff Roost - Frost - Small TH":"Frost","Frostquail Haven - Frost - Small THV2":"Frost","The Petal Perch - Blossom - Small THv2":"Blossom","Cherrybud Nest - Blossom - SmallTH":"Blossom","The Eggson Tower - Genesis - Apartment":"Genesis","Scorched Plume Tower - Sizzle - Apartment":"Sizzle","Belle Epoque Retreat":"Genesis","The Epoque Lodge - Genesis - Small THV2":"Genesis","Quailwood Greens - Hole 19":"Frost","AAMH - INDEPENDENCE DAY - GENESIS":"Genesis","Quailwood Greens - Hole 20":"Frost","Inspiraverse Harvest Microhouse":"Harvest","The Laban - Apartment - Wonderland":"Wonderland"}};
@@ -190,6 +191,32 @@ const T = {
   }
 };
 Site.register(T);
+Site.register({
+  en:{
+    shopTitle:'What it costs to fill the gaps', shopNote:'Cheapest ornaments listed right now in ornament and variety shops, leaving out your own listings. UPX and USD are priced separately.',
+    pricesLoading:'Checking prices…', pricesErr:'Prices are unavailable right now.', pricesAt:'Prices from {t}.',
+    colNeed:'Missing', colUpx:'Cheapest in UPX', colUsd:'Cheapest in USD', forMofN:'for {m} of {n}', noneForSale:'none for sale', allSeasons:'All seasons',
+    fillCard:'To fill: {x}', buyList:'Cheapest options', inCheapskate:'See all prices', openShop:'Open shop',
+    extrasValue:'Your extras usually sell for about {x} in total ({n} of them have sales history).', usually:'usually sells for {x}', cheapestNow:'cheapest listed {x}'
+  },
+  es:{
+    shopTitle:'Cuánto cuesta llenar los huecos', shopNote:'Los ornamentos más baratos en venta ahora en tiendas de ornamentos y variedades, sin contar los tuyos. UPX y USD van por separado.',
+    pricesLoading:'Revisando precios…', pricesErr:'Los precios no están disponibles ahora.', pricesAt:'Precios de {t}.',
+    colNeed:'Faltan', colUpx:'Más barato en UPX', colUsd:'Más barato en USD', forMofN:'por {m} de {n}', noneForSale:'nada en venta', allSeasons:'Todas las temporadas',
+    fillCard:'Para llenar: {x}', buyList:'Opciones más baratas', inCheapskate:'Ver todos los precios', openShop:'Abrir tienda',
+    extrasValue:'Tus ornamentos de sobra suelen venderse en unos {x} en total ({n} tienen historial de ventas).', usually:'suele venderse en {x}', cheapestNow:'lo más barato listado {x}'
+  },
+  en_cunk:{
+    shopTitle:'The cost of completeness', shopNote:'The cheapest ornaments for sale right now, excluding your own, because buying from yourself is just moving money around. UPX and dollars are kept apart, like oil and water.',
+    pricesLoading:'Asking the market…', noneForSale:'nobody is selling', fillCard:'Completion costs: {x}', buyList:'The bargains', inCheapskate:'Consult the Cheapskate',
+    extrasValue:'Your unwanted ornaments are worth about {x} ({n} have been sold before, so we know).'
+  },
+  es_cunk:{
+    shopTitle:'El precio de estar completo', shopNote:'Los ornamentos más baratos en venta ahora, sin los tuyos, porque comprarte a ti mismo es solo mover dinero de lugar. UPX y dólares van separados, como el agua y el aceite.',
+    pricesLoading:'Preguntándole al mercado…', noneForSale:'nadie lo vende', fillCard:'Completar cuesta: {x}', buyList:'Las gangas', inCheapskate:'Consultar al Codo',
+    extrasValue:'Tus ornamentos que nadie quiere valen unos {x} ({n} ya se han vendido antes, así que sabemos).'
+  }
+});
 
 // ---------- small helpers ----------
 const $ = s => document.querySelector(s);
@@ -472,7 +499,8 @@ function render(){
     const tag = s === si.active ? t('active', {s:''}).trim() : (s === si.next && !si.active ? t('windowNow') : '');
     return `<div class="sz" style="--c:var(--${s})"><div class="name">${s}<span>${esc(tag)}</span></div>
       <div class="bar"><i class="a" style="width:${p.inPlace * 100 / n}%"></i><i class="b" style="width:${p.move * 100 / n}%"></i></div>
-      <div class="nums">${p.inPlace} ${esc(t('nIn'))} · ${p.move} ${esc(t('nMv'))} · <span class="${p.missing ? 'short' : ''}">${p.missing} ${esc(t('nNo'))}</span></div></div>`;
+      <div class="nums">${p.inPlace} ${esc(t('nIn'))} · ${p.move} ${esc(t('nMv'))} · <span class="${p.missing ? 'short' : ''}">${p.missing} ${esc(t('nNo'))}</span></div>
+      ${p.missing && fillCosts() ? `<div class="nums">${esc(t('fillCard', {x:fillText(FILL[s])}))}</div>` : ''}</div>`;
   }).join('');
 
   const storageCount = DATA.ornaments.filter(o => !P.hasStructAt.has(o.propId + '|' + o.type)).length;
@@ -574,20 +602,26 @@ function renderGaps(){
       const short = Math.max(0, c.need - c.have); totalShort += short;
       return `<td class="num ${short ? 'short' : 'okc'}" title="${short ? '-' + short : ''}">${c.have}/${c.need}${short ? ` <small>(−${short})</small>` : ''}</td>`;
     }).join('')}</tr>`).join('');
-  const ex = groupBy(P.extras, e => e.o.name + '|' + e.reason);
+  const ex = groupBy(P.extras, e => e.o.name + '|' + e.o.type + '|' + e.reason);
+  let exValue = 0, exPriced = 0;
   const exRows = [...ex.values()].sort((a,b) => b.length - a.length).map(g => {
     const o = g[0].o;
+    const key = PRICES && PRICES.key(o.name, o.type), typ = key && PRICES.typical(key);
+    const cheap = PRICES && SEASONS.includes(o.season) ? PRICES.forSlot(o.season, o.type, DATA.live ? DATA.user : '').filter(r => r.key === key) : [];
+    if(typ){ exValue += typ.price * g.length; exPriced += g.length; }
+    const priceLine = [typ && t('usually', {x:fmtUpx(typ.price)}), cheap[0] && t('cheapestNow', {x:cheap[0].cur === 'USD' ? fmtUsd(cheap[0].total) : fmtUpx(cheap[0].total)})].filter(Boolean).join(' · ');
     const reason = {noStruct:t('reasonNoStruct'), surplus:t('reasonSurplus'), unknown:t('reasonUnknown')}[g[0].reason];
     const mints = g.map(e => '#' + e.o.mint).slice(0, 12).join(' ') + (g.length > 12 ? ' …' : '');
     return `<div class="item">${thumb(o)}<div><div class="t">${esc(t('count', {n:g.length}))} ${esc(o.name)}</div>
-      <div class="s">${pill(o.season)} · ${esc(o.type)} · ${esc(reason)}</div><div class="s">${esc(mints)}</div></div><span></span></div>`;
+      <div class="s">${pill(o.season)} · ${esc(o.type)} · ${esc(reason)}</div><div class="s">${esc(mints)}</div>${priceLine ? `<div class="s"><b>${esc(priceLine)}</b></div>` : ''}</div><span></span></div>`;
   }).join('');
   const build = P.build.map(b => `<li>${esc(t('buildRow', {t:b.type, k:b.k, n:b.n}))}</li>`).join('');
-  $('#panel').innerHTML = `<h2>${esc(t('shortTitle'))}</h2><p class="note">${esc(t('shortNote'))}</p>
+  $('#panel').innerHTML = `${renderFill()}<p class="note">${esc(t('shortNote'))}</p>
     <div class="tablewrap"><table><thead><tr><th>${esc(t('colType'))}</th><th class="num">#</th>${SEASONS.map(s => `<th class="num">${pill(s)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>
     <p class="small" style="margin-top:8px">${esc(t('totalShort'))}: <span class="${totalShort ? 'short' : 'okc'}">${totalShort}</span></p>
     ${build ? `<h3>${esc(t('buildTitle'))}</h3><p class="note">${esc(t('buildNote'))}</p><ul class="small">${build}</ul>` : ''}
     <h3>${esc(t('extrasTitle'))} <span class="muted small">${P.extras.length}</span></h3><p class="note">${esc(t('extrasNote'))}</p>
+    ${exPriced ? `<div class="banner" style="--c:var(--accent)">${esc(t('extrasValue', {x:fmtUpx(exValue), n:exPriced}))}</div>` : ''}
     <div class="list">${exRows || `<div class="card empty">–</div>`}</div>`;
 }
 
@@ -610,9 +644,71 @@ function renderStorage(){
   }).join('') || `<div class="card empty">–</div>`);
 }
 
+
+// ---------- prices (collected every 12 hours by tools/collect_prices.py) ----------
+let PRICES = null, pricesState = 'idle', FILL = null;
+const fmtUpx = x => `${Math.round(x).toLocaleString(Site.locale())} UPX`;
+const fmtUsd = x => `$${Number(x).toLocaleString(Site.locale(), {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+function ensurePrices(){
+  if(pricesState !== 'idle') return;
+  pricesState = 'loading';
+  Prices.load('../data/').then(p => { PRICES = p; pricesState = 'ok'; FILL = null; if(PLAN) render(); })
+    .catch(() => { pricesState = 'err'; if(PLAN) render(); });
+}
+// Cheapest way to buy what each season is missing, per structure type, in UPX and in USD.
+function fillCosts(){
+  if(FILL || !PRICES || !PLAN) return FILL;
+  const me = DATA.live ? DATA.user : '';
+  FILL = {};
+  for(const season of SEASONS){
+    const types = [];
+    for(const m of PLAN.matrix){
+      const c = m.cells.find(x => x.season === season), k = Math.max(0, c.need - c.have);
+      if(!k) continue;
+      const ls = PRICES.forSlot(season, m.type, me);
+      types.push({type:m.type, k, upx:ls.filter(r => r.cur === 'UPX').slice(0, k), usd:ls.filter(r => r.cur === 'USD').slice(0, k)});
+    }
+    const sum = (key) => types.reduce((a, x) => a + x[key].reduce((b, r) => b + r.total, 0), 0);
+    const cnt = (key) => types.reduce((a, x) => a + x[key].length, 0);
+    FILL[season] = {types, need:types.reduce((a, x) => a + x.k, 0), upx:sum('upx'), upxN:cnt('upx'), usd:sum('usd'), usdN:cnt('usd')};
+  }
+  return FILL;
+}
+function fillText(f){
+  const parts = [];
+  if(f.upxN) parts.push(fmtUpx(f.upx) + (f.upxN < f.need ? ` (${f.upxN}/${f.need})` : ''));
+  if(f.usdN) parts.push(fmtUsd(f.usd) + (f.usdN < f.need ? ` (${f.usdN}/${f.need})` : ''));
+  return parts.join(' · ') || t('noneForSale');
+}
+function renderFill(){
+  if(pricesState === 'loading' || pricesState === 'idle') return `<h2>${esc(t('shopTitle'))}</h2><p class="note">${esc(t('pricesLoading'))}</p>`;
+  if(pricesState === 'err') return `<h2>${esc(t('shopTitle'))}</h2><p class="note">${esc(t('pricesErr'))}</p>`;
+  const F = fillCosts();
+  const at = new Date(PRICES.state.updatedAt).toLocaleString(Site.locale(), {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+  const cell = (total, n, need, fmt) => n ? `${esc(fmt(total))}<br><small class="muted">${esc(t('forMofN', {m:n, n:need}))}</small>` : `<span class="muted">${esc(t('noneForSale'))}</span>`;
+  const rows = SEASONS.filter(s => F[s].need).map(s => `<tr><td>${pill(s)}</td><td class="num">${F[s].need}</td>
+      <td class="num">${cell(F[s].upx, F[s].upxN, F[s].need, fmtUpx)}</td><td class="num">${cell(F[s].usd, F[s].usdN, F[s].need, fmtUsd)}</td></tr>`);
+  const all = SEASONS.reduce((a, s) => ({need:a.need + F[s].need, upx:a.upx + F[s].upx, upxN:a.upxN + F[s].upxN, usd:a.usd + F[s].usd, usdN:a.usdN + F[s].usdN}), {need:0, upx:0, upxN:0, usd:0, usdN:0});
+  if(rows.length > 1) rows.push(`<tr><td><b>${esc(t('allSeasons'))}</b></td><td class="num"><b>${all.need}</b></td><td class="num"><b>${cell(all.upx, all.upxN, all.need, fmtUpx)}</b></td><td class="num"><b>${cell(all.usd, all.usdN, all.need, fmtUsd)}</b></td></tr>`);
+  const option = r => {
+    const d = PRICES.design(r.key) || {n:r.key}, sh = PRICES.shop(r.shop) || {};
+    const where = [sh.n, [sh.a, sh.c].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+    const img = d.img ? `<img class="thumb" loading="lazy" alt="" src="${esc(Upland.image(d.img))}">` : '<div class="thumb ph">◆</div>';
+    return `<div class="item">${img}<div><div class="t">${esc(d.n)} <span class="muted">#${esc(r.mint)}</span> · ${esc(r.cur === 'USD' ? fmtUsd(r.total) : fmtUpx(r.total))}</div>
+      <div class="s">${esc(where)}</div></div>
+      <div class="acts">${sh.p ? `<a class="btn small" target="_blank" rel="noopener" href="https://play.upland.me/?prop_id=${esc(sh.p)}">${esc(t('openShop'))} ↗</a>` : ''}<a class="btn small" href="../cheapskate/?q=${encodeURIComponent(d.n)}">${esc(t('inCheapskate'))}</a></div></div>`;
+  };
+  const details = SEASONS.filter(s => F[s].need).map(s => `<details class="prop"><summary class="group-h" style="cursor:pointer"><h3>${pill(s)} ${esc(t('buyList'))}</h3><span class="muted small">${esc(fillText(F[s]))}</span></summary>
+      ${F[s].types.map(x => `<h3 class="small">${esc(x.type)} · ${esc(t('colNeed'))} ${x.k}</h3><div class="list">${[...x.upx, ...x.usd].map(option).join('') || `<p class="note">${esc(t('noneForSale'))}</p>`}</div>`).join('')}</details>`).join('');
+  return `<h2>${esc(t('shopTitle'))}</h2><p class="note">${esc(t('shopNote'))} ${esc(t('pricesAt', {t:at}))}</p>
+    <div class="tablewrap"><table><thead><tr><th></th><th class="num">${esc(t('colNeed'))}</th><th class="num">${esc(t('colUpx'))}</th><th class="num">${esc(t('colUsd'))}</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+    <div style="margin-top:10px">${details}</div><h2 style="margin-top:24px">${esc(t('shortTitle'))}</h2>`;
+}
+
 // ---------- wiring ----------
 function show(D){
-  DATA = D; PLAN = buildPlan(D);
+  DATA = D; PLAN = buildPlan(D); FILL = null;
+  ensurePrices();
   const key = 'uop:last:' + (D.live ? D.user.toLowerCase() : 'csv');
   const last = store.get(key, null);
   store.set(key, {after:PLAN.inPlace});
