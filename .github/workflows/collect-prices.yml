@@ -1,0 +1,44 @@
+name: Collect ornament prices
+
+on:
+  schedule:
+    - cron: '17 3,15 * * *'   # every 12 hours (03:17 and 15:17 UTC)
+  workflow_dispatch:
+    inputs:
+      backfill_days:
+        description: 'Older days of sale history to add this run'
+        default: '4'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-prices
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Collect prices
+        run: python3 tools/collect_prices.py --backfill-days "${{ github.event.inputs.backfill_days || '4' }}"
+
+      - name: Commit new data
+        run: |
+          git config user.name "price-collector"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "data: refresh ornament prices"
+            git pull --rebase --autostash
+            git push
+          fi

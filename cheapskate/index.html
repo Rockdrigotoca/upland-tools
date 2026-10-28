@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo’s Cheapskate</title>
+<meta name="description" content="Upland structure ornament prices: what they sell for in UPX, what they are listed at in UPX and USD, and which showroom has them.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.thumb{width:calc(44px * var(--text-scale,1));height:calc(44px * var(--text-scale,1))}
+.dz{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:6px}
+.dz > summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:calc(44px * var(--text-scale,1)) minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:center;padding:8px 10px}
+.dz > summary::-webkit-details-marker{display:none}
+.dz[open] > summary{border-bottom:1px solid var(--border)}
+.dz .nm{font-weight:600;overflow-wrap:anywhere}
+.dz .meta{font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}
+.stat .v{font-weight:700;font-variant-numeric:tabular-nums}
+.stat .l{font-size:.75rem;color:var(--muted)}
+.body{padding:10px 12px 14px}
+.body h3{margin:12px 0 6px}
+.body h3:first-child{margin-top:0}
+.ccy{font-size:.6875rem;font-weight:700;color:var(--muted);margin-left:3px}
+.junk td{color:var(--muted);text-decoration:line-through}
+.fresh{font-size:.8125rem;color:var(--muted);margin:8px 0 14px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.controls select{max-width:100%}
+td a{white-space:nowrap}
+@media (max-width:700px){
+  .dz > summary{grid-template-columns:calc(40px * var(--text-scale,1)) minmax(0,1fr) minmax(0,1fr)}
+  .dz > summary .s2{grid-column:2 / -1}
+  .dz > summary .s1{grid-column:2}
+  .dz > summary .s3{grid-column:3}
+  .dz > summary .who{grid-column:2 / -1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <div class="fresh" id="fresh"></div>
+  <nav class="tabs" id="tabs"></nav>
+  <section id="panel"><div class="card empty" data-i="loading"></div></section>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../shared/site.js"></script>
+<script src="../shared/upland.js"></script>
+<script>
+"use strict";
+const {t, esc, store} = Site;
+const SEASONS = ['Frost','Blossom','Genesis','Sizzle','Harvest','Wonderland'];
+
+Site.register({
+  en:{
+    title:'Rockdrigo’s Cheapskate', subtitle:'Ornament prices: what they sell for, what they’re listed at, and where.',
+    loading:'Loading prices…', errLoad:'Could not load the price data. Try again in a bit.',
+    updated:'Prices updated {t} · sales history since {d} · {n} ornaments listed in {s} shops',
+    tBrowse:'Browse prices', tSales:'Latest sales', tMine:'Price my ornaments',
+    search:'Search an ornament', allTypes:'All structure types', allSeasons:'All seasons',
+    sortSold:'Most sold', sortCheap:'Cheapest listing', sortPrice:'Highest price', sortName:'Name',
+    onlyListed:'Only ornaments for sale now', results:'{n} ornaments', showMore:'Show more',
+    typical:'Usually sells for', typicalNone:'No UPX sales yet', salesIn:'{n} sales · {p}', p30:'last 30 days', p90:'last 90 days', pAll:'all history',
+    cheapest:'Cheapest now', noneListed:'Not listed right now', listedN:'{n} listed',
+    lowMint:'Low mints (#1–10) usually go for {x} UPX.',
+    listingsH:'For sale now', salesH:'Recent sales', colMint:'Mint', colPrice:'Price', colShop:'Shop', colWhere:'Where', colSeller:'Seller', colWhen:'When', colBuyer:'Buyer', colOrnament:'Ornament',
+    giveaway:'giveaway price, ignored', openShop:'Open', noSales:'No sales recorded yet.', noListings:'Nobody is selling this one right now.',
+    usdNote:'USD sales are estimated: an ornament listed in USD that left its shop and changed owner without a UPX payment.',
+    unknownShop:'unknown shop', ago:'{n} ago',
+    mineNote:'Type a username to see what their ornaments are worth and a suggested price for each.', userPh:'Upland username', price:'Price them', reading:'Reading ornaments…',
+    mineTotal:'Estimated value: about {x} UPX for {n} ornaments with sales history.', mineNoPrice:'{n} more have no sales to compare with.',
+    suggest:'Suggested price', suggestHow:'Undercuts the cheapest UPX listing by 1% when it is below the usual price; otherwise the usual price.',
+    owned:'Owned', errUser:'Could not load ornaments for “{u}”.',
+    foot:'Prices refresh every 12 hours from Upland’s public sales history and shop listings.'
+  },
+  es:{
+    title:'El Codo de Rockdrigo', subtitle:'Precios de ornamentos: en cuánto se venden, a cuánto están listados y dónde.',
+    loading:'Cargando precios…', errLoad:'No se pudieron cargar los precios. Intenta en un rato.',
+    updated:'Precios actualizados {t} · historial de ventas desde {d} · {n} ornamentos en venta en {s} tiendas',
+    tBrowse:'Ver precios', tSales:'Últimas ventas', tMine:'Valuar mis ornamentos',
+    search:'Busca un ornamento', allTypes:'Todos los tipos de estructura', allSeasons:'Todas las temporadas',
+    sortSold:'Más vendidos', sortCheap:'Más barato listado', sortPrice:'Precio más alto', sortName:'Nombre',
+    onlyListed:'Solo ornamentos en venta ahora', results:'{n} ornamentos', showMore:'Ver más',
+    typical:'Suele venderse en', typicalNone:'Sin ventas en UPX aún', salesIn:'{n} ventas · {p}', p30:'últimos 30 días', p90:'últimos 90 días', pAll:'todo el historial',
+    cheapest:'Lo más barato ahora', noneListed:'No está en venta ahora', listedN:'{n} en venta',
+    lowMint:'Los mints bajos (#1–10) suelen venderse en {x} UPX.',
+    listingsH:'En venta ahora', salesH:'Ventas recientes', colMint:'Mint', colPrice:'Precio', colShop:'Tienda', colWhere:'Dónde', colSeller:'Vendedor', colWhen:'Cuándo', colBuyer:'Comprador', colOrnament:'Ornamento',
+    giveaway:'precio de regalo, ignorado', openShop:'Abrir', noSales:'Aún no hay ventas registradas.', noListings:'Nadie lo está vendiendo ahora.',
+    usdNote:'Las ventas en USD son estimadas: un ornamento listado en USD que salió de su tienda y cambió de dueño sin pago en UPX.',
+    unknownShop:'tienda desconocida', ago:'hace {n}',
+    mineNote:'Escribe un usuario para ver cuánto valen sus ornamentos y un precio sugerido para cada uno.', userPh:'Usuario de Upland', price:'Valuar', reading:'Leyendo ornamentos…',
+    mineTotal:'Valor estimado: unos {x} UPX por {n} ornamentos con historial de ventas.', mineNoPrice:'{n} más no tienen ventas para comparar.',
+    suggest:'Precio sugerido', suggestHow:'Le gana por 1% al listado en UPX más barato cuando está por debajo del precio usual; si no, el precio usual.',
+    owned:'Tienes', errUser:'No se pudieron cargar los ornamentos de “{u}”.',
+    foot:'Los precios se actualizan cada 12 horas con el historial público de ventas y las tiendas de Upland.'
+  },
+  en_cunk:{
+    title:'Rockdrigo’s Cheapskate: A History of Paying Less', subtitle:'Since the invention of money, people have tried to give less of it away. This helps.',
+    loading:'Consulting the markets…', errLoad:'The prices have gone missing, like most of history. Try again in a bit.',
+    updated:'Prices last looked at {t} · records begin {d} · {n} ornaments on sale in {s} shops, which is a lot of shops',
+    tBrowse:'What things cost', tSales:'Who bought what', tMine:'What am I worth',
+    search:'Name an ornament, any ornament', sortSold:'Most popular', sortCheap:'Cheapest, obviously', sortPrice:'Most expensive, for some reason',
+    onlyListed:'Only things you can actually buy', results:'{n} ornaments, counted', showMore:'Show more things',
+    typical:'People usually pay', typicalNone:'Nobody has bought one with UPX. Yet.',
+    cheapest:'Cheapest, today', noneListed:'Not for sale. Possibly priceless.',
+    lowMint:'Low mints (#1–10) cost {x} UPX, because being early is worth money.',
+    listingsH:'Things for sale', salesH:'Things that were sold', giveaway:'basically free, so ignored',
+    noSales:'No one has bought one. History will judge them.', noListings:'Nobody is selling. Supply and demand, but without the supply.',
+    usdNote:'USD sales are a guess: an ornament priced in dollars vanished from a shop and someone else owns it now. Draw your own conclusions.',
+    mineNote:'Type a name to find out what someone’s ornaments are worth, which is the closest anyone gets to knowing what they are worth.', price:'Assess my worth', reading:'Counting your things…',
+    mineTotal:'Total worth: about {x} UPX across {n} ornaments. Not bad. Not great.', mineNoPrice:'{n} more have never been sold, so are worth either nothing or everything.',
+    suggest:'Ask for this much', suggestHow:'Slightly cheaper than the cheapest rival, which is how capitalism works, apparently.',
+    owned:'You have',
+    foot:'Prices are refreshed every 12 hours, which is twice a day, from Upland’s public records.'
+  },
+  es_cunk:{
+    title:'El Codo de Rockdrigo: una historia de pagar menos', subtitle:'Desde que se inventó el dinero, la gente ha intentado soltar menos. Esto ayuda.',
+    loading:'Consultando a los mercados…', errLoad:'Los precios desaparecieron, como casi toda la historia. Intenta en un rato.',
+    updated:'Precios revisados {t} · los registros empiezan {d} · {n} ornamentos en venta en {s} tiendas, que son muchas tiendas',
+    tBrowse:'Cuánto cuestan las cosas', tSales:'Quién compró qué', tMine:'Cuánto valgo',
+    search:'Nombra un ornamento, cualquiera', sortSold:'Más populares', sortCheap:'Lo más barato, obviamente', sortPrice:'Lo más caro, por alguna razón',
+    onlyListed:'Solo cosas que de verdad puedes comprar', results:'{n} ornamentos, contados', showMore:'Ver más cosas',
+    typical:'La gente suele pagar', typicalNone:'Nadie ha comprado uno con UPX. Todavía.',
+    cheapest:'Lo más barato, hoy', noneListed:'No está en venta. Quizá no tiene precio.',
+    lowMint:'Los mints bajos (#1–10) cuestan {x} UPX, porque llegar temprano vale dinero.',
+    listingsH:'Cosas en venta', salesH:'Cosas que se vendieron', giveaway:'casi regalado, así que se ignora',
+    noSales:'Nadie ha comprado uno. La historia los juzgará.', noListings:'Nadie lo vende. Oferta y demanda, pero sin la oferta.',
+    usdNote:'Las ventas en USD son una suposición: un ornamento con precio en dólares desapareció de una tienda y ahora es de otra persona. Saca tus conclusiones.',
+    mineNote:'Escribe un nombre para saber cuánto valen sus ornamentos, que es lo más cerca que alguien llega a saber cuánto vale.', price:'Valuar mi existencia', reading:'Contando tus cosas…',
+    mineTotal:'Valor total: unos {x} UPX en {n} ornamentos. No está mal. No está bien.', mineNoPrice:'{n} más nunca se han vendido, así que valen nada o todo.',
+    suggest:'Pide esto', suggestHow:'Un poquito más barato que el rival más barato, que al parecer es como funciona el capitalismo.',
+    owned:'Tienes',
+    foot:'Los precios se actualizan cada 12 horas, o sea dos veces al día, con los registros públicos de Upland.'
+  }
+});
+
+// ---------- data ----------
+let D = null;                 // {state, summary, designs, listings, shops}
+const monthCache = {};
+let ui = {tab: store.get('csk:tab', 'browse'), q:'', season:'all', type:'all', sort:'sold', onlyListed:false, limit:60, open:null};
+
+async function loadData(){
+  const st = await Upland.getJSON('../data/state.json?t=' + Date.now());
+  const v = encodeURIComponent(st.updatedAt || '');
+  const get = f => Upland.getJSON(`../data/${f}?v=${v}`);
+  const [summary, designs, listings, shops] = await Promise.all([get('summary.json'), get('designs.json'), get('listings.json'), get('shops.json')]);
+  const byKey = new Map();
+  for(const r of listings.rows){ (byKey.get(r.key) || byKey.set(r.key, []).get(r.key)).push(r); }
+  for(const arr of byKey.values()) arr.sort((a, b) => a.total - b.total);
+  const keys = new Set([...Object.keys(summary), ...byKey.keys()]);
+  const items = [...keys].map(k => {
+    const d = designs[k] || {n:k.split(' | ')[0], ty:k.split(' | ')[1]};
+    const ls = byKey.get(k) || [];
+    const s = summary[k] || null;
+    return {k, d, s, ls, cheapUpx: ls.find(r => r.cur === 'UPX') || null, cheapUsd: ls.find(r => r.cur === 'USD') || null, typical: typical(s)};
+  });
+  D = {state: st, items, byKey, shops, listings, v};
+}
+function typical(s){
+  if(!s) return null;
+  for(const [k, p] of [['u30','p30'], ['u90','p90'], ['uAll','pAll']]) if(s[k] && s[k][0]) return {price:s[k][1], n:s[k][0], p};
+  return null;
+}
+async function month(m){
+  if(!monthCache[m]) monthCache[m] = Upland.getJSON(`../data/sales/${m}.json?v=${D.v}`).then(x => x.rows).catch(() => []);
+  return monthCache[m];
+}
+async function salesFor(key, want = 40){
+  const out = [];
+  for(const m of [...(D.state.months || [])].reverse()){
+    for(const r of (await month(m)).slice().reverse()) if(!key || r[2] === key) out.push(r);
+    if(out.length >= want) break;
+  }
+  return out.slice(0, want);
+}
+
+// ---------- formatting ----------
+const num = (x, d = 0) => x == null ? '–' : Number(x).toLocaleString(Site.locale(), {maximumFractionDigits:d, minimumFractionDigits:0});
+const money = (x, cur) => cur === 'USD' ? `$${Number(x).toLocaleString(Site.locale(), {minimumFractionDigits:2, maximumFractionDigits:2})}<span class="ccy">USD</span>` : `${num(x, x < 100 ? 2 : 0)}<span class="ccy">UPX</span>`;
+function ago(ts){
+  const s = Math.max(0, Date.now() / 1000 - ts);
+  const rtf = new Intl.RelativeTimeFormat(Site.locale(), {numeric:'auto'});
+  if(s < 3600) return rtf.format(-Math.round(s / 60), 'minute');
+  if(s < 86400) return rtf.format(-Math.round(s / 3600), 'hour');
+  return rtf.format(-Math.round(s / 86400), 'day');
+}
+const fmtDay = d => new Date(d).toLocaleDateString(Site.locale(), {year:'numeric', month:'short', day:'numeric'});
+function pill(season){ const s = SEASONS.includes(season) ? season : 'Unknown'; return `<span class="pill" style="--c:var(--${s})">${esc(season || '?')}</span>`; }
+const thumb = d => d && d.img ? `<img class="thumb" loading="lazy" alt="" src="${esc(Upland.image(d.img))}">` : `<div class="thumb ph">◆</div>`;
+function shopCell(id){
+  const s = D.shops[String(id)];
+  if(!s) return [esc(t('unknownShop')), ''];
+  const where = [s.a, s.c].filter(Boolean).join(', ');
+  const link = s.p ? ` <a target="_blank" rel="noopener" href="https://play.upland.me/?prop_id=${esc(s.p)}">${esc(t('openShop'))} ↗</a>` : '';
+  return [esc(s.n || '#' + id), esc(where) + link];
+}
+
+// ---------- rendering ----------
+function render(){
+  if(!D) return;
+  const st = D.state;
+  $('#fresh').textContent = t('updated', {t: ago(Date.parse(st.updatedAt) / 1000), d: st.historyFrom ? fmtDay(st.historyFrom + 'Z') : '–',
+    n: num(D.listings.rows.length), s: num(new Set(D.listings.rows.map(r => r.shop)).size)});
+  const tabs = [['browse', t('tBrowse')], ['sales', t('tSales')], ['mine', t('tMine')]];
+  $('#tabs').innerHTML = tabs.map(([k, l]) => `<button data-tab="${k}" class="${ui.tab === k ? 'on' : ''}">${esc(l)}</button>`).join('');
+  ({browse:renderBrowse, sales:renderSales, mine:renderMine}[ui.tab] || renderBrowse)();
+}
+const $ = s => document.querySelector(s);
+
+function filtered(){
+  const q = ui.q.trim().toLowerCase();
+  let list = D.items.filter(x => (!q || x.d.n.toLowerCase().includes(q)) && (ui.season === 'all' || x.d.s === ui.season)
+    && (ui.type === 'all' || x.d.ty === ui.type) && (!ui.onlyListed || x.ls.length));
+  const cheap = x => Math.min(x.cheapUpx ? x.cheapUpx.total : Infinity, x.cheapUsd ? x.cheapUsd.total * 1000 : Infinity);
+  const sorts = {
+    sold: (a, b) => ((b.s && b.s.uAll[0]) || 0) - ((a.s && a.s.uAll[0]) || 0) || b.ls.length - a.ls.length,
+    cheap: (a, b) => cheap(a) - cheap(b),
+    price: (a, b) => ((b.typical && b.typical.price) || 0) - ((a.typical && a.typical.price) || 0),
+    name: (a, b) => a.d.n.localeCompare(b.d.n)
+  };
+  return list.sort(sorts[ui.sort] || sorts.sold);
+}
+
+function renderBrowse(){
+  const types = [...new Set(D.items.map(x => x.d.ty).filter(Boolean))].sort();
+  const list = filtered();
+  const opt = (v, l, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`;
+  $('#panel').innerHTML = `<div class="controls">
+      <input type="search" id="q" class="grow" placeholder="${esc(t('search'))}" value="${esc(ui.q)}">
+      <select id="season">${opt('all', t('allSeasons'), ui.season)}${SEASONS.map(s => opt(s, s, ui.season)).join('')}</select>
+      <select id="type">${opt('all', t('allTypes'), ui.type)}${types.map(s => opt(s, s, ui.type)).join('')}</select>
+      <select id="sort">${[['sold','sortSold'],['cheap','sortCheap'],['price','sortPrice'],['name','sortName']].map(([v, k]) => opt(v, t(k), ui.sort)).join('')}</select>
+      <label class="small row" style="gap:6px"><input type="checkbox" id="onlyListed" ${ui.onlyListed ? 'checked' : ''}>${esc(t('onlyListed'))}</label>
+    </div>
+    <p class="note">${esc(t('results', {n:num(list.length)}))}</p>
+    <div id="list">${list.slice(0, ui.limit).map(row).join('')}</div>
+    ${list.length > ui.limit ? `<button class="btn" id="more">${esc(t('showMore'))}</button>` : ''}`;
+  if(ui.open) openDetail(ui.open);
+}
+
+function row(x){
+  const ty = x.typical;
+  const cheapest = [x.cheapUpx && money(x.cheapUpx.total, 'UPX'), x.cheapUsd && money(x.cheapUsd.total, 'USD')].filter(Boolean).join(' · ');
+  return `<details class="dz" data-key="${esc(x.k)}"${ui.open === x.k ? ' open' : ''}><summary>
+      ${thumb(x.d)}
+      <div class="s2"><div class="nm">${esc(x.d.n)}</div><div class="meta">${pill(x.d.s)} ${esc(x.d.ty || '')}</div></div>
+      <div class="stat s1"><div class="l">${esc(t('typical'))}</div><div class="v">${ty ? money(ty.price, 'UPX') : '–'}</div>
+        <div class="l">${ty ? esc(t('salesIn', {n:ty.n, p:t(ty.p)})) : esc(t('typicalNone'))}</div></div>
+      <div class="stat s3"><div class="l">${esc(t('cheapest'))}</div><div class="v">${cheapest || '–'}</div>
+        <div class="l">${x.ls.length ? esc(t('listedN', {n:x.ls.length})) : esc(t('noneListed'))}</div></div>
+    </summary><div class="body" id="body-${cssId(x.k)}"></div></details>`;
+}
+const cssId = k => k.replace(/[^a-z0-9]/gi, '_');
+
+async function openDetail(key){
+  const x = D.items.find(i => i.k === key);
+  const el = document.getElementById('body-' + cssId(key));
+  if(!x || !el) return;
+  el.innerHTML = `<div class="muted small">${esc(t('loading'))}</div>`;
+  const sales = await salesFor(key, 30);
+  const low = x.s && x.s.lowMint ? `<p class="note">${esc(t('lowMint', {x:num(x.s.lowMint)}))}</p>` : '';
+  const lrows = x.ls.slice(0, 40).map(r => { const [n, w] = shopCell(r.shop);
+    return `<tr><td class="num">#${esc(r.mint)}</td><td class="num">${money(r.total, r.cur)}</td><td>${n}</td><td>${w}</td><td>${esc(r.seller || '')}</td></tr>`; }).join('');
+  const srows = sales.map(r => { const junk = r[4] === 'UPX' && r[5] <= 2; const [n] = r[11] ? shopCell(r[11]) : [''];
+    return `<tr class="${junk ? 'junk' : ''}" title="${junk ? esc(t('giveaway')) : ''}"><td>${esc(ago(r[0]))}</td><td class="num">#${esc(r[3])}</td><td class="num">${money(r[5], r[4])}</td><td>${esc(r[8] || '')}</td><td>${esc(r[9] || '')}</td><td>${n}</td></tr>`; }).join('');
+  el.innerHTML = `${low}<h3>${esc(t('listingsH'))}</h3>${lrows ? `<div class="tablewrap"><table><thead><tr><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colShop'))}</th><th>${esc(t('colWhere'))}</th><th>${esc(t('colSeller'))}</th></tr></thead><tbody>${lrows}</tbody></table></div>` : `<p class="note">${esc(t('noListings'))}</p>`}
+    <h3>${esc(t('salesH'))}</h3>${srows ? `<div class="tablewrap"><table><thead><tr><th>${esc(t('colWhen'))}</th><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colSeller'))}</th><th>${esc(t('colBuyer'))}</th><th>${esc(t('colShop'))}</th></tr></thead><tbody>${srows}</tbody></table></div>` : `<p class="note">${esc(t('noSales'))}</p>`}
+    ${sales.some(r => r[4] === 'USD') ? `<p class="note">${esc(t('usdNote'))}</p>` : ''}`;
+}
+
+async function renderSales(){
+  $('#panel').innerHTML = `<div class="card empty">${esc(t('loading'))}</div>`;
+  const sales = await salesFor(null, 120);
+  if(ui.tab !== 'sales') return;
+  const designs = new Map(D.items.map(x => [x.k, x.d]));
+  $('#panel').innerHTML = `<div class="tablewrap"><table><thead><tr><th>${esc(t('colWhen'))}</th><th>${esc(t('colOrnament'))}</th><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colSeller'))}</th><th>${esc(t('colBuyer'))}</th><th>${esc(t('colShop'))}</th></tr></thead><tbody>
+    ${sales.map(r => { const d = designs.get(r[2]) || {n:r[2]}; const junk = r[4] === 'UPX' && r[5] <= 2; const [n] = r[11] ? shopCell(r[11]) : [''];
+      return `<tr class="${junk ? 'junk' : ''}" title="${junk ? esc(t('giveaway')) : ''}"><td>${esc(ago(r[0]))}</td><td>${pill(d.s)} ${esc(d.n)} <span class="muted">${esc(d.ty || '')}</span></td><td class="num">#${esc(r[3])}</td><td class="num">${money(r[5], r[4])}</td><td>${esc(r[8] || '')}</td><td>${esc(r[9] || '')}</td><td>${n}</td></tr>`; }).join('')}
+    </tbody></table></div><p class="note">${esc(t('usdNote'))}</p>`;
+}
+
+let mine = {user: store.get('csk:user', ''), rows: null, err: null, busy: false};
+function renderMine(){
+  let html = `<p class="note">${esc(t('mineNote'))}</p>
+    <form class="row" id="mineForm" style="margin-bottom:12px"><input type="text" id="mineUser" class="grow" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t('userPh'))}" value="${esc(mine.user)}">
+    <button class="btn primary" type="submit"${mine.busy ? ' disabled' : ''}>${esc(mine.busy ? t('reading') : t('price'))}</button></form>`;
+  if(mine.err) html += `<div class="status err">${esc(mine.err)}</div>`;
+  if(mine.rows){
+    const priced = mine.rows.filter(r => r.x && r.x.typical);
+    const total = priced.reduce((a, r) => a + r.n * r.x.typical.price, 0);
+    const count = priced.reduce((a, r) => a + r.n, 0), noPrice = mine.rows.filter(r => !(r.x && r.x.typical)).reduce((a, r) => a + r.n, 0);
+    html += `<div class="banner" style="--c:var(--accent)"><b>${esc(t('mineTotal', {x:num(total), n:num(count)}))}</b>${noPrice ? ` ${esc(t('mineNoPrice', {n:num(noPrice)}))}` : ''}</div>
+      <p class="note">${esc(t('suggest'))}: ${esc(t('suggestHow'))}</p>
+      <div class="tablewrap"><table><thead><tr><th>${esc(t('colOrnament'))}</th><th class="num">${esc(t('owned'))}</th><th class="num">${esc(t('typical'))}</th><th class="num">${esc(t('cheapest'))}</th><th class="num">${esc(t('suggest'))}</th></tr></thead><tbody>
+      ${mine.rows.map(r => { const x = r.x; const ty = x && x.typical; const cu = x && x.cheapUpx;
+        const sug = ty ? (cu && cu.total < ty.price ? cu.total * 0.99 : ty.price) : (cu ? cu.total * 0.99 : null);
+        return `<tr><td>${pill(r.season)} ${esc(r.name)} <span class="muted">${esc(r.type || '')}</span></td><td class="num">${r.n}</td>
+          <td class="num">${ty ? money(ty.price, 'UPX') : '–'}</td><td class="num">${[cu && money(cu.total, 'UPX'), x && x.cheapUsd && money(x.cheapUsd.total, 'USD')].filter(Boolean).join('<br>') || '–'}</td>
+          <td class="num"><b>${sug ? money(Math.round(sug), 'UPX') : '–'}</b></td></tr>`; }).join('')}
+      </tbody></table></div>`;
+  }
+  $('#panel').innerHTML = html;
+}
+async function priceMine(user){
+  mine = {user, rows:null, err:null, busy:true}; store.set('csk:user', user); renderMine();
+  try{
+    const orn = (await Upland.ornaments(user)).filter(o => o.category === 'structornmt');
+    const byKey = new Map(D.items.map(x => [x.k, x]));
+    const groups = new Map();
+    for(const o of orn){
+      const md = o.metadata || {}, k = `${md.displayName} | ${md.subtitle}`;
+      const g = groups.get(k) || {k, name:md.displayName, type:md.subtitle, n:0, x:byKey.get(k), season:(byKey.get(k) || {d:{}}).d.s};
+      g.n++; groups.set(k, g);
+    }
+    mine.rows = [...groups.values()].sort((a, b) => b.n * ((b.x && b.x.typical && b.x.typical.price) || 0) - a.n * ((a.x && a.x.typical && a.x.typical.price) || 0));
+  }catch(e){ mine.err = t('errUser', {u:user}); }
+  mine.busy = false; if(ui.tab === 'mine') renderMine();
+}
+
+// ---------- wiring ----------
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; ui.tab = b.dataset.tab; store.set('csk:tab', ui.tab); render(); });
+$('#panel').addEventListener('input', e => {
+  if(e.target.id === 'q'){ ui.q = e.target.value; ui.limit = 60; const pos = e.target.selectionStart; renderBrowse(); const q = $('#q'); q.focus(); q.setSelectionRange(pos, pos); }
+});
+$('#panel').addEventListener('change', e => {
+  const id = e.target.id;
+  if(['season', 'type', 'sort'].includes(id)){ ui[id] = e.target.value; ui.limit = 60; renderBrowse(); }
+  if(id === 'onlyListed'){ ui.onlyListed = e.target.checked; ui.limit = 60; renderBrowse(); }
+});
+$('#panel').addEventListener('click', e => { if(e.target.id === 'more'){ ui.limit += 60; renderBrowse(); } });
+$('#panel').addEventListener('toggle', e => {
+  const d = e.target; if(!d.matches || !d.matches('details.dz')) return;
+  if(d.open){ ui.open = d.dataset.key; openDetail(d.dataset.key); } else if(ui.open === d.dataset.key) ui.open = null;
+}, true);
+$('#panel').addEventListener('submit', e => { if(e.target.id === 'mineForm'){ e.preventDefault(); const u = $('#mineUser').value.trim(); if(u) priceMine(u); } });
+
+Site.mount({onChange: render});
+const params = new URLSearchParams(location.search);
+loadData().then(() => {
+  if(params.get('user')){ ui.tab = 'mine'; render(); priceMine(params.get('user')); }
+  else if(params.get('q')){ ui.tab = 'browse'; ui.q = params.get('q'); render(); }
+  else render();
+}).catch(() => { $('#panel').innerHTML = `<div class="card empty">${esc(t('errLoad'))}</div>`; });
+</script>
+</body>
+</html>
