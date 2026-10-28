@@ -33,31 +33,41 @@ Site.register({
     title:'Rockdrigo’s Upland Tools', subtitle:'Free tools for Upland players. Your data stays in your browser.',
     live:'Live', soon:'Coming soon', open:'Open →',
     optimizerName:'Rockdrigo’s Ornament Optimizer', optimizerDesc:'Type a username and get one ornament per season on every structure: what to apply today, which ornaments to move (with one-click links), and what is missing.',
+    grabberName:'Rockdrigo’s Land Grabber', grabberDesc:'Which collection each of your properties should sit in for the most yield, which collections you and your friends can swap, and the cheapest properties for sale to finish the ones you are missing.',
+    horoscopeName:'Rockdrigo’s Property Horoscope', horoscopeDesc:'Your property’s fortune for the week, read from its street number and the alignment of nearby Uppies. Scientifically unproven. Legally distinct from advice.',
     pricesName:'Rockdrigo’s Cheapskate', pricesDesc:'Ornament prices: what they actually sell for in UPX, what they are listed at in UPX and USD, which showroom has them, and what your own ornaments are worth.'
   },
   es:{
     title:'Herramientas de Upland de Rockdrigo', subtitle:'Herramientas gratis para jugadores de Upland. Tus datos se quedan en tu navegador.',
     live:'Disponible', soon:'Próximamente', open:'Abrir →',
     optimizerName:'Optimizador de Ornamentos de Rockdrigo', optimizerDesc:'Escribe un usuario y ten un ornamento por temporada en cada estructura: qué aplicar hoy, qué mover (con enlaces directos) y qué falta.',
+    grabberName:'El Acaparador de Rockdrigo', grabberDesc:'En qué colección debe ir cada propiedad para sacarle más rendimiento, qué colecciones pueden intercambiar tú y tus amigos, y las propiedades en venta más baratas para terminar las que te faltan.',
+    horoscopeName:'El Horóscopo Inmobiliario de Rockdrigo', horoscopeDesc:'La suerte de tu propiedad esta semana, leída en su número de calle y la alineación de los Uppies cercanos. Sin respaldo científico. Legalmente no es un consejo.',
     pricesName:'El Codo de Rockdrigo', pricesDesc:'Precios de ornamentos: en cuánto se venden de verdad en UPX, a cuánto están listados en UPX y USD, en qué showroom están y cuánto valen los tuyos.'
   },
   en_cunk:{
     subtitle:'Tools for Upland, a game about owning pretend land, which is the best kind of land.',
     live:'Exists', soon:'Not yet. Soon. Possibly.', open:'Go in →',
     optimizerName:'Rockdrigo’s Ornament Optimizer: A History of Putting Things on Houses', optimizerDesc:'Since the dawn of time, people have put things on houses. This tells you which things, which houses, and when.',
+    grabberName:'Rockdrigo’s Land Grabber: A History of Wanting More', grabberDesc:'People have always wanted more land than they have. This tells you exactly which land, and how much more.',
+    horoscopeName:'Rockdrigo’s Property Horoscope: The Stars, But for Land', horoscopeDesc:'Astrology has never been applied to real estate. There may be a reason. We intend to find out.',
     pricesName:'Rockdrigo’s Cheapskate: A History of Paying Less', pricesDesc:'Find out what things are worth, a question that has troubled economists since money.'
   },
   es_cunk:{
     subtitle:'Herramientas para Upland, un juego de tener terrenos de mentira, que son los mejores terrenos.',
     live:'Existe', soon:'Todavía no. Pronto. Quizá.', open:'Entrar →',
     optimizerName:'El Optimizador de Ornamentos de Rockdrigo: una historia de ponerle cosas a las casas', optimizerDesc:'Desde el principio de los tiempos, la gente le ha puesto cosas a las casas. Esto te dice qué cosas, a qué casas y cuándo.',
+    grabberName:'El Acaparador de Rockdrigo: una historia de querer más', grabberDesc:'La gente siempre ha querido más terreno del que tiene. Esto te dice exactamente cuál, y cuánto más.',
+    horoscopeName:'El Horóscopo Inmobiliario de Rockdrigo: los astros, pero para terrenos', horoscopeDesc:'Nunca se ha aplicado la astrología a los bienes raíces. Quizá haya una razón. Pensamos averiguarlo.',
     pricesName:'El Codo de Rockdrigo: una historia de pagar menos', pricesDesc:'Averigua cuánto valen las cosas, una pregunta que inquieta a los economistas desde que existe el dinero.'
   }
 });
 
 const TOOLS = [
   {key:'optimizer', href:'ornament-optimizer/', live:true},
-  {key:'prices', href:'cheapskate/', live:true}
+  {key:'prices', href:'cheapskate/', live:true},
+  {key:'grabber', href:null, live:false},
+  {key:'horoscope', href:null, live:false}
 ];
 function render(){
   document.getElementById('tools').innerHTML = TOOLS.map(x => {
