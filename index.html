@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo’s Upland Tools</title>
+<meta name="description" content="Free tools for Upland players by Rockdrigo: ornament season planning, prices and more.">
+<link rel="stylesheet" href="shared/theme.css">
+<style>
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:8px}
+.tool{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit}
+a.tool:hover{border-color:var(--muted)}
+.tool h2{margin:0;font-size:1.0625rem}
+.tool p{margin:0;color:var(--muted);font-size:.875rem;flex:1}
+.tool .foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.state{font-size:.75rem;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--surface-2);color:var(--muted)}
+.state.live{background:var(--accent);color:var(--accent-ink)}
+.tool.soon{opacity:.75}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header" data-home="true"></header>
+  <main class="tools" id="tools"></main>
+  <footer id="site-footer" data-home="true"></footer>
+</div>
+<script src="shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc} = Site;
+Site.register({
+  en:{
+    title:'Rockdrigo’s Upland Tools', subtitle:'Free tools for Upland players. Your data stays in your browser.',
+    live:'Live', soon:'Coming soon', open:'Open →',
+    plannerName:'Rockdrigo’s Ornament Season Planner', plannerDesc:'Type a username and get one ornament per season on every structure: what to apply today, which ornaments to move (with one-click links), and what is missing.',
+    pricesName:'Rockdrigo’s Ornament Price Finder', pricesDesc:'What ornaments actually sell for in UPX, what they are listed at in UPX and USD, and which showroom has them.'
+  },
+  es:{
+    title:'Herramientas de Upland de Rockdrigo', subtitle:'Herramientas gratis para jugadores de Upland. Tus datos se quedan en tu navegador.',
+    live:'Disponible', soon:'Próximamente', open:'Abrir →',
+    plannerName:'Planificador de Ornamentos de Rockdrigo', plannerDesc:'Escribe un usuario y ten un ornamento por temporada en cada estructura: qué aplicar hoy, qué mover (con enlaces directos) y qué falta.',
+    pricesName:'Buscador de Precios de Ornamentos de Rockdrigo', pricesDesc:'En cuánto se venden de verdad los ornamentos en UPX, a cuánto están listados en UPX y USD, y en qué showroom están.'
+  },
+  en_cunk:{
+    subtitle:'Tools for Upland, a game about owning pretend land, which is the best kind of land.',
+    live:'Exists', soon:'Not yet. Soon. Possibly.', open:'Go in →',
+    plannerName:'Rockdrigo’s Ornaments: A History of Putting Things on Houses', plannerDesc:'Since the dawn of time, people have put things on houses. This tells you which things, which houses, and when.',
+    pricesDesc:'Find out what things are worth, a question that has troubled economists since money.'
+  },
+  es_cunk:{
+    subtitle:'Herramientas para Upland, un juego de tener terrenos de mentira, que son los mejores terrenos.',
+    live:'Existe', soon:'Todavía no. Pronto. Quizá.', open:'Entrar →',
+    plannerName:'Los ornamentos de Rockdrigo: una historia de ponerle cosas a las casas', plannerDesc:'Desde el principio de los tiempos, la gente le ha puesto cosas a las casas. Esto te dice qué cosas, a qué casas y cuándo.',
+    pricesDesc:'Averigua cuánto valen las cosas, una pregunta que inquieta a los economistas desde que existe el dinero.'
+  }
+});
+
+const TOOLS = [
+  {key:'planner', href:'ornament-planner/', live:true},
+  {key:'prices', href:null, live:false}
+];
+function render(){
+  document.getElementById('tools').innerHTML = TOOLS.map(x => {
+    const inner = `<h2>${esc(t(x.key + 'Name'))}</h2><p>${esc(t(x.key + 'Desc'))}</p>
+      <div class="foot"><span class="state${x.live ? ' live' : ''}">${esc(t(x.live ? 'live' : 'soon'))}</span>${x.live ? `<span class="small">${esc(t('open'))}</span>` : ''}</div>`;
+    return x.live ? `<a class="card tool" href="${x.href}">${inner}</a>` : `<div class="card tool soon">${inner}</div>`;
+  }).join('');
+}
+Site.mount({onChange: render});
+</script>
+</body>
+</html>

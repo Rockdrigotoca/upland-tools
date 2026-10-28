@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ornament Season Planner</title>
+<meta name="description" content="Plan Upland structure ornaments for every season: what to apply now, which ornaments to move, and what is missing.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.cell{width:calc(22px * var(--text-scale,1));height:calc(22px * var(--text-scale,1))}
+.thumb{width:calc(44px * var(--text-scale,1));height:calc(44px * var(--text-scale,1))}
+.item{grid-template-columns:calc(44px * var(--text-scale,1)) 1fr auto}
+@media (max-width:560px){.item{grid-template-columns:calc(36px * var(--text-scale,1)) 1fr}.thumb{width:calc(36px * var(--text-scale,1));height:calc(36px * var(--text-scale,1))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+
+  <section class="card" id="loader">
+    <form class="row" id="userForm">
+      <input type="text" id="username" data-i-ph="userPh" class="grow" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="btn primary" id="loadBtn" type="submit" data-i="load"></button>
+      <button class="btn hidden" id="refreshBtn" type="button" data-i="refresh"></button>
+    </form>
+    <div class="status" id="status"></div>
+    <details class="csv">
+      <summary data-i="csvSummary"></summary>
+      <p class="note" data-i="csvNote"></p>
+      <div class="files">
+        <label><span data-i="csvOrn"></span><input type="file" id="fOrn" accept=".csv"></label>
+        <label><span data-i="csvStruct"></span><input type="file" id="fStr" accept=".csv"></label>
+        <label><span data-i="csvProps"></span><input type="file" id="fProp" accept=".xlsx,.xls,.csv"></label>
+      </div>
+      <div class="row" style="margin-top:10px"><button class="btn" id="csvBtn" type="button" data-i="csvLoad"></button></div>
+    </details>
+  </section>
+
+  <main id="app" class="hidden">
+    <div class="kpis" id="kpis"></div>
+    <div class="seasons" id="seasonCards"></div>
+    <nav class="tabs" id="tabs"></nav>
+    <section id="panel"></section>
+  </main>
+
+  <footer id="site-footer"></footer>
+</div>
+
+<script src="../shared/site.js"></script>
+<script src="../shared/upland.js"></script>
+<script>
+"use strict";
+const CATALOG = {"byId":{"1":"Harvest","19":"Harvest","91":"Wonderland","92":"Wonderland","93":"Wonderland","97":"Wonderland","98":"Wonderland","100":"Wonderland","105":"Wonderland","108":"Wonderland","111":"Wonderland","120":"Genesis","123":"Genesis","216":"Harvest","221":"Harvest","261":"Harvest","264":"Harvest","266":"Harvest","288":"Harvest","347":"Harvest","353":"Wonderland","355":"Wonderland","356":"Wonderland","357":"Wonderland","358":"Wonderland","359":"Wonderland","360":"Wonderland","399":"Frost","407":"Frost","526":"Harvest","527":"Harvest","538":"Wonderland","541":"Wonderland","550":"Wonderland","565":"Blossom","566":"Wonderland","583":"Blossom","584":"Blossom","586":"Blossom","600":"Frost","660":"Sizzle","675":"Harvest","676":"Frost","677":"Sizzle","710":"Harvest","726":"Harvest","741":"Harvest","790":"Blossom","792":"Blossom","793":"Genesis","795":"Wonderland","796":"Harvest","809":"Wonderland","818":"Frost","819":"Frost","847":"Frost","848":"Frost","849":"Frost","850":"Frost","851":"Frost","852":"Frost","853":"Frost","854":"Frost","855":"Frost","856":"Frost","857":"Frost","858":"Frost","859":"Frost","860":"Frost","861":"Frost","862":"Frost","867":"Frost","868":"Wonderland","893":"Wonderland","910":"Blossom","916":"Blossom","935":"Genesis","938":"Blossom","946":"Frost","958":"Blossom","965":"Genesis","989":"Wonderland","999":"Genesis","1018":"Blossom","1022":"Frost","1023":"Blossom","1024":"Sizzle","1025":"Genesis","1046":"Sizzle","1105":"Frost","1133":"Frost","1157":"Frost","1159":"Genesis","1160":"Blossom","1168":"Wonderland","1169":"Harvest","1170":"Wonderland","1172":"Blossom","1173":"Harvest","1174":"Frost","1175":"Frost","1177":"Blossom","1178":"Blossom","1179":"Genesis","1180":"Sizzle","1185":"Genesis","1186":"Genesis","1198":"Frost","1213":"Genesis","1243":"Frost","1299":"Harvest","1423":"Wonderland"},"byName":{"Lil Skelly":"Harvest","Wacky Mole Animatronic":"Harvest","LAND4LAND's Winter Windmill":"Wonderland","REDSKY's Winter Emporium":"Wonderland","RETRY_88's Winter Medley":"Wonderland","RETRY_88's Taste of Winter":"Wonderland","OBAY's Present Overload!":"Wonderland","BUNNYBE's Snowflake Fantasy":"Wonderland","LAND4LAND's Winter Mural":"Wonderland","Winter Wonderland '21":"Wonderland","RETRY_88's Spark Is Here!":"Genesis","RUPPEL_GROUP's Genesis Truck":"Genesis","Creepy Kid":"Harvest","Zombie":"Harvest","Roseate Metaskull":"Harvest","Creepy Kid v2":"Harvest","Unicef Winter Ornament - Apartment Building":"Wonderland","Unicef Winter Ornament - Luxury Ranch House":"Wonderland","Unicef Winter Ornament - Micro House":"Wonderland","Unicef Winter Ornament - Ranch House":"Wonderland","Unicef Winter Ornament - Small Townhouse":"Wonderland","Unicef Winter Ornament - Small Townhouse 2":"Wonderland","Unicef Winter Ornament - Town House":"Wonderland","Renovação do Timbal; Carnaval 2023":"Frost","Ara Ketu; Carnaval 2023":"Frost","Zombie Rising Apartment":"Harvest","Harvest Tractor":"Harvest","Gingerbread house | Apartment Building":"Wonderland","Gingerbread house | Town House":"Wonderland","Eye-Candy":"Wonderland","Sakura Serenity":"Blossom","Telephone Booth Christmas":"Wonderland","Blossom 2024 | Micro House":"Blossom","Blossom 2024 | Small Town House":"Blossom","Blossom 2024 | Ranch House":"Blossom","Block Party Fiesta":"Frost","Sizzle 2024 | Micro House":"Sizzle","The Fuzz Micro Station":"Harvest","Just Ice Box":"Frost","The Crown Jewels | Sizzle | Midnight Crest":"Sizzle","The Fuzz - Small Town House Station V2":"Harvest","Helipad - Harvest - Achini":"Harvest","Hungry Monster":"Harvest","Cosme Blossom 25 STH V2 Green":"Blossom","Cosme Blossom 25 Town House Green":"Blossom","Cosme Genesis 25 Town House Yellow":"Genesis","Cosme Wonderland 25 Town House Indigo":"Wonderland","Cosme Harvest 25 Town House Orange":"Harvest","ACE CREEPY CHRISTMAS":"Wonderland","Quailwood Greens - Hole 1":"Frost","Quailwood Greens - Hole 2":"Frost","Quailwood Greens - Hole 3":"Frost","Quailwood Greens - Hole 4":"Frost","Quailwood Greens - Hole 5":"Frost","Quailwood Greens - Hole 6":"Frost","Quailwood Greens - Hole 7":"Frost","Quailwood Greens - Hole 8":"Frost","Quailwood Greens - Hole 9":"Frost","Quailwood Greens - Hole 10":"Frost","Quailwood Greens - Hole 11":"Frost","Quailwood Greens - Hole 12":"Frost","Quailwood Greens - Hole 13":"Frost","Quailwood Greens - Hole 14":"Frost","Quailwood Greens - Hole 15":"Frost","Quailwood Greens - Hole 16":"Frost","Quailwood Greens - Hole 17":"Frost","Quailwood Greens - Hole 18":"Frost","FROST HB TOWNHOUSE":"Frost","Cosme Winter 25 Apartment":"Wonderland","ACE CREEPY CHRISTMAS WONDERLAND MICRO":"Wonderland","Cosme Luxury Ranch Blossom 25":"Blossom","Chloro Phill Box":"Blossom","Cosme France Micro House Genesis":"Genesis","Cosme Japan Hanami Micro House":"Blossom","Steelheart":"Frost","Cosme Cherry Blossom Hanami":"Blossom","RobotCity Genesis Tower":"Genesis","$SPARKLET Warz | Cyborgs Tokyo Town House":"Wonderland","RobotCity electric ion":"Genesis","Cherry Blossom Night Viewing Town House":"Blossom","ACE MICRO FROST":"Frost","ACE BLOSSOM MICRO":"Blossom","ACE SIZZLE MICRO":"Sizzle","ACE GENESIS MICRO":"Genesis","AAMH - LITTLE ROCK - SIZZLE":"Sizzle","Bavarian Frost Micro Chapel":"Frost","Montys Moo-bile":"Frost","The Udder Heights - Frost":"Frost","CyberMoo Guardian - Genesis":"Genesis","Algorithmic Quail - Blossom - Micro":"Blossom","Quail Santas Bag - Wonderland - Micro":"Wonderland","Quail O Lantern - Harvest - Micro":"Harvest","Giftwrapped Quail - Wonderland - Apartment":"Wonderland","Royal Quail Garden - Blossom - Apartment":"Blossom","Cow O Lantern - Harvest - Apartment":"Harvest","Snowfluff Roost - Frost - Small TH":"Frost","Frostquail Haven - Frost - Small THV2":"Frost","The Petal Perch - Blossom - Small THv2":"Blossom","Cherrybud Nest - Blossom - SmallTH":"Blossom","The Eggson Tower - Genesis - Apartment":"Genesis","Scorched Plume Tower - Sizzle - Apartment":"Sizzle","Belle Epoque Retreat":"Genesis","The Epoque Lodge - Genesis - Small THV2":"Genesis","Quailwood Greens - Hole 19":"Frost","AAMH - INDEPENDENCE DAY - GENESIS":"Genesis","Quailwood Greens - Hole 20":"Frost","Inspiraverse Harvest Microhouse":"Harvest","The Laban - Apartment - Wonderland":"Wonderland"}};
+
+const {API, IMG, getJSON, pool} = Upland;
+const {store, t} = Site;
+const SEASONS = ['Frost','Blossom','Genesis','Sizzle','Harvest','Wonderland'];
+const SEASON_DATES = {Frost:[2,1,3,15],Blossom:[4,1,5,15],Genesis:[6,1,7,15],Sizzle:[8,1,9,15],Harvest:[10,1,11,15],Wonderland:[12,1,1,15]};
+// Structure types that have ornaments; anything else is ignored.
+const ORN_TYPES = ['Micro House','Small Town House','Small Town House v2','Town House','Apartment Building','Luxury Ranch House','Ranch House','Tokyo Unique Structure 1 - Town House'];
+
+const T = {
+  en:{
+    title:'Rockdrigo’s Ornament Season Planner', subtitle:'Upland structure ornaments, one per season on every structure',
+    userPh:'Upland username', load:'Load', refresh:'Refresh', loading:'Loading…',
+    fetchOrn:'Reading ornaments…', fetchStr:'Reading structures…', fetchProps:'Checking {n} properties without listed structures…', fetchSeasons:'Looking up seasons for {n} designs…',
+    loaded:'Loaded {o} ornaments and {s} structures for {u} · {t}', loadedFiles:'Loaded {o} ornaments and {s} structures from your files · {t}', since:'Since last refresh: {d} more slots set up.',
+    errUser:'Could not load data for “{u}”. Check the username, or try again in a minute.', errNet:'Upland did not answer ({e}). Try again, or use the CSV files below.',
+    csvSummary:'No connection? Use your exported files instead', csvNote:'Upload the exports from Upland. Without a connection, moves link to the property instead of directly to the ornament.',
+    csvOrn:'Structure ornaments (.csv)', csvStruct:'Structures (.csv)', csvProps:'Properties (.xlsx or .csv)', csvLoad:'Load files', csvNeed:'Add at least the ornaments and structures files.', csvMode:'From files',
+    kStructs:'Structures with ornament slots', kOrn:'Ornaments owned', kInPlace:'Slots ready now', kAfter:'Slots after all moves', kMoves:'Moves needed', kExtra:'Extra ornaments',
+    ofSlots:'{a} of {b} slots',
+    tNow:'Now', tPlan:'Setup moves', tStructs:'Structures', tGaps:'Missing & extras', tStorage:'Storage cleanup',
+    active:'{s} is active', endsIn:'ends {d} ({n} days left)', windowNow:'Swap window', startsIn:'{s} starts {d} (in {n} days). Apply now so it is on from day one.',
+    pickSeason:'Season to apply:',
+    stDone:'Applied', stApply:'Ready to apply', stMove:'Move, then apply', stMissing:'No ornament',
+    nowApplied:'Applied now: {x}', nowNothing:'Nothing applied', apply:'Apply', moveApply:'Move & apply', open:'Open property',
+    allDone:'Every structure has its {s} ornament applied. 🎉', showDone:'Show {n} structures already done',
+    planNote:'One-time setup: after these moves every structure holds one ornament per season on its own property. Then each season is just “apply”. Moves are free and instant.',
+    from:'from', to:'to', all:'All', noMoves:'No moves needed. Everything that can be in place is in place.',
+    search:'Search address, city or ornament', onlyIncomplete:'Only structures with gaps',
+    lgIn:'In place', lgApp:'Applied now', lgMv:'Needs a move', lgNo:'Missing', nIn:'in place', nMv:'to move', nNo:'missing',
+    colAddress:'Address', colCity:'City', colType:'Structure',
+    shortTitle:'Missing ornaments by season and structure type', shortNote:'Each cell: ornaments you have / structures that need one. Red means you are short.',
+    totalShort:'Short in total', extrasTitle:'Extra ornaments', extrasNote:'Not needed by any structure. Sell, trade or keep for a new build.',
+    reasonNoStruct:'no structure of this type', reasonSurplus:'more than structures', reasonUnknown:'season unknown',
+    buildTitle:'Build ideas', buildNote:'Structure types where your extra ornaments would fill a new structure.',
+    buildRow:'A new {t} would get ornaments for {k} of 6 seasons right away ({n} extras).',
+    storageNote:'Ornaments sitting where they cannot be applied: no structure of their type on that property.',
+    goesTo:'goes to', isExtra:'extra', structsHere:'Structures here: {x}', none:'none',
+    unknownTitle:'Ornaments without a known season', count:'{n}×',
+    foot:'Seasons: Frost Feb 1–Mar 15 · Blossom Apr 1–May 15 · Genesis Jun 1–Jul 15 · Sizzle Aug 1–Sep 15 · Harvest Oct 1–Nov 15 · Wonderland Dec 1–Jan 15.',
+    inferred:'(found on property)', copy:'Copy link', copied:'Copied!', cunk:'Cunk mode'
+  },
+  es:{
+    title:'Planificador de Ornamentos de Rockdrigo', subtitle:'Ornamentos de estructuras en Upland, uno por temporada en cada estructura',
+    userPh:'Usuario de Upland', load:'Cargar', refresh:'Actualizar', loading:'Cargando…',
+    fetchOrn:'Leyendo ornamentos…', fetchStr:'Leyendo estructuras…', fetchProps:'Revisando {n} propiedades sin estructuras listadas…', fetchSeasons:'Buscando temporadas de {n} diseños…',
+    loaded:'{o} ornamentos y {s} estructuras de {u} · {t}', loadedFiles:'{o} ornamentos y {s} estructuras desde tus archivos · {t}', since:'Desde la última actualización: {d} espacios más listos.',
+    errUser:'No se pudieron cargar los datos de “{u}”. Revisa el usuario o intenta en un minuto.', errNet:'Upland no respondió ({e}). Intenta de nuevo o usa los archivos CSV de abajo.',
+    csvSummary:'¿Sin conexión? Usa tus archivos exportados', csvNote:'Sube los archivos exportados de Upland. Sin conexión, los movimientos enlazan a la propiedad en lugar del ornamento.',
+    csvOrn:'Ornamentos de estructura (.csv)', csvStruct:'Estructuras (.csv)', csvProps:'Propiedades (.xlsx o .csv)', csvLoad:'Cargar archivos', csvNeed:'Agrega al menos los archivos de ornamentos y estructuras.', csvMode:'Desde archivos',
+    kStructs:'Estructuras con espacio para ornamentos', kOrn:'Ornamentos', kInPlace:'Espacios listos ahora', kAfter:'Espacios tras mover', kMoves:'Movimientos', kExtra:'Ornamentos de sobra',
+    ofSlots:'{a} de {b} espacios',
+    tNow:'Ahora', tPlan:'Movimientos', tStructs:'Estructuras', tGaps:'Faltantes y sobrantes', tStorage:'Limpiar bodegas',
+    active:'{s} está activa', endsIn:'termina el {d} (faltan {n} días)', windowNow:'Ventana de cambio', startsIn:'{s} empieza el {d} (en {n} días). Aplícalo ya para que esté desde el primer día.',
+    pickSeason:'Temporada a aplicar:',
+    stDone:'Aplicado', stApply:'Listo para aplicar', stMove:'Mover y aplicar', stMissing:'Sin ornamento',
+    nowApplied:'Aplicado: {x}', nowNothing:'Nada aplicado', apply:'Aplicar', moveApply:'Mover y aplicar', open:'Abrir propiedad',
+    allDone:'Todas las estructuras tienen su ornamento de {s} aplicado. 🎉', showDone:'Ver {n} estructuras ya listas',
+    planNote:'Configuración única: tras estos movimientos cada estructura tiene un ornamento por temporada en su propia propiedad. Después cada temporada solo es “aplicar”. Mover es gratis e inmediato.',
+    from:'desde', to:'a', all:'Todas', noMoves:'No hace falta mover nada. Todo lo posible ya está en su lugar.',
+    search:'Buscar dirección, ciudad u ornamento', onlyIncomplete:'Solo estructuras incompletas',
+    lgIn:'En su lugar', lgApp:'Aplicado', lgMv:'Hay que moverlo', lgNo:'Falta', nIn:'en su lugar', nMv:'por mover', nNo:'faltan',
+    colAddress:'Dirección', colCity:'Ciudad', colType:'Estructura',
+    shortTitle:'Faltantes por temporada y tipo de estructura', shortNote:'Cada celda: ornamentos que tienes / estructuras que necesitan uno. En rojo, te faltan.',
+    totalShort:'Faltan en total', extrasTitle:'Ornamentos de sobra', extrasNote:'Ninguna estructura los necesita. Véndelos, cámbialos o guárdalos para construir.',
+    reasonNoStruct:'no tienes ese tipo de estructura', reasonSurplus:'más que estructuras', reasonUnknown:'temporada desconocida',
+    buildTitle:'Ideas para construir', buildNote:'Tipos de estructura donde tus ornamentos de sobra llenarían una nueva.',
+    buildRow:'Una {t} nueva tendría ornamentos para {k} de 6 temporadas de inmediato ({n} de sobra).',
+    storageNote:'Ornamentos donde no se pueden aplicar: no hay una estructura de su tipo en esa propiedad.',
+    goesTo:'va a', isExtra:'sobra', structsHere:'Estructuras aquí: {x}', none:'ninguna',
+    unknownTitle:'Ornamentos sin temporada conocida', count:'{n}×',
+    foot:'Temporadas: Frost 1 feb–15 mar · Blossom 1 abr–15 may · Genesis 1 jun–15 jul · Sizzle 1 ago–15 sep · Harvest 1 oct–15 nov · Wonderland 1 dic–15 ene.',
+    inferred:'(encontrada en la propiedad)', copy:'Copiar enlace', copied:'¡Copiado!', cunk:'Modo Cunk'
+  },
+  en_cunk:{
+    title:'Rockdrigo’s Ornaments: A History of Putting Things on Houses', subtitle:'Humanity has always wanted to decorate houses. This is the latest, and possibly last, attempt.',
+    userPh:'Your Upland name, the one you made up', load:'Find out', refresh:'Look again', loading:'Thinking…',
+    fetchOrn:'Counting ornaments. An ornament is furniture that lives outside…', fetchStr:'Locating your structures, also known as houses that don’t need you…', fetchProps:'Knocking on {n} properties that forgot to mention they had a house…', fetchSeasons:'Asking Upland what season {n} things are. It knows. It always knows.',
+    loaded:'Found {o} ornaments and {s} structures belonging to {u}. That is a lot of things · {t}', loadedFiles:'Found {o} ornaments and {s} structures in your files, which is where files keep things · {t}', since:'Since you last looked, {d} more slots became correct. Progress, like the wheel.',
+    errUser:'Nobody called “{u}” turned up. Either they don’t exist, or they’re very shy.', errNet:'Upland has stopped talking to us ({e}), like a cat. Try again, or use the files below.',
+    csvSummary:'No internet? Do it the old way, with files, like the Romans', csvNote:'Upload the files Upland gave you. Without the internet, buttons take you to the property and you must find the ornament with your own eyes.',
+    csvOrn:'Ornaments (.csv), the decorations', csvStruct:'Structures (.csv), the houses', csvProps:'Properties (.xlsx or .csv), the ground', csvLoad:'Read the files', csvNeed:'You need at least the ornaments and the houses. You can’t decorate nothing. Many have tried.', csvMode:'the files',
+    kStructs:'Houses that can wear a hat', kOrn:'Ornaments hoarded', kInPlace:'Slots already sorted', kAfter:'Slots sorted once you do the work', kMoves:'Things to move', kExtra:'Ornaments nobody asked for',
+    ofSlots:'{a} of {b} slots, mathematically',
+    tNow:'Right now', tPlan:'The great migration', tStructs:'The houses', tGaps:'Too few, too many', tStorage:'The pile',
+    active:'{s} is happening', endsIn:'until {d}, when it simply stops ({n} days left)', windowNow:'The bit between seasons', startsIn:'{s} begins {d} (in {n} days). Apply it now, so the house is ready before the season is.',
+    pickSeason:'Choose a season. Any season. But only these six.',
+    stDone:'Already dressed', stApply:'Ornament is right there, just apply it', stMove:'Has to travel first', stMissing:'Naked',
+    nowApplied:'Currently wearing: {x}', nowNothing:'Wearing nothing', apply:'Apply', moveApply:'Move & apply', open:'Go there',
+    allDone:'Every house is wearing its {s} ornament. Nothing left to do, the dream of every civilisation. 🎉', showDone:'Show the {n} houses that are already fine, for smugness',
+    planNote:'Do this once and every house keeps one ornament per season on the premises, like a coat rack. After that each season is just pressing “apply”. Moving is free and instant, unlike most moving.',
+    from:'from', to:'to', all:'All of them', noMoves:'Nothing needs moving. Everything is where it belongs, which has almost never happened in history.',
+    search:'Type an address, city or ornament, or just type and see', onlyIncomplete:'Only houses with gaps',
+    lgIn:'Home', lgApp:'Worn right now', lgMv:'Lives elsewhere', lgNo:'Doesn’t exist', nIn:'home', nMv:'abroad', nNo:'missing',
+    colAddress:'Where', colCity:'Which city', colType:'What sort of house',
+    shortTitle:'Ornaments you have versus ornaments you need: the oldest struggle', shortNote:'Each box: what you own / what the houses want. Red means wanting more than you have, also known as “the economy”.',
+    totalShort:'Ornaments missing, in total', extrasTitle:'Ornaments with no house to go to', extrasNote:'No house needs these. Sell them, swap them, or build a house just so they feel wanted.',
+    reasonNoStruct:'you don’t own that kind of house', reasonSurplus:'more of them than houses', reasonUnknown:'season: a mystery',
+    buildTitle:'Things you could build', buildNote:'Kinds of house your spare ornaments are basically begging for.',
+    buildRow:'Build a new {t} and it instantly has outfits for {k} of 6 seasons ({n} spare). It practically builds itself. It doesn’t, though.',
+    storageNote:'Ornaments sitting somewhere they can’t be worn, like a hat in a fridge.',
+    goesTo:'belongs at', isExtra:'surplus to requirements', structsHere:'Living here: {x}', none:'nobody',
+    unknownTitle:'Ornaments of unknown season', count:'{n}×',
+    foot:'The seasons, as decreed: Frost Feb 1–Mar 15 · Blossom Apr 1–May 15 · Genesis Jun 1–Jul 15 · Sizzle Aug 1–Sep 15 · Harvest Oct 1–Nov 15 · Wonderland Dec 1–Jan 15.',
+    inferred:'(we found it ourselves)', copy:'Copy link', copied:'Copied, somehow'
+  },
+  es_cunk:{
+    title:'Los ornamentos de Rockdrigo: una historia de ponerle cosas a las casas', subtitle:'La humanidad siempre ha querido decorar casas. Este es el intento más reciente, y quizá el último.',
+    userPh:'Tu nombre en Upland, el que te inventaste', load:'Averiguar', refresh:'Ver otra vez', loading:'Pensando…',
+    fetchOrn:'Contando ornamentos. Un ornamento es un mueble que vive afuera…', fetchStr:'Buscando tus estructuras, o sea, casas que no te necesitan…', fetchProps:'Tocando la puerta de {n} propiedades que no avisaron que tenían casa…', fetchSeasons:'Preguntándole a Upland de qué temporada son {n} cosas. Sabe. Siempre sabe.',
+    loaded:'Encontramos {o} ornamentos y {s} estructuras de {u}. Son muchas cosas · {t}', loadedFiles:'Encontramos {o} ornamentos y {s} estructuras en tus archivos, que es donde los archivos guardan cosas · {t}', since:'Desde la última vez, {d} espacios más quedaron bien. Progreso, como la rueda.',
+    errUser:'No apareció nadie llamado “{u}”. O no existe, o es muy tímido.', errNet:'Upland dejó de hablarnos ({e}), como un gato. Intenta de nuevo o usa los archivos de abajo.',
+    csvSummary:'¿Sin internet? Hazlo a la antigua, con archivos, como los romanos', csvNote:'Sube los archivos que te dio Upland. Sin internet, los botones te llevan a la propiedad y tendrás que encontrar el ornamento con tus propios ojos.',
+    csvOrn:'Ornamentos (.csv), los adornos', csvStruct:'Estructuras (.csv), las casas', csvProps:'Propiedades (.xlsx o .csv), el terreno', csvLoad:'Leer los archivos', csvNeed:'Necesitas al menos los ornamentos y las casas. No se puede decorar la nada. Muchos lo han intentado.', csvMode:'los archivos',
+    kStructs:'Casas que pueden usar sombrero', kOrn:'Ornamentos acumulados', kInPlace:'Espacios ya resueltos', kAfter:'Espacios resueltos cuando hagas el trabajo', kMoves:'Cosas que mover', kExtra:'Ornamentos que nadie pidió',
+    ofSlots:'{a} de {b} espacios, matemáticamente',
+    tNow:'Ahorita', tPlan:'La gran migración', tStructs:'Las casas', tGaps:'Muy pocos, demasiados', tStorage:'El montón',
+    active:'{s} está ocurriendo', endsIn:'hasta el {d}, cuando simplemente se acaba (faltan {n} días)', windowNow:'El ratito entre temporadas', startsIn:'{s} empieza el {d} (en {n} días). Aplícalo ya, para que la casa esté lista antes que la temporada.',
+    pickSeason:'Elige una temporada. Cualquiera. Pero solo estas seis.',
+    stDone:'Ya está vestida', stApply:'El ornamento está ahí, solo aplícalo', stMove:'Primero tiene que viajar', stMissing:'Desnuda',
+    nowApplied:'Trae puesto: {x}', nowNothing:'No trae nada puesto', apply:'Aplicar', moveApply:'Mover y aplicar', open:'Ir para allá',
+    allDone:'Todas las casas traen su ornamento de {s}. No queda nada que hacer, el sueño de toda civilización. 🎉', showDone:'Ver las {n} casas que ya están bien, para presumir',
+    planNote:'Haz esto una vez y cada casa guarda un ornamento por temporada en su terreno, como un perchero. Después cada temporada es solo picarle a “aplicar”. Mover es gratis e inmediato, a diferencia de casi todas las mudanzas.',
+    from:'desde', to:'a', all:'Todas', noMoves:'No hay que mover nada. Todo está donde debe, cosa que casi nunca ha pasado en la historia.',
+    search:'Escribe una dirección, ciudad u ornamento, o nomás escribe a ver qué sale', onlyIncomplete:'Solo casas con huecos',
+    lgIn:'En casa', lgApp:'Puesto ahorita', lgMv:'Vive en otro lado', lgNo:'No existe', nIn:'en casa', nMv:'fuera', nNo:'faltan',
+    colAddress:'Dónde', colCity:'Qué ciudad', colType:'Qué tipo de casa',
+    shortTitle:'Ornamentos que tienes contra ornamentos que necesitas: la lucha más antigua', shortNote:'Cada casilla: lo que tienes / lo que quieren las casas. Rojo es querer más de lo que tienes, también conocido como “la economía”.',
+    totalShort:'Ornamentos faltantes, en total', extrasTitle:'Ornamentos sin casa a dónde ir', extrasNote:'Ninguna casa los necesita. Véndelos, cámbialos o construye una casa solo para que se sientan queridos.',
+    reasonNoStruct:'no tienes ese tipo de casa', reasonSurplus:'hay más que casas', reasonUnknown:'temporada: un misterio',
+    buildTitle:'Cosas que podrías construir', buildNote:'Tipos de casa que tus ornamentos de sobra prácticamente están rogando.',
+    buildRow:'Construye una {t} nueva y tendría ropa para {k} de 6 temporadas de inmediato ({n} de sobra). Prácticamente se construye sola. Pero no.',
+    storageNote:'Ornamentos donde no se pueden usar, como un sombrero en el refri.',
+    goesTo:'pertenece a', isExtra:'sobra', structsHere:'Viven aquí: {x}', none:'nadie',
+    unknownTitle:'Ornamentos de temporada desconocida', count:'{n}×',
+    foot:'Las temporadas, por decreto: Frost 1 feb–15 mar · Blossom 1 abr–15 may · Genesis 1 jun–15 jul · Sizzle 1 ago–15 sep · Harvest 1 oct–15 nov · Wonderland 1 dic–15 ene.',
+    inferred:'(la encontramos solitos)', copy:'Copiar enlace', copied:'Copiado, de algún modo'
+  }
+};
+Site.register(T);
+
+// ---------- small helpers ----------
+const $ = s => document.querySelector(s);
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(d){ return d.toLocaleDateString(Site.locale(), {month:'short', day:'numeric'}); }
+function pill(season){ const s = SEASONS.includes(season) ? season : 'Unknown'; return `<span class="pill" style="--c:var(--${s})">${esc(season || '?')}</span>`; }
+function thumb(o){ return o.img ? `<img class="thumb" loading="lazy" alt="" src="${esc(IMG + encodeURI(o.img))}">` : `<div class="thumb ph">◆</div>`; }
+const groupBy = (arr, f) => arr.reduce((m, x) => { const k = f(x); (m.get(k) || m.set(k, []).get(k)).push(x); return m; }, new Map());
+
+let statusFn = null;
+function setStatus(msg, err){ statusFn = typeof msg === 'function' ? msg : null; const el = $('#status'); el.textContent = (statusFn ? statusFn() : msg) || ''; el.classList.toggle('err', !!err); }
+
+
+// ---------- seasons ----------
+function today(){ const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function seasonInfo(now = today()){
+  const y = now.getFullYear(), ranges = [];
+  for(const s of SEASONS){
+    const [m1,d1,m2,d2] = SEASON_DATES[s];
+    for(const yy of [y-1, y, y+1]) ranges.push({s, start:new Date(yy, m1-1, d1), end:new Date(m2 < m1 ? yy+1 : yy, m2-1, d2)});
+  }
+  const act = ranges.find(r => now >= r.start && now <= r.end);
+  const next = ranges.filter(r => r.start > now).sort((a,b) => a.start - b.start)[0];
+  return {active: act ? act.s : null, end: act && act.end, next: next.s, nextStart: next.start, target: act ? act.s : next.s, now};
+}
+const days = (a, b) => Math.round((b - a) / 864e5);
+
+function seasonFromName(name, rarity){
+  const n = (name || '').toLowerCase();
+  if(CATALOG.byName[name]) return CATALOG.byName[name];
+  for(const s of SEASONS) if(n.includes(s.toLowerCase())) return s;
+  if(/sakura|hanami|cherry/.test(n)) return 'Blossom';
+  if(/christmas|santa|gingerbread|winter|snow|present/.test(n)) return 'Wonderland';
+  if(/halloween|lantern|zombie|skelly|creepy|spooky/.test(n)) return 'Harvest';
+  const r = (rarity || '').toLowerCase();
+  if(r === 'uncanny') return 'Harvest';
+  if(r.includes('winter')) return 'Wonderland';
+  return null;
+}
+
+function structType(name, img){
+  if(name === 'Small Town House' && /small_town_house_new2/.test(img || '')) return 'Small Town House v2';
+  return name;
+}
+
+// ---------- live loading ----------
+async function loadLive(user){
+  setStatus(t('fetchOrn'));
+  const rawOrn = await getJSON(`${API}/nft/assets/v2/decorations/${encodeURIComponent(user)}`);
+  setStatus(t('fetchStr'));
+  const rawStr = await getJSON(`${API}/nft/assets/structures/${encodeURIComponent(user)}`);
+
+  const props = new Map();
+  const structures = rawStr.map(s => {
+    props.set(s.prop_id, {id:s.prop_id, address:s.address, city:s.city && s.city.name});
+    return {id:'s'+s.dgoodId, propId:s.prop_id, type:structType(s.constructionName, s.buildingImage), address:s.address, city:s.city && s.city.name};
+  });
+
+  const ornaments = (Array.isArray(rawOrn) ? rawOrn : []).filter(o => o.category === 'structornmt').map(o => {
+    const m = o.metadata || {}, p = m.property || {};
+    return {id:o.dgoodId, mint:o.serialNumber, name:m.displayName, designId:m.decorationId, type:m.subtitle, applied:!!m.isApplied,
+      propId:p.id, address:p.fullAddress, city:p.cityName, img:m.image, rarity:m.rarityLevel, season:null};
+  });
+
+  // Properties holding ornaments but missing from the structure list: read their buildings directly.
+  const known = new Set(structures.map(s => s.propId));
+  const missing = [...new Set(ornaments.map(o => o.propId).filter(id => id && !known.has(id)))];
+  if(missing.length){
+    setStatus(t('fetchProps', {n:missing.length}));
+    const res = await pool(missing, 4, id => getJSON(`${API}/api/properties/${id}`));
+    const seen = new Set(structures.map(s => s.id));
+    res.forEach(p => {
+      if(!p) return;
+      props.set(p.prop_id, {id:p.prop_id, address:p.full_address, city:p.city && p.city.name});
+      if((p.owner_username || '').toLowerCase() !== user.toLowerCase()) return;
+      for(const b of (p.buildings || [])){
+        if(b.constructionStatus !== 'completed' || seen.has('s'+b.nftID)) continue;
+        seen.add('s'+b.nftID);
+        structures.push({id:'s'+b.nftID, propId:p.prop_id, type:structType(b.buildingName, b.buildingImage), address:p.full_address, city:p.city && p.city.name, inferred:true});
+      }
+    });
+  }
+  // City names: prefer the game's map city from structures/properties over the ornament's neighborhood city.
+  for(const o of ornaments){ const p = props.get(o.propId); if(p && p.city) o.city = p.city; }
+
+  // Seasons: built-in catalog → saved cache → ask Upland → guess from name.
+  const cache = store.get('uop:seasons', {});
+  const unknownIds = [...new Set(ornaments.map(o => o.designId))].filter(id => !CATALOG.byId[id] && !cache[id]);
+  if(unknownIds.length){
+    setStatus(t('fetchSeasons', {n:unknownIds.length}));
+    const res = await pool(unknownIds, 4, id => getJSON(`${API}/business/decorations/${id}/preview`));
+    res.forEach((r, i) => { if(r && SEASONS.includes(r.seasonName)) cache[unknownIds[i]] = r.seasonName; });
+    store.set('uop:seasons', cache);
+  }
+  for(const o of ornaments) o.season = CATALOG.byId[o.designId] || cache[o.designId] || seasonFromName(o.name, o.rarity);
+
+  return {user, live:true, ornaments, structures};
+}
+
+// ---------- CSV / XLSX loading ----------
+function parseCSV(text){
+  text = text.replace(/^﻿/, '');
+  const rows = []; let row = [], cur = '', q = false;
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(q){ if(c === '"'){ if(text[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if(c === '"') q = true;
+    else if(c === ','){ row.push(cur); cur = ''; }
+    else if(c === '\n' || c === '\r'){ if(c === '\r' && text[i+1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if(cur !== '' || row.length){ row.push(cur); rows.push(row); }
+  const head = rows.shift() || [];
+  return rows.filter(r => r.some(v => v !== '')).map(r => Object.fromEntries(head.map((h, i) => [h.trim(), (r[i] ?? '').trim()])));
+}
+function loadScript(src){ return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); }); }
+async function readTable(file){
+  if(/\.xlsx?$/i.test(file.name)){
+    if(!window.XLSX) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    const wb = XLSX.read(await file.arrayBuffer(), {type:'array'});
+    return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:'', raw:false});
+  }
+  return parseCSV(await file.text());
+}
+async function loadFiles(){
+  const fo = $('#fOrn').files[0], fs = $('#fStr').files[0], fp = $('#fProp').files[0];
+  if(!fo || !fs) throw new Error(t('csvNeed'));
+  const [ro, rs, rp] = await Promise.all([readTable(fo), readTable(fs), fp ? readTable(fp) : []]);
+  const key = a => String(a || '').toUpperCase().replace(/\s+/g, ' ').trim();
+  const propByAddr = new Map(), v2 = new Set(), propStructs = new Map();
+  for(const p of rp){
+    const a = key(p['Address']); if(!a) continue;
+    if(!propByAddr.has(a)) propByAddr.set(a, String(p['Property ID'] || '').trim() || 'addr:' + a);
+    const s = String(p['Structures'] || '').trim();
+    if(s === 'Small Town House 1') v2.add(a);
+    if(s) propStructs.set(a, s === 'Small Town House 1' ? 'Small Town House v2' : s);
+  }
+  const pid = a => propByAddr.get(key(a)) || 'addr:' + key(a);
+  let n = 0;
+  const structures = rs.map(s => {
+    let type = s['Construction Name'];
+    if(type === 'Small Town House' && v2.has(key(s['Address']))) type = 'Small Town House v2';
+    return {id:'c' + (n++), propId:pid(s['Address']), type, address:s['Address'], city:s['City']};
+  });
+  const ornaments = ro.map(o => ({
+    id:'csv:' + o['Name'] + '#' + o['Mint'] + '@' + key(o['Address']), mint:Number(o['Mint']) || 0, name:o['Name'], designId:o['Name'], type:o['Sub Name'],
+    applied:String(o['Is Applied']).toLowerCase() === 'true', propId:pid(o['Address']), address:o['Address'], city:o['City'], img:null,
+    rarity:o['Rarity'], season:seasonFromName(o['Name'], o['Rarity'])
+  }));
+  // Structures the export leaves out but the properties file lists, or an applied ornament proves.
+  const have = new Set(structures.map(s => s.propId + '|' + s.type));
+  for(const [a, type] of propStructs){
+    const id = pid(a);
+    if(ORN_TYPES.includes(type) && !have.has(id + '|' + type) && ornaments.some(o => o.propId === id)){
+      have.add(id + '|' + type);
+      const o = ornaments.find(o => o.propId === id);
+      structures.push({id:'c' + (n++), propId:id, type, address:o.address, city:o.city, inferred:true});
+    }
+  }
+  for(const o of ornaments){
+    if(o.applied && !have.has(o.propId + '|' + o.type)){
+      have.add(o.propId + '|' + o.type);
+      structures.push({id:'c' + (n++), propId:o.propId, type:o.type, address:o.address, city:o.city, inferred:true});
+    }
+  }
+  const cityByProp = new Map(structures.map(s => [s.propId, s.city]));
+  for(const o of ornaments) if(cityByProp.get(o.propId)) o.city = cityByProp.get(o.propId);
+  return {user:t('csvMode'), live:false, ornaments, structures};
+}
+
+// ---------- planner ----------
+function buildPlan(D){
+  const supported = new Set([...ORN_TYPES, ...D.ornaments.map(o => o.type)]);
+  const structs = D.structures.filter(s => supported.has(s.type))
+    .sort((a,b) => (a.city || '').localeCompare(b.city || '') || (a.address || '').localeCompare(b.address || ''));
+  const hasStructAt = new Set(structs.map(s => s.propId + '|' + s.type));
+  const typesOwned = new Set(structs.map(s => s.type));
+  const slot = new Map();   // structId|season -> ornament
+  const used = new Set();
+
+  const buckets = groupBy(D.ornaments.filter(o => SEASONS.includes(o.season)), o => o.season + '|' + o.type);
+  for(const [k, orns] of buckets){
+    const [season, type] = [k.slice(0, k.indexOf('|')), k.slice(k.indexOf('|') + 1)];
+    const ss = structs.filter(s => s.type === type);
+    if(!ss.length) continue;
+    // 1) Use ornaments already on the structure's own property (applied first).
+    const byProp = groupBy([...orns].sort((a,b) => (b.applied - a.applied) || (a.mint - b.mint)), o => o.propId);
+    const need = [];
+    for(const s of ss){
+      const o = (byProp.get(s.propId) || []).find(o => !used.has(o.id));
+      if(o){ slot.set(s.id + '|' + season, o); used.add(o.id); } else need.push(s);
+    }
+    // 2) Fill the rest from spare ornaments, taking from storage before properties that use that type.
+    const spare = orns.filter(o => !used.has(o.id))
+      .sort((a,b) => (hasStructAt.has(a.propId + '|' + type) - hasStructAt.has(b.propId + '|' + type)) || (a.mint - b.mint));
+    need.forEach((s, i) => { const o = spare[i]; if(o){ slot.set(s.id + '|' + season, o); used.add(o.id); } });
+  }
+
+  // Which ornament is applied on which structure (properties can hold several structures of a type).
+  const appliedBy = groupBy(D.ornaments.filter(o => o.applied), o => o.propId + '|' + o.type);
+  const appliedTaken = new Map();
+  const rows = structs.map(s => {
+    const k = s.propId + '|' + s.type, list = appliedBy.get(k) || [], i = appliedTaken.get(k) || 0;
+    appliedTaken.set(k, i + 1);
+    const cells = {};
+    for(const season of SEASONS){
+      const o = slot.get(s.id + '|' + season);
+      cells[season] = !o ? {state:'no'} : {state: o.propId === s.propId ? 'in' : 'mv', o};
+    }
+    return {s, cells, applied: list[i] || null};
+  });
+
+  const moves = [];
+  for(const r of rows) for(const season of SEASONS){ const c = r.cells[season]; if(c.state === 'mv') moves.push({o:c.o, to:r.s, season}); }
+
+  const extras = D.ornaments.filter(o => !used.has(o.id)).map(o => ({o,
+    reason: !SEASONS.includes(o.season) ? 'unknown' : (typesOwned.has(o.type) ? 'surplus' : 'noStruct')}));
+
+  const total = rows.length * SEASONS.length;
+  const per = {};
+  for(const season of SEASONS){
+    let a = 0, b = 0;
+    for(const r of rows){ const st = r.cells[season].state; if(st === 'in') a++; else if(st === 'mv') b++; }
+    per[season] = {inPlace:a, move:b, missing:rows.length - a - b};
+  }
+  const inPlace = SEASONS.reduce((x, s) => x + per[s].inPlace, 0);
+  const after = inPlace + moves.length;
+
+  // Shortage matrix by type × season
+  const types = [...new Set(rows.map(r => r.s.type))].sort((a,b) => ORN_TYPES.indexOf(a) - ORN_TYPES.indexOf(b));
+  const owned = groupBy(D.ornaments.filter(o => SEASONS.includes(o.season)), o => o.season + '|' + o.type);
+  const matrix = types.map(type => {
+    const n = rows.filter(r => r.s.type === type).length;
+    return {type, n, cells: SEASONS.map(season => ({season, have:(owned.get(season + '|' + type) || []).length, need:n}))};
+  });
+
+  // Build ideas: types where spare ornaments cover several seasons
+  const spareByType = groupBy(extras.filter(e => e.reason !== 'unknown').map(e => e.o), o => o.type);
+  const build = [...spareByType].map(([type, os]) => ({type, n:os.length, k:new Set(os.map(o => o.season)).size}))
+    .filter(b => b.k >= 2).sort((a,b) => b.k - a.k || b.n - a.n);
+
+  return {rows, moves, extras, per, total, inPlace, after, matrix, build, hasStructAt};
+}
+
+// ---------- rendering ----------
+let DATA = null, PLAN = null;
+let ui = {tab: store.get('uop:tab', 'now'), nowSeason: null, planSeason: 'all', q: '', onlyGaps: true, showDone: false};
+const opened = new Set(store.get('uop:opened', []));
+const moveLink = (o, s) => typeof o.id === 'number'
+  ? `https://play.upland.me/property-development-v2/${s.propId}/outdoor-decor/${o.id}`
+  : `https://play.upland.me/?prop_id=${encodeURIComponent(String(o.propId).replace(/^addr:.*/, ''))}`;
+const actBtn = (o, s, label, primary) => { const href = moveLink(o, s);
+  return `<div class="acts"><a class="btn small${primary ? ' primary' : ''}" target="_blank" rel="noopener" data-open="${esc(o.id)}" href="${esc(href)}">${esc(label)} ↗</a><button class="btn small" type="button" data-copy="${esc(href)}" data-oid="${esc(o.id)}">${esc(t('copy'))}</button></div>`; };
+async function copyText(s){
+  try{ await navigator.clipboard.writeText(s); return true; }
+  catch{ const ta = document.createElement('textarea'); ta.value = s; ta.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(ta); ta.select(); let ok = false; try{ ok = document.execCommand('copy'); }catch{} ta.remove(); return ok; }
+}
+
+// Called by the shared header whenever language, Cunk mode or text size changes.
+function onSiteChange(){
+  if(statusFn) $('#status').textContent = statusFn();
+  if(PLAN) render();
+}
+
+function render(){
+  const P = PLAN;
+  const pct = (a, b) => b ? Math.round(a * 100 / b) + '%' : '–';
+  $('#kpis').innerHTML = [
+    [P.rows.length, t('kStructs')],
+    [DATA.ornaments.length, t('kOrn')],
+    [pct(P.inPlace, P.total), t('kInPlace') + ' · ' + t('ofSlots', {a:P.inPlace, b:P.total})],
+    [pct(P.after, P.total), t('kAfter') + ' · ' + t('ofSlots', {a:P.after, b:P.total})],
+    [P.moves.length, t('kMoves')],
+    [P.extras.length, t('kExtra')]
+  ].map(([v, l]) => `<div class="kpi"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join('');
+
+  const si = seasonInfo();
+  $('#seasonCards').innerHTML = SEASONS.map(s => {
+    const p = P.per[s], n = P.rows.length || 1;
+    const tag = s === si.active ? t('active', {s:''}).trim() : (s === si.next && !si.active ? t('windowNow') : '');
+    return `<div class="sz" style="--c:var(--${s})"><div class="name">${s}<span>${esc(tag)}</span></div>
+      <div class="bar"><i class="a" style="width:${p.inPlace * 100 / n}%"></i><i class="b" style="width:${p.move * 100 / n}%"></i></div>
+      <div class="nums">${p.inPlace} ${esc(t('nIn'))} · ${p.move} ${esc(t('nMv'))} · <span class="${p.missing ? 'short' : ''}">${p.missing} ${esc(t('nNo'))}</span></div></div>`;
+  }).join('');
+
+  const storageCount = DATA.ornaments.filter(o => !P.hasStructAt.has(o.propId + '|' + o.type)).length;
+  const tabs = [['now', t('tNow')], ['plan', t('tPlan'), P.moves.length], ['structs', t('tStructs'), P.rows.length], ['gaps', t('tGaps')], ['storage', t('tStorage'), storageCount]];
+  $('#tabs').innerHTML = tabs.map(([k, l, n]) => `<button data-tab="${k}" class="${ui.tab === k ? 'on' : ''}">${esc(l)}${n != null ? `<span class="n">${n}</span>` : ''}</button>`).join('');
+  ({now:renderNow, plan:renderPlan, structs:renderStructs, gaps:renderGaps, storage:renderStorage}[ui.tab] || renderNow)();
+}
+
+function seasonChips(cur, withAll){
+  const list = (withAll ? ['all'] : []).concat(SEASONS);
+  return `<div class="chips">${list.map(s => `<button class="chip${cur === s ? ' on' : ''}" data-season="${s}" style="${s === 'all' ? '' : `--c:var(--${s})`}">${s === 'all' ? esc(t('all')) : `<span class="dot"></span>${s}`}</button>`).join('')}</div>`;
+}
+
+function renderNow(){
+  const si = seasonInfo(), S = ui.nowSeason || si.target;
+  let banner;
+  if(si.active) banner = `<b>${esc(t('active', {s:si.active}))}</b> — ${esc(t('endsIn', {d:fmtDate(si.end), n:days(si.now, si.end)}))}`;
+  else banner = `<b>${esc(t('windowNow'))}</b> — ${esc(t('startsIn', {s:si.next, d:fmtDate(si.nextStart), n:days(si.now, si.nextStart)}))}`;
+  const groups = {done:[], apply:[], move:[], missing:[]};
+  for(const r of PLAN.rows){
+    const c = r.cells[S];
+    if(r.applied && r.applied.season === S) groups.done.push(r);
+    else if(c.state === 'in') groups.apply.push(r);
+    else if(c.state === 'mv') groups.move.push(r);
+    else groups.missing.push(r);
+  }
+  const line = r => {
+    const c = r.cells[S], o = c.o;
+    const cur = r.applied ? t('nowApplied', {x:`${r.applied.name} (${r.applied.season || '?'})`}) : t('nowNothing');
+    const where = `<b>${esc(r.s.address)}</b>, ${esc(r.s.city || '')} · ${esc(r.s.type)}${r.s.inferred ? ' ' + esc(t('inferred')) : ''}`;
+    let act = '', title = o ? `${esc(o.name)} <span class="muted">#${esc(o.mint)}</span>` : `<span class="muted">${esc(t('stMissing'))}</span>`;
+    if(o && c.state === 'in' && !(r.applied && r.applied.season === S)) act = actBtn(o, r.s, t('apply'), true);
+    if(o && c.state === 'mv') { act = actBtn(o, r.s, t('moveApply'), true); title += ` <span class="s">${esc(t('from'))} ${esc(o.address)}</span>`; }
+    const op = o && opened.has(String(o.id)) ? ' opened' : '';
+    return `<div class="item${op}">${o ? thumb(o) : '<div class="thumb ph">–</div>'}<div><div class="t">${title}</div><div class="s">${where}</div><div class="s">${esc(cur)}</div></div>${act}</div>`;
+  };
+  const sect = (key, label, arr) => arr.length ? `<div class="group-h"><h3>${esc(label)}</h3><span class="muted small">${arr.length}</span></div><div class="list">${arr.map(line).join('')}</div>` : '';
+  let html = `<div class="banner" style="--c:var(--${si.target})">${banner}</div>
+    <div class="row small muted" style="margin-bottom:6px">${esc(t('pickSeason'))}</div>${seasonChips(S)}`;
+  const todo = groups.apply.length + groups.move.length;
+  if(!todo && !groups.missing.length) html += `<div class="card empty">${esc(t('allDone', {s:S}))}</div>`;
+  html += sect('apply', t('stApply'), groups.apply) + sect('move', t('stMove'), groups.move) + sect('missing', t('stMissing'), groups.missing);
+  if(groups.done.length){
+    html += ui.showDone ? sect('done', t('stDone'), groups.done)
+      : `<div style="margin-top:14px"><button class="btn small wrap" id="showDone">${esc(t('showDone', {n:groups.done.length}))}</button></div>`;
+  }
+  $('#panel').innerHTML = html;
+}
+
+function renderPlan(){
+  const P = PLAN, S = ui.planSeason;
+  const list = P.moves.filter(m => S === 'all' || m.season === S);
+  let html = `<p class="note">${esc(t('planNote'))}</p>${seasonChips(S, true)}`;
+  if(!list.length) html += `<div class="card empty">${esc(t('noMoves'))}</div>`;
+  for(const season of SEASONS){
+    const ms = list.filter(m => m.season === season);
+    if(!ms.length) continue;
+    html += `<div class="group-h"><h3>${pill(season)} </h3><span class="muted small">${ms.length}</span></div><div class="list">` + ms.map(m => {
+      const op = opened.has(String(m.o.id)) ? ' opened' : '';
+      return `<div class="item${op}">${thumb(m.o)}<div><div class="t">${esc(m.o.name)} <span class="muted">#${esc(m.o.mint)}</span></div>
+        <div class="s">${esc(t('from'))} ${esc(m.o.address)}, ${esc(m.o.city || '')} → ${esc(t('to'))} <b>${esc(m.to.address)}</b>, ${esc(m.to.city || '')} · ${esc(m.to.type)}</div></div>
+        ${actBtn(m.o, m.to, DATA.live ? t('moveApply') : t('open'), true)}</div>`;
+    }).join('') + `</div>`;
+  }
+  $('#panel').innerHTML = html;
+}
+
+function renderStructs(){
+  const q = ui.q.trim().toLowerCase();
+  const rows = PLAN.rows.filter(r => {
+    if(ui.onlyGaps && SEASONS.every(s => r.cells[s].state === 'in')) return false;
+    if(!q) return true;
+    const hay = [r.s.address, r.s.city, r.s.type, ...SEASONS.map(s => r.cells[s].o && r.cells[s].o.name)].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  const cell = (r, s) => {
+    const c = r.cells[s], o = c.o;
+    const app = r.applied && o && r.applied.id === o.id ? ' app' : '';
+    const tip = o ? `${o.name} #${o.mint}${c.state === 'mv' ? ` — ${t('from')} ${o.address}` : ''}` : t('lgNo');
+    const sym = c.state === 'in' ? '✓' : c.state === 'mv' ? '→' : '·';
+    return `<td class="c"><span class="cell ${c.state}${app}" style="--c:var(--${s})" title="${esc(tip)}">${sym}</span></td>`;
+  };
+  $('#panel').innerHTML = `<div class="row" style="margin-bottom:8px">
+      <input type="search" id="q" class="grow" placeholder="${esc(t('search'))}" value="${esc(ui.q)}">
+      <label class="small row" style="gap:6px"><input type="checkbox" id="onlyGaps" ${ui.onlyGaps ? 'checked' : ''}>${esc(t('onlyIncomplete'))}</label></div>
+    <div class="legend">
+      <span><span class="cell in" style="--c:var(--accent)">✓</span>${esc(t('lgIn'))}</span>
+      <span><span class="cell in app" style="--c:var(--accent)">✓</span>${esc(t('lgApp'))}</span>
+      <span><span class="cell mv" style="--c:var(--accent)">→</span>${esc(t('lgMv'))}</span>
+      <span><span class="cell no">·</span>${esc(t('lgNo'))}</span></div>
+    <div class="tablewrap"><table><thead><tr><th>${esc(t('colAddress'))}</th><th>${esc(t('colCity'))}</th><th>${esc(t('colType'))}</th>${SEASONS.map(s => `<th class="c">${pill(s)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r.s.address)}</td><td>${esc(r.s.city || '')}</td><td>${esc(r.s.type)}</td>${SEASONS.map(s => cell(r, s)).join('')}</tr>`).join('') || `<tr><td colspan="9" class="empty">–</td></tr>`}</tbody></table></div>`;
+}
+
+function renderGaps(){
+  const P = PLAN;
+  let totalShort = 0;
+  const body = P.matrix.map(m => `<tr><td>${esc(m.type)}</td><td class="num">${m.n}</td>${m.cells.map(c => {
+      const short = Math.max(0, c.need - c.have); totalShort += short;
+      return `<td class="num ${short ? 'short' : 'okc'}" title="${short ? '-' + short : ''}">${c.have}/${c.need}${short ? ` <small>(−${short})</small>` : ''}</td>`;
+    }).join('')}</tr>`).join('');
+  const ex = groupBy(P.extras, e => e.o.name + '|' + e.reason);
+  const exRows = [...ex.values()].sort((a,b) => b.length - a.length).map(g => {
+    const o = g[0].o;
+    const reason = {noStruct:t('reasonNoStruct'), surplus:t('reasonSurplus'), unknown:t('reasonUnknown')}[g[0].reason];
+    const mints = g.map(e => '#' + e.o.mint).slice(0, 12).join(' ') + (g.length > 12 ? ' …' : '');
+    return `<div class="item">${thumb(o)}<div><div class="t">${esc(t('count', {n:g.length}))} ${esc(o.name)}</div>
+      <div class="s">${pill(o.season)} · ${esc(o.type)} · ${esc(reason)}</div><div class="s">${esc(mints)}</div></div><span></span></div>`;
+  }).join('');
+  const build = P.build.map(b => `<li>${esc(t('buildRow', {t:b.type, k:b.k, n:b.n}))}</li>`).join('');
+  $('#panel').innerHTML = `<h2>${esc(t('shortTitle'))}</h2><p class="note">${esc(t('shortNote'))}</p>
+    <div class="tablewrap"><table><thead><tr><th>${esc(t('colType'))}</th><th class="num">#</th>${SEASONS.map(s => `<th class="num">${pill(s)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>
+    <p class="small" style="margin-top:8px">${esc(t('totalShort'))}: <span class="${totalShort ? 'short' : 'okc'}">${totalShort}</span></p>
+    ${build ? `<h3>${esc(t('buildTitle'))}</h3><p class="note">${esc(t('buildNote'))}</p><ul class="small">${build}</ul>` : ''}
+    <h3>${esc(t('extrasTitle'))} <span class="muted small">${P.extras.length}</span></h3><p class="note">${esc(t('extrasNote'))}</p>
+    <div class="list">${exRows || `<div class="card empty">–</div>`}</div>`;
+}
+
+function renderStorage(){
+  const P = PLAN;
+  const dest = new Map(P.moves.map(m => [m.o.id, m]));
+  const stuck = DATA.ornaments.filter(o => !P.hasStructAt.has(o.propId + '|' + o.type));
+  const byProp = [...groupBy(stuck, o => o.propId)].sort((a,b) => b[1].length - a[1].length);
+  const structsAt = groupBy(DATA.structures, s => s.propId);
+  $('#panel').innerHTML = `<p class="note">${esc(t('storageNote'))}</p>` + (byProp.map(([pid, os]) => {
+    const o0 = os[0], here = [...new Set((structsAt.get(pid) || []).map(s => s.type))].join(', ') || t('none');
+    const items = os.sort((a,b) => (dest.has(b.id) - dest.has(a.id)) || a.name.localeCompare(b.name)).map(o => {
+      const m = dest.get(o.id), op = opened.has(String(o.id)) ? ' opened' : '';
+      return `<div class="item${op}">${thumb(o)}<div><div class="t">${esc(o.name)} <span class="muted">#${esc(o.mint)}</span> ${pill(o.season)}</div>
+        <div class="s">${m ? `${esc(t('goesTo'))} <b>${esc(m.to.address)}</b>, ${esc(m.to.city || '')}` : esc(t('isExtra'))} · ${esc(o.type)}</div></div>
+        ${m ? actBtn(o, m.to, DATA.live ? t('moveApply') : t('open'), true) : '<span></span>'}</div>`;
+    }).join('');
+    return `<div class="prop"><div class="head"><h3 style="margin:0">${esc(o0.address)}, ${esc(o0.city || '')}</h3>
+      <span class="badge">${esc(t('structsHere', {x:here}))} · ${os.length}</span></div><div class="list">${items}</div></div>`;
+  }).join('') || `<div class="card empty">–</div>`);
+}
+
+// ---------- wiring ----------
+function show(D){
+  DATA = D; PLAN = buildPlan(D);
+  const key = 'uop:last:' + (D.live ? D.user.toLowerCase() : 'csv');
+  const last = store.get(key, null);
+  store.set(key, {after:PLAN.inPlace});
+  const at = new Date(), gained = last && PLAN.inPlace > last.after ? PLAN.inPlace - last.after : 0;
+  setStatus(() => {
+    const time = at.toLocaleTimeString(Site.locale(), {hour:'2-digit', minute:'2-digit'});
+    return t(D.live ? 'loaded' : 'loadedFiles', {o:D.ornaments.length, s:PLAN.rows.length, u:D.user, t:time}) + (gained ? ' ' + t('since', {d:gained}) : '');
+  });
+  $('#app').classList.remove('hidden');
+  $('#refreshBtn').classList.toggle('hidden', !D.live);
+  render();
+}
+
+async function runLive(){
+  const user = $('#username').value.trim();
+  if(!user) return;
+  store.set('uop:user', user);
+  $('#loadBtn').disabled = $('#refreshBtn').disabled = true;
+  try{
+    const D = await loadLive(user);
+    if(!D.ornaments.length && !D.structures.length) throw Object.assign(new Error('empty'), {status:404});
+    show(D);
+  }catch(e){
+    setStatus(e.status === 404 || e.status === 400 ? t('errUser', {u:user}) : t('errNet', {e:e.message}), true);
+  }finally{ $('#loadBtn').disabled = $('#refreshBtn').disabled = false; }
+}
+
+$('#userForm').addEventListener('submit', e => { e.preventDefault(); runLive(); });
+$('#refreshBtn').addEventListener('click', () => { opened.clear(); store.set('uop:opened', []); runLive(); });
+$('#csvBtn').addEventListener('click', async () => {
+  try{ setStatus(t('loading')); show(await loadFiles()); }catch(e){ setStatus(e.message, true); }
+});
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; ui.tab = b.dataset.tab; store.set('uop:tab', ui.tab); render(); });
+$('#panel').addEventListener('click', e => {
+  const chip = e.target.closest('[data-season]');
+  if(chip){ if(ui.tab === 'now'){ ui.nowSeason = chip.dataset.season; ui.showDone = false; } else ui.planSeason = chip.dataset.season; render(); return; }
+  if(e.target.id === 'showDone'){ ui.showDone = true; render(); return; }
+  const cp = e.target.closest('button[data-copy]');
+  if(cp){ copyText(cp.dataset.copy).then(ok => { if(!ok){ window.prompt(t('copy'), cp.dataset.copy); return; } cp.textContent = t('copied'); setTimeout(() => { cp.textContent = t('copy'); }, 1600); });
+    opened.add(cp.dataset.oid); store.set('uop:opened', [...opened]); cp.closest('.item') && cp.closest('.item').classList.add('opened'); return; }
+  const a = e.target.closest('a[data-open]');
+  if(a){ opened.add(a.dataset.open); store.set('uop:opened', [...opened]); a.closest('.item') && a.closest('.item').classList.add('opened'); }
+});
+$('#panel').addEventListener('input', e => {
+  if(e.target.id === 'q'){ ui.q = e.target.value; const pos = e.target.selectionStart; renderStructs(); const q = $('#q'); q.focus(); q.setSelectionRange(pos, pos); }
+});
+$('#panel').addEventListener('change', e => { if(e.target.id === 'onlyGaps'){ ui.onlyGaps = e.target.checked; renderStructs(); } });
+
+Site.mount({onChange: onSiteChange});
+const params = new URLSearchParams(location.search);
+const startUser = params.get('user') || store.get('uop:user', '');
+if(startUser){ $('#username').value = startUser; if(params.get('user')) runLive(); }
+</script>
+</body>
+</html>
