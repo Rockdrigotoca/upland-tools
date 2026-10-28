@@ -25,6 +25,9 @@
     structures: user => getJSON(`${API}/nft/assets/structures/${u(user)}`),
     property: id => getJSON(`${API}/api/properties/${id}`),
     decorationPreview: id => getJSON(`${API}/business/decorations/${id}/preview`),
+    profile: user => getJSON(`${API}/api/profile/${u(user)}`),
+    collections: () => getJSON(`${API}/api/collections`),
+    propertyCollections: id => getJSON(`${API}/api/properties/match/${id}`),
     shop: id => getJSON(`${API}/metaventures/secondary-shop/${id}`),
     shopItems: id => getJSON(`${API}/metaventures/secondary-shop/${id}/items`, {method:'POST', headers:{Accept:'application/json','Content-Type':'application/json'}, body:'{}'}),
     image: path => path ? IMG + encodeURI(path) : ''
