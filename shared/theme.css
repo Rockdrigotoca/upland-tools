@@ -153,3 +153,5 @@ td.c{text-align:center}
 .sizes button[data-size="1.15"]{font-size:.9375rem}
 .sizes button[data-size="1.3"]{font-size:1.0625rem}
 .sizes button[data-size="1.5"]{font-size:1.25rem}
+
+.chart{width:100%;max-width:360px;height:auto;display:block;margin:4px 0}

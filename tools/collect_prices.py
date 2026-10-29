@@ -254,6 +254,21 @@ def shop_info(sid, pin):
 
 # ---------- summaries ----------
 
+def update_history(rows, now_dt):
+    """One line per design per day: the cheapest UPX and USD listing and how many are listed. Feeds the price charts."""
+    day = now_dt.strftime('%Y-%m-%d')
+    path = f'history/{day[:7]}.json'
+    old = [r for r in load(path, {'rows': []})['rows'] if r[0] != day]   # a second run on the same day replaces the first
+    best = {}
+    for r in rows:
+        b = best.setdefault(r['key'], [None, None, 0, 0])
+        i = 0 if r['cur'] == 'UPX' else 1
+        b[i] = r['total'] if b[i] is None else min(b[i], r['total'])
+        b[2 + i] += 1
+    save(path, {'fields': ['day', 'key', 'minUpx', 'minUsd', 'nUpx', 'nUsd'],
+                'rows': old + [[day, k, v[0], v[1], v[2], v[3]] for k, v in sorted(best.items())]})
+
+
 def summarize(months, now):
     """Per-design sale stats for the page. Giveaway-priced sales (2 UPX or less) are left out of medians."""
     cut30, cut90 = now - 30 * 86400, now - 90 * 86400
@@ -381,6 +396,7 @@ def main():
         fields = ['shop', 'nft', 'key', 'mint', 'total', 'cur', 'seller', 'sellerAcct']
         rows = sorted(({k: r[k] for k in fields} for r in listings), key=lambda r: (r['key'] or '', r['total']))
         save('listings.json', {'at': iso(now_dt) + 'Z', 'fields': fields, 'rows': rows})
+        update_history(rows, now_dt)
         state['lastSnapshotAt'] = iso(now_dt)
     save('summary.json', summarize(months, int(now_dt.timestamp())))
     designs.save()
@@ -391,6 +407,8 @@ def main():
     state['updatedAt'] = iso(now_dt) + 'Z'
     state['historyFrom'] = state.get('backfillCursor')
     state['months'] = sorted(months)
+    hist_dir = os.path.join(DATA, 'history')
+    state['histMonths'] = sorted(f[:-5] for f in os.listdir(hist_dir)) if os.path.isdir(hist_dir) else []
     save('state.json', state)
     log('done')
 

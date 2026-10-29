@@ -21,7 +21,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from collect_prices import HEADERS, load, save, log   # noqa: E402
 
 API = 'https://api.prod.upland.me/api'
-GROUP = ['rockdrigo', 'mstullis', 'missmarlow', 'talljames', 'maikn1', 'bielykvietok', 'leflof2p']
+# Collected in this order: Rockdrigo first, then mstullis, missmarlow, talljames, bielykvietok, leflof2p and maikn1 last.
+GROUP = ['rockdrigo', 'mstullis', 'missmarlow', 'talljames', 'bielykvietok', 'leflof2p', 'maikn1']
 REFRESH_DAYS = 30
 
 
