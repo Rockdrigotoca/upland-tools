@@ -34,6 +34,7 @@ td a{white-space:nowrap}
       <input type="text" id="username" data-i-ph="userPh" class="grow" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button class="btn primary" id="loadBtn" type="submit" data-i="load"></button>
     </form>
+    <div class="row hidden" id="viewRow" style="margin-top:8px"><label class="small row" style="gap:6px"><span data-i="viewAs"></span> <select id="viewAs"></select></label></div>
     <div class="status" id="status"></div>
     <div class="progress hidden" id="progress"><i></i></div>
   </section>
@@ -74,6 +75,21 @@ Site.register({
     foot:'One property per collection at a time. Moving a property waits for its collection’s cooldown.',
     tBorrow:'Freeloader: borrow', tLend:'Lend', owner:'Owner', you:'You',
     tOverview:'Overview', tBuy:'Buy', tEarn:'Earnings',
+    tSwap:'Swaps', tCompare:'Compare', viewAs:'Viewing as:', burner:'burner',
+    loanDays:'Loan length in days (0 = the collection’s cooldown):', loanTax:'Upland tax per transfer:',
+    loanRules:'Cooldowns: Standard none, Limited 3 days, Exclusive 7, Rare and Ultra Rare 14. Lending a property and getting it back each cost the tax on its price (estimated from its mint price). Yields are per 30 days and scaled by your earning percentage (set it in the Earnings tab).',
+    tmLoan:'Loan: {d} days ({r} cooldown unless you changed it)', tmPot:'Pot: {r} UPX reward + {b} UPX of collection bonus during the loan = {p} UPX',
+    tmCosts:'Costs: {k} UPX of bonus the lender gives up + {x} UPX of Upland tax ({pct}% each way)', tmNet:'Left to share: {n} UPX, so {h} UPX each',
+    loanBase:'Tax is charged on:', loanBaseMint:'the property’s mint price', loanBaseFixed:'a price you agree on:', tmLoss:'At these settings the tax is bigger than the gain. Agree a lower transfer price to make it worthwhile.',
+    tmPay:'You pay the lender about {s} UPX, which leaves you both with {h} UPX', tmGet:'The borrower pays you about {s} UPX, which leaves you both with {h} UPX',
+    swPartner:'Swap with:', swNote:'Pairs your loan with theirs: you borrow from them to finish one of your collections, and they borrow from you to finish one of theirs. Same-rarity swaps come first, then different rarities with the closest value, then loans that only go one way. The balance is the payment that makes a swap even.',
+    swTier1:'Even swaps, same rarity', swTier1n:'Each side finishes a collection of the same rarity, so it’s easiest to agree.', swTier2:'Swaps across rarities', swTier2n:'Different rarities, paired by closest value; the balance evens it out.', swTier3:'One-sided loans', swTier3n:'One of you borrows and the other has nothing to borrow back right now.',
+    swCard:'You get {a} · {p} gets {b}', swEven:'Even', swYouPay:'You pay {p} ≈ {n} UPX', swTheyPay:'{p} pays you ≈ {n} UPX', swBorrowH:'You borrow, to finish {c}', swLendH:'{p} borrows from you, to finish {c}', swNone:'No swaps found with {p}. They may not need anything of yours yet, or the group data is still being collected.',
+    burnTitle:'Burner properties', burnSum:'{a} sit in none of your best collections; {m} marked by you', burnNote:'A burner costs you nothing to lend, because it holds up no collection. Tick any you don’t mind lending even though they sit in a collection today. These are the properties your friends’ collections would use.',
+    burnHolds:'holds {c} ({g} UPX/month)', burnFree:'in no collection', burnUsed:'useful for {n} loans',
+    cmpNote:'See which collections two players have collected, and which each could give the other.', cmpPartner:'Compare with:', cmpOther:'Another player (collections only):', cmpBoth:'Both', cmpOnlyYou:'Only you', cmpOnlyThem:'Only them',
+    cmpCounts:'You have collected {a} collections, they have {b}.', cmpSwapHint:'They’re in the group, so the Swaps tab shows which properties could trade.', cmpNeedGroup:'They aren’t in the group data, so only collections can be compared, not properties. Ask Rockdrigo to add them.',
+    cmpListThem:'{p} has collected, you never have ({n})', cmpListYou:'You have collected, {p} never has ({n})', colColl:'Collection', colReward:'Reward', colBoost:'Boost', colStatus:'Status',
     earnNote:'What your properties make per month: on their own, with your active collection boosts (estimated), and with the best possible arrangement.',
     earnPct:'Your UPX earning percentage:', earnListed:'As Upland lists it', earnAfter:'After your {p}%', earnBase:'Without any collection boosts', earnNow:'With your active collections (estimated)', earnBest:'With the best arrangement',
     earnExplain:'“As Upland lists it” is the figure on each property’s Collections panel. The second column applies your UPX earning percentage (Upland showed 14.70% for the Harvest season, from a multiplier of 3); change it when it changes. Upland doesn’t say which properties sit in each active collection, so the active-collections row assumes they use their best ones.',
@@ -90,10 +106,10 @@ Site.register({
     ovRewards:'Rewards left (UPX)', ovAlone:'Doable now', ovBorrow:'By borrowing', ovAlmost:'1–3 short', ovAll:'All', ovAnywhere:'Anywhere', ovCity:'City #{id}',
     ovSummary:'{a} collections active and {c} collected before, out of {t} in Upland. {n} never collected, worth {r} UPX in one-time rewards: {alone} you can complete with your own properties, {borrow} by borrowing from friends, {almost} are 1–3 properties short.',
     ovLegend:'“Doable now”, “By borrowing” and “1–3 short” only count collections you have never collected. City names appear once the group has a property there.',
-    borrowNote:'Collections you have never collected that you could complete by borrowing up to 3 properties from the group for a month. One-time rewards split 50/50; shown only when the lender’s half covers what lending costs them (the property’s yield plus any collection bonus it breaks for the month).',
-    lendNote:'Your properties that would let a friend collect something they have never had, when your half of the reward covers what you give up for the month.',
+    borrowNote:'Collections you have never collected that you could finish by borrowing up to 3 properties from the group. The reward and the collection bonus during the loan are shared 50/50 after the lender’s costs and Upland’s tax; the borrower pays the lender the difference so both end up with the same.',
+    lendNote:'Your properties that would let a friend collect something they have never had, shown only when the loan is worth it after what it costs you and the tax.',
     lenderCost:'lender gives up ≈ {x} UPX', leavesColl:'leaves {c} for the month',
-    borrowSum:'Borrow {k} · {r} UPX reward · {h} UPX each', lendSum:'{f} borrows {k} of yours · {r} UPX reward · your half {h} UPX',
+    borrowSum:'Borrow {k} · you net ≈ {h} UPX · you pay {s} UPX', lendSum:'{f} borrows {k} of yours · you net ≈ {h} UPX · they pay you {s} UPX',
     groupOnly:'Borrowing works between the group’s players, whose data is collected every 12 hours.', partialGroup:'Group data is still being collected ({n} of {t} properties), so more options will appear.'
   },
   es:{
@@ -115,6 +131,21 @@ Site.register({
     foot:'Una propiedad por colección a la vez. Mover una propiedad espera el cooldown de su colección.',
     tBorrow:'Gorrón: pedir prestado', tLend:'Prestar', owner:'Dueño', you:'Tú',
     tOverview:'Resumen', tBuy:'Comprar', tEarn:'Ganancias',
+    tSwap:'Intercambios', tCompare:'Comparar', viewAs:'Viendo como:', burner:'prescindible',
+    loanDays:'Duración del préstamo en días (0 = el cooldown de la colección):', loanTax:'Impuesto de Upland por transferencia:',
+    loanRules:'Cooldowns: Standard ninguno, Limited 3 días, Exclusive 7, Rare y Ultra Rare 14. Prestar una propiedad y recibirla de vuelta cuestan cada una el impuesto sobre su precio (estimado con su precio de mint). Los rendimientos son por 30 días y escalados por tu porcentaje de ganancia (ponlo en la pestaña de Ganancias).',
+    tmLoan:'Préstamo: {d} días (cooldown {r} salvo que lo cambies)', tmPot:'Bolsa: {r} UPX de premio + {b} UPX de bono de colección durante el préstamo = {p} UPX',
+    tmCosts:'Costos: {k} UPX de bono que deja el que presta + {x} UPX de impuesto de Upland ({pct}% por lado)', tmNet:'Queda por repartir: {n} UPX, o sea {h} UPX para cada uno',
+    loanBase:'El impuesto se cobra sobre:', loanBaseMint:'el precio de mint de la propiedad', loanBaseFixed:'un precio que acuerden:', tmLoss:'Con estos ajustes el impuesto es mayor que la ganancia. Acuerden un precio de transferencia más bajo para que valga la pena.',
+    tmPay:'Le pagas al que presta unos {s} UPX, y a los dos les quedan {h} UPX', tmGet:'Quien pide te paga unos {s} UPX, y a los dos les quedan {h} UPX',
+    swPartner:'Intercambiar con:', swNote:'Empareja tu préstamo con el suyo: tú les pides para terminar una de tus colecciones y ellos te piden para terminar una de las suyas. Primero los intercambios de la misma rareza, luego rarezas distintas con el valor más parecido, y al final los préstamos que van en un solo sentido. El saldo es el pago que deja el intercambio parejo.',
+    swTier1:'Intercambios parejos, misma rareza', swTier1n:'Cada lado termina una colección de la misma rareza, así que es lo más fácil de acordar.', swTier2:'Intercambios entre rarezas', swTier2n:'Rarezas distintas, emparejadas por valor parecido; el saldo lo empareja.', swTier3:'Préstamos de un solo sentido', swTier3n:'Uno pide y el otro no tiene nada que pedir de vuelta por ahora.',
+    swCard:'Tú obtienes {a} · {p} obtiene {b}', swEven:'Parejo', swYouPay:'Le pagas a {p} ≈ {n} UPX', swTheyPay:'{p} te paga ≈ {n} UPX', swBorrowH:'Tú pides, para terminar {c}', swLendH:'{p} te pide, para terminar {c}', swNone:'No hay intercambios con {p}. Quizá todavía no necesita nada tuyo, o los datos del grupo aún se están recolectando.',
+    burnTitle:'Propiedades prescindibles', burnSum:'{a} no están en ninguna de tus mejores colecciones; {m} marcadas por ti', burnNote:'Una propiedad prescindible no te cuesta nada prestarla, porque no sostiene ninguna colección. Marca las que no te importe prestar aunque hoy estén en una colección. Son las propiedades que usarían las colecciones de tus amigos.',
+    burnHolds:'sostiene {c} ({g} UPX/mes)', burnFree:'en ninguna colección', burnUsed:'sirve para {n} préstamos',
+    cmpNote:'Mira qué colecciones ha cobrado cada jugador y cuáles podría darle uno al otro.', cmpPartner:'Comparar con:', cmpOther:'Otro jugador (solo colecciones):', cmpBoth:'Ambos', cmpOnlyYou:'Solo tú', cmpOnlyThem:'Solo ellos',
+    cmpCounts:'Tú has cobrado {a} colecciones, ellos {b}.', cmpSwapHint:'Está en el grupo, así que la pestaña de Intercambios muestra qué propiedades se podrían intercambiar.', cmpNeedGroup:'No está en los datos del grupo, así que solo se pueden comparar colecciones, no propiedades. Pídele a Rockdrigo que lo agregue.',
+    cmpListThem:'{p} ha cobrado, tú nunca ({n})', cmpListYou:'Tú has cobrado, {p} nunca ({n})', colColl:'Colección', colReward:'Premio', colBoost:'Boost', colStatus:'Estado',
     earnNote:'Lo que producen tus propiedades al mes: solas, con los boosts de tus colecciones activas (estimado) y con el mejor acomodo posible.',
     earnPct:'Tu porcentaje de ganancia de UPX:', earnListed:'Como lo lista Upland', earnAfter:'Con tu {p}%', earnBase:'Sin boosts de colección', earnNow:'Con tus colecciones activas (estimado)', earnBest:'Con el mejor acomodo',
     earnExplain:'“Como lo lista Upland” es la cifra del panel de colecciones de cada propiedad. La segunda columna aplica tu porcentaje de ganancia de UPX (Upland mostró 14.70% para la temporada Harvest, con un multiplicador de 3); cámbialo cuando cambie. Upland no dice qué propiedades están en cada colección activa, así que la fila de colecciones activas supone que usan las mejores.',
@@ -131,10 +162,10 @@ Site.register({
     ovRewards:'Premios pendientes (UPX)', ovAlone:'Posibles ya', ovBorrow:'Pidiendo prestado', ovAlmost:'Faltan 1–3', ovAll:'Todas', ovAnywhere:'Cualquier lugar', ovCity:'Ciudad #{id}',
     ovSummary:'{a} colecciones activas y {c} cobradas antes, de {t} en Upland. {n} nunca cobradas, con {r} UPX en premios: {alone} las puedes completar con tus propiedades, {borrow} pidiendo prestado a amigos, y a {almost} les faltan 1–3 propiedades.',
     ovLegend:'“Posibles ya”, “Pidiendo prestado” y “Faltan 1–3” solo cuentan colecciones que nunca has cobrado. Los nombres de ciudad aparecen cuando el grupo tiene una propiedad ahí.',
-    borrowNote:'Colecciones que nunca has cobrado y que podrías completar pidiendo prestadas hasta 3 propiedades al grupo por un mes. Los premios se reparten 50/50; solo se muestran cuando la mitad del que presta cubre lo que le cuesta (el rendimiento de la propiedad y el bono de colección que rompe ese mes).',
-    lendNote:'Tus propiedades que dejarían a un amigo cobrar algo que nunca ha tenido, cuando tu mitad del premio cubre lo que dejas de ganar ese mes.',
+    borrowNote:'Colecciones que nunca has cobrado y que podrías terminar pidiendo prestadas hasta 3 propiedades al grupo. El premio y el bono de colección durante el préstamo se reparten 50/50 tras los costos del que presta y el impuesto de Upland; quien pide le paga la diferencia al que presta para que ambos queden igual.',
+    lendNote:'Tus propiedades que dejarían a un amigo cobrar algo que nunca ha tenido, solo cuando el préstamo vale la pena tras lo que te cuesta y el impuesto.',
     lenderCost:'el que presta deja ≈ {x} UPX', leavesColl:'sale de {c} ese mes',
-    borrowSum:'Pide {k} · premio {r} UPX · {h} UPX cada uno', lendSum:'{f} pide {k} tuyas · premio {r} UPX · tu mitad {h} UPX',
+    borrowSum:'Pide {k} · te quedan ≈ {h} UPX · pagas {s} UPX', lendSum:'{f} pide {k} tuyas · te quedan ≈ {h} UPX · te pagan {s} UPX',
     groupOnly:'Pedir prestado funciona entre los jugadores del grupo, cuyos datos se recolectan cada 12 horas.', partialGroup:'Los datos del grupo aún se están recolectando ({n} de {t} propiedades), así que aparecerán más opciones.'
   },
   en_cunk:{
@@ -146,15 +177,17 @@ Site.register({
     releaseNote:'These properties are wasting their potential, like most people. Free them when allowed.',
     almostNote:'Collections you nearly have, which is like having them, but worse.',
     foot:'One property per collection at a time. This is the law. Probably.',
-    tBorrow:'Freeload', tLend:'Be generous', tOverview:'The big picture', tBuy:'Spend money', tEarn:'The money',
+    tBorrow:'Freeload', tLend:'Be generous', tOverview:'The big picture', tBuy:'Spend money', tEarn:'The money', tSwap:'The Great Swap', tCompare:'Compare and despair',
+    swTier1:'Even swaps, same rarity: the fairest kind of trade, in theory', swTier2:'Swaps across rarities: apples for slightly different apples', swTier3:'One-sided loans: generosity, or optimism',
+    burnTitle:'Burner properties: the ones nobody will miss', swNote:'A trade between two friends who each want what the other has, which is the basis of all commerce.',
     earnList:'Your collections, ranked by how much they pay you',
     buyLoading:'Asking the market what it wants…', buyErr:'The prices aren’t here yet. They’re gathered slowly, twice a day, like a polite burglar.',
     buyNote:'The cheapest properties for sale that would finish each collection you’re missing. If you already own a fitting property, we count it, because that would be silly otherwise.',
     buyTotals:'The cost of having everything', sCheap:'Cheapest, naturally',
     buyFacts:'One-time reward {r} UPX · ≈ +{g} UPX a month · pays for itself in ≈ {p} months, give or take the economy',
     ovSummary:'{a} collections active and {c} collected once, out of {t} that exist. {n} have never been yours, worth {r} UPX: {alone} are within your grasp, {borrow} within your friends’ grasp, and {almost} just out of reach, like most things.',
-    borrowNote:'Things you could own briefly, if your friends trust you. Rewards are split 50/50, which is the fairest number.',
-    lendNote:'Your friends need your land. Lend it to them and keep half the money, which is what friendship is.'
+    borrowNote:'Things you could own briefly, if your friends trust you. The money is shared fairly once costs and tax are out of the way, and the borrower pays the lender the difference, the most civilised way to settle anything.',
+    lendNote:'Your friends need your land. Lend it to them and keep your fair share once your costs and Upland’s tax are covered, which is what friendship is.',
   },
   es_cunk:{
     title:'El Acaparador de Rockdrigo: una historia de querer más', subtitle:'Desde que se inventó la tierra, la gente ha querido más, mejor acomodada, de preferencia incluyendo la de otros. Esto lo acomoda.',
@@ -165,15 +198,17 @@ Site.register({
     releaseNote:'Estas propiedades desperdician su potencial, como casi todos. Libéralas cuando se pueda.',
     almostNote:'Colecciones que casi tienes, que es como tenerlas, pero peor.',
     foot:'Una propiedad por colección a la vez. Es la ley. Probablemente.',
-    tBorrow:'Gorronear', tLend:'Ser generoso', tOverview:'El panorama', tBuy:'Gastar dinero', tEarn:'El dinero',
+    tBorrow:'Gorronear', tLend:'Ser generoso', tOverview:'El panorama', tBuy:'Gastar dinero', tEarn:'El dinero', tSwap:'El Gran Trueque', tCompare:'Comparar y lamentar',
+    swTier1:'Trueques parejos, misma rareza: el más justo, en teoría', swTier2:'Trueques entre rarezas: manzanas por manzanas un poco distintas', swTier3:'Préstamos de un solo sentido: generosidad, u optimismo',
+    burnTitle:'Propiedades prescindibles: las que nadie va a extrañar', swNote:'Un trueque entre dos amigos que quieren lo que tiene el otro, que es la base de todo comercio.',
     earnList:'Tus colecciones, por lo que te pagan',
     buyLoading:'Preguntándole al mercado qué quiere…', buyErr:'Los precios todavía no llegan. Se juntan despacio, dos veces al día, como un ladrón educado.',
     buyNote:'Las propiedades en venta más baratas que terminarían cada colección que te falta. Si ya tienes una que sirve, la contamos, porque si no sería absurdo.',
     buyTotals:'El costo de tenerlo todo', sCheap:'Lo más barato, naturalmente',
     buyFacts:'Premio único {r} UPX · ≈ +{g} UPX al mes · se paga solo en ≈ {p} meses, más o menos, según la economía',
     ovSummary:'{a} colecciones activas y {c} cobradas alguna vez, de {t} que existen. {n} nunca han sido tuyas, con {r} UPX: {alone} están a tu alcance, {borrow} al alcance de tus amigos, y {almost} apenas fuera de alcance, como casi todo.',
-    borrowNote:'Cosas que podrías tener un ratito, si tus amigos confían en ti. Los premios van 50/50, que es el número más justo.',
-    lendNote:'Tus amigos necesitan tu tierra. Préstasela y quédate con la mitad del dinero, que es lo que es la amistad.'
+    borrowNote:'Cosas que podrías tener un ratito, si tus amigos confían en ti. El dinero se reparte parejo una vez pagados costos e impuesto, y quien pide le paga la diferencia al que presta, la forma más civilizada de arreglar cualquier cosa.',
+    lendNote:'Tus amigos necesitan tu tierra. Préstasela y quédate con tu parte justa una vez cubiertos tus costos y el impuesto de Upland, que es lo que es la amistad.',
   }
 });
 
@@ -223,6 +258,8 @@ async function loadGroup(pre, user){
     const me = {user:m, props, colls:pre.colls, total:u.props.length, active:new Set(u.active), collected:new Set(u.collected)};
     me.ar = arrange(me);
     me.ar.where = new Map(me.ar.picks.flatMap(x => x.set.map(p => [p.id, x])));   // property → collection it holds up
+    me.byColl = new Map();
+    for(const p of props) for(const cid of p.m){ (me.byColl.get(cid) || me.byColl.set(cid, []).get(cid)).push(p); }
     return me;
   }));
   return members.filter(Boolean);
@@ -351,41 +388,71 @@ function mixedSet(c, own, spare){
   }
   return best;
 }
+// ---------- loan economics ----------
+// Upland's cooldown before a property can leave a collection, by rarity (days).
+const COOLDOWN = {1:0, 2:3, 3:7, 4:14, 5:14};
+const MINT_K = 5.6713e-6;                       // yield per hour = mint price × this
+const loan = {days: Number(store.get('fl:days', 0)) || 0, tax: store.get('fl:tax', 5) === '' ? 5 : Number(store.get('fl:tax', 5)),
+  base: store.get('fl:taxBase', 'mint'), fixed: Number(store.get('fl:taxFixed', 1000)) || 1000};
+// The price Upland's tax is charged on for each transfer: the mint price, or a price the two players agree on.
+const priceOf = p => loan.base === 'fixed' ? loan.fixed : p.y / MINT_K;
+let BURN = new Set();                           // properties the viewer marked as "fine to lend"
+const isBurner = (L, p) => L.user === (D.user || '').toLowerCase() && BURN.has(p.id);
+// One loan, shared fairly. Yields here are per 30 days and scaled by the earning percentage; rewards are real UPX.
+//   pot     = one-time reward + the collection bonus the borrower earns during the loan
+//   costs   = the bonus the lender loses for that time + Upland's tax on lending and returning each property
+//   net     = pot - costs, split 50/50; the borrower pays the lender "settle" so both end up with net/2
+function terms(x){
+  const days = loan.days > 0 ? loan.days : (COOLDOWN[x.c.category] || 0);
+  const f = days / 30, ep = earn.pct / 100;
+  const bonus = x.gain * f * ep;
+  const base = x.borrowed.reduce((a, p) => a + p.base, 0) * f * ep;
+  const broken = [...new Set(x.borrowed.map(p => p.holds).filter(Boolean))].reduce((a, h) => a + h.gain, 0) * f * ep;
+  const tax = x.borrowed.reduce((a, p) => a + priceOf(p), 0) * (loan.tax / 100) * 2;
+  const pot = x.reward + bonus, net = pot - broken - tax;
+  return {days, bonus, base, broken, tax, pot, net, half: net / 2, settle: net / 2 + base + broken + tax / 2};
+}
 // Collections a member has never collected that they could finish with a few borrowed properties.
 function borrowFor(B, members, colls){
   const out = [];
   for(const c of colls){
     if(B.active.has(c.id) || B.collected.has(c.id)) continue;
-    const own = B.props.filter(p => p.m.includes(c.id)).sort((a, b) => b.base - a.base).map(p => ({...p, owner:B.user, own:true}));
+    const own = (B.byColl.get(c.id) || []).slice().sort((a, b) => b.base - a.base).map(p => ({...p, owner:B.user, own:true}));
     if(own.length >= c.amount && bestSet(c, own, new Set())) continue;   // can do it alone: shown in the other tabs
-    // Any friend's property can be lent; its cost for a month is its base yield (which goes to the borrower)
-    // plus the collection bonus it would break in the friend's own best arrangement. Cheapest first.
-    const spare = members.filter(L => L !== B).flatMap(L => L.props.filter(p => p.m.includes(c.id)).map(p => {
-      const holds = L.ar.where.get(p.id);
-      return {...p, owner:L.user, own:false, holds, cost:p.base + (holds ? holds.gain : 0)};
+    // Any friend's property can be lent. A burner (in none of the owner's best collections, or marked as one) costs
+    // nothing extra; otherwise lending it breaks the collection it holds up for the loan. Cheapest first.
+    const spare = members.filter(L => L !== B).flatMap(L => (L.byColl.get(c.id) || []).map(p => {
+      const holds = isBurner(L, p) ? undefined : L.ar.where.get(p.id);
+      return {...p, owner:L.user, own:false, holds, burner:!holds, cost:p.base + (holds ? holds.gain : 0)};
     })).sort((a, b) => a.cost - b.cost);
     const set = mixedSet(c, own, spare);
     if(!set) continue;
     const borrowed = set.filter(p => !p.own);
     if(!borrowed.length || borrowed.length > 3) continue;
-    const broken = new Map();
-    let cost = 0;
-    for(const p of borrowed){ cost += p.base; if(p.holds) broken.set(p.holds, p.holds.gain); }
-    for(const g of broken.values()) cost += g;
-    const reward = c.one_time_reward || 0;
-    if(reward / 2 < cost) continue;   // not worth it for the lender
-    out.push({c, set, borrowed, borrower:B.user, reward, cost, gain:set.reduce((a, p) => a + p.base, 0) * (c.yield_boost - 1)});
+    const x = {c, set, borrowed, borrower:B.user, reward:c.one_time_reward || 0, gain:set.reduce((a, p) => a + p.base, 0) * (c.yield_boost - 1)};
+    x.tm = terms(x);
+    if(x.tm.pot - x.tm.broken <= 0) continue;   // not worth it even before tax (the lender's loss is bigger than the gain)
+    out.push(x);
   }
-  return out.sort((a, b) => (b.reward - 2 * b.cost) - (a.reward - 2 * a.cost) || a.borrowed.length - b.borrowed.length);
+  return out.sort((a, b) => b.tm.net - a.tm.net || a.borrowed.length - b.borrowed.length);
 }
+let CR = null;   // collections with their rules, built once
 function analyseGroup(){
   if(!D.group) return null;
-  const colls = D.colls.map(c => ({...c, rule:ruleOf(c.requirements)}));
+  CR = CR || D.colls.map(c => ({...c, rule:ruleOf(c.requirements)}));
   const me = D.user.toLowerCase();
-  const all = D.group.map(B => borrowFor(B, D.group, colls)).flat();
+  BURN = new Set(store.get('fl:burn:' + me, []));
+  const all = D.group.map(B => borrowFor(B, D.group, CR)).flat();
   const have = D.group.reduce((a, m) => a + m.props.length, 0), total = D.group.reduce((a, m) => a + m.total, 0);
-  return {borrow: all.filter(x => x.borrower === me), lend: all.filter(x => x.borrower !== me && x.borrowed.some(p => p.owner === me)), have, total, names: D.group.map(m => m.user)};
+  const mine = D.group.find(m => m.user === me);
+  const lend = all.filter(x => x.borrower !== me && x.borrowed.some(p => p.owner === me));
+  // Properties of the viewer that friends' collections would use, and whether they cost a collection bonus.
+  const cand = new Map();
+  for(const x of lend) for(const p of x.borrowed) if(p.owner === me){ const e = cand.get(p.id) || {p, n:0, holds:p.holds}; e.n++; cand.set(p.id, e); }
+  return {borrow: all.filter(x => x.borrower === me), lend, all, have, total, names: D.group.map(m => m.user),
+    burners: {auto: mine ? mine.props.filter(p => !mine.ar.where.has(p.id)).length : 0, cand: [...cand.values()].sort((a, b) => b.n - a.n)}};
 }
+function refreshGroup(){ if(D && D.group){ G = analyseGroup(); } }
 
 let D = null, A = null, G = null;
 const status = id => D.active.has(id) ? 'active' : D.collected.has(id) ? 'collected' : 'new';
@@ -524,6 +591,138 @@ function buyHtml(){
     <h2 style="margin-top:18px">${esc(t('buyList', {n:view.length}))}</h2>${cards || `<div class="card empty">${esc(t('nothing'))}</div>`}`;
 }
 
+// ---------- swaps, burners, compare ----------
+const sw = {partner: store.get('fl:partner', '')};
+const cmp = {partner: store.get('fl:cmpPartner', ''), other: {}, busy: false, error: null};
+const lenderNames = x => [...new Set(x.borrowed.map(p => p.owner))].join(', ');
+function loanSettingsHtml(){
+  return `<div class="row" style="gap:12px;margin-bottom:6px;flex-wrap:wrap">
+    <label class="small row" style="gap:6px">${esc(t('loanDays'))} <input type="number" id="loanDays" min="0" step="1" value="${loan.days}" style="width:5em"></label>
+    <label class="small row" style="gap:6px">${esc(t('loanTax'))} <input type="number" id="loanTax" min="0" max="100" step="0.1" value="${loan.tax}" style="width:5em"> %</label>
+    <label class="small row" style="gap:6px">${esc(t('loanBase'))} <select id="loanBase"><option value="mint"${loan.base === 'mint' ? ' selected' : ''}>${esc(t('loanBaseMint'))}</option><option value="fixed"${loan.base === 'fixed' ? ' selected' : ''}>${esc(t('loanBaseFixed'))}</option></select>
+      ${loan.base === 'fixed' ? `<input type="number" id="loanFixed" min="0" step="100" value="${loan.fixed}" style="width:6em"> UPX` : ''}</label></div>
+    <p class="note">${esc(t('loanRules'))}</p>`;
+}
+function termsHtml(x, role){
+  const m = x.tm;
+  return `<ul class="small terms"><li>${esc(t('tmLoan', {d:m.days, r:RARITY[x.c.category]}))}</li>
+    <li>${esc(t('tmPot', {r:n0(x.reward), b:n0(m.bonus), p:n0(m.pot)}))}</li>
+    <li>${esc(t('tmCosts', {k:n0(m.broken), x:n0(m.tax), pct:loan.tax}))}</li>
+    <li><b>${esc(t('tmNet', {n:n0(m.net), h:n0(m.half)}))}</b></li>
+    <li>${esc(role === 'borrow' ? t('tmPay', {s:n0(m.settle), h:n0(m.half)}) : t('tmGet', {s:n0(m.settle), h:n0(m.half)}))}</li>
+    ${m.net < 0 ? `<li class="short"><b>${esc(t('tmLoss'))}</b></li>` : ''}</ul>`;
+}
+function setTableHtml(x){
+  const me = D.user.toLowerCase();
+  const rows = x.set.map(p => `<tr><td>${esc(p.a)}${p.owner !== x.borrower ? (p.burner ? ` <span class="st active">${esc(t('burner'))}</span>` : `<div class="small muted">${esc(t('leavesColl', {c:p.holds.c.name}))}</div>`) : ''}</td><td>${esc(p.cn || '')}</td>
+    <td>${p.owner === me ? `<b>${esc(t('you'))}</b>` : esc(p.owner)}</td><td><a target="_blank" rel="noopener" href="https://play.upland.me/?prop_id=${p.id}">${esc(t('open'))} ↗</a></td></tr>`).join('');
+  return `<div class="tablewrap"><table><thead><tr><th>${esc(t('colAddress'))}</th><th>${esc(t('colCity'))}</th><th>${esc(t('owner'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function burnersHtml(){
+  const b = G.burners;
+  return `<details class="coll" style="--c:var(--accent)"${ui.burnOpen ? ' open' : ''} id="burnBox"><summary><span class="nm">${esc(t('burnTitle'))}</span><span class="small muted">${esc(t('burnSum', {a:n0(b.auto), m:BURN.size}))}</span></summary>
+    <div class="body"><p class="note">${esc(t('burnNote'))}</p>
+    ${b.cand.slice(0, 40).map(e => `<label class="row small" style="gap:8px;margin:5px 0;align-items:flex-start"><input type="checkbox" data-burn="${e.p.id}" ${BURN.has(e.p.id) ? 'checked' : ''}>
+      <span>${esc(e.p.a)}, ${esc(e.p.cn || '')} · ${esc(e.holds ? t('burnHolds', {c:e.holds.c.name, g:n0(e.holds.gain)}) : t('burnFree'))} · ${esc(t('burnUsed', {n:e.n}))}</span></label>`).join('') || `<p class="note">${esc(t('nothing'))}</p>`}</div></details>`;
+}
+function loanCard(x, role){
+  const me = D.user.toLowerCase();
+  const sum = role === 'borrow' ? t('borrowSum', {k:x.borrowed.length, h:n0(x.tm.half), s:n0(x.tm.settle)})
+    : t('lendSum', {f:x.borrower, k:x.borrowed.filter(p => p.owner === me).length, h:n0(x.tm.half), s:n0(x.tm.settle)});
+  return `<details class="coll" style="--c:var(--r${x.c.category})"><summary><span class="nm">${esc(x.c.name)}</span>${rar(x.c)}
+      <span class="small muted">${esc(t('needs', {a:x.c.amount}))} · ${esc(t('boost', {b:x.c.yield_boost}))}</span><span class="gain">${esc(sum)}</span></summary>
+    <div class="body"><div class="req">${esc(x.c.requirements || '')}</div>${setTableHtml(x)}${termsHtml(x, role)}</div></details>`;
+}
+function groupBanner(){ return G.have < G.total ? `<p class="note"><b>${esc(t('partialGroup', {n:n0(G.have), t:n0(G.total)}))}</b></p>` : ''; }
+
+function swapHtml(){
+  if(!G) return `<div class="card empty">${esc(t('groupOnly'))}</div>`;
+  const me = D.user.toLowerCase();
+  const names = D.group.map(m => m.user).filter(u => u !== me);
+  if(!names.length) return `<div class="card empty">${esc(t('nothing'))}</div>`;
+  const partner = names.includes(sw.partner) ? sw.partner : names[0];
+  const memA = D.group.find(m => m.user === me), memB = D.group.find(m => m.user === partner);
+  const sel = `<div class="row" style="gap:8px;margin-bottom:8px"><label class="small row" style="gap:6px">${esc(t('swPartner'))} <select id="swPartner">${names.map(n => `<option value="${esc(n)}"${n === partner ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label></div>`;
+  if(!memA) return sel + `<div class="card empty">${esc(t('groupOnly'))}</div>`;
+  const pair = [memA, memB];
+  const mine = borrowFor(memA, pair, CR), theirs = borrowFor(memB, pair, CR);
+  const ids = (x, owner) => x.set.filter(p => p.owner === owner).map(p => p.id);
+  const used = new Set();
+  const ok = (a, b) => { const all = [...ids(a, me), ...ids(b, me), ...ids(a, partner), ...ids(b, partner)]; return new Set(all).size === all.length && !all.some(i => used.has(i)); };
+  const commit = x => ids(x, me).concat(ids(x, partner)).forEach(i => used.add(i));
+  const pairs = []; let lm = mine.slice(), lt = theirs.slice();
+  for(const same of [true, false]){
+    for(;;){
+      let best = null;
+      for(const a of lm) for(const b of lt){
+        if(same && a.c.category !== b.c.category) continue;
+        if(!ok(a, b)) continue;
+        const d = Math.abs(a.tm.net - b.tm.net);
+        if(!best || d < best.d) best = {a, b, d};
+      }
+      if(!best) break;
+      pairs.push({...best, tier: same ? 1 : 2}); commit(best.a); commit(best.b);
+      lm = lm.filter(x => x !== best.a); lt = lt.filter(x => x !== best.b);
+    }
+  }
+  const soloM = lm.filter(x => !ids(x, me).concat(ids(x, partner)).some(i => used.has(i)));
+  const soloT = lt.filter(x => !ids(x, me).concat(ids(x, partner)).some(i => used.has(i)));
+  const pairCard = p => {
+    const pay = p.a.tm.settle - p.b.tm.settle;
+    const bal = Math.abs(pay) < 1 ? t('swEven') : (pay > 0 ? t('swYouPay', {p:partner, n:n0(pay)}) : t('swTheyPay', {p:partner, n:n0(-pay)}));
+    return `<details class="coll" style="--c:var(--r${p.a.c.category})"><summary><span class="nm">${esc(t('swCard', {a:p.a.c.name, p:partner, b:p.b.c.name}))}</span>${rar(p.a.c)}${rar(p.b.c)}<span class="gain">${esc(bal)}</span></summary>
+      <div class="body"><h3 class="small">${esc(t('swBorrowH', {c:p.a.c.name}))}</h3>${setTableHtml(p.a)}${termsHtml(p.a, 'borrow')}
+      <h3 class="small">${esc(t('swLendH', {p:partner, c:p.b.c.name}))}</h3>${setTableHtml(p.b)}${termsHtml(p.b, 'lend')}</div></details>`;
+  };
+  const tier = n => pairs.filter(p => p.tier === n);
+  const sect = (title, note, html, n) => n ? `<h2 style="margin-top:18px">${esc(title)} <span class="muted small">${n}</span></h2><p class="note">${esc(note)}</p>${html}` : '';
+  return `${sel}<p class="note">${esc(t('swNote'))}</p>${loanSettingsHtml()}${groupBanner()}${burnersHtml()}
+    ${sect(t('swTier1'), t('swTier1n'), tier(1).map(pairCard).join(''), tier(1).length)}
+    ${sect(t('swTier2'), t('swTier2n'), tier(2).map(pairCard).join(''), tier(2).length)}
+    ${sect(t('swTier3'), t('swTier3n'), soloM.map(x => loanCard(x, 'borrow')).join('') + soloT.map(x => loanCard(x, 'lend')).join(''), soloM.length + soloT.length)}
+    ${pairs.length || soloM.length || soloT.length ? '' : `<div class="card empty">${esc(t('swNone', {p:partner}))}</div>`}`;
+}
+
+function cmpData(name){
+  const g = D.group && D.group.find(m => m.user === name);
+  return g ? {active:g.active, collected:g.collected, inGroup:true} : (cmp.other[name] || null);
+}
+async function cmpLoad(name){
+  cmp.busy = true; cmp.error = null; render();
+  try{
+    const p = await Upland.profile(name);
+    cmp.other[name] = {active:new Set((p.collections || []).map(c => c.id)), collected:new Set((p.previouslyCompletedCollections || []).map(c => c.id)), inGroup:false};
+    cmp.partner = name; store.set('fl:cmpPartner', name);
+  }catch(e){ cmp.error = t('errUser', {u:name}); }
+  cmp.busy = false; render();
+}
+function compareHtml(){
+  const me = D.user.toLowerCase();
+  const names = D.group ? D.group.map(m => m.user).filter(u => u !== me) : [];
+  const others = Object.keys(cmp.other);
+  const all = [...names, ...others.filter(o => !names.includes(o))];
+  const partner = all.includes(cmp.partner) ? cmp.partner : (all[0] || '');
+  const P = partner ? cmpData(partner) : null;
+  const ctrl = `<div class="row" style="gap:10px;margin-bottom:10px;flex-wrap:wrap">
+    ${all.length ? `<label class="small row" style="gap:6px">${esc(t('cmpPartner'))} <select id="cmpPartner">${all.map(n => `<option value="${esc(n)}"${n === partner ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></label>` : ''}
+    <label class="small row" style="gap:6px">${esc(t('cmpOther'))} <input type="text" id="cmpOther" placeholder="${esc(t('userPh'))}" autocapitalize="off" spellcheck="false" style="width:11em"></label></div>
+    ${cmp.busy ? `<p class="note">${esc(t('loading'))}</p>` : ''}${cmp.error ? `<div class="status err">${esc(cmp.error)}</div>` : ''}`;
+  if(!P) return `<p class="note">${esc(t('cmpNote'))}</p>${ctrl}`;
+  const mine = new Set([...D.active, ...D.collected]), theirs = new Set([...P.active, ...P.collected]);
+  const stOf = (set, id) => set.active.has(id) ? 'active' : 'collected';
+  const onlyThem = D.colls.filter(c => theirs.has(c.id) && !mine.has(c.id)), onlyMe = D.colls.filter(c => mine.has(c.id) && !theirs.has(c.id));
+  const row = k => { const cs = D.colls.filter(c => c.category === k);
+    const m = cs.filter(c => mine.has(c.id)).length, th = cs.filter(c => theirs.has(c.id)).length, b = cs.filter(c => mine.has(c.id) && theirs.has(c.id)).length;
+    return `<tr><td><span class="rar" style="--c:var(--r${k})">${esc(RARITY[k])}</span></td><td class="num">${m}</td><td class="num">${th}</td><td class="num">${b}</td><td class="num"><b>${m - b}</b></td><td class="num"><b>${th - b}</b></td></tr>`; };
+  const list = (cs, who) => cs.length ? `<div class="tablewrap"><table><thead><tr><th>${esc(t('colColl'))}</th><th>${esc(t('ovRarity'))}</th><th class="num">${esc(t('colReward'))}</th><th class="num">${esc(t('colBoost'))}</th><th>${esc(t('colStatus'))}</th></tr></thead><tbody>
+    ${cs.slice().sort((a, b) => (b.one_time_reward || 0) - (a.one_time_reward || 0)).slice(0, 80).map(c => `<tr><td>${esc(c.name)}</td><td>${rar(c)}</td><td class="num">${n0(c.one_time_reward || 0)}</td><td class="num">${c.yield_boost}×</td><td>${esc(stOf(who, c.id) === 'active' ? t('stActive') : t('stCollected'))}</td></tr>`).join('')}</tbody></table></div>` : `<p class="note">${esc(t('nothing'))}</p>`;
+  return `<p class="note">${esc(t('cmpNote'))}</p>${ctrl}
+    <div class="tablewrap"><table><thead><tr><th>${esc(t('ovRarity'))}</th><th class="num">${esc(t('you'))}</th><th class="num">${esc(partner)}</th><th class="num">${esc(t('cmpBoth'))}</th><th class="num">${esc(t('cmpOnlyYou'))}</th><th class="num">${esc(t('cmpOnlyThem'))}</th></tr></thead><tbody>${[1, 2, 3, 4, 5].map(row).join('')}</tbody></table></div>
+    <p class="note">${esc(t('cmpCounts', {a:n0(mine.size), b:n0(theirs.size)}))} ${esc(P.inGroup ? t('cmpSwapHint') : t('cmpNeedGroup'))}</p>
+    <h2 style="margin-top:16px">${esc(t('cmpListThem', {p:partner, n:onlyThem.length}))}</h2>${list(onlyThem, P)}
+    <h2 style="margin-top:16px">${esc(t('cmpListYou', {p:partner, n:onlyMe.length}))}</h2>${list(onlyMe, {active:D.active})}`;
+}
+
 // ---------- earnings: what the properties make, with and without collection boosts ----------
 const earn = {pct: Number(store.get('fl:pct', 14.7)) || 14.7, sort: store.get('fl:earnSort', 'upx')};
 function earnHtml(){
@@ -563,7 +762,7 @@ function render(){
   const release = D.colls.filter(c => D.active.has(c.id) && !idealIds.has(c.id));
   const shownRelease = D.props.length < D.total ? 0 : release.length;   // with partial data, active collections only look unfillable
   const tabs = [['overview', t('tOverview'), null], ['earn', t('tEarn'), null], ['best', t('tBest'), picks.length], ['changes', t('tChanges'), toActivate.length + shownRelease], ['almost', t('tAlmost'), A.almost.length]];
-  tabs.push(['borrow', t('tBorrow'), G ? G.borrow.length : 0], ['lend', t('tLend'), G ? G.lend.length : 0], ['buy', t('tBuy'), null]);
+  tabs.push(['borrow', t('tBorrow'), G ? G.borrow.length : 0], ['lend', t('tLend'), G ? G.lend.length : 0], ['swap', t('tSwap'), null], ['compare', t('tCompare'), null], ['buy', t('tBuy'), null]);
   $('#tabs').innerHTML = tabs.map(([k, l, n]) => `<button data-tab="${k}" class="${ui.tab === k ? 'on' : ''}">${esc(l)}${n == null ? '' : `<span class="n">${n}</span>`}</button>`).join('');
   let html = '';
   if(ui.tab === 'overview') html = overviewHtml();
@@ -582,31 +781,29 @@ function render(){
   if(ui.tab === 'borrow' || ui.tab === 'lend'){
     if(!G) html = `<div class="card empty">${esc(t('groupOnly'))}</div>`;
     else{
-      const me = D.user.toLowerCase();
-      const list = (ui.tab === 'borrow' ? G.borrow : G.lend).slice(0, 80);
-      const who = o => o === me ? t('you') : o;
-      html = `<p class="note">${esc(t(ui.tab === 'borrow' ? 'borrowNote' : 'lendNote'))}</p>`
-        + (G.have < G.total ? `<p class="note"><b>${esc(t('partialGroup', {n:n0(G.have), t:n0(G.total)}))}</b></p>` : '')
-        + (list.map(x => {
-          const half = n0(x.reward / 2);
-          const sum = (ui.tab === 'borrow' ? t('borrowSum', {k:x.borrowed.length, r:n0(x.reward), h:half})
-            : t('lendSum', {f:x.borrower, k:x.borrowed.filter(p => p.owner === me).length, r:n0(x.reward), h:half})) + ' · ' + t('lenderCost', {x:n0(x.cost)});
-          const rows = x.set.map(p => `<tr><td>${esc(p.a)}${p.holds ? `<div class="small muted">${esc(t('leavesColl', {c:p.holds.c.name}))}</div>` : ''}</td><td>${esc(p.cn || '')}</td><td>${p.own ? esc(x.borrower === me ? t('you') : x.borrower) : `<b>${esc(who(p.owner))}</b>`}</td>
-            <td><a target="_blank" rel="noopener" href="https://play.upland.me/?prop_id=${p.id}">${esc(t('open'))} ↗</a></td></tr>`).join('');
-          return `<details class="coll" style="--c:var(--r${x.c.category})"><summary><span class="nm">${esc(x.c.name)}</span>${rar(x.c)}
-              <span class="small muted">${esc(t('needs', {a:x.c.amount}))} · ${esc(t('boost', {b:x.c.yield_boost}))}</span><span class="gain">${esc(sum)}</span></summary>
-            <div class="body"><div class="req">${esc(x.c.requirements || '')}</div><div class="tablewrap"><table><thead><tr><th>${esc(t('colAddress'))}</th><th>${esc(t('colCity'))}</th><th>${esc(t('owner'))}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></div></details>`;
-        }).join('') || `<div class="card empty">${esc(t('nothing'))}</div>`);
+      const role = ui.tab === 'borrow' ? 'borrow' : 'lend';
+      const list = (role === 'borrow' ? G.borrow : G.lend).slice(0, 80);
+      html = `<p class="note">${esc(t(role === 'borrow' ? 'borrowNote' : 'lendNote'))}</p>${loanSettingsHtml()}${groupBanner()}${role === 'lend' ? burnersHtml() : ''}`
+        + (list.map(x => loanCard(x, role)).join('') || `<div class="card empty">${esc(t('nothing'))}</div>`);
     }
   }
+  if(ui.tab === 'swap') html = swapHtml();
+  if(ui.tab === 'compare') html = compareHtml();
   $('#panel').innerHTML = html;
 }
 
 // ---------- wiring ----------
 let statusFn = null;
 function setStatus(fn, err){ statusFn = typeof fn === 'function' ? fn : null; const el = $('#status'); el.textContent = statusFn ? statusFn() : (fn || ''); el.classList.toggle('err', !!err); }
-async function run(user, auto){
-  store.set('fl:user', user); Site.setUser(user);
+function fillViewAs(){
+  const row = $('#viewRow'), sel = $('#viewAs');
+  if(!D || !D.group || D.group.length < 2){ row.classList.add('hidden'); return; }
+  sel.innerHTML = D.group.map(m => `<option value="${esc(m.user)}"${m.user === D.user.toLowerCase() ? ' selected' : ''}>${esc(m.user)}</option>`).join('');
+  row.classList.remove('hidden');
+}
+$('#viewAs').addEventListener('change', e => { $('#username').value = e.target.value; run(e.target.value, false, true); });
+async function run(user, auto, view){
+  if(!view){ store.set('fl:user', user); Site.setUser(user); }   // looking at a friend's data doesn't change your remembered name
   $('#loadBtn').disabled = true; $('#progress').classList.remove('hidden');
   const bar = $('#progress i');
   try{
@@ -616,7 +813,7 @@ async function run(user, auto){
     const at = new Date();
     setStatus(() => t('loaded', {p:n0(D.props.length), c:n0(A.ideal.colls.length), t:at.toLocaleTimeString(Site.locale(), {hour:'2-digit', minute:'2-digit'})})
       + (D.props.length < D.total ? ' ' + t('partial', {n:n0(D.props.length), t:n0(D.total)}) : ''));
-    $('#app').classList.remove('hidden'); render();
+    $('#app').classList.remove('hidden'); fillViewAs(); render();
   }catch(e){ if(e.message === 'auto-skip') setStatus(t('pressGo', {u:user})); else setStatus(t('errUser', {u:user}), true); }
   $('#loadBtn').disabled = false; $('#progress').classList.add('hidden');
 }
@@ -626,12 +823,24 @@ $('#panel').addEventListener('change', e => {
   if(id === 'buyScope'){ bs.scope = e.target.value; store.set('fl:buyScope', bs.scope); }
   else if(id === 'buyRarity') bs.rarity = e.target.value;
   else if(id === 'buySort'){ bs.sort = e.target.value; store.set('fl:buySort', bs.sort); }
-  else if(id === 'earnPct'){ earn.pct = Math.max(0, Number(e.target.value) || 0); store.set('fl:pct', earn.pct); }
+  else if(id === 'earnPct'){ earn.pct = Math.max(0, Number(e.target.value) || 0); store.set('fl:pct', earn.pct); refreshGroup(); }
   else if(id === 'earnSort'){ earn.sort = e.target.value; store.set('fl:earnSort', earn.sort); }
   else if(id === 'buyRate'){ bs.rate = Math.max(1, Number(e.target.value) || 1000); store.set('fl:rate', bs.rate); }
+  else if(id === 'swPartner'){ sw.partner = e.target.value; store.set('fl:partner', sw.partner); }
+  else if(id === 'cmpPartner'){ cmp.partner = e.target.value; store.set('fl:cmpPartner', cmp.partner); }
+  else if(id === 'cmpOther'){ const v = e.target.value.trim().toLowerCase(); if(v) cmpLoad(v); return; }
+  else if(id === 'loanDays'){ loan.days = Math.max(0, Number(e.target.value) || 0); store.set('fl:days', loan.days); refreshGroup(); }
+  else if(id === 'loanBase'){ loan.base = e.target.value; store.set('fl:taxBase', loan.base); refreshGroup(); }
+  else if(id === 'loanFixed'){ loan.fixed = Math.max(0, Number(e.target.value) || 0); store.set('fl:taxFixed', loan.fixed); refreshGroup(); }
+  else if(id === 'loanTax'){ loan.tax = Math.max(0, Number(e.target.value) || 0); store.set('fl:tax', loan.tax); refreshGroup(); }
+  else if(e.target.dataset && e.target.dataset.burn){
+    const i = Number(e.target.dataset.burn); if(BURN.has(i)) BURN.delete(i); else BURN.add(i);
+    store.set('fl:burn:' + D.user.toLowerCase(), [...BURN]); ui.burnOpen = true; refreshGroup();
+  }
   else return;
   render();
 });
+$('#panel').addEventListener('toggle', e => { if(e.target.id === 'burnBox') ui.burnOpen = e.target.open; }, true);
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; ui.tab = b.dataset.tab; store.set('fl:tab', ui.tab); render(); });
 Site.mount({onChange: () => { if(statusFn) $('#status').textContent = statusFn(); render(); }});
 const params = new URLSearchParams(location.search);
