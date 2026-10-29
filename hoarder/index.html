@@ -76,15 +76,14 @@ Site.register({
     tBorrow:'Freeloader: borrow', tLend:'Lend', owner:'Owner', you:'You',
     tOverview:'Overview', tBuy:'Buy', tEarn:'Earnings',
     tSwap:'Swaps', tCompare:'Compare', viewAs:'Viewing as:', burner:'burner',
-    loanDays:'Loan length in days (0 = the collection’s cooldown):', loanTax:'Upland tax per transfer:',
-    loanRules:'Cooldowns: Standard none, Limited 3 days, Exclusive 7, Rare and Ultra Rare 14. Lending a property and getting it back each cost the tax on its price (estimated from its mint price). Yields are per 30 days and scaled by your earning percentage (set it in the Earnings tab).',
+    loanDays:'Loan length in days (0 = the collection’s cooldown):', loanFee:'Upland fee when sending UPX, on each side:',
+    loanRules:'Cooldowns: Standard none, Limited 3 days, Exclusive 7, Rare and Ultra Rare 14. Upland charges a fee on each side when UPX is sent directly (the sender pays 5% more and the receiver gets 5% less), so only the payment between you pays it; moving the property itself is assumed to be free. Yields are per 30 days and scaled by your earning percentage (set it in the Earnings tab).',
     tmLoan:'Loan: {d} days ({r} cooldown unless you changed it)', tmPot:'Pot: {r} UPX reward + {b} UPX of collection bonus during the loan = {p} UPX',
-    tmCosts:'Costs: {k} UPX of bonus the lender gives up + {x} UPX of Upland tax ({pct}% each way)', tmNet:'Left to share: {n} UPX, so {h} UPX each',
-    loanBase:'Tax is charged on:', loanBaseMint:'the property’s mint price', loanBaseFixed:'a price you agree on:', tmLoss:'At these settings the tax is bigger than the gain. Agree a lower transfer price to make it worthwhile.',
-    tmPay:'You pay the lender about {s} UPX, which leaves you both with {h} UPX', tmGet:'The borrower pays you about {s} UPX, which leaves you both with {h} UPX',
-    swPartner:'Swap with:', swNote:'Pairs your loan with theirs: you borrow from them to finish one of your collections, and they borrow from you to finish one of theirs. Same-rarity swaps come first, then different rarities with the closest value, then loans that only go one way. The balance is the payment that makes a swap even.',
+    tmCosts:'Costs: {k} UPX of bonus the lender gives up + {x} UPX of Upland fees on the payment ({pct}% on each side)', tmNet:'Left to share: {n} UPX, so {h} UPX each',
+    tmPay:'You send the lender {s} UPX (it costs you {c} with Upland’s fee, and they receive {r}), which leaves you both with {h} UPX', tmGet:'The borrower sends you {s} UPX (you receive {r} after Upland’s fee), which leaves you both with {h} UPX',
+    swPartner:'Swap with:', swNote:'Pairs your loan with theirs: you borrow from them to finish one of your collections, and they borrow from you to finish one of theirs. Same-rarity swaps come first, then different rarities with the closest value, then loans that only go one way. Both loans are settled with a single payment, so Upland’s fee is only charged on the difference.',
     swTier1:'Even swaps, same rarity', swTier1n:'Each side finishes a collection of the same rarity, so it’s easiest to agree.', swTier2:'Swaps across rarities', swTier2n:'Different rarities, paired by closest value; the balance evens it out.', swTier3:'One-sided loans', swTier3n:'One of you borrows and the other has nothing to borrow back right now.',
-    swCard:'You get {a} · {p} gets {b}', swEven:'Even', swYouPay:'You pay {p} ≈ {n} UPX', swTheyPay:'{p} pays you ≈ {n} UPX', swBorrowH:'You borrow, to finish {c}', swLendH:'{p} borrows from you, to finish {c}', swNone:'No swaps found with {p}. They may not need anything of yours yet, or the group data is still being collected.',
+    swCard:'You get {a} · {p} gets {b}', swEven:'Even', swYouPay:'You pay {p} ≈ {n} UPX ({c} with Upland’s fee)', swTheyPay:'{p} pays you ≈ {n} UPX ({r} after Upland’s fee)', swBorrowH:'You borrow, to finish {c}', swLendH:'{p} borrows from you, to finish {c}', swNone:'No swaps found with {p}. They may not need anything of yours yet, or the group data is still being collected.',
     burnTitle:'Burner properties', burnSum:'{a} sit in none of your best collections; {m} marked by you', burnNote:'A burner costs you nothing to lend, because it holds up no collection. Tick any you don’t mind lending even though they sit in a collection today. These are the properties your friends’ collections would use.',
     burnHolds:'holds {c} ({g} UPX/month)', burnFree:'in no collection', burnUsed:'useful for {n} loans',
     cmpNote:'See which collections two players have collected, and which each could give the other.', cmpPartner:'Compare with:', cmpOther:'Another player (collections only):', cmpBoth:'Both', cmpOnlyYou:'Only you', cmpOnlyThem:'Only them',
@@ -132,15 +131,14 @@ Site.register({
     tBorrow:'Gorrón: pedir prestado', tLend:'Prestar', owner:'Dueño', you:'Tú',
     tOverview:'Resumen', tBuy:'Comprar', tEarn:'Ganancias',
     tSwap:'Intercambios', tCompare:'Comparar', viewAs:'Viendo como:', burner:'prescindible',
-    loanDays:'Duración del préstamo en días (0 = el cooldown de la colección):', loanTax:'Impuesto de Upland por transferencia:',
-    loanRules:'Cooldowns: Standard ninguno, Limited 3 días, Exclusive 7, Rare y Ultra Rare 14. Prestar una propiedad y recibirla de vuelta cuestan cada una el impuesto sobre su precio (estimado con su precio de mint). Los rendimientos son por 30 días y escalados por tu porcentaje de ganancia (ponlo en la pestaña de Ganancias).',
+    loanDays:'Duración del préstamo en días (0 = el cooldown de la colección):', loanFee:'Comisión de Upland al enviar UPX, por cada lado:',
+    loanRules:'Cooldowns: Standard ninguno, Limited 3 días, Exclusive 7, Rare y Ultra Rare 14. Upland cobra una comisión por cada lado cuando se envía UPX directamente (quien envía paga 5% más y quien recibe obtiene 5% menos), así que solo el pago entre ustedes la paga; se supone que mover la propiedad en sí no cuesta. Los rendimientos son por 30 días y escalados por tu porcentaje de ganancia (ponlo en la pestaña de Ganancias).',
     tmLoan:'Préstamo: {d} días (cooldown {r} salvo que lo cambies)', tmPot:'Bolsa: {r} UPX de premio + {b} UPX de bono de colección durante el préstamo = {p} UPX',
-    tmCosts:'Costos: {k} UPX de bono que deja el que presta + {x} UPX de impuesto de Upland ({pct}% por lado)', tmNet:'Queda por repartir: {n} UPX, o sea {h} UPX para cada uno',
-    loanBase:'El impuesto se cobra sobre:', loanBaseMint:'el precio de mint de la propiedad', loanBaseFixed:'un precio que acuerden:', tmLoss:'Con estos ajustes el impuesto es mayor que la ganancia. Acuerden un precio de transferencia más bajo para que valga la pena.',
-    tmPay:'Le pagas al que presta unos {s} UPX, y a los dos les quedan {h} UPX', tmGet:'Quien pide te paga unos {s} UPX, y a los dos les quedan {h} UPX',
-    swPartner:'Intercambiar con:', swNote:'Empareja tu préstamo con el suyo: tú les pides para terminar una de tus colecciones y ellos te piden para terminar una de las suyas. Primero los intercambios de la misma rareza, luego rarezas distintas con el valor más parecido, y al final los préstamos que van en un solo sentido. El saldo es el pago que deja el intercambio parejo.',
+    tmCosts:'Costos: {k} UPX de bono que deja el que presta + {x} UPX de comisiones de Upland sobre el pago ({pct}% por cada lado)', tmNet:'Queda por repartir: {n} UPX, o sea {h} UPX para cada uno',
+    tmPay:'Le envías al que presta {s} UPX (te cuestan {c} con la comisión de Upland y él recibe {r}), y a los dos les quedan {h} UPX', tmGet:'Quien pide te envía {s} UPX (tú recibes {r} tras la comisión de Upland), y a los dos les quedan {h} UPX',
+    swPartner:'Intercambiar con:', swNote:'Empareja tu préstamo con el suyo: tú les pides para terminar una de tus colecciones y ellos te piden para terminar una de las suyas. Primero los intercambios de la misma rareza, luego rarezas distintas con el valor más parecido, y al final los préstamos que van en un solo sentido. Ambos préstamos se saldan con un solo pago, así que la comisión de Upland solo se cobra sobre la diferencia.',
     swTier1:'Intercambios parejos, misma rareza', swTier1n:'Cada lado termina una colección de la misma rareza, así que es lo más fácil de acordar.', swTier2:'Intercambios entre rarezas', swTier2n:'Rarezas distintas, emparejadas por valor parecido; el saldo lo empareja.', swTier3:'Préstamos de un solo sentido', swTier3n:'Uno pide y el otro no tiene nada que pedir de vuelta por ahora.',
-    swCard:'Tú obtienes {a} · {p} obtiene {b}', swEven:'Parejo', swYouPay:'Le pagas a {p} ≈ {n} UPX', swTheyPay:'{p} te paga ≈ {n} UPX', swBorrowH:'Tú pides, para terminar {c}', swLendH:'{p} te pide, para terminar {c}', swNone:'No hay intercambios con {p}. Quizá todavía no necesita nada tuyo, o los datos del grupo aún se están recolectando.',
+    swCard:'Tú obtienes {a} · {p} obtiene {b}', swEven:'Parejo', swYouPay:'Le pagas a {p} ≈ {n} UPX ({c} con la comisión de Upland)', swTheyPay:'{p} te paga ≈ {n} UPX (recibes {r} tras la comisión de Upland)', swBorrowH:'Tú pides, para terminar {c}', swLendH:'{p} te pide, para terminar {c}', swNone:'No hay intercambios con {p}. Quizá todavía no necesita nada tuyo, o los datos del grupo aún se están recolectando.',
     burnTitle:'Propiedades prescindibles', burnSum:'{a} no están en ninguna de tus mejores colecciones; {m} marcadas por ti', burnNote:'Una propiedad prescindible no te cuesta nada prestarla, porque no sostiene ninguna colección. Marca las que no te importe prestar aunque hoy estén en una colección. Son las propiedades que usarían las colecciones de tus amigos.',
     burnHolds:'sostiene {c} ({g} UPX/mes)', burnFree:'en ninguna colección', burnUsed:'sirve para {n} préstamos',
     cmpNote:'Mira qué colecciones ha cobrado cada jugador y cuáles podría darle uno al otro.', cmpPartner:'Comparar con:', cmpOther:'Otro jugador (solo colecciones):', cmpBoth:'Ambos', cmpOnlyYou:'Solo tú', cmpOnlyThem:'Solo ellos',
@@ -391,26 +389,23 @@ function mixedSet(c, own, spare){
 // ---------- loan economics ----------
 // Upland's cooldown before a property can leave a collection, by rarity (days).
 const COOLDOWN = {1:0, 2:3, 3:7, 4:14, 5:14};
-const MINT_K = 5.6713e-6;                       // yield per hour = mint price × this
-const loan = {days: Number(store.get('fl:days', 0)) || 0, tax: store.get('fl:tax', 5) === '' ? 5 : Number(store.get('fl:tax', 5)),
-  base: store.get('fl:taxBase', 'mint'), fixed: Number(store.get('fl:taxFixed', 1000)) || 1000};
-// The price Upland's tax is charged on for each transfer: the mint price, or a price the two players agree on.
-const priceOf = p => loan.base === 'fixed' ? loan.fixed : p.y / MINT_K;
+const loan = {days: Number(store.get('fl:days', 0)) || 0, fee: store.get('fl:fee', 5) === '' ? 5 : Number(store.get('fl:fee', 5))};
 let BURN = new Set();                           // properties the viewer marked as "fine to lend"
 const isBurner = (L, p) => L.user === (D.user || '').toLowerCase() && BURN.has(p.id);
 // One loan, shared fairly. Yields here are per 30 days and scaled by the earning percentage; rewards are real UPX.
-//   pot     = one-time reward + the collection bonus the borrower earns during the loan
-//   costs   = the bonus the lender loses for that time + Upland's tax on lending and returning each property
-//   net     = pot - costs, split 50/50; the borrower pays the lender "settle" so both end up with net/2
+//   pot    = one-time reward + the collection bonus the borrower earns during the loan
+//   settle = the UPX the borrower sends the lender so both end level (moving the property itself is assumed free)
+//   fee    = Upland charges a % on each side of a UPX transfer: the sender pays settle x (1+r), the receiver gets settle x (1-r)
+//   net    = pot - the bonus the lender loses - fees; each ends with net/2
 function terms(x){
   const days = loan.days > 0 ? loan.days : (COOLDOWN[x.c.category] || 0);
-  const f = days / 30, ep = earn.pct / 100;
+  const f = days / 30, ep = earn.pct / 100, r = loan.fee / 100;
   const bonus = x.gain * f * ep;
   const base = x.borrowed.reduce((a, p) => a + p.base, 0) * f * ep;
   const broken = [...new Set(x.borrowed.map(p => p.holds).filter(Boolean))].reduce((a, h) => a + h.gain, 0) * f * ep;
-  const tax = x.borrowed.reduce((a, p) => a + priceOf(p), 0) * (loan.tax / 100) * 2;
-  const pot = x.reward + bonus, net = pot - broken - tax;
-  return {days, bonus, base, broken, tax, pot, net, half: net / 2, settle: net / 2 + base + broken + tax / 2};
+  const pot = x.reward + bonus;
+  const settle = (pot + 2 * base + broken) / 2, fee = 2 * r * settle, net = pot - broken - fee;
+  return {days, bonus, base, broken, pot, settle, fee, net, half: net / 2, pays: settle * (1 + r), gets: settle * (1 - r)};
 }
 // Collections a member has never collected that they could finish with a few borrowed properties.
 function borrowFor(B, members, colls){
@@ -598,19 +593,16 @@ const lenderNames = x => [...new Set(x.borrowed.map(p => p.owner))].join(', ');
 function loanSettingsHtml(){
   return `<div class="row" style="gap:12px;margin-bottom:6px;flex-wrap:wrap">
     <label class="small row" style="gap:6px">${esc(t('loanDays'))} <input type="number" id="loanDays" min="0" step="1" value="${loan.days}" style="width:5em"></label>
-    <label class="small row" style="gap:6px">${esc(t('loanTax'))} <input type="number" id="loanTax" min="0" max="100" step="0.1" value="${loan.tax}" style="width:5em"> %</label>
-    <label class="small row" style="gap:6px">${esc(t('loanBase'))} <select id="loanBase"><option value="mint"${loan.base === 'mint' ? ' selected' : ''}>${esc(t('loanBaseMint'))}</option><option value="fixed"${loan.base === 'fixed' ? ' selected' : ''}>${esc(t('loanBaseFixed'))}</option></select>
-      ${loan.base === 'fixed' ? `<input type="number" id="loanFixed" min="0" step="100" value="${loan.fixed}" style="width:6em"> UPX` : ''}</label></div>
+    <label class="small row" style="gap:6px">${esc(t('loanFee'))} <input type="number" id="loanFee" min="0" max="100" step="0.1" value="${loan.fee}" style="width:5em"> %</label></div>
     <p class="note">${esc(t('loanRules'))}</p>`;
 }
 function termsHtml(x, role){
   const m = x.tm;
   return `<ul class="small terms"><li>${esc(t('tmLoan', {d:m.days, r:RARITY[x.c.category]}))}</li>
     <li>${esc(t('tmPot', {r:n0(x.reward), b:n0(m.bonus), p:n0(m.pot)}))}</li>
-    <li>${esc(t('tmCosts', {k:n0(m.broken), x:n0(m.tax), pct:loan.tax}))}</li>
+    <li>${esc(t('tmCosts', {k:n0(m.broken), x:n0(m.fee), pct:loan.fee}))}</li>
     <li><b>${esc(t('tmNet', {n:n0(m.net), h:n0(m.half)}))}</b></li>
-    <li>${esc(role === 'borrow' ? t('tmPay', {s:n0(m.settle), h:n0(m.half)}) : t('tmGet', {s:n0(m.settle), h:n0(m.half)}))}</li>
-    ${m.net < 0 ? `<li class="short"><b>${esc(t('tmLoss'))}</b></li>` : ''}</ul>`;
+    <li>${esc(role === 'borrow' ? t('tmPay', {s:n0(m.settle), c:n0(m.pays), r:n0(m.gets), h:n0(m.half)}) : t('tmGet', {s:n0(m.settle), c:n0(m.pays), r:n0(m.gets), h:n0(m.half)}))}</li></ul>`;
 }
 function setTableHtml(x){
   const me = D.user.toLowerCase();
@@ -627,8 +619,8 @@ function burnersHtml(){
 }
 function loanCard(x, role){
   const me = D.user.toLowerCase();
-  const sum = role === 'borrow' ? t('borrowSum', {k:x.borrowed.length, h:n0(x.tm.half), s:n0(x.tm.settle)})
-    : t('lendSum', {f:x.borrower, k:x.borrowed.filter(p => p.owner === me).length, h:n0(x.tm.half), s:n0(x.tm.settle)});
+  const sum = role === 'borrow' ? t('borrowSum', {k:x.borrowed.length, h:n0(x.tm.half), s:n0(x.tm.pays)})
+    : t('lendSum', {f:x.borrower, k:x.borrowed.filter(p => p.owner === me).length, h:n0(x.tm.half), s:n0(x.tm.gets)});
   return `<details class="coll" style="--c:var(--r${x.c.category})"><summary><span class="nm">${esc(x.c.name)}</span>${rar(x.c)}
       <span class="small muted">${esc(t('needs', {a:x.c.amount}))} · ${esc(t('boost', {b:x.c.yield_boost}))}</span><span class="gain">${esc(sum)}</span></summary>
     <div class="body"><div class="req">${esc(x.c.requirements || '')}</div>${setTableHtml(x)}${termsHtml(x, role)}</div></details>`;
@@ -669,7 +661,8 @@ function swapHtml(){
   const soloT = lt.filter(x => !ids(x, me).concat(ids(x, partner)).some(i => used.has(i)));
   const pairCard = p => {
     const pay = p.a.tm.settle - p.b.tm.settle;
-    const bal = Math.abs(pay) < 1 ? t('swEven') : (pay > 0 ? t('swYouPay', {p:partner, n:n0(pay)}) : t('swTheyPay', {p:partner, n:n0(-pay)}));
+    const r = loan.fee / 100;
+    const bal = Math.abs(pay) < 1 ? t('swEven') : (pay > 0 ? t('swYouPay', {p:partner, n:n0(pay), c:n0(pay * (1 + r))}) : t('swTheyPay', {p:partner, n:n0(-pay), r:n0(-pay * (1 - r))}));
     return `<details class="coll" style="--c:var(--r${p.a.c.category})"><summary><span class="nm">${esc(t('swCard', {a:p.a.c.name, p:partner, b:p.b.c.name}))}</span>${rar(p.a.c)}${rar(p.b.c)}<span class="gain">${esc(bal)}</span></summary>
       <div class="body"><h3 class="small">${esc(t('swBorrowH', {c:p.a.c.name}))}</h3>${setTableHtml(p.a)}${termsHtml(p.a, 'borrow')}
       <h3 class="small">${esc(t('swLendH', {p:partner, c:p.b.c.name}))}</h3>${setTableHtml(p.b)}${termsHtml(p.b, 'lend')}</div></details>`;
@@ -830,9 +823,7 @@ $('#panel').addEventListener('change', e => {
   else if(id === 'cmpPartner'){ cmp.partner = e.target.value; store.set('fl:cmpPartner', cmp.partner); }
   else if(id === 'cmpOther'){ const v = e.target.value.trim().toLowerCase(); if(v) cmpLoad(v); return; }
   else if(id === 'loanDays'){ loan.days = Math.max(0, Number(e.target.value) || 0); store.set('fl:days', loan.days); refreshGroup(); }
-  else if(id === 'loanBase'){ loan.base = e.target.value; store.set('fl:taxBase', loan.base); refreshGroup(); }
-  else if(id === 'loanFixed'){ loan.fixed = Math.max(0, Number(e.target.value) || 0); store.set('fl:taxFixed', loan.fixed); refreshGroup(); }
-  else if(id === 'loanTax'){ loan.tax = Math.max(0, Number(e.target.value) || 0); store.set('fl:tax', loan.tax); refreshGroup(); }
+  else if(id === 'loanFee'){ loan.fee = Math.max(0, Number(e.target.value) || 0); store.set('fl:fee', loan.fee); refreshGroup(); }
   else if(e.target.dataset && e.target.dataset.burn){
     const i = Number(e.target.dataset.burn); if(BURN.has(i)) BURN.delete(i); else BURN.add(i);
     store.set('fl:burn:' + D.user.toLowerCase(), [...BURN]); ui.burnOpen = true; refreshGroup();
