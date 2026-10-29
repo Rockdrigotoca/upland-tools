@@ -73,7 +73,12 @@ Site.register({
     shortBy:'{n} more needed', haveOf:'You have {h} of {a}', potential:'≈ +{x}/month if completed',
     foot:'One property per collection at a time. Moving a property waits for its collection’s cooldown.',
     tBorrow:'Freeloader: borrow', tLend:'Lend', owner:'Owner', you:'You',
-    tOverview:'Overview', tBuy:'Buy',
+    tOverview:'Overview', tBuy:'Buy', tEarn:'Earnings',
+    earnNote:'What your properties make per month: on their own, with your active collection boosts (estimated), and with the best possible arrangement.',
+    earnPct:'Your UPX earning percentage:', earnListed:'As Upland lists it', earnAfter:'After your {p}%', earnBase:'Without any collection boosts', earnNow:'With your active collections (estimated)', earnBest:'With the best arrangement',
+    earnExplain:'“As Upland lists it” is the figure on each property’s Collections panel. The second column applies your UPX earning percentage (Upland showed 14.70% for the Harvest season, from a multiplier of 3); change it when it changes. Upland doesn’t say which properties sit in each active collection, so the active-collections row assumes they use their best ones.',
+    earnList:'Your active collections', earnByUpx:'Most UPX first', earnByCity:'By city',
+    pressGo:'Press the button to read {u}’s properties live. It takes a while, because Upland only allows one look per second.',
     buyLoading:'Checking what’s for sale…', buyErr:'The for-sale prices aren’t available yet. They are collected slowly, every 12 hours.',
     buyNote:'Cheapest properties for sale that would complete each collection you’re missing, confirmed against each property’s own collection list. UPX and USD listings are priced separately; properties you already own that fit are counted first, and no property is suggested for two collections.',
     buyScopeNever:'Never collected (reward + boost)', buyScopeAll:'Never collected + collected before (boost only)', sCheap:'Cheapest first', sPayback:'Best payback first', sReward:'Biggest reward first', sGain:'Biggest yield first',
@@ -109,7 +114,12 @@ Site.register({
     shortBy:'Faltan {n}', haveOf:'Tienes {h} de {a}', potential:'≈ +{x}/mes si la completas',
     foot:'Una propiedad por colección a la vez. Mover una propiedad espera el cooldown de su colección.',
     tBorrow:'Gorrón: pedir prestado', tLend:'Prestar', owner:'Dueño', you:'Tú',
-    tOverview:'Resumen', tBuy:'Comprar',
+    tOverview:'Resumen', tBuy:'Comprar', tEarn:'Ganancias',
+    earnNote:'Lo que producen tus propiedades al mes: solas, con los boosts de tus colecciones activas (estimado) y con el mejor acomodo posible.',
+    earnPct:'Tu porcentaje de ganancia de UPX:', earnListed:'Como lo lista Upland', earnAfter:'Con tu {p}%', earnBase:'Sin boosts de colección', earnNow:'Con tus colecciones activas (estimado)', earnBest:'Con el mejor acomodo',
+    earnExplain:'“Como lo lista Upland” es la cifra del panel de colecciones de cada propiedad. La segunda columna aplica tu porcentaje de ganancia de UPX (Upland mostró 14.70% para la temporada Harvest, con un multiplicador de 3); cámbialo cuando cambie. Upland no dice qué propiedades están en cada colección activa, así que la fila de colecciones activas supone que usan las mejores.',
+    earnList:'Tus colecciones activas', earnByUpx:'Más UPX primero', earnByCity:'Por ciudad',
+    pressGo:'Presiona el botón para leer las propiedades de {u} en vivo. Tarda, porque Upland solo permite una consulta por segundo.',
     buyLoading:'Revisando qué está en venta…', buyErr:'Todavía no están disponibles los precios en venta. Se recolectan despacio, cada 12 horas.',
     buyNote:'Las propiedades en venta más baratas que completarían cada colección que te falta, confirmadas con la lista de colecciones de cada propiedad. Los listados en UPX y USD se cotizan por separado; primero cuentan las propiedades que ya tienes y que sirven, y ninguna propiedad se sugiere para dos colecciones.',
     buyScopeNever:'Nunca cobradas (premio + boost)', buyScopeAll:'Nunca cobradas + cobradas antes (solo boost)', sCheap:'Más baratas primero', sPayback:'Mejor recuperación primero', sReward:'Mayor premio primero', sGain:'Mayor rendimiento primero',
@@ -136,7 +146,8 @@ Site.register({
     releaseNote:'These properties are wasting their potential, like most people. Free them when allowed.',
     almostNote:'Collections you nearly have, which is like having them, but worse.',
     foot:'One property per collection at a time. This is the law. Probably.',
-    tBorrow:'Freeload', tLend:'Be generous', tOverview:'The big picture', tBuy:'Spend money',
+    tBorrow:'Freeload', tLend:'Be generous', tOverview:'The big picture', tBuy:'Spend money', tEarn:'The money',
+    earnList:'Your collections, ranked by how much they pay you',
     buyLoading:'Asking the market what it wants…', buyErr:'The prices aren’t here yet. They’re gathered slowly, twice a day, like a polite burglar.',
     buyNote:'The cheapest properties for sale that would finish each collection you’re missing. If you already own a fitting property, we count it, because that would be silly otherwise.',
     buyTotals:'The cost of having everything', sCheap:'Cheapest, naturally',
@@ -154,7 +165,8 @@ Site.register({
     releaseNote:'Estas propiedades desperdician su potencial, como casi todos. Libéralas cuando se pueda.',
     almostNote:'Colecciones que casi tienes, que es como tenerlas, pero peor.',
     foot:'Una propiedad por colección a la vez. Es la ley. Probablemente.',
-    tBorrow:'Gorronear', tLend:'Ser generoso', tOverview:'El panorama', tBuy:'Gastar dinero',
+    tBorrow:'Gorronear', tLend:'Ser generoso', tOverview:'El panorama', tBuy:'Gastar dinero', tEarn:'El dinero',
+    earnList:'Tus colecciones, por lo que te pagan',
     buyLoading:'Preguntándole al mercado qué quiere…', buyErr:'Los precios todavía no llegan. Se juntan despacio, dos veces al día, como un ladrón educado.',
     buyNote:'Las propiedades en venta más baratas que terminarían cada colección que te falta. Si ya tienes una que sirve, la contamos, porque si no sería absurdo.',
     buyTotals:'El costo de tenerlo todo', sCheap:'Lo más barato, naturalmente',
@@ -215,9 +227,10 @@ async function loadGroup(pre, user){
   }));
   return members.filter(Boolean);
 }
-async function loadUser(user, progress){
+async function loadUser(user, progress, auto){
   progress(t('readingProfile', {u:user}), 0);
   const pre = await precomputed(user);
+  if(!pre && auto) throw new Error('auto-skip');   // a remembered name only auto-loads for the group; others wait for the button
   let prof, colls;
   if(pre){ prof = {ids: pre.u.props, active: pre.u.active, collected: pre.u.collected}; colls = pre.colls; }
   else{
@@ -315,7 +328,7 @@ function analyse(D){
     const avg = all.reduce((a, p) => a + p.base, 0) / all.length;
     return {c, have, short, all, potential: avg * c.amount * (c.yield_boost - 1), free};
   }).filter(x => x.short >= 1 && x.short <= 3).sort((a, b) => b.potential - a.potential);
-  return {base, ideal, idealGain:sum(ideal), nowGain:sum(now), almost,
+  return {base, ideal, now, idealGain:sum(ideal), nowGain:sum(now), almost,
     newRewards: ideal.picks.filter(x => status(x.c.id) === 'new').reduce((a, x) => a + (x.c.one_time_reward || 0), 0)};
 }
 // ---------- borrowing ----------
@@ -511,6 +524,33 @@ function buyHtml(){
     <h2 style="margin-top:18px">${esc(t('buyList', {n:view.length}))}</h2>${cards || `<div class="card empty">${esc(t('nothing'))}</div>`}`;
 }
 
+// ---------- earnings: what the properties make, with and without collection boosts ----------
+const earn = {pct: Number(store.get('fl:pct', 14.7)) || 14.7, sort: store.get('fl:earnSort', 'upx')};
+function earnHtml(){
+  const ep = earn.pct, base = A.base, boosted = A.base + A.nowGain, best = A.base + A.idealGain;
+  const cityName = new Map();
+  for(const p of D.props) if(p.c) cityName.set(p.c, p.cn);
+  const row = (label, v) => `<tr><td>${esc(label)}</td><td class="num">${n0(v)}</td><td class="num"><b>${n0(v * ep / 100)}</b></td></tr>`;
+  const picks = A.now.picks.slice();
+  const card = x => collCard({c:x.c, set:x.set, gain:x.gain});
+  let list;
+  if(earn.sort === 'city'){
+    const groups = new Map();
+    for(const x of picks){ const k = x.c.city_id || 0; (groups.get(k) || groups.set(k, []).get(k)).push(x); }
+    list = [...groups].map(([k, xs]) => ({k, xs: xs.sort((a, b) => b.gain - a.gain), gain: xs.reduce((a, x) => a + x.gain, 0)})).sort((a, b) => b.gain - a.gain)
+      .map(g => `<div class="group-h"><h3>${esc(g.k ? (cityName.get(g.k) || t('ovCity', {id:g.k})) : t('ovAnywhere'))}</h3><span class="muted small">${esc(t('perMonth', {x:n0(g.gain)}))} · ${g.xs.length}</span></div>${g.xs.map(card).join('')}`).join('');
+  }else list = picks.sort((a, b) => b.gain - a.gain).map(card).join('');
+  const opt = (v, l, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`;
+  return `<p class="note">${esc(t('earnNote'))}</p>${D.props.length < D.total ? `<p class="note"><b>${esc(t('partial', {n:n0(D.props.length), t:n0(D.total)}))}</b></p>` : ''}
+    <div class="row" style="gap:8px;margin-bottom:10px"><label class="small row" style="gap:6px">${esc(t('earnPct'))} <input type="number" id="earnPct" min="0" max="1000" step="0.01" value="${ep}" style="width:6em"> %</label></div>
+    <div class="tablewrap"><table><thead><tr><th></th><th class="num">${esc(t('earnListed'))}</th><th class="num">${esc(t('earnAfter', {p:ep.toFixed(2)}))}</th></tr></thead><tbody>
+      ${row(t('earnBase'), base)}${row(t('earnNow'), boosted)}${row(t('earnBest'), best)}</tbody></table></div>
+    <p class="note">${esc(t('earnExplain'))}</p>
+    <div class="row" style="gap:8px;margin:14px 0 8px"><h2 style="margin:0;flex:1 1 200px">${esc(t('earnList'))} (${A.now.picks.length})</h2>
+      <select id="earnSort">${opt('upx', t('earnByUpx'), earn.sort)}${opt('city', t('earnByCity'), earn.sort)}</select></div>
+    ${list || `<div class="card empty">${esc(t('nothing'))}</div>`}`;
+}
+
 let ui = {tab: store.get('fl:tab', 'overview')};
 function render(){
   if(!A) return;
@@ -522,11 +562,12 @@ function render(){
   const idealIds = new Set(picks.map(x => x.c.id));
   const release = D.colls.filter(c => D.active.has(c.id) && !idealIds.has(c.id));
   const shownRelease = D.props.length < D.total ? 0 : release.length;   // with partial data, active collections only look unfillable
-  const tabs = [['overview', t('tOverview'), null], ['best', t('tBest'), picks.length], ['changes', t('tChanges'), toActivate.length + shownRelease], ['almost', t('tAlmost'), A.almost.length]];
+  const tabs = [['overview', t('tOverview'), null], ['earn', t('tEarn'), null], ['best', t('tBest'), picks.length], ['changes', t('tChanges'), toActivate.length + shownRelease], ['almost', t('tAlmost'), A.almost.length]];
   tabs.push(['borrow', t('tBorrow'), G ? G.borrow.length : 0], ['lend', t('tLend'), G ? G.lend.length : 0], ['buy', t('tBuy'), null]);
   $('#tabs').innerHTML = tabs.map(([k, l, n]) => `<button data-tab="${k}" class="${ui.tab === k ? 'on' : ''}">${esc(l)}${n == null ? '' : `<span class="n">${n}</span>`}</button>`).join('');
   let html = '';
   if(ui.tab === 'overview') html = overviewHtml();
+  if(ui.tab === 'earn') html = earnHtml();
   if(ui.tab === 'buy'){ ensureBuy(); html = buyHtml(); }
   if(ui.tab === 'best') html = picks.map(x => collCard(x)).join('') || `<div class="card empty">${esc(t('nothing'))}</div>`;
   if(ui.tab === 'changes'){
@@ -564,19 +605,19 @@ function render(){
 // ---------- wiring ----------
 let statusFn = null;
 function setStatus(fn, err){ statusFn = typeof fn === 'function' ? fn : null; const el = $('#status'); el.textContent = statusFn ? statusFn() : (fn || ''); el.classList.toggle('err', !!err); }
-async function run(user){
-  store.set('fl:user', user);
+async function run(user, auto){
+  store.set('fl:user', user); Site.setUser(user);
   $('#loadBtn').disabled = true; $('#progress').classList.remove('hidden');
   const bar = $('#progress i');
   try{
-    D = await loadUser(user, (msg, f) => { setStatus(msg); bar.style.width = Math.round(f * 100) + '%'; });
+    D = await loadUser(user, (msg, f) => { setStatus(msg); bar.style.width = Math.round(f * 100) + '%'; }, auto);
     A = analyse(D);
     G = analyseGroup();
     const at = new Date();
     setStatus(() => t('loaded', {p:n0(D.props.length), c:n0(A.ideal.colls.length), t:at.toLocaleTimeString(Site.locale(), {hour:'2-digit', minute:'2-digit'})})
       + (D.props.length < D.total ? ' ' + t('partial', {n:n0(D.props.length), t:n0(D.total)}) : ''));
     $('#app').classList.remove('hidden'); render();
-  }catch(e){ setStatus(t('errUser', {u:user}), true); }
+  }catch(e){ if(e.message === 'auto-skip') setStatus(t('pressGo', {u:user})); else setStatus(t('errUser', {u:user}), true); }
   $('#loadBtn').disabled = false; $('#progress').classList.add('hidden');
 }
 $('#userForm').addEventListener('submit', e => { e.preventDefault(); const u = $('#username').value.trim(); if(u) run(u); });
@@ -585,6 +626,8 @@ $('#panel').addEventListener('change', e => {
   if(id === 'buyScope'){ bs.scope = e.target.value; store.set('fl:buyScope', bs.scope); }
   else if(id === 'buyRarity') bs.rarity = e.target.value;
   else if(id === 'buySort'){ bs.sort = e.target.value; store.set('fl:buySort', bs.sort); }
+  else if(id === 'earnPct'){ earn.pct = Math.max(0, Number(e.target.value) || 0); store.set('fl:pct', earn.pct); }
+  else if(id === 'earnSort'){ earn.sort = e.target.value; store.set('fl:earnSort', earn.sort); }
   else if(id === 'buyRate'){ bs.rate = Math.max(1, Number(e.target.value) || 1000); store.set('fl:rate', bs.rate); }
   else return;
   render();
@@ -592,8 +635,8 @@ $('#panel').addEventListener('change', e => {
 $('#tabs').addEventListener('click', e => { const b = e.target.closest('button'); if(!b) return; ui.tab = b.dataset.tab; store.set('fl:tab', ui.tab); render(); });
 Site.mount({onChange: () => { if(statusFn) $('#status').textContent = statusFn(); render(); }});
 const params = new URLSearchParams(location.search);
-const start = params.get('user') || store.get('fl:user', '');
-if(start){ $('#username').value = start; if(params.get('user')) run(start); }
+const start = params.get('user') || Site.user() || store.get('fl:user', '');
+if(start){ $('#username').value = start; run(start, !params.get('user')); }
 </script>
 </body>
 </html>

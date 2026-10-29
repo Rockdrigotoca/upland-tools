@@ -103,8 +103,12 @@
     if(e.target.id === 'cunk-toggle'){ cunk = e.target.checked; store.set('rut:cunk', cunk); refresh(true); }
   });
 
+  // One username for every tool: set it once and each tool opens with it already filled in.
+  const user = () => store.get('rut:user', '');
+  const setUser = u => store.set('rut:user', String(u || '').trim());
+
   window.Site = {
-    store, t, esc,
+    store, t, esc, user, setUser,
     lang: () => lang,
     locale: () => lang === 'es' ? 'es-MX' : 'en-US',
     cunk: () => cunk,

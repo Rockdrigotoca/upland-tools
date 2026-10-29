@@ -132,10 +132,46 @@ Site.register({
   }
 });
 
+Site.register({
+  en:{
+    sortCheapUpx:'Cheapest in UPX', sortCheapUsd:'Cheapest in USD', onlyMine:'Only what I’m missing', onlyMineHint:'Open the Ornament Optimizer with your username first, so I know what you’re missing.',
+    mineMissing:'You’re missing {n} for this', missingFor:'Missing for {u}:', colNft:'NFT', viewNft:'NFT',
+    chartUpx:'Cheapest UPX listing, day by day', chartSales:'Sale prices (UPX)', chartLo:'low', chartHi:'high',
+    mineSortWorth:'Most valuable first', mineSortOwned:'Most owned first', mineSortPrice:'Highest price first', mineSortName:'Name'
+  },
+  es:{
+    sortCheapUpx:'Más barato en UPX', sortCheapUsd:'Más barato en USD', onlyMine:'Solo lo que me falta', onlyMineHint:'Abre primero el Optimizador de Ornamentos con tu usuario, para saber qué te falta.',
+    mineMissing:'Te faltan {n} de este', missingFor:'Faltantes de {u}:', colNft:'NFT', viewNft:'NFT',
+    chartUpx:'Listado más barato en UPX, día por día', chartSales:'Precios de venta (UPX)', chartLo:'mín', chartHi:'máx',
+    mineSortWorth:'Más valiosos primero', mineSortOwned:'Más repetidos primero', mineSortPrice:'Precio más alto primero', mineSortName:'Nombre'
+  },
+  en_cunk:{
+    sortCheapUpx:'Cheapest in UPX, naturally', sortCheapUsd:'Cheapest in dollars, even more naturally', onlyMine:'Only the things I lack, which is many', onlyMineHint:'Visit the Ornament Optimizer with your name first, so I can find out what you lack.',
+    mineMissing:'You lack {n} of these', missingFor:'What {u} lacks:', chartUpx:'The cheapest price, day by day, like a diary', chartSales:'What people paid, as a line'
+  },
+  es_cunk:{
+    sortCheapUpx:'Lo más barato en UPX, naturalmente', sortCheapUsd:'Lo más barato en dólares, más naturalmente aún', onlyMine:'Solo lo que me falta, que es mucho', onlyMineHint:'Visita primero el Optimizador de Ornamentos con tu nombre, para averiguar qué te falta.',
+    mineMissing:'Te faltan {n} de estos', missingFor:'Lo que le falta a {u}:', chartUpx:'El precio más bajo, día por día, como un diario', chartSales:'Lo que pagó la gente, en una línea'
+  }
+});
+
 // ---------- data ----------
 let D = null;                 // {state, summary, designs, listings, shops}
 const monthCache = {};
-let ui = {tab: store.get('csk:tab', 'browse'), q:'', season:'all', type:'all', sort:'sold', onlyListed:false, limit:60, open:null};
+let ui = {tab: store.get('csk:tab', 'browse'), q:'', season:'all', type:'all', sort:'sold', onlyListed:false, onlyMine:false, limit:60, open:null};
+// What the player is missing, from the copy the Ornament Optimizer saved in this browser (no calls to Upland).
+function myGaps(){
+  const u = Site.user();
+  if(!u) return null;
+  const c = store.get('uop:data:' + u.toLowerCase(), null);
+  if(!c || !Array.isArray(c.structures)) return null;
+  const need = {}, have = {}, ok = new Set(D.items.map(x => x.d.ty));   // only structure types that have ornaments at all
+  for(const x of c.structures) if(ok.has(x.type)) need[x.type] = (need[x.type] || 0) + 1;
+  for(const o of c.ornaments){ const k = o.season + '|' + o.type; have[k] = (have[k] || 0) + 1; }
+  const gap = (season, type) => Math.max(0, (need[type] || 0) - (have[season + '|' + type] || 0));
+  const bySeason = Object.fromEntries(SEASONS.map(s => [s, Object.keys(need).reduce((a, ty) => a + gap(s, ty), 0)]));
+  return {user:u, gap, bySeason};
+}
 
 async function loadData(){
   const st = await Upland.getJSON('../data/state.json?t=' + Date.now());
@@ -207,12 +243,13 @@ const $ = s => document.querySelector(s);
 
 function filtered(){
   const q = ui.q.trim().toLowerCase();
+  const G = myGaps();
   let list = D.items.filter(x => (!q || x.d.n.toLowerCase().includes(q)) && (ui.season === 'all' || x.d.s === ui.season)
-    && (ui.type === 'all' || x.d.ty === ui.type) && (!ui.onlyListed || x.ls.length));
-  const cheap = x => Math.min(x.cheapUpx ? x.cheapUpx.total : Infinity, x.cheapUsd ? x.cheapUsd.total * 1000 : Infinity);
+    && (ui.type === 'all' || x.d.ty === ui.type) && (!ui.onlyListed || x.ls.length) && (!ui.onlyMine || (G && G.gap(x.d.s, x.d.ty) > 0)));
   const sorts = {
     sold: (a, b) => ((b.s && b.s.uAll[0]) || 0) - ((a.s && a.s.uAll[0]) || 0) || b.ls.length - a.ls.length,
-    cheap: (a, b) => cheap(a) - cheap(b),
+    cheapUpx: (a, b) => (a.cheapUpx ? a.cheapUpx.total : Infinity) - (b.cheapUpx ? b.cheapUpx.total : Infinity),
+    cheapUsd: (a, b) => (a.cheapUsd ? a.cheapUsd.total : Infinity) - (b.cheapUsd ? b.cheapUsd.total : Infinity),
     price: (a, b) => ((b.typical && b.typical.price) || 0) - ((a.typical && a.typical.price) || 0),
     name: (a, b) => a.d.n.localeCompare(b.d.n)
   };
@@ -221,15 +258,17 @@ function filtered(){
 
 function renderBrowse(){
   const types = [...new Set(D.items.map(x => x.d.ty).filter(Boolean))].sort();
-  const list = filtered();
+  const list = filtered(), G = myGaps();
   const opt = (v, l, cur) => `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(l)}</option>`;
   $('#panel').innerHTML = `<div class="controls">
       <input type="search" id="q" class="grow" placeholder="${esc(t('search'))}" value="${esc(ui.q)}">
       <select id="season">${opt('all', t('allSeasons'), ui.season)}${SEASONS.map(s => opt(s, s, ui.season)).join('')}</select>
       <select id="type">${opt('all', t('allTypes'), ui.type)}${types.map(s => opt(s, s, ui.type)).join('')}</select>
-      <select id="sort">${[['sold','sortSold'],['cheap','sortCheap'],['price','sortPrice'],['name','sortName']].map(([v, k]) => opt(v, t(k), ui.sort)).join('')}</select>
+      <select id="sort">${[['sold','sortSold'],['cheapUpx','sortCheapUpx'],['cheapUsd','sortCheapUsd'],['price','sortPrice'],['name','sortName']].map(([v, k]) => opt(v, t(k), ui.sort)).join('')}</select>
       <label class="small row" style="gap:6px"><input type="checkbox" id="onlyListed" ${ui.onlyListed ? 'checked' : ''}>${esc(t('onlyListed'))}</label>
+      <label class="small row" style="gap:6px" title="${G ? '' : esc(t('onlyMineHint'))}"><input type="checkbox" id="onlyMine" ${ui.onlyMine && G ? 'checked' : ''} ${G ? '' : 'disabled'}>${esc(t('onlyMine'))}</label>
     </div>
+    ${G ? `<p class="note"><b>${esc(t('missingFor', {u:G.user}))}</b> ${SEASONS.map(x => `${x} ${G.bySeason[x]}`).join(' · ')}</p>` : `<p class="note">${esc(t('onlyMineHint'))}</p>`}
     <p class="note">${esc(t('results', {n:num(list.length)}))}</p>
     <div id="list">${list.slice(0, ui.limit).map(row).join('')}</div>
     ${list.length > ui.limit ? `<button class="btn" id="more">${esc(t('showMore'))}</button>` : ''}`;
@@ -241,14 +280,35 @@ function row(x){
   const cheapest = [x.cheapUpx && money(x.cheapUpx.total, 'UPX'), x.cheapUsd && money(x.cheapUsd.total, 'USD')].filter(Boolean).join(' · ');
   return `<details class="dz" data-key="${esc(x.k)}"${ui.open === x.k ? ' open' : ''}><summary>
       ${thumb(x.d)}
-      <div class="s2"><div class="nm">${esc(x.d.n)}</div><div class="meta">${pill(x.d.s)} ${esc(x.d.ty || '')}</div></div>
+      <div class="s2"><div class="nm">${esc(x.d.n)}</div><div class="meta">${pill(x.d.s)} ${esc(x.d.ty || '')}${(() => { const G = myGaps(); const n = G ? G.gap(x.d.s, x.d.ty) : 0; return n ? ` · <b>${esc(t('mineMissing', {n}))}</b>` : ''; })()}</div></div>
       <div class="stat s1"><div class="l">${esc(t('typical'))}</div><div class="v">${ty ? money(ty.price, 'UPX') : '–'}</div>
         <div class="l">${ty ? esc(t('salesIn', {n:ty.n, p:t(ty.p)})) : esc(t('typicalNone'))}</div></div>
       <div class="stat s3"><div class="l">${esc(t('cheapest'))}</div><div class="v">${cheapest || '–'}</div>
         <div class="l">${x.ls.length ? esc(t('listedN', {n:x.ls.length})) : esc(t('noneListed'))}</div></div>
     </summary><div class="body" id="body-${cssId(x.k)}"></div></details>`;
 }
+const nftLink = id => `<a target="_blank" rel="noopener" href="https://play.upland.me/nft/structure-ornaments/${esc(id)}">${esc(t('viewNft'))} ↗</a>`;
 const cssId = k => k.replace(/[^a-z0-9]/gi, '_');
+
+const histCache = {};
+async function histFor(){
+  const out = [];
+  for(const m of (D.state.histMonths || [])){
+    histCache[m] = histCache[m] || Upland.getJSON(`../data/history/${m}.json?v=${D.v}`).then(x => x.rows).catch(() => []);
+    out.push(...await histCache[m]);
+  }
+  return out;
+}
+// A small line chart; shown once there are at least 3 points.
+function chart(points, fmt){
+  if(points.length < 3) return '';
+  const W = 320, H = 72, P = 5, xs = points.map(p => p.x), ys = points.map(p => p.y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const sx = x => P + (W - 2 * P) * (x1 === x0 ? .5 : (x - x0) / (x1 - x0)), sy = y => H - P - (H - 2 * P) * (y1 === y0 ? .5 : (y - y0) / (y1 - y0));
+  const d = points.map((p, i) => (i ? 'L' : 'M') + sx(p.x).toFixed(1) + ' ' + sy(p.y).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" class="chart" role="img"><path d="${d}" fill="none" style="stroke:var(--accent)" stroke-width="2"/>${points.map(p => `<circle cx="${sx(p.x).toFixed(1)}" cy="${sy(p.y).toFixed(1)}" r="2.5" style="fill:var(--accent)"/>`).join('')}</svg>
+    <div class="small muted">${esc(t('chartLo'))} ${fmt(y0)} · ${esc(t('chartHi'))} ${fmt(y1)}</div>`;
+}
 
 async function openDetail(key){
   const x = D.items.find(i => i.k === key);
@@ -256,13 +316,16 @@ async function openDetail(key){
   if(!x || !el) return;
   el.innerHTML = `<div class="muted small">${esc(t('loading'))}</div>`;
   const sales = await salesFor(key, 30);
+  const hist = (await histFor()).filter(r => r[1] === key && r[2] != null).map(r => ({x:Date.parse(r[0] + 'T12:00:00Z'), y:r[2]}));
+  const sp = (await salesFor(key, 120)).filter(r => r[4] === 'UPX' && r[5] > 2).map(r => ({x:r[0] * 1000, y:r[5]})).sort((a, b) => a.x - b.x);
+  const charts = [chart(hist, v => num(v) + ' UPX') && `<h3>${esc(t('chartUpx'))}</h3>${chart(hist, v => num(v) + ' UPX')}`, chart(sp, v => num(v) + ' UPX') && `<h3>${esc(t('chartSales'))}</h3>${chart(sp, v => num(v) + ' UPX')}`].filter(Boolean).join('');
   const low = x.s && x.s.lowMint ? `<p class="note">${esc(t('lowMint', {x:num(x.s.lowMint)}))}</p>` : '';
   const lrows = x.ls.slice(0, 40).map(r => { const [n, w] = shopCell(r.shop);
-    return `<tr><td class="num">#${esc(r.mint)}</td><td class="num">${money(r.total, r.cur)}</td><td>${n}</td><td>${w}</td><td>${esc(r.seller || '')}</td></tr>`; }).join('');
+    return `<tr><td class="num">#${esc(r.mint)}</td><td class="num">${money(r.total, r.cur)}</td><td>${n}</td><td>${w}</td><td>${esc(r.seller || '')}</td><td>${nftLink(r.nft)}</td></tr>`; }).join('');
   const srows = sales.map(r => { const junk = r[4] === 'UPX' && r[5] <= 2; const [n] = r[11] ? shopCell(r[11]) : [''];
-    return `<tr class="${junk ? 'junk' : ''}" title="${junk ? esc(t('giveaway')) : ''}"><td>${esc(ago(r[0]))}</td><td class="num">#${esc(r[3])}</td><td class="num">${money(r[5], r[4])}</td><td>${esc(r[8] || '')}</td><td>${esc(r[9] || '')}</td><td>${n}</td></tr>`; }).join('');
-  el.innerHTML = `${low}<h3>${esc(t('listingsH'))}</h3>${lrows ? `<div class="tablewrap"><table><thead><tr><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colShop'))}</th><th>${esc(t('colWhere'))}</th><th>${esc(t('colSeller'))}</th></tr></thead><tbody>${lrows}</tbody></table></div>` : `<p class="note">${esc(t('noListings'))}</p>`}
-    <h3>${esc(t('salesH'))}</h3>${srows ? `<div class="tablewrap"><table><thead><tr><th>${esc(t('colWhen'))}</th><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colSeller'))}</th><th>${esc(t('colBuyer'))}</th><th>${esc(t('colShop'))}</th></tr></thead><tbody>${srows}</tbody></table></div>` : `<p class="note">${esc(t('noSales'))}</p>`}
+    return `<tr class="${junk ? 'junk' : ''}" title="${junk ? esc(t('giveaway')) : ''}"><td>${esc(ago(r[0]))}</td><td class="num">#${esc(r[3])}</td><td class="num">${money(r[5], r[4])}</td><td>${esc(r[8] || '')}</td><td>${esc(r[9] || '')}</td><td>${n}</td><td>${nftLink(r[1])}</td></tr>`; }).join('');
+  el.innerHTML = `${low}${charts}<h3>${esc(t('listingsH'))}</h3>${lrows ? `<div class="tablewrap"><table><thead><tr><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colShop'))}</th><th>${esc(t('colWhere'))}</th><th>${esc(t('colSeller'))}</th><th></th></tr></thead><tbody>${lrows}</tbody></table></div>` : `<p class="note">${esc(t('noListings'))}</p>`}
+    <h3>${esc(t('salesH'))}</h3>${srows ? `<div class="tablewrap"><table><thead><tr><th>${esc(t('colWhen'))}</th><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colSeller'))}</th><th>${esc(t('colBuyer'))}</th><th>${esc(t('colShop'))}</th><th></th></tr></thead><tbody>${srows}</tbody></table></div>` : `<p class="note">${esc(t('noSales'))}</p>`}
     ${sales.some(r => r[4] === 'USD') ? `<p class="note">${esc(t('usdNote'))}</p>` : ''}`;
 }
 
@@ -271,13 +334,18 @@ async function renderSales(){
   const sales = await salesFor(null, 120);
   if(ui.tab !== 'sales') return;
   const designs = new Map(D.items.map(x => [x.k, x.d]));
-  $('#panel').innerHTML = `<div class="tablewrap"><table><thead><tr><th>${esc(t('colWhen'))}</th><th>${esc(t('colOrnament'))}</th><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colSeller'))}</th><th>${esc(t('colBuyer'))}</th><th>${esc(t('colShop'))}</th></tr></thead><tbody>
+  $('#panel').innerHTML = `<div class="tablewrap"><table><thead><tr><th>${esc(t('colWhen'))}</th><th>${esc(t('colOrnament'))}</th><th class="num">${esc(t('colMint'))}</th><th class="num">${esc(t('colPrice'))}</th><th>${esc(t('colSeller'))}</th><th>${esc(t('colBuyer'))}</th><th>${esc(t('colShop'))}</th><th></th></tr></thead><tbody>
     ${sales.map(r => { const d = designs.get(r[2]) || {n:r[2]}; const junk = r[4] === 'UPX' && r[5] <= 2; const [n] = r[11] ? shopCell(r[11]) : [''];
-      return `<tr class="${junk ? 'junk' : ''}" title="${junk ? esc(t('giveaway')) : ''}"><td>${esc(ago(r[0]))}</td><td>${pill(d.s)} ${esc(d.n)} <span class="muted">${esc(d.ty || '')}</span></td><td class="num">#${esc(r[3])}</td><td class="num">${money(r[5], r[4])}</td><td>${esc(r[8] || '')}</td><td>${esc(r[9] || '')}</td><td>${n}</td></tr>`; }).join('')}
+      return `<tr class="${junk ? 'junk' : ''}" title="${junk ? esc(t('giveaway')) : ''}"><td>${esc(ago(r[0]))}</td><td>${pill(d.s)} ${esc(d.n)} <span class="muted">${esc(d.ty || '')}</span></td><td class="num">#${esc(r[3])}</td><td class="num">${money(r[5], r[4])}</td><td>${esc(r[8] || '')}</td><td>${esc(r[9] || '')}</td><td>${n}</td><td>${nftLink(r[1])}</td></tr>`; }).join('')}
     </tbody></table></div><p class="note">${esc(t('usdNote'))}</p>`;
 }
 
-let mine = {user: store.get('csk:user', ''), rows: null, err: null, busy: false};
+let mine = {user: Site.user() || store.get('csk:user', ''), rows: null, err: null, busy: false, sort: 'worth', season: 'all'};
+function mineView(){
+  const tp = r => (r.x && r.x.typical && r.x.typical.price) || 0;
+  const sorts = {worth:(a, b) => b.n * tp(b) - a.n * tp(a), owned:(a, b) => b.n - a.n, price:(a, b) => tp(b) - tp(a), name:(a, b) => a.name.localeCompare(b.name)};
+  return mine.rows.filter(r => mine.season === 'all' || r.season === mine.season).sort(sorts[mine.sort] || sorts.worth);
+}
 function renderMine(){
   let html = `<p class="note">${esc(t('mineNote'))}</p>
     <form class="row" id="mineForm" style="margin-bottom:12px"><input type="text" id="mineUser" class="grow" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(t('userPh'))}" value="${esc(mine.user)}">
@@ -289,8 +357,11 @@ function renderMine(){
     const count = priced.reduce((a, r) => a + r.n, 0), noPrice = mine.rows.filter(r => !(r.x && r.x.typical)).reduce((a, r) => a + r.n, 0);
     html += `<div class="banner" style="--c:var(--accent)"><b>${esc(t('mineTotal', {x:num(total), n:num(count)}))}</b>${noPrice ? ` ${esc(t('mineNoPrice', {n:num(noPrice)}))}` : ''}</div>
       <p class="note">${esc(t('suggest'))}: ${esc(t('suggestHow'))}</p>
+      <div class="controls row" style="margin-bottom:8px;gap:8px">
+        <select id="mineSeason"><option value="all">${esc(t('allSeasons'))}</option>${SEASONS.map(x => `<option value="${x}"${mine.season === x ? ' selected' : ''}>${x}</option>`).join('')}</select>
+        <select id="mineSort">${[['worth','mineSortWorth'],['owned','mineSortOwned'],['price','mineSortPrice'],['name','mineSortName']].map(([v, k]) => `<option value="${v}"${mine.sort === v ? ' selected' : ''}>${esc(t(k))}</option>`).join('')}</select></div>
       <div class="tablewrap"><table><thead><tr><th>${esc(t('colOrnament'))}</th><th class="num">${esc(t('owned'))}</th><th class="num">${esc(t('typical'))}</th><th class="num">${esc(t('cheapest'))}</th><th class="num">${esc(t('suggest'))}</th></tr></thead><tbody>
-      ${mine.rows.map(r => { const x = r.x; const ty = x && x.typical; const cu = x && x.cheapUpx;
+      ${mineView().map(r => { const x = r.x; const ty = x && x.typical; const cu = x && x.cheapUpx;
         const sug = ty ? (cu && cu.total < ty.price ? cu.total * 0.99 : ty.price) : (cu ? cu.total * 0.99 : null);
         return `<tr><td>${pill(r.season)} ${esc(r.name)} <span class="muted">${esc(r.type || '')}</span></td><td class="num">${r.n}</td>
           <td class="num">${ty ? money(ty.price, 'UPX') : '–'}</td><td class="num">${[cu && money(cu.total, 'UPX'), x && x.cheapUsd && money(x.cheapUsd.total, 'USD')].filter(Boolean).join('<br>') || '–'}</td>
@@ -300,17 +371,20 @@ function renderMine(){
   $('#panel').innerHTML = html;
 }
 async function priceMine(user){
-  mine = {user, rows:null, err:null, busy:true}; store.set('csk:user', user); renderMine();
+  mine = {...mine, user, rows:null, err:null, busy:true}; store.set('csk:user', user); Site.setUser(user); renderMine();
   try{
-    const orn = (await Upland.ornaments(user)).filter(o => o.category === 'structornmt');
+    // Use the copy the Ornament Optimizer saved, if there is one; otherwise ask Upland once.
+    const saved = store.get('uop:data:' + user.toLowerCase(), null);
+    const orn = saved && Array.isArray(saved.ornaments) ? saved.ornaments.map(o => ({name:o.name, type:o.type}))
+      : (await Upland.ornaments(user)).filter(o => o.category === 'structornmt').map(o => ({name:(o.metadata || {}).displayName, type:(o.metadata || {}).subtitle}));
     const byKey = new Map(D.items.map(x => [x.k, x]));
     const groups = new Map();
     for(const o of orn){
-      const md = o.metadata || {}, k = `${md.displayName} | ${md.subtitle}`;
-      const g = groups.get(k) || {k, name:md.displayName, type:md.subtitle, n:0, x:byKey.get(k), season:(byKey.get(k) || {d:{}}).d.s};
+      const k = `${o.name} | ${o.type}`;
+      const g = groups.get(k) || {k, name:o.name, type:o.type, n:0, x:byKey.get(k), season:(byKey.get(k) || {d:{}}).d.s};
       g.n++; groups.set(k, g);
     }
-    mine.rows = [...groups.values()].sort((a, b) => b.n * ((b.x && b.x.typical && b.x.typical.price) || 0) - a.n * ((a.x && a.x.typical && a.x.typical.price) || 0));
+    mine.rows = [...groups.values()];
   }catch(e){ mine.err = t('errUser', {u:user}); }
   mine.busy = false; if(ui.tab === 'mine') renderMine();
 }
@@ -324,6 +398,9 @@ $('#panel').addEventListener('change', e => {
   const id = e.target.id;
   if(['season', 'type', 'sort'].includes(id)){ ui[id] = e.target.value; ui.limit = 60; renderBrowse(); }
   if(id === 'onlyListed'){ ui.onlyListed = e.target.checked; ui.limit = 60; renderBrowse(); }
+  if(id === 'onlyMine'){ ui.onlyMine = e.target.checked; ui.limit = 60; renderBrowse(); }
+  if(id === 'mineSeason'){ mine.season = e.target.value; renderMine(); }
+  if(id === 'mineSort'){ mine.sort = e.target.value; renderMine(); }
 });
 $('#panel').addEventListener('click', e => { if(e.target.id === 'more'){ ui.limit += 60; renderBrowse(); } });
 $('#panel').addEventListener('toggle', e => {
@@ -337,6 +414,7 @@ const params = new URLSearchParams(location.search);
 loadData().then(() => {
   if(params.get('user')){ ui.tab = 'mine'; render(); priceMine(params.get('user')); }
   else if(params.get('q')){ ui.tab = 'browse'; ui.q = params.get('q'); render(); }
+  else if(ui.tab === 'mine' && mine.user){ render(); priceMine(mine.user); }   // remembered username: show the results right away
   else render();
 }).catch(() => { $('#panel').innerHTML = `<div class="card empty">${esc(t('errLoad'))}</div>`; });
 </script>

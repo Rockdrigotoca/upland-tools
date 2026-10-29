@@ -9,6 +9,8 @@
 <style>
 .cell{width:calc(22px * var(--text-scale,1));height:calc(22px * var(--text-scale,1))}
 .thumb{width:calc(44px * var(--text-scale,1));height:calc(44px * var(--text-scale,1))}
+.sz.focus{box-shadow:0 0 0 2px var(--c)}
+td.focus,th.focus{background:var(--surface-2)}
 .item{grid-template-columns:calc(44px * var(--text-scale,1)) 1fr auto}
 @media (max-width:560px){.item{grid-template-columns:calc(36px * var(--text-scale,1)) 1fr}.thumb{width:calc(36px * var(--text-scale,1));height:calc(36px * var(--text-scale,1))}}
 </style>
@@ -63,7 +65,7 @@ const ORN_TYPES = ['Micro House','Small Town House','Small Town House v2','Town 
 const T = {
   en:{
     title:'Rockdrigo’s Ornament Optimizer', subtitle:'Upland structure ornaments, one per season on every structure',
-    userPh:'Upland username', load:'Load', refresh:'Refresh', loading:'Loading…',
+    userPh:'Upland username', load:'Load', refresh:'Re-sync', loading:'Loading…',
     fetchOrn:'Reading ornaments…', fetchStr:'Reading structures…', fetchProps:'Checking {n} properties without listed structures…', fetchSeasons:'Looking up seasons for {n} designs…',
     loaded:'Loaded {o} ornaments and {s} structures for {u} · {t}', loadedFiles:'Loaded {o} ornaments and {s} structures from your files · {t}', since:'Since last refresh: {d} more slots set up.',
     errUser:'Could not load data for “{u}”. Check the username, or try again in a minute.', errNet:'Upland did not answer ({e}). Try again, or use the CSV files below.',
@@ -95,7 +97,7 @@ const T = {
   },
   es:{
     title:'Optimizador de Ornamentos de Rockdrigo', subtitle:'Ornamentos de estructuras en Upland, uno por temporada en cada estructura',
-    userPh:'Usuario de Upland', load:'Cargar', refresh:'Actualizar', loading:'Cargando…',
+    userPh:'Usuario de Upland', load:'Cargar', refresh:'Resincronizar', loading:'Cargando…',
     fetchOrn:'Leyendo ornamentos…', fetchStr:'Leyendo estructuras…', fetchProps:'Revisando {n} propiedades sin estructuras listadas…', fetchSeasons:'Buscando temporadas de {n} diseños…',
     loaded:'{o} ornamentos y {s} estructuras de {u} · {t}', loadedFiles:'{o} ornamentos y {s} estructuras desde tus archivos · {t}', since:'Desde la última actualización: {d} espacios más listos.',
     errUser:'No se pudieron cargar los datos de “{u}”. Revisa el usuario o intenta en un minuto.', errNet:'Upland no respondió ({e}). Intenta de nuevo o usa los archivos CSV de abajo.',
@@ -193,6 +195,13 @@ const T = {
 Site.register(T);
 Site.register({
   en:{
+    fKpiReady:'{s}: structures ready now', fKpiAfter:'{s}: ready after the moves', fKpiMoves:'{s}: moves to make', fKpiMissing:'{s}: still without an ornament',
+    offSeasonWarn:'Heads up: {s} runs {d}. In the game, apply {s} ornaments only during that season, or in the swap window right before it. Until then, just have them waiting on each property.',
+    planLaterNote:'Other seasons: move these now so the ornaments are already on each structure, but don’t apply them in the game until that season (or its swap window).',
+    pileLater:'Other seasons: you can move them now so they’re ready, but you don’t need to apply them yet.', applyLater:'Apply in {s}, not before', forFocus:'{n} for {s}',
+    missingByType:'Missing ornaments by structure type', missingByCity:'Missing ornaments by city', missingNote:'Structures that still have no ornament for that season, even after every move. Your focus season is shaded.', colTypeShort:'Structure type', total:'Total',
+    savedAt:'Saved copy from {d}. Nothing was asked from Upland; press Re-sync after you change things in the game.', fresh:'Read from Upland {d}.', metaExcluded:'{n} structures host a shop (metaventure) and can’t be dressed, so they’re left out.',
+    ventureCheck:'Checking which structures host a shop… {n} left',
     shopTitle:'What it costs to fill the gaps', shopNote:'Cheapest ornaments listed right now in ornament and variety shops, leaving out your own listings. UPX and USD are priced separately.',
     pricesLoading:'Checking prices…', pricesErr:'Prices are unavailable right now.', pricesAt:'Prices from {t}.',
     colNeed:'Missing', colUpx:'Cheapest in UPX', colUsd:'Cheapest in USD', forMofN:'for {m} of {n}', noneForSale:'none for sale', allSeasons:'All seasons',
@@ -200,6 +209,13 @@ Site.register({
     extrasValue:'Your extras usually sell for about {x} in total ({n} of them have sales history).', usually:'usually sells for {x}', cheapestNow:'cheapest listed {x}'
   },
   es:{
+    fKpiReady:'{s}: estructuras listas ahora', fKpiAfter:'{s}: listas tras mover', fKpiMoves:'{s}: movimientos', fKpiMissing:'{s}: aún sin ornamento',
+    offSeasonWarn:'Ojo: {s} va {d}. En el juego, aplica ornamentos de {s} solo durante esa temporada, o en la ventana de cambio justo antes. Mientras, déjalos esperando en cada propiedad.',
+    planLaterNote:'Otras temporadas: muévelos ya para que los ornamentos estén en cada estructura, pero no los apliques en el juego hasta esa temporada (o su ventana de cambio).',
+    pileLater:'Otras temporadas: puedes moverlos ya para tenerlos listos, pero todavía no hace falta aplicarlos.', applyLater:'Aplicar en {s}, no antes', forFocus:'{n} para {s}',
+    missingByType:'Ornamentos que faltan por tipo de estructura', missingByCity:'Ornamentos que faltan por ciudad', missingNote:'Estructuras que aún no tienen ornamento para esa temporada, incluso tras todos los movimientos. Tu temporada en foco está sombreada.', colTypeShort:'Tipo de estructura', total:'Total',
+    savedAt:'Copia guardada de {d}. No se le pidió nada a Upland; presiona Resincronizar cuando cambies algo en el juego.', fresh:'Leído de Upland {d}.', metaExcluded:'{n} estructuras tienen una tienda (metaventure) y no se pueden decorar, así que se dejaron fuera.',
+    ventureCheck:'Revisando qué estructuras tienen tienda… faltan {n}',
     shopTitle:'Cuánto cuesta llenar los huecos', shopNote:'Los ornamentos más baratos en venta ahora en tiendas de ornamentos y variedades, sin contar los tuyos. UPX y USD van por separado.',
     pricesLoading:'Revisando precios…', pricesErr:'Los precios no están disponibles ahora.', pricesAt:'Precios de {t}.',
     colNeed:'Faltan', colUpx:'Más barato en UPX', colUsd:'Más barato en USD', forMofN:'por {m} de {n}', noneForSale:'nada en venta', allSeasons:'Todas las temporadas',
@@ -207,11 +223,15 @@ Site.register({
     extrasValue:'Tus ornamentos de sobra suelen venderse en unos {x} en total ({n} tienen historial de ventas).', usually:'suele venderse en {x}', cheapestNow:'lo más barato listado {x}'
   },
   en_cunk:{
+    offSeasonWarn:'A word of caution: {s} runs {d}. Putting {s} ornaments on houses outside that time is like wearing a Christmas jumper in July. Have them ready; don’t apply them yet.',
+    savedAt:'A saved copy from {d}, so Upland wasn’t bothered. Press Re-sync once you’ve changed things in the game, which you will.',
     shopTitle:'The cost of completeness', shopNote:'The cheapest ornaments for sale right now, excluding your own, because buying from yourself is just moving money around. UPX and dollars are kept apart, like oil and water.',
     pricesLoading:'Asking the market…', noneForSale:'nobody is selling', fillCard:'Completion costs: {x}', buyList:'The bargains', inCheapskate:'Consult the Cheapskate',
     extrasValue:'Your unwanted ornaments are worth about {x} ({n} have been sold before, so we know).'
   },
   es_cunk:{
+    offSeasonWarn:'Una advertencia: {s} va {d}. Ponerle ornamentos de {s} a las casas fuera de esas fechas es como usar suéter navideño en julio. Déjalos listos; no los apliques todavía.',
+    savedAt:'Una copia guardada de {d}, así que no molestamos a Upland. Presiona Resincronizar cuando cambies algo en el juego, que lo harás.',
     shopTitle:'El precio de estar completo', shopNote:'Los ornamentos más baratos en venta ahora, sin los tuyos, porque comprarte a ti mismo es solo mover dinero de lugar. UPX y dólares van separados, como el agua y el aceite.',
     pricesLoading:'Preguntándole al mercado…', noneForSale:'nadie lo vende', fillCard:'Completar cuesta: {x}', buyList:'Las gangas', inCheapskate:'Consultar al Codo',
     extrasValue:'Tus ornamentos que nadie quiere valen unos {x} ({n} ya se han vendido antes, así que sabemos).'
@@ -243,6 +263,10 @@ function seasonInfo(now = today()){
   return {active: act ? act.s : null, end: act && act.end, next: next.s, nextStart: next.start, target: act ? act.s : next.s, now};
 }
 const days = (a, b) => Math.round((b - a) / 864e5);
+// The season to work on: the active one, or the next one during a swap window.
+const focus = () => seasonInfo().target;
+const rangeText = s => { const [m1, d1, m2, d2] = SEASON_DATES[s], f = (m, d) => new Date(2001, m - 1, d).toLocaleDateString(Site.locale(), {month:'short', day:'numeric'}); return f(m1, d1) + ' – ' + f(m2, d2); };
+const orderSeasons = () => { const F = focus(); return [F, ...SEASONS.filter(x => x !== F)]; };
 
 function seasonFromName(name, rarity){
   const n = (name || '').toLowerCase();
@@ -263,6 +287,49 @@ function structType(name, img){
 }
 
 // ---------- live loading ----------
+const wait = ms => new Promise(r => setTimeout(r, ms));
+// Types that can host a metaventure shop (Upland marks such a building with pinType "venture").
+const VENTURE_CHECK = new Set(['Apartment Building', 'Town House', 'Luxury Ranch House', 'Small Town House', 'Small Town House v2', 'Ranch House', 'Tokyo Unique Structure 1 - Town House']);
+const ventFresh = v => v && Date.now() - v[1] < 30 * 864e5;
+// Drop structures already known (from an earlier check, remembered 30 days) to host a shop.
+function applyVentureCache(structures){
+  const cache = store.get('uop:vent', {});
+  const keep = structures.filter(x => !(ventFresh(cache[x.id]) && cache[x.id][0]));
+  return {structures: keep, excluded: structures.length - keep.length};
+}
+// Check the remaining shop-capable structures one property at a time in the background, so the plan shows first;
+// the plan updates whenever a shop turns up.
+let ventToken = 0, ventLeft = 0;
+async function refineVentures(D){
+  const my = ++ventToken;
+  const cache = store.get('uop:vent', {});
+  const todo = [...new Set(D.structures.filter(x => VENTURE_CHECK.has(x.type) && !ventFresh(cache[x.id])).map(x => x.propId))];
+  ventLeft = todo.length;
+  const paint = () => { if(statusFn) $('#status').textContent = statusFn(); };
+  let changed = false;
+  for(const pid of todo){
+    if(my !== ventToken) return;
+    paint();
+    await wait(1100);
+    let p = null;
+    try{ p = await getJSON(`${API}/api/properties/${pid}`); }
+    catch(e){ if(e.status !== 404){ await wait(20000); try{ p = await getJSON(`${API}/api/properties/${pid}`); }catch{} } }
+    ventLeft--;
+    if(!p) continue;
+    let hit = false;
+    for(const b of (p.buildings || [])){
+      cache['s' + b.nftID] = [b.pinType ? 1 : 0, Date.now()];
+      if(b.pinType){ const i = D.structures.findIndex(x => x.id === 's' + b.nftID); if(i >= 0){ D.structures.splice(i, 1); D.ventures = (D.ventures || 0) + 1; hit = true; } }
+    }
+    store.set('uop:vent', cache);
+    if(hit){ changed = true; PLAN = buildPlan(D); FILL = null; render(); if(D.live) saveCache(D); }
+  }
+  if(my !== ventToken) return;
+  ventLeft = 0;
+  if(changed) paint(); else paint();
+  if(D.live) saveCache(D);
+}
+
 async function loadLive(user){
   setStatus(t('fetchOrn'));
   const rawOrn = await getJSON(`${API}/nft/assets/v2/decorations/${encodeURIComponent(user)}`);
@@ -299,6 +366,10 @@ async function loadLive(user){
       }
     });
   }
+  // Structures that host a shop (metaventure) can't be dressed. Only the types that can host one are checked,
+  // one property at a time, and the answer is remembered for 30 days.
+  const vent = applyVentureCache(structures);
+  structures.splice(0, structures.length, ...vent.structures);
   // City names: prefer the game's map city from structures/properties over the ornament's neighborhood city.
   for(const o of ornaments){ const p = props.get(o.propId); if(p && p.city) o.city = p.city; }
 
@@ -313,7 +384,7 @@ async function loadLive(user){
   }
   for(const o of ornaments) o.season = CATALOG.byId[o.designId] || cache[o.designId] || seasonFromName(o.name, o.rarity);
 
-  return {user, live:true, ornaments, structures};
+  return {user, live:true, ornaments, structures, ventures:vent.excluded};
 }
 
 // ---------- CSV / XLSX loading ----------
@@ -463,7 +534,7 @@ function buildPlan(D){
 
 // ---------- rendering ----------
 let DATA = null, PLAN = null;
-let ui = {tab: store.get('uop:tab', 'now'), nowSeason: null, planSeason: 'all', q: '', onlyGaps: true, showDone: false};
+let ui = {tab: store.get('uop:tab', 'now'), nowSeason: null, planSeason: null, q: '', onlyGaps: true, showDone: false};
 const opened = new Set(store.get('uop:opened', []));
 const moveLink = (o, s) => typeof o.id === 'number'
   ? `https://play.upland.me/property-development-v2/${s.propId}/outdoor-decor/${o.id}`
@@ -484,20 +555,21 @@ function onSiteChange(){
 function render(){
   const P = PLAN;
   const pct = (a, b) => b ? Math.round(a * 100 / b) + '%' : '–';
+  const F = focus(), pf = P.per[F];
   $('#kpis').innerHTML = [
     [P.rows.length, t('kStructs')],
     [DATA.ornaments.length, t('kOrn')],
-    [pct(P.inPlace, P.total), t('kInPlace') + ' · ' + t('ofSlots', {a:P.inPlace, b:P.total})],
-    [pct(P.after, P.total), t('kAfter') + ' · ' + t('ofSlots', {a:P.after, b:P.total})],
-    [P.moves.length, t('kMoves')],
-    [P.extras.length, t('kExtra')]
+    [`${pf.inPlace} / ${P.rows.length}`, t('fKpiReady', {s:F})],
+    [`${pf.inPlace + pf.move} / ${P.rows.length}`, t('fKpiAfter', {s:F})],
+    [pf.move, t('fKpiMoves', {s:F})],
+    [pf.missing, t('fKpiMissing', {s:F})]
   ].map(([v, l]) => `<div class="kpi"><div class="v">${esc(v)}</div><div class="l">${esc(l)}</div></div>`).join('');
 
   const si = seasonInfo();
   $('#seasonCards').innerHTML = SEASONS.map(s => {
     const p = P.per[s], n = P.rows.length || 1;
     const tag = s === si.active ? t('active', {s:''}).trim() : (s === si.next && !si.active ? t('windowNow') : '');
-    return `<div class="sz" style="--c:var(--${s})"><div class="name">${s}<span>${esc(tag)}</span></div>
+    return `<div class="sz${s === F ? ' focus' : ''}" style="--c:var(--${s})"><div class="name">${s}<span>${esc(tag)}</span></div>
       <div class="bar"><i class="a" style="width:${p.inPlace * 100 / n}%"></i><i class="b" style="width:${p.move * 100 / n}%"></i></div>
       <div class="nums">${p.inPlace} ${esc(t('nIn'))} · ${p.move} ${esc(t('nMv'))} · <span class="${p.missing ? 'short' : ''}">${p.missing} ${esc(t('nNo'))}</span></div>
       ${p.missing && fillCosts() ? `<div class="nums">${esc(t('fillCard', {x:fillText(FILL[s])}))}</div>` : ''}</div>`;
@@ -510,7 +582,7 @@ function render(){
 }
 
 function seasonChips(cur, withAll){
-  const list = (withAll ? ['all'] : []).concat(SEASONS);
+  const list = (withAll ? ['all'] : []).concat(orderSeasons());
   return `<div class="chips">${list.map(s => `<button class="chip${cur === s ? ' on' : ''}" data-season="${s}" style="${s === 'all' ? '' : `--c:var(--${s})`}">${s === 'all' ? esc(t('all')) : `<span class="dot"></span>${s}`}</button>`).join('')}</div>`;
 }
 
@@ -539,7 +611,8 @@ function renderNow(){
   };
   const sect = (key, label, arr) => arr.length ? `<div class="group-h"><h3>${esc(label)}</h3><span class="muted small">${arr.length}</span></div><div class="list">${arr.map(line).join('')}</div>` : '';
   let html = `<div class="banner" style="--c:var(--${si.target})">${banner}</div>
-    <div class="row small muted" style="margin-bottom:6px">${esc(t('pickSeason'))}</div>${seasonChips(S)}`;
+    <div class="row small muted" style="margin-bottom:6px">${esc(t('pickSeason'))}</div>${seasonChips(S)}
+    ${S !== si.target ? `<div class="banner" style="--c:var(--warn)">${esc(t('offSeasonWarn', {s:S, d:rangeText(S)}))}</div>` : ''}`;
   const todo = groups.apply.length + groups.move.length;
   if(!todo && !groups.missing.length) html += `<div class="card empty">${esc(t('allDone', {s:S}))}</div>`;
   html += sect('apply', t('stApply'), groups.apply) + sect('move', t('stMove'), groups.move) + sect('missing', t('stMissing'), groups.missing);
@@ -551,13 +624,16 @@ function renderNow(){
 }
 
 function renderPlan(){
-  const P = PLAN, S = ui.planSeason;
+  const P = PLAN, F = focus(), S = ui.planSeason || F;
   const list = P.moves.filter(m => S === 'all' || m.season === S);
   let html = `<p class="note">${esc(t('planNote'))}</p>${seasonChips(S, true)}`;
+  if(S !== 'all' && S !== F) html += `<div class="banner" style="--c:var(--warn)">${esc(t('planLaterNote'))}</div>`;
   if(!list.length) html += `<div class="card empty">${esc(t('noMoves'))}</div>`;
-  for(const season of SEASONS){
+  let noted = false;
+  for(const season of orderSeasons()){
     const ms = list.filter(m => m.season === season);
     if(!ms.length) continue;
+    if(season !== F && S === 'all' && !noted){ noted = true; html += `<div class="banner" style="--c:var(--warn)">${esc(t('planLaterNote'))}</div>`; }
     html += `<div class="group-h"><h3>${pill(season)} </h3><span class="muted small">${ms.length}</span></div><div class="list">` + ms.map(m => {
       const op = opened.has(String(m.o.id)) ? ' opened' : '';
       return `<div class="item${op}">${thumb(m.o)}<div><div class="t">${esc(m.o.name)} <span class="muted">#${esc(m.o.mint)}</span></div>
@@ -595,6 +671,20 @@ function renderStructs(){
     <tbody>${rows.map(r => `<tr><td>${esc(r.s.address)}</td><td>${esc(r.s.city || '')}</td><td>${esc(r.s.type)}</td>${SEASONS.map(s => cell(r, s)).join('')}</tr>`).join('') || `<tr><td colspan="9" class="empty">–</td></tr>`}</tbody></table></div>`;
 }
 
+function missingTables(){
+  const F = focus();
+  const tbl = (keyFn, head) => {
+    const rows = [...groupBy(PLAN.rows, keyFn)].map(([k, rs]) => ({k, n:rs.length, miss:Object.fromEntries(SEASONS.map(x => [x, rs.filter(r => r.cells[x].state === 'no').length]))}))
+      .sort((a, b) => b.miss[F] - a.miss[F] || b.n - a.n);
+    const tot = Object.fromEntries(SEASONS.map(x => [x, rows.reduce((a, r) => a + r.miss[x], 0)]));
+    return `<div class="tablewrap"><table><thead><tr><th>${esc(head)}</th><th class="num">#</th>${orderSeasons().map(x => `<th class="num${x === F ? ' focus' : ''}">${pill(x)}</th>`).join('')}</tr></thead><tbody>
+      ${rows.map(r => `<tr><td>${esc(r.k || '–')}</td><td class="num">${r.n}</td>${orderSeasons().map(x => `<td class="num ${r.miss[x] ? 'short' : 'okc'}${x === F ? ' focus' : ''}">${r.miss[x]}</td>`).join('')}</tr>`).join('')}
+      <tr><td><b>${esc(t('total'))}</b></td><td class="num"><b>${PLAN.rows.length}</b></td>${orderSeasons().map(x => `<td class="num${x === F ? ' focus' : ''}"><b>${tot[x]}</b></td>`).join('')}</tr></tbody></table></div>`;
+  };
+  return `<h2>${esc(t('missingByType'))}</h2><p class="note">${esc(t('missingNote'))}</p>${tbl(r => r.s.type, t('colTypeShort'))}
+    <h2 style="margin-top:18px">${esc(t('missingByCity'))}</h2>${tbl(r => r.s.city, t('colCity'))}<hr style="border:0;border-top:1px solid var(--border);margin:22px 0">`;
+}
+
 function renderGaps(){
   const P = PLAN;
   let totalShort = 0;
@@ -616,7 +706,7 @@ function renderGaps(){
       <div class="s">${pill(o.season)} · ${esc(o.type)} · ${esc(reason)}</div><div class="s">${esc(mints)}</div>${priceLine ? `<div class="s"><b>${esc(priceLine)}</b></div>` : ''}</div><span></span></div>`;
   }).join('');
   const build = P.build.map(b => `<li>${esc(t('buildRow', {t:b.type, k:b.k, n:b.n}))}</li>`).join('');
-  $('#panel').innerHTML = `${renderFill()}<p class="note">${esc(t('shortNote'))}</p>
+  $('#panel').innerHTML = `${missingTables()}${renderFill()}<p class="note">${esc(t('shortNote'))}</p>
     <div class="tablewrap"><table><thead><tr><th>${esc(t('colType'))}</th><th class="num">#</th>${SEASONS.map(s => `<th class="num">${pill(s)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>
     <p class="small" style="margin-top:8px">${esc(t('totalShort'))}: <span class="${totalShort ? 'short' : 'okc'}">${totalShort}</span></p>
     ${build ? `<h3>${esc(t('buildTitle'))}</h3><p class="note">${esc(t('buildNote'))}</p><ul class="small">${build}</ul>` : ''}
@@ -629,18 +719,22 @@ function renderStorage(){
   const P = PLAN;
   const dest = new Map(P.moves.map(m => [m.o.id, m]));
   const stuck = DATA.ornaments.filter(o => !P.hasStructAt.has(o.propId + '|' + o.type));
-  const byProp = [...groupBy(stuck, o => o.propId)].sort((a,b) => b[1].length - a[1].length);
+  const F = focus();
+  const forFocus = os => os.filter(o => dest.has(o.id) && dest.get(o.id).season === F).length;
+  const byProp = [...groupBy(stuck, o => o.propId)].sort((a,b) => forFocus(b[1]) - forFocus(a[1]) || b[1].length - a[1].length);
   const structsAt = groupBy(DATA.structures, s => s.propId);
-  $('#panel').innerHTML = `<p class="note">${esc(t('storageNote'))}</p>` + (byProp.map(([pid, os]) => {
+  const rank = o => dest.has(o.id) ? (dest.get(o.id).season === F ? 0 : 1) : 2;
+  $('#panel').innerHTML = `<p class="note">${esc(t('storageNote'))}</p>
+    <div class="banner" style="--c:var(--${F})"><b>${esc(t('forFocus', {n:stuck.filter(o => dest.has(o.id) && dest.get(o.id).season === F).length, s:F}))}</b> — ${esc(t('pileLater'))}</div>` + (byProp.map(([pid, os]) => {
     const o0 = os[0], here = [...new Set((structsAt.get(pid) || []).map(s => s.type))].join(', ') || t('none');
-    const items = os.sort((a,b) => (dest.has(b.id) - dest.has(a.id)) || a.name.localeCompare(b.name)).map(o => {
-      const m = dest.get(o.id), op = opened.has(String(o.id)) ? ' opened' : '';
+    const items = os.sort((a,b) => (rank(a) - rank(b)) || a.name.localeCompare(b.name)).map(o => {
+      const m = dest.get(o.id), op = opened.has(String(o.id)) ? ' opened' : '', later = m && m.season !== F;
       return `<div class="item${op}">${thumb(o)}<div><div class="t">${esc(o.name)} <span class="muted">#${esc(o.mint)}</span> ${pill(o.season)}</div>
-        <div class="s">${m ? `${esc(t('goesTo'))} <b>${esc(m.to.address)}</b>, ${esc(m.to.city || '')}` : esc(t('isExtra'))} · ${esc(o.type)}</div></div>
-        ${m ? actBtn(o, m.to, DATA.live ? t('moveApply') : t('open'), true) : '<span></span>'}</div>`;
+        <div class="s">${m ? `${esc(t('goesTo'))} <b>${esc(m.to.address)}</b>, ${esc(m.to.city || '')}` : esc(t('isExtra'))} · ${esc(o.type)}</div>${later ? `<div class="s muted">${esc(t('applyLater', {s:m.season}))}</div>` : ''}</div>
+        ${m ? actBtn(o, m.to, DATA.live ? t('moveApply') : t('open'), !later) : '<span></span>'}</div>`;
     }).join('');
     return `<div class="prop"><div class="head"><h3 style="margin:0">${esc(o0.address)}, ${esc(o0.city || '')}</h3>
-      <span class="badge">${esc(t('structsHere', {x:here}))} · ${os.length}</span></div><div class="list">${items}</div></div>`;
+      <span class="badge">${esc(t('structsHere', {x:here}))} · ${os.length}${forFocus(os) ? ' · ' + esc(t('forFocus', {n:forFocus(os), s:F})) : ''}</span></div><div class="list">${items}</div></div>`;
   }).join('') || `<div class="card empty">–</div>`);
 }
 
@@ -714,22 +808,43 @@ function show(D){
   store.set(key, {after:PLAN.inPlace});
   const at = new Date(), gained = last && PLAN.inPlace > last.after ? PLAN.inPlace - last.after : 0;
   setStatus(() => {
+    const fmt = x => new Date(x).toLocaleString(Site.locale(), {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
     const time = at.toLocaleTimeString(Site.locale(), {hour:'2-digit', minute:'2-digit'});
-    return t(D.live ? 'loaded' : 'loadedFiles', {o:D.ornaments.length, s:PLAN.rows.length, u:D.user, t:time}) + (gained ? ' ' + t('since', {d:gained}) : '');
+    const head = D.live && D.savedAt && !D.fresh ? t('savedAt', {d:fmt(D.savedAt)}) : t(D.live ? 'loaded' : 'loadedFiles', {o:D.ornaments.length, s:PLAN.rows.length, u:D.user, t:time});
+    return head + (gained ? ' ' + t('since', {d:gained}) : '') + (D.ventures ? ' ' + t('metaExcluded', {n:D.ventures}) : '') + (ventLeft ? ' · ' + t('ventureCheck', {n:ventLeft}) : '');
   });
   $('#app').classList.remove('hidden');
   $('#refreshBtn').classList.toggle('hidden', !D.live);
   render();
+  if(D.live) refineVentures(D);
 }
 
-async function runLive(){
+// A saved copy of each player's data lives in this browser, so reloading or coming back from another tool
+// doesn't ask Upland again. Re-sync reads Upland fresh after changes in the game.
+const cacheKey = u => 'uop:data:' + u.toLowerCase();
+function saveCache(D){
+  store.set(cacheKey(D.user), {at:D.savedAt, ventures:D.ventures || 0, structures:D.structures,
+    ornaments:D.ornaments.map(o => ({id:o.id, mint:o.mint, name:o.name, designId:o.designId, type:o.type, applied:o.applied, propId:o.propId, address:o.address, city:o.city, img:o.img, rarity:o.rarity, season:o.season}))});
+}
+function readCache(u){
+  const c = store.get(cacheKey(u), null);
+  if(!c || !Array.isArray(c.ornaments)) return null;
+  const seasons = store.get('uop:seasons', {});
+  for(const o of c.ornaments) o.season = CATALOG.byId[o.designId] || seasons[o.designId] || o.season;
+  return c;
+}
+async function runLive(force){
   const user = $('#username').value.trim();
   if(!user) return;
-  store.set('uop:user', user);
+  store.set('uop:user', user); Site.setUser(user);
+  const cached = force ? null : readCache(user);
+  if(cached){ show({user, live:true, ornaments:cached.ornaments, structures:cached.structures, ventures:cached.ventures || 0, savedAt:cached.at}); return; }
   $('#loadBtn').disabled = $('#refreshBtn').disabled = true;
   try{
     const D = await loadLive(user);
     if(!D.ornaments.length && !D.structures.length) throw Object.assign(new Error('empty'), {status:404});
+    D.savedAt = Date.now(); D.fresh = true;
+    saveCache(D);
     show(D);
   }catch(e){
     setStatus(e.status === 404 || e.status === 400 ? t('errUser', {u:user}) : t('errNet', {e:e.message}), true);
@@ -737,7 +852,7 @@ async function runLive(){
 }
 
 $('#userForm').addEventListener('submit', e => { e.preventDefault(); runLive(); });
-$('#refreshBtn').addEventListener('click', () => { opened.clear(); store.set('uop:opened', []); runLive(); });
+$('#refreshBtn').addEventListener('click', () => { opened.clear(); store.set('uop:opened', []); runLive(true); });
 $('#csvBtn').addEventListener('click', async () => {
   try{ setStatus(t('loading')); show(await loadFiles()); }catch(e){ setStatus(e.message, true); }
 });
@@ -759,8 +874,8 @@ $('#panel').addEventListener('change', e => { if(e.target.id === 'onlyGaps'){ ui
 
 Site.mount({onChange: onSiteChange});
 const params = new URLSearchParams(location.search);
-const startUser = params.get('user') || store.get('uop:user', '');
-if(startUser){ $('#username').value = startUser; if(params.get('user')) runLive(); }
+const startUser = params.get('user') || Site.user() || store.get('uop:user', '');
+if(startUser){ $('#username').value = startUser; runLive(); }   // shows the saved copy right away, no calls to Upland
 </script>
 </body>
 </html>
