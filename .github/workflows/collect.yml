@@ -1,0 +1,94 @@
+name: Collectors
+
+# One queue for everything that talks to Upland. Upland tolerates roughly one request a second and drops
+# connections when two things hit it at once, so the collectors run one after another, never together
+# (this workflow can only run once at a time), and only the ones switched on.
+#
+# Switch jobs on or off with a repo variable, no code change needed:
+#   gh variable set COLLECTORS --body "prices,buy,collections"   # which jobs run (no spaces)
+#   gh variable set COLLECTORS --body ""                          # pause everything
+# Run something once right now, whatever the variable says:
+#   gh workflow run Collectors -f only=buy
+
+on:
+  schedule:
+    - cron: '17 3,15 * * *'   # every 12 hours
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Jobs to run now, comma separated: prices, buy, collections. Empty = the COLLECTORS variable.'
+        default: ''
+
+permissions:
+  contents: write
+  actions: write   # lets the keep-alive step re-enable this schedule
+
+concurrency:
+  group: upland-collectors
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      JOBS: ${{ github.event.inputs.only || vars.COLLECTORS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Jobs switched on
+        run: |
+          echo "Jobs switched on: '${JOBS}'"
+
+      # 1. Ornament sales and listings: the most time-sensitive, so first.
+      - name: Ornament prices
+        if: contains(format(',{0},', env.JOBS), ',prices,')
+        continue-on-error: true
+        timeout-minutes: 60
+        run: python3 tools/collect_prices.py --backfill-days 4
+
+      - name: Save ornament prices
+        if: contains(format(',{0},', env.JOBS), ',prices,')
+        run: |
+          bash tools/commit_data.sh "data: refresh ornament prices" ':(glob)data/*.json' data/sales data/history
+
+      - name: Breather
+        run: sleep 30
+
+      # 2. Cheapest properties for sale per collection.
+      - name: Properties for sale
+        if: contains(format(',{0},', env.JOBS), ',buy,')
+        continue-on-error: true
+        timeout-minutes: 110
+        run: python3 tools/collect_buy.py --minutes 90 --pause 2.0
+
+      - name: Save properties for sale
+        if: contains(format(',{0},', env.JOBS), ',buy,')
+        run: |
+          bash tools/commit_data.sh "data: refresh properties for sale" data/buy
+
+      - name: Breather
+        run: sleep 30
+
+      # 3. The group's properties and collections: slow and not urgent, so last.
+      - name: Group collections
+        if: contains(format(',{0},', env.JOBS), ',collections,')
+        continue-on-error: true
+        timeout-minutes: 110
+        run: python3 tools/collect_collections.py --minutes 90 --pause 2.0
+
+      - name: Save group collections
+        if: contains(format(',{0},', env.JOBS), ',collections,')
+        run: |
+          bash tools/commit_data.sh "data: refresh collections" data/collections
+
+      # GitHub turns off schedules in public repos after 60 days without activity; this keeps it on.
+      - name: Keep schedule alive
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/collect.yml/enable"

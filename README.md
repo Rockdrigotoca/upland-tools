@@ -24,15 +24,34 @@ shared/site.js        header, settings, footer, translations
 shared/upland.js      helpers for Upland's public data
 cheapskate/           ornament prices page
 data/                 price data written by the collector
-tools/collect_prices.py   the collector (runs every 12 hours in GitHub Actions)
+tools/collect_prices.py   ornament prices collector
 hoarder/              collections tool (freeloader/ redirects here)
-tools/collect_collections.py   reads the group's properties and collections (every 12 hours)
-tools/collect_buy.py          prices the cheapest for-sale properties per collection (every 12 hours)
+tools/collect_collections.py   reads the group's properties and collections
+tools/collect_buy.py          prices the cheapest for-sale properties per collection
+tools/commit_data.sh          commits and pushes a collector's data files
+```
+
+## Collectors: one queue, one switch
+
+Everything that talks to Upland runs from one workflow, `.github/workflows/collect.yml`, every 12 hours. Upland tolerates about one request per second and drops connections when two things hit it at once, so the jobs run **one after another, never together**, and only the ones that are switched on:
+
+| Job | What it collects | Budget per run |
+|---|---|---|
+| `prices` | ornament sales, listings and daily price history | about 25 min |
+| `buy` | cheapest properties for sale per collection | 90 min |
+| `collections` | the group's properties and collections | 90 min |
+
+Switch jobs on or off with a repo variable, no code change:
+
+```
+gh variable set COLLECTORS --body "prices,buy,collections"   # jobs that run (no spaces)
+gh variable set COLLECTORS --body ""                          # pause everything
+gh workflow run Collectors -f only=buy                        # run one job once, right now
 ```
 
 ## Price data
 
-A GitHub Actions job (`.github/workflows/collect-prices.yml`) runs `tools/collect_prices.py` every 12 hours. It reads ornament shop sales from Upland's public chain history, snapshots ornament listings in ornament and variety shops, and commits small JSON files to `data/`. Each run also adds a few older days of history until it reaches April 2025. USD sale prices are not public, so USD sales are estimated from USD listings that disappear when the ornament changes owner without a UPX payment.
+The `prices` job runs `tools/collect_prices.py`. It reads ornament shop sales from Upland's public chain history, snapshots ornament listings in ornament and variety shops, and commits small JSON files to `data/`. Each run also adds a few older days of history until it reaches April 2025. USD sale prices are not public, so USD sales are estimated from USD listings that disappear when the ornament changes owner without a UPX payment.
 
 ## Run locally
 
