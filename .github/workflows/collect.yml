@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Jobs to run now, comma separated: prices, buy, collections. Empty = the COLLECTORS variable.'
+        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger. Empty = the COLLECTORS variable.'
         default: ''
 
 permissions:
@@ -85,6 +85,21 @@ jobs:
         if: contains(format(',{0},', env.JOBS), ',collections,')
         run: |
           bash tools/commit_data.sh "data: refresh collections" data/collections
+
+      - name: Breather
+        run: sleep 30
+
+      # 4. Everyone's sales from the chain history (Rockdrigo's Receipts): reads the chain, barely touches Upland.
+      - name: Sales ledger
+        if: contains(format(',{0},', env.JOBS), ',ledger,')
+        continue-on-error: true
+        timeout-minutes: 110
+        run: python3 tools/collect_ledger.py --days 10 --minutes 90
+
+      - name: Save sales ledger
+        if: contains(format(',{0},', env.JOBS), ',ledger,')
+        run: |
+          bash tools/commit_data.sh "data: refresh sales ledger" data/ledger
 
       # GitHub turns off schedules in public repos after 60 days without activity; this keeps it on.
       - name: Keep schedule alive
