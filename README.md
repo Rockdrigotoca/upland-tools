@@ -5,7 +5,7 @@ Free, browser-only tools for [Upland](https://upland.me) players, by Rockdrigo.
 | Tool | What it does |
 |---|---|
 | [Ornament Optimizer](ornament-optimizer/) | Enter a username to get one ornament per season on every structure: what to apply now, which ornaments to move (with one-click links), shortages, extras and storage cleanup. |
-| [Collection Hoarder](hoarder/) | Collections: overview of active, collected and missing collections by rarity and city; which collection each property should sit in for the most monthly yield, what to change, and collections you're 1–3 properties short of. Freeloader (borrow) and Lend: never-collected collections the group can finish by lending each other up to 3 spare properties, with 50/50 reward splits. Cheapest properties to buy are next. |
+| [Collection Hoarder](hoarder/) | Collections: overview of active, collected and missing collections by rarity and city; which collection each property should sit in for the most monthly yield, what to change, and collections you're 1–3 properties short of. Freeloader (borrow) and Lend: never-collected collections the group can finish by lending each other up to 3 spare properties, with 50/50 reward splits. Buy: the cheapest properties for sale (UPX and USD) to finish what's missing, by rarity. |
 | [Cheapskate](cheapskate/) | Ornament prices: UPX sale history, current UPX/USD listings with the showroom and its address, and what a player's ornaments are worth. |
 
 Every tool shares the same settings: English/Spanish, text size, and Cunk mode (on by default).
@@ -27,6 +27,7 @@ data/                 price data written by the collector
 tools/collect_prices.py   the collector (runs every 12 hours in GitHub Actions)
 hoarder/              collections tool (freeloader/ redirects here)
 tools/collect_collections.py   reads the group's properties and collections (every 12 hours)
+tools/collect_buy.py          prices the cheapest for-sale properties per collection (every 12 hours)
 ```
 
 ## Price data
