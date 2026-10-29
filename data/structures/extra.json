@@ -1,0 +1,990 @@
+{
+"note": "Structures and sparklet-hour costs from the Nomentano sign-up sheet (Uplytics), for the ones the permits sheet doesn't list",
+"structures": [
+{
+"name": "Track & Field Complex",
+"sph": 233550,
+"category": "Entertainment"
+},
+{
+"name": "Soccer Field",
+"sph": 167400,
+"category": "Essential"
+},
+{
+"name": "Upland Junior High",
+"sph": 149850,
+"category": "Public Service"
+},
+{
+"name": "University",
+"sph": 147150,
+"category": "Public Service"
+},
+{
+"name": "Mall of Upland",
+"sph": 125550,
+"category": "Essential"
+},
+{
+"name": "High School",
+"sph": 110700,
+"category": "Entertainment"
+},
+{
+"name": "Skyline Medical Center",
+"sph": 109800,
+"category": "Public Service"
+},
+{
+"name": "Large Library",
+"sph": 101250,
+"category": "Public Service"
+},
+{
+"name": "The Starline Theater",
+"sph": 97200,
+"category": "Entertainment"
+},
+{
+"name": "The Upland Y Rec Center",
+"sph": 91800,
+"category": "Public Service"
+},
+{
+"name": "Planetarium",
+"sph": 90450,
+"category": "Entertainment"
+},
+{
+"name": "SuperKarts Mini Raceway",
+"sph": 90000,
+"category": "Entertainment"
+},
+{
+"name": "Large Court house",
+"sph": 89100,
+"category": "Public Service"
+},
+{
+"name": "Natural History Museum",
+"sph": 75150,
+"category": "Entertainment"
+},
+{
+"name": "Post Office Distribution Center",
+"sph": 74250,
+"category": "Public Service"
+},
+{
+"name": "CineSpark Theatre",
+"sph": 70200,
+"category": "Entertainment"
+},
+{
+"name": "ÜPKEA",
+"sph": 70200,
+"category": "Essential"
+},
+{
+"name": "Pickle Ball Courts",
+"sph": 68400,
+"category": "Essential"
+},
+{
+"name": "Sports Courts",
+"sph": 68400,
+"category": "Essential"
+},
+{
+"name": "Supermarket Super Store",
+"sph": 66150,
+"category": "Entertainment"
+},
+{
+"name": "Theater",
+"sph": 66000,
+"category": "Entertainment"
+},
+{
+"name": "The Lucky Star Hotel",
+"sph": 64800,
+"category": "Essential"
+},
+{
+"name": "Fire Station Headquarters",
+"sph": 62100,
+"category": "Public Service"
+},
+{
+"name": "Science Museum",
+"sph": 60750,
+"category": "Entertainment"
+},
+{
+"name": "The Starlight Senior Home",
+"sph": 60750,
+"category": "Public Service"
+},
+{
+"name": "Large Assisted Living Center",
+"sph": 59400,
+"category": "Public Service"
+},
+{
+"name": "Junior College",
+"sph": 54900,
+"category": "Public Service"
+},
+{
+"name": "Circus",
+"sph": 54450,
+"category": "Entertainment"
+},
+{
+"name": "The Skyline Courthouse",
+"sph": 53550,
+"category": "Public Service"
+},
+{
+"name": "Beyond the Bath",
+"sph": 52650,
+"category": "Essential"
+},
+{
+"name": "Department store",
+"sph": 49050,
+"category": "Essential"
+},
+{
+"name": "Seattle Music Venue Service Structure",
+"sph": 48600,
+"category": "Entertainment"
+},
+{
+"name": "Starlite Precinct",
+"sph": 47250,
+"category": "Public Service"
+},
+{
+"name": "Set Point Beach Club",
+"sph": 46800,
+"category": "Essential"
+},
+{
+"name": "Tennis court",
+"sph": 46350,
+"category": "Essential"
+},
+{
+"name": "Urgent care center",
+"sph": 46350,
+"category": "Essential"
+},
+{
+"name": "Basketball court",
+"sph": 45900,
+"category": "Essential"
+},
+{
+"name": "Elementary School",
+"sph": 45900,
+"category": "Public Service"
+},
+{
+"name": "The Upland Rodeo",
+"sph": 42750,
+"category": "Entertainment"
+},
+{
+"name": "Motel",
+"sph": 38700,
+"category": "Essential"
+},
+{
+"name": "Live Jams Stage",
+"sph": 36900,
+"category": "Entertainment"
+},
+{
+"name": "Public Pool",
+"sph": 35550,
+"category": "Public Service"
+},
+{
+"name": "Large Day care",
+"sph": 35100,
+"category": "Public Service"
+},
+{
+"name": "The Atomic Firehouse",
+"sph": 35100,
+"category": "Public Service"
+},
+{
+"name": "Aquarium",
+"sph": 34200,
+"category": "Entertainment"
+},
+{
+"name": "The Climbing Collective",
+"sph": 32850,
+"category": "Essential"
+},
+{
+"name": "Recycling Center",
+"sph": 32400,
+"category": "Public Service"
+},
+{
+"name": "Dreamspace VR",
+"sph": 30600,
+"category": "Entertainment"
+},
+{
+"name": "Large Electronic store",
+"sph": 30600,
+"category": "Essential"
+},
+{
+"name": "Private Swim Club",
+"sph": 30150,
+"category": "Essential"
+},
+{
+"name": "Off the Wall Skate Park",
+"sph": 29700,
+"category": "Entertainment"
+},
+{
+"name": "Local Brewery",
+"sph": 29250,
+"category": "Essential"
+},
+{
+"name": "Large Sports Bar",
+"sph": 28350,
+"category": "Entertainment"
+},
+{
+"name": "Neighborhood Police Station",
+"sph": 27450,
+"category": "Public Service"
+},
+{
+"name": "Comedy Club",
+"sph": 26550,
+"category": "Entertainment"
+},
+{
+"name": "Dunder Office Supplies",
+"sph": 26100,
+"category": "Public Service"
+},
+{
+"name": "Mother Putters",
+"sph": 25650,
+"category": "Entertainment"
+},
+{
+"name": "Art Museum",
+"sph": 24300,
+"category": "Entertainment"
+},
+{
+"name": "The Lobster Shack",
+"sph": 23850,
+"category": "Entertainment"
+},
+{
+"name": "Beach Pavilion",
+"sph": 23400,
+"category": "Essential"
+},
+{
+"name": "Moonbeam Diner",
+"sph": 23400,
+"category": "Entertainment"
+},
+{
+"name": "The Victory Gym",
+"sph": 23400,
+"category": "Essential"
+},
+{
+"name": "Club Mirage Night Club",
+"sph": 22500,
+"category": "Entertainment"
+},
+{
+"name": "Fish Market",
+"sph": 22500,
+"category": "Essential"
+},
+{
+"name": "Lotus of Upland Thai House",
+"sph": 21150,
+"category": "Entertainment"
+},
+{
+"name": "Steakhouse",
+"sph": 21150,
+"category": "Entertainment"
+},
+{
+"name": "Exclusive Hockey Store Service Structure",
+"sph": 20250,
+"category": "Essential"
+},
+{
+"name": "The Rocket Cup Cafe",
+"sph": 20250,
+"category": "Entertainment"
+},
+{
+"name": "Atomic Auto Service",
+"sph": 19800,
+"category": "Essential"
+},
+{
+"name": "QuickRinse Self-Serve Carwash",
+"sph": 19350,
+"category": "Essential"
+},
+{
+"name": "Ramen Restaurant",
+"sph": 19350,
+"category": "Entertainment"
+},
+{
+"name": "Luxury Restaurant",
+"sph": 18900,
+"category": "Entertainment"
+},
+{
+"name": "Southside Boxing Club",
+"sph": 18900,
+"category": "Essential"
+},
+{
+"name": "Try Harder Gym",
+"sph": 18900,
+"category": "Essential"
+},
+{
+"name": "Veterinary Clinic",
+"sph": 18000,
+"category": "Essential"
+},
+{
+"name": "Waffle Home Diner",
+"sph": 18000,
+"category": "Entertainment"
+},
+{
+"name": "Thee Olde Spaghetti Factory",
+"sph": 17550,
+"category": "Entertainment"
+},
+{
+"name": "Ultra Beauty Co",
+"sph": 17550,
+"category": "Essential"
+},
+{
+"name": "Auto Repair",
+"sph": 17100,
+"category": "Essential"
+},
+{
+"name": "Florence Retro Googie Farmers Market",
+"sph": 16650,
+"category": "Essential"
+},
+{
+"name": "Takasaki Retro Googie Farmers Market",
+"sph": 16650,
+"category": "Essential"
+},
+{
+"name": "UPhone Store",
+"sph": 16650,
+"category": "Essential"
+},
+{
+"name": "Car Rental",
+"sph": 16200,
+"category": "Essential"
+},
+{
+"name": "Martial Arts Dojo",
+"sph": 16200,
+"category": "Essential"
+},
+{
+"name": "Tandoor House",
+"sph": 16200,
+"category": "Entertainment"
+},
+{
+"name": "Camp World",
+"sph": 15750,
+"category": "Essential"
+},
+{
+"name": "Going Under Dive Shop",
+"sph": 15750,
+"category": "Essential"
+},
+{
+"name": "Asian Modular Apartments: Hawker Centre Edition",
+"sph": 15300,
+"category": "Entertainment"
+},
+{
+"name": "The Moonbeam Bookstore",
+"sph": 15300,
+"category": "Essential"
+},
+{
+"name": "Wheel Alignment center",
+"sph": 15300,
+"category": "Essential"
+},
+{
+"name": "European Modular Apartments: Big Ben's Gift Shoppe",
+"sph": 14850,
+"category": "Essential"
+},
+{
+"name": "European Modular Apartments: Galerie d'Art Edition",
+"sph": 14850,
+"category": "Entertainment"
+},
+{
+"name": "European Modular Apartments: Sports Bar",
+"sph": 14850,
+"category": "Entertainment"
+},
+{
+"name": "The Atomic Arcade",
+"sph": 14850,
+"category": "Entertainment"
+},
+{
+"name": "Art Gallery",
+"sph": 14800,
+"category": "Entertainment"
+},
+{
+"name": "Blockade Arcade",
+"sph": 14400,
+"category": "Entertainment"
+},
+{
+"name": "Dollar Store",
+"sph": 14400,
+"category": "Essential"
+},
+{
+"name": "Omaha Retro Googie Farmers Market",
+"sph": 14400,
+"category": "Essential"
+},
+{
+"name": "The Atomic Oven Bakery",
+"sph": 14400,
+"category": "Essential"
+},
+{
+"name": "Asian Modular Apartments: Rattan Shop Edition",
+"sph": 13950,
+"category": "Essential"
+},
+{
+"name": "Comic Book Store",
+"sph": 13950,
+"category": "Essential"
+},
+{
+"name": "Delicatessen shop",
+"sph": 13950,
+"category": "Essential"
+},
+{
+"name": "Funeral Home",
+"sph": 13950,
+"category": "Public Service"
+},
+{
+"name": "Musical Instrument Store",
+"sph": 13950,
+"category": "Essential"
+},
+{
+"name": "Pure Pose Yoga",
+"sph": 13950,
+"category": "Essential"
+},
+{
+"name": "The Thrift Gap",
+"sph": 13950,
+"category": "Essential"
+},
+{
+"name": "Upland Axes",
+"sph": 13950,
+"category": "Entertainment"
+},
+{
+"name": "Cape Town Modular: Padstal Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "European Modular Apartments: Mantequeria Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Hallow Spirit Costumes",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Main Street Modular Apartments: Fashion Boutique Store Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Main Street Modular Apartments: Pier Pressure Fish Market",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Main Street Modular Apartments: Pizzeria Edition",
+"sph": 13500,
+"category": "Entertainment"
+},
+{
+"name": "Main Street Modular Apartments: Shoe Store Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Main Street Modular Apartments: Uppany & Co. Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Main Street Modular: Pacific Northwest Trading Post Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Mainstreet Modular Apartments: Arcade Edition",
+"sph": 13500,
+"category": "Entertainment"
+},
+{
+"name": "Mainstreet Modular Apartments: Bookstore Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Mainstreet Modular Apartments: Cafe Edition building",
+"sph": 13500,
+"category": "Entertainment"
+},
+{
+"name": "Mainstreet Modular Apartments: Clothing Boutique",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Mainstreet Modular Apartments: Farmer Supply Editions",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Mainstreet Modular Apartments: Laundromat Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Mainstreet Modular Apartments: Pawn Shop Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Mainstreet Modular Apartments: Pub Edition building",
+"sph": 13500,
+"category": "Entertainment"
+},
+{
+"name": "Mainstreet Modular Apartments: Zoomies Skate Shop Edition",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Quickserver Surf Co",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Regal Roots Salon",
+"sph": 13500,
+"category": "Essential"
+},
+{
+"name": "Build-A-Bowl Workshop",
+"sph": 13050,
+"category": "Essential"
+},
+{
+"name": "Rick's Sporting Goods",
+"sph": 13050,
+"category": "Essential"
+},
+{
+"name": "The Corner Drugstore",
+"sph": 13050,
+"category": "Essential"
+},
+{
+"name": "Bike Shop",
+"sph": 12600,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Bakery Edition",
+"sph": 12600,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Pharmacy",
+"sph": 12600,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Tattoo studio Edition",
+"sph": 12600,
+"category": "Entertainment"
+},
+{
+"name": "Fast Food Joint",
+"sph": 12600,
+"category": "Entertainment"
+},
+{
+"name": "Game Exchange",
+"sph": 12600,
+"category": "Entertainment"
+},
+{
+"name": "Singapore Kopitiam",
+"sph": 12600,
+"category": "Entertainment"
+},
+{
+"name": "South America Modular Apartments: Two Can Tango Bar Edition",
+"sph": 12600,
+"category": "Entertainment"
+},
+{
+"name": "African Crafts Market",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "Beach Feet Sandals",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Bank Edition",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Barber Shop",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Nail Salon",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Yeehaw Outfitters Edition",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "French Cafe",
+"sph": 12150,
+"category": "Entertainment"
+},
+{
+"name": "Luxury Fashion Boutique",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "Rip Curl'd Swimwear",
+"sph": 12150,
+"category": "Essential"
+},
+{
+"name": "Antique Store",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "Barbershop",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Fast Food Restaurant",
+"sph": 11700,
+"category": "Entertainment"
+},
+{
+"name": "East Coast Modular Apartments: Intimate Apparel Boutique",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Little Havana Grill Edition",
+"sph": 11700,
+"category": "Entertainment"
+},
+{
+"name": "East Coast Modular Apartments: Mobile Phone Store",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "East Coast Modular Apartments: Money Exchange Edition",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "Hook & Tackle Bait Shop",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "Small Farmers Market",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "Sneaker Store",
+"sph": 11700,
+"category": "Essential"
+},
+{
+"name": "South America Modular Apartments: Rodizio Edition",
+"sph": 11700,
+"category": "Entertainment"
+},
+{
+"name": "Sunglass Shack",
+"sph": 11250,
+"category": "Essential"
+},
+{
+"name": "Dry Cleaner",
+"sph": 10800,
+"category": "Essential"
+},
+{
+"name": "Tapas Bar",
+"sph": 10350,
+"category": "Entertainment"
+},
+{
+"name": "The Amsterdam Cheese House",
+"sph": 10350,
+"category": "Essential"
+},
+{
+"name": "Butcher Shop",
+"sph": 9900,
+"category": "Essential"
+},
+{
+"name": "Ice cream Parlor",
+"sph": 9900,
+"category": "Entertainment"
+},
+{
+"name": "Swiggly Soda Shop",
+"sph": 9900,
+"category": "Entertainment"
+},
+{
+"name": "Dairy King Ice Cream",
+"sph": 9450,
+"category": "Entertainment"
+},
+{
+"name": "Candy shop",
+"sph": 9000,
+"category": "Essential"
+},
+{
+"name": "Nomi Sushi Bar",
+"sph": 9000,
+"category": "Entertainment"
+},
+{
+"name": "Mile's Beach Bikes",
+"sph": 8550,
+"category": "Essential"
+},
+{
+"name": "The Tipsy Tiki Bar",
+"sph": 8550,
+"category": "Entertainment"
+},
+{
+"name": "South America Modular Apartments: Almacén Edition",
+"sph": 8400,
+"category": "Essential"
+},
+{
+"name": "Crêpe Stand",
+"sph": 7200,
+"category": "Entertainment"
+},
+{
+"name": "Fish Ball Stand",
+"sph": 7200,
+"category": "Entertainment"
+},
+{
+"name": "Fish Deli",
+"sph": 6750,
+"category": "Entertainment"
+},
+{
+"name": "Welcome Point Travel Center",
+"sph": 6750,
+"category": "Public Service"
+},
+{
+"name": "Sausage Stand",
+"sph": 6300,
+"category": "Entertainment"
+},
+{
+"name": "The Totally Official Cup Flag Stand",
+"sph": 6300,
+"category": "Entertainment"
+},
+{
+"name": "Fresh Pick Fruit Stand",
+"sph": 4950,
+"category": "Essential"
+},
+{
+"name": "Beachside Taco's",
+"sph": 4500,
+"category": "Entertainment"
+},
+{
+"name": "Coney Island Franks",
+"sph": 4500,
+"category": "Entertainment"
+},
+{
+"name": "Deep Fillings Empanadas",
+"sph": 4500,
+"category": "Entertainment"
+},
+{
+"name": "Main Squeeze Lemonade",
+"sph": 4500,
+"category": "Entertainment"
+},
+{
+"name": "The Burger Stop",
+"sph": 4500,
+"category": "Entertainment"
+},
+{
+"name": "Mile's Popcorn",
+"sph": 4050,
+"category": "Entertainment"
+},
+{
+"name": "Big Fish Balls",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "Cinnaboom",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "Glazed & Confused Donuts",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "Kentucky Fried Kiosk",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "Shawarma Street Co.",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "Taco Stand",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "The Crepe Escape",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "The Crispy Empanada Kiosk",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "The Patty Shack",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "The Salty Twist Pretzel Stand",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "The Slice Station",
+"sph": 3600,
+"category": "Entertainment"
+},
+{
+"name": "Totally Official Cup Merch Kiosk",
+"sph": 3150,
+"category": "Entertainment"
+},
+{
+"name": "Paintball Upland",
+"sph": null,
+"category": "Entertainment"
+}
+]
+}

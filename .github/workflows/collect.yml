@@ -1,8 +1,9 @@
 name: Collectors
 
-# One queue for everything that talks to Upland. Upland tolerates roughly one request a second and drops
-# connections when two things hit it at once, so the collectors run one after another, never together
-# (this workflow can only run once at a time), and only the ones switched on.
+# One queue for everything that talks to Upland. The collectors run one after another, never together
+# (this workflow can only run once at a time), and only the ones switched on. Inside a job a few requests run at once
+# (measured on 29 Oct 2026: four at a time, about 9 a second, no errors), kept to about 4 to 5 a second in all,
+# with a longer wait whenever Upland pushes back.
 #
 # Switch jobs on or off with a repo variable, no code change needed:
 #   gh variable set COLLECTORS --body "prices,buy,collections"   # which jobs run (no spaces)
@@ -16,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger, pulse. Empty = the COLLECTORS variable.'
+        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger, pulse, structures. Empty = the COLLECTORS variable.'
         default: ''
 
 permissions:
@@ -64,7 +65,7 @@ jobs:
         if: contains(format(',{0},', env.JOBS), ',buy,')
         continue-on-error: true
         timeout-minutes: 110
-        run: python3 tools/collect_buy.py --minutes 90 --pause 2.0
+        run: python3 tools/collect_buy.py --minutes 90 --pause 0.5
 
       - name: Save properties for sale
         if: contains(format(',{0},', env.JOBS), ',buy,')
@@ -79,7 +80,7 @@ jobs:
         if: contains(format(',{0},', env.JOBS), ',collections,')
         continue-on-error: true
         timeout-minutes: 110
-        run: python3 tools/collect_collections.py --minutes 90 --pause 2.0
+        run: python3 tools/collect_collections.py --minutes 90 --pause 0.25 --workers 4
 
       - name: Save group collections
         if: contains(format(',{0},', env.JOBS), ',collections,')
@@ -112,6 +113,18 @@ jobs:
         if: contains(format(',{0},', env.JOBS), ',pulse,')
         run: |
           bash tools/commit_data.sh "data: refresh neighbourhood pulse" data/pulse
+
+      # 6. Which structures each neighbourhood has and which are missing (for the spark trains): about 2,300 property reads.
+      - name: Structures
+        if: contains(format(',{0},', env.JOBS), ',structures,')
+        continue-on-error: true
+        timeout-minutes: 70
+        run: python3 tools/collect_structures.py --minutes 55 --workers 4 --rate 5
+
+      - name: Save structures
+        if: contains(format(',{0},', env.JOBS), ',structures,')
+        run: |
+          bash tools/commit_data.sh "data: refresh structures" data/structures
 
       # GitHub turns off schedules in public repos after 60 days without activity; this keeps it on.
       - name: Keep schedule alive
