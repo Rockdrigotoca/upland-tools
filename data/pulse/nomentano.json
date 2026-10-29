@@ -1,0 +1,8 @@
+{
+"node":"nomentano",
+"name":"Nomentano",
+"city":"Rome",
+"source":"uplytics.org",
+"latest":{"date":"2026-10-29","total_properties":1596,"owned_properties":1596,"unminted_properties":0,"for_sale_properties":78,"total_buildings":428,"under_construction":96,"total_service_structures":219,"total_living_units":744,"total_service_units":1495.95,"total_residents":312,"total_unique_owners":307,"total_home_addresses":1,"occupancy_rate":41.935483870967744,"su_per_lu":2.010685483870968,"build_out_percentage":26.81704260651629,"total_staked_sparklet":403760.89,"active_homeowners_7d":100},
+"history":[{"date":"2026-10-29","total_properties":1596,"owned_properties":1596,"unminted_properties":0,"for_sale_properties":78,"total_buildings":428,"under_construction":96,"total_service_structures":219,"total_living_units":744,"total_service_units":1495.95,"total_residents":312,"total_unique_owners":307,"total_home_addresses":1,"occupancy_rate":41.935483870967744,"su_per_lu":2.010685483870968,"build_out_percentage":26.81704260651629,"total_staked_sparklet":403760.89,"active_homeowners_7d":100}]
+}

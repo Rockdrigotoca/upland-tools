@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger. Empty = the COLLECTORS variable.'
+        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger, pulse. Empty = the COLLECTORS variable.'
         default: ''
 
 permissions:
@@ -100,6 +100,18 @@ jobs:
         if: contains(format(',{0},', env.JOBS), ',ledger,')
         run: |
           bash tools/commit_data.sh "data: refresh sales ledger" data/ledger
+
+      # 5. Neighbourhood numbers for the Quailbert pulse (Quailwood and Nomentano): two small requests to Uplytics.
+      - name: Neighbourhood pulse
+        if: contains(format(',{0},', env.JOBS), ',pulse,')
+        continue-on-error: true
+        timeout-minutes: 10
+        run: python3 tools/collect_pulse.py
+
+      - name: Save neighbourhood pulse
+        if: contains(format(',{0},', env.JOBS), ',pulse,')
+        run: |
+          bash tools/commit_data.sh "data: refresh neighbourhood pulse" data/pulse
 
       # GitHub turns off schedules in public repos after 60 days without activity; this keeps it on.
       - name: Keep schedule alive

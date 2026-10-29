@@ -1,0 +1,8 @@
+{
+"node":"qw",
+"name":"Quailwood",
+"city":"Bakersfield",
+"source":"uplytics.org",
+"latest":{"date":"2026-10-29","total_properties":695,"owned_properties":612,"unminted_properties":83,"for_sale_properties":13,"total_buildings":727,"under_construction":14,"total_service_structures":148,"total_living_units":1391,"total_service_units":436.1,"total_residents":552,"total_unique_owners":138,"total_home_addresses":48,"occupancy_rate":39.68368080517613,"su_per_lu":0.31351545650611073,"build_out_percentage":118.79084967320262,"total_staked_sparklet":241509.5,"active_homeowners_7d":52.083333333333336},
+"history":[{"date":"2026-10-29","total_properties":695,"owned_properties":612,"unminted_properties":83,"for_sale_properties":13,"total_buildings":727,"under_construction":14,"total_service_structures":148,"total_living_units":1391,"total_service_units":436.1,"total_residents":552,"total_unique_owners":138,"total_home_addresses":48,"occupancy_rate":39.68368080517613,"su_per_lu":0.31351545650611073,"build_out_percentage":118.79084967320262,"total_staked_sparklet":241509.5,"active_homeowners_7d":52.083333333333336}]
+}
