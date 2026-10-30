@@ -1,0 +1,13 @@
+{"fields":["ts","nft","key","mint","cur","price","fee","merchantFee","seller","buyer","shopOwner","shop"],"rows":[
+[1790802765,9495971,"Welcome Harvest Season | Apartment Building",2,"UPX",5.25,0.25,0.0,"rittergil","cheezy_poof",null,null],
+[1790810875,8909566,"Welcome Wonderland Season | Apartment Building",7,"UPX",2100.0,100.0,0.0,"rittergil","camoville",null,null],
+[1790810996,9482226,"AARH - SNOWMAN - WONDERLAND | Ranch House",24,"UPX",338.1,16.1,0.0,"saulofm","cheezy_poof",null,null],
+[1790811000,9482289,"AARH - SNOWMAN - WONDERLAND | Ranch House",25,"UPX",338.1,16.1,0.0,"saulofm","cheezy_poof",null,null],
+[1790811005,9481377,"AARH - SNOWMAN - WONDERLAND | Ranch House",18,"UPX",338.1,16.1,0.0,"saulofm","cheezy_poof",null,null],
+[1790811009,9481440,"AARH - SNOWMAN - WONDERLAND | Ranch House",19,"UPX",338.1,16.1,0.0,"saulofm","cheezy_poof",null,null],
+[1790811015,9481332,"AARH - SNOWMAN - WONDERLAND | Ranch House",17,"UPX",338.1,16.1,0.0,"saulofm","cheezy_poof",null,null],
+[1790811038,9514160,"AxRH - ROCK SANTA - WONDERLAND | Ranch House",17,"UPX",338.1,16.1,0.0,"saulofm","cheezy_poof",null,null],
+[1790812230,6375582,"The Fuzz - Ranch Station | Ranch House",753,"UPX",945.0,45.0,0.0,"swarley129","th_braga",null,null],
+[1790812242,6374687,"The Fuzz - Ranch Station | Ranch House",734,"UPX",945.0,45.0,0.0,"swarley129","th_braga",null,null],
+[1790812795,9511976,"Welcome Blossom Season | Apartment Building",2,"UPX",2100.0,100.0,0.0,"rittergil","nf_holdings",null,null]
+]}
