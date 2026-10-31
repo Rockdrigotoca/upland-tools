@@ -51,13 +51,15 @@ const {t, esc, store} = Site;
 Site.register({
   en:{
     title:'Rockdrigo’s Troves', subtitle:'What to find first, what to craft now and what to bank.',
-    srcTitle:'Whose troves?', srcRock:'Rockdrigo’s (latest)', srcMine:'My own file', upload:'Upload your troves file', drop:'Drop your .json here, or click to choose it',
-    forget:'Forget my file', howto:'How do I get my troves file?', private:'Your file is read in this browser only. It is not uploaded anywhere.',
+    srcTitle:'Whose troves?', srcRock:'Rockdrigo’s (latest)', srcMine:'My own file', upload:'Upload your troves file', drop:'Drop your HAR file here, or click to choose it',
+    forget:'Forget my file', howto:'How do I get my troves file?', private:'Your file is read in this browser only and is not uploaded anywhere. From a HAR the page keeps only your troves: never the HAR, never your login.',
     loaded:'Loaded {n} troves and {r} recipes from {d}.', loading:'Loading…',
-    upErrToken:'This file contains something that looks like a login token. It was not loaded. Do not share it: clean it first with the script on the how-to page.',
-    upErrHar:'This looks like a raw HAR file, which holds your login. It was not loaded. Run the script from the how-to page on it and upload the file it writes.',
+    upErrToken:'This file contains something that looks like a login token. It was not loaded, and you should not share it.',
+    upErrNoInv:'Your trove inventory is not in this HAR. Open your Troves page with the Network tab recording, reload it, and save the HAR again.',
     upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
-    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tFind:'Look up',
+    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tWorld:'Grind map', tFind:'Look up',
+    wCover:'Cities scanned so far: {list}. Everything here is “so far”: it changes as more cities are scanned.', wNone:'The world scan has not produced data yet.', wBestH:'Best cities for what you are missing', wBestN:'For each scanned city: how many of your missing troves it can give you, and how many recipes that would unlock. Partial cities (one neighbourhood) only show what that neighbourhood has.',
+    wCity:'City', wGives:'Gives you', wUnlock:'Recipes held up', wMissing:'Not here', wGrindH:'Troves tied to few cities', wGrindN:'Troves whose structures exist in only one or two of the scanned cities, or in none yet. These are the ones to grind for on purpose.', wOnlyMine:'Only troves I am missing', wCities:'Cities', wNoCity:'in no scanned city yet', wScanned:'{n} cities', wStructs:'Structures', wTabN:'{n} to grind',
     eNow:'Bank right now', eNowN:'One step each, cheapest first. You hold enough already and still keep what recipes need.', eCraft:'A few crafts away', eCraftN:'Craft the extra copies from ingredients you can spare, then bank. Fewest crafts first.', eNeed:'Craft', eStep:'Step', eNone:'Nothing easy right now.', eCraftVerb:'craft {n} more', eBankVerb:'bank {n}', eHold:'hold {n}', eSum:'Doing all of this: {c} crafts and {b} banking levels, with the reserve kept and no protected trove touched.', ePlan:'Craft, then bank', ePlanN:'Each row is a whole plan for one trove: how many to craft in total and the level it ends at. The plans share ingredients, so you can do them all together.', eJust:'Just bank (no crafting)', eJustN:'You already hold enough.', colNow:'Now', colCraftTot:'Craft in total', colEnds:'Ends at', colSteps:'Step by step', colUses:'Uses', cUpTo:'Up to', cLimit:'limited by {x}', cReach:'Reaches', cLeft:'{n} left', cAfter:'bank levels show once you hold one', cOnly:'only 1 (or none) to craft', cTabN:'{n} new', eTabN:'{n} steps',
     kFound:'Troves found', kCraft:'Recipes you can craft', kOne:'One trove short', kBlock:'Troves missing', kStamina:'Stamina', kDate:'File from',
     ovFirst:'Find these first', ovFirstN:'The troves that hold up the most recipes. Finding one finishes the recipes where it is the only thing missing.',
@@ -76,13 +78,15 @@ Site.register({
   },
   es:{
     title:'Los Troves de Rockdrigo', subtitle:'Qué buscar primero, qué craftear ya y qué guardar en el banco.',
-    srcTitle:'¿De quién son los troves?', srcRock:'De Rockdrigo (último)', srcMine:'Mi propio archivo', upload:'Sube tu archivo de troves', drop:'Suelta tu .json aquí, o haz clic para elegirlo',
-    forget:'Olvidar mi archivo', howto:'¿Cómo consigo mi archivo de troves?', private:'Tu archivo se lee solo en este navegador. No se sube a ningún lado.',
+    srcTitle:'¿De quién son los troves?', srcRock:'De Rockdrigo (último)', srcMine:'Mi propio archivo', upload:'Sube tu archivo de troves', drop:'Suelta tu archivo HAR aquí, o haz clic para elegirlo',
+    forget:'Olvidar mi archivo', howto:'¿Cómo consigo mi archivo de troves?', private:'Tu archivo se lee solo en este navegador y no se sube a ningún lado. De un HAR la página guarda solo tus troves: nunca el HAR ni tu sesión.',
     loaded:'Cargados {n} troves y {r} recetas de {d}.', loading:'Cargando…',
-    upErrToken:'Este archivo contiene algo que parece un token de sesión. No se cargó. No lo compartas: límpialo primero con el script de la página de ayuda.',
-    upErrHar:'Esto parece un archivo HAR sin limpiar, que contiene tu sesión. No se cargó. Pásale el script de la página de ayuda y sube el archivo que genera.',
+    upErrToken:'Este archivo contiene algo que parece un token de sesión. No se cargó, y no deberías compartirlo.',
+    upErrNoInv:'Tu inventario de troves no está en este HAR. Abre tu página de Troves con la pestaña Network grabando, recárgala y guarda el HAR otra vez.',
     upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
-    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tFind:'Consultar',
+    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tWorld:'Mapa de grind', tFind:'Consultar',
+    wCover:'Ciudades escaneadas hasta ahora: {list}. Todo esto es “por ahora”: cambia al escanear más ciudades.', wNone:'El escaneo del mundo aún no tiene datos.', wBestH:'Mejores ciudades para lo que te falta', wBestN:'Por cada ciudad escaneada: cuántos de tus troves faltantes puede darte y cuántas recetas desbloquearía. Las ciudades parciales (un barrio) solo muestran lo de ese barrio.',
+    wCity:'Ciudad', wGives:'Te da', wUnlock:'Recetas frenadas', wMissing:'No aquí', wGrindH:'Troves ligados a pocas ciudades', wGrindN:'Troves cuyas estructuras existen en solo una o dos de las ciudades escaneadas, o en ninguna aún. Son los que hay que buscar a propósito.', wOnlyMine:'Solo los troves que me faltan', wCities:'Ciudades', wNoCity:'en ninguna ciudad escaneada aún', wScanned:'{n} ciudades', wStructs:'Estructuras', wTabN:'{n} por buscar',
     eNow:'Al banco ya', eNowN:'Un paso cada uno, los más baratos primero. Ya tienes suficiente y aún guardas lo que piden las recetas.', eCraft:'A pocos crafteos', eCraftN:'Craftea las copias extra con ingredientes que te sobran y luego al banco. Los que menos crafteos piden, primero.', eNeed:'Craftear', eStep:'Paso', eNone:'Nada fácil por ahora.', eCraftVerb:'craftea {n} más', eBankVerb:'banquea {n}', eHold:'tienes {n}', eSum:'Haciendo todo esto: {c} crafteos y {b} niveles de banco, guardando la reserva y sin tocar ningún trove protegido.', ePlan:'Craftear y luego al banco', ePlanN:'Cada fila es un plan completo para un trove: cuántos craftear en total y el nivel en que termina. Los planes comparten ingredientes, así que puedes hacerlos todos juntos.', eJust:'Solo al banco (sin craftear)', eJustN:'Ya tienes suficiente.', colNow:'Ahora', colCraftTot:'Craftear en total', colEnds:'Termina en', colSteps:'Paso a paso', colUses:'Usa', cUpTo:'Hasta', cLimit:'limitado por {x}', cReach:'Llega a', cLeft:'sobran {n}', cAfter:'los niveles de banco se ven cuando tengas uno', cOnly:'solo 1 (o ninguno)', cTabN:'{n} nuevos', eTabN:'{n} pasos',
     kFound:'Troves encontrados', kCraft:'Recetas que puedes craftear', kOne:'A un trove de lograrlo', kBlock:'Troves que faltan', kStamina:'Stamina', kDate:'Archivo del',
     ovFirst:'Busca estos primero', ovFirstN:'Los troves que frenan más recetas. Encontrar uno completa las recetas donde es lo único que falta.',
@@ -104,12 +108,13 @@ Site.register({
 const FORMAT = 'upland-troves-v1';
 // Same patterns as the cleaning script: a login token anywhere in the text means the file is declined.
 const TOKEN = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}|[Bb]earer\s+[A-Za-z0-9._~+\/=-]{20,}|"(?:access_?token|refresh_?token|id_?token|authorization|cookie|set-cookie|secret|password)"\s*:\s*"[^"]{12,}"/i;
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 5 * 1024 * 1024, MAX_HAR = 150 * 1024 * 1024;
 const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let PLACES = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
+let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
+let onlyMine = store.get('rut:troves:onlyMine', true);
 let tab = store.get('rut:troves:tab', 'overview'), mode = store.get('rut:troves:mode', 'careful'), query = '';
 
 // ---------- reading a file ----------
@@ -128,12 +133,29 @@ function checkShape(j){
   const st = j.stamina && num(j.stamina.current) ? {current:j.stamina.current, max:num(j.stamina.max) ? j.stamina.max : null} : null;
   return {format:FORMAT, date:String(j.date || '').slice(0, 10), troves:{found:num(j.troves && j.troves.found) ? j.troves.found : items.length, max:num(j.troves && j.troves.max) ? j.troves.max : null}, items, recipes, stamina:st};
 }
-// Returns {data} or {err}. A file with a token, or a raw HAR, is declined before anything is kept.
+// A HAR holds your login, so the page never keeps it: it reads the HAR here, takes only the trove inventory out of it, and drops the rest.
+function fromHar(har){
+  let bal = null, stamina = null;
+  for(const e of (har.log.entries || [])){
+    const c = e && e.response && e.response.content; if(!c || !c.text) continue;
+    let body; try{ body = JSON.parse(c.encoding === 'base64' ? atob(c.text) : c.text); }catch{ continue; }
+    const url = String((e.request && e.request.url) || '').split('?')[0];
+    if(body && body.discoveredRecipes && body.categories) bal = body;
+    else if(url.endsWith('/stamina/total') && body && typeof body.current === 'number') stamina = body;
+  }
+  if(!bal) return null;
+  const d = fromBalance(bal); if(stamina) d.stamina = {current:stamina.current, max:stamina.max};
+  return d;
+}
+// Returns {data} or {err}. A HAR is read here and reduced to the inventory. Any other file with a token in it is declined.
 function readText(text){
-  if(text.length > MAX_BYTES) return {err:'upErrBig'};
-  if(TOKEN.test(text)) return {err:'upErrToken'};
+  const looksHar = /^\s*\{\s*"log"\s*:/.test(text.slice(0, 300));
+  if(!looksHar){
+    if(text.length > MAX_BYTES) return {err:'upErrBig'};
+    if(TOKEN.test(text)) return {err:'upErrToken'};
+  }
   let j; try{ j = JSON.parse(text); }catch{ return {err:'upErrJson'}; }
-  if(j && j.log && j.log.entries) return {err:'upErrHar'};
+  if(j && j.log && j.log.entries){ const d = fromHar(j); const c = d && checkShape(d); return c ? {data:c} : {err:'upErrNoInv'}; }
   if(j && j.format === FORMAT){ const d = checkShape(j); return d ? {data:d} : {err:'upErrShape'}; }
   const bal = j && j.discoveredRecipes ? j : (j && Array.isArray(j.responses) ? j.responses.map(r => r && r.body).find(b => b && b.discoveredRecipes) : null);
   if(bal && bal.categories){ try{ const d = checkShape(fromBalance(bal)); if(d) return {data:d}; }catch{} }
@@ -141,7 +163,7 @@ function readText(text){
 }
 async function takeFile(file){
   if(!file) return;
-  if(file.size > MAX_BYTES){ STATUS = t('upErrBig'); STATUS_ERR = true; return draw(); }
+  if(file.size > MAX_HAR){ STATUS = t('upErrBig'); STATUS_ERR = true; return draw(); }
   const r = readText(await file.text());
   if(r.err){ STATUS = t(r.err); STATUS_ERR = true; return draw(); }
   MINE = r.data; store.set(MINE_KEY, MINE); SRC = 'mine'; store.set('rut:troves:src', SRC);
@@ -301,6 +323,37 @@ function viewEasy(){
     + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td></tr>`)))
     + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
 }
+// Which scanned cities hold a trove: cities where at least one of its structures is built, with the structures found there.
+const presence = (() => { const memo = new Map(); return name => {
+  if(memo.has(name)) return memo.get(name);
+  const out = new Map(), p = PLACES.get(name);
+  if(p && WORLD) p.structures.forEach(sn => { const e = WORLD.structures[norm(sn).replace(/ 1$/, '')]; if(!e) return; Object.entries(e.c).forEach(([cid, c]) => { if(c > 0){ const o = out.get(cid) || {n:0, s:[]}; o.n += c; o.s.push(sn); out.set(cid, o); } }); });
+  memo.set(name, out); return out; }; })();
+function viewWorld(){
+  if(!WORLD || !WORLD.cities.length) return `<div class="card muted">${esc(t('wNone'))}</div>`;
+  const cname = id => (WORLD.cities.find(c => String(c.id) === String(id)) || {name:'#' + id}).name;
+  const cover = `<div class="card" style="margin-bottom:6px">${esc(t('wCover', {list:WORLD.cities.map(c => c.name + (c.done ? '' : ' ' + n0(c.read) + '/' + n0(c.total))).join(', ')}))}</div>`;
+  const best = WORLD.cities.map(c => {
+    const got = A.blockers.filter(b => presence(b.n).has(String(c.id))), miss = A.blockers.filter(b => !presence(b.n).has(String(c.id)));
+    return {c, got, miss, w:got.reduce((a, b) => a + b.recipes, 0)};
+  }).sort((a, b) => b.w - a.w);
+  const bestT = tbl([[t('wCity')], [t('wGives'), 'n'], [t('wUnlock'), 'n'], [t('wMissing')]],
+    best.map(r => `<tr><td><b>${esc(r.c.name)}</b></td><td class="n">${r.got.length} / ${A.blockers.length}</td><td class="n">${r.w}</td><td class="places">${esc(r.miss.map(b => b.n).join(', '))}</td></tr>`));
+  const mine = new Set([...A.items.values()].filter(i => i.q > 0).map(i => i.name));
+  const rows = [];
+  PLACES.forEach((p, name) => {
+    if(!p.structures.length) return;
+    const pr = presence(name), have = mine.has(name);
+    if(onlyMine && have) return;
+    if(pr.size <= 2) rows.push({name, pr, have, w:(A.blockers.find(b => b.n === name) || {recipes:0}).recipes});
+  });
+  rows.sort((a, b) => (b.w - a.w) || (a.pr.size - b.pr.size) || a.name.localeCompare(b.name));
+  const grind = tbl([[t('colTrove')], [t('wCities')], [t('wStructs')]], rows.map(r => `<tr><td><b>${esc(r.name)}</b>${r.w ? ` <span class="tag bad">${r.w}</span>` : ''}</td>
+    <td>${r.pr.size ? esc([...r.pr.keys()].map(cname).join(', ')) : `<span class="muted">${esc(t('wNoCity'))}</span>`}</td>
+    <td class="places">${esc([...new Set([...r.pr.values()].flatMap(v => v.s))].slice(0, 6).join(', ') || PLACES.get(r.name).structures.slice(0, 4).join(', '))}</td></tr>`));
+  return cover + sec(t('wBestH'), t('wBestN'), bestT)
+    + sec(t('wGrindH'), t('wGrindN'), `<label class="row small" style="margin-bottom:6px"><input type="checkbox" id="onlyMine" ${onlyMine ? 'checked' : ''}> ${esc(t('wOnlyMine'))}</label>` + grind);
+}
 function viewFind(){
   const q = norm(query);
   const names = new Set([...PLACES.keys(), ...A.items.keys()]);
@@ -321,7 +374,7 @@ function srcCard(){
   el.innerHTML = `<div class="row"><b>${esc(t('srcTitle'))}</b>
       <div class="seg" id="srcSeg"><button type="button" data-src="rock" class="${SRC === 'rock' ? 'on' : ''}">${esc(t('srcRock'))}</button><button type="button" data-src="mine" class="${SRC === 'mine' ? 'on' : ''}" ${MINE ? '' : 'disabled'}>${esc(t('srcMine'))}</button></div>
       ${MINE ? `<button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}</div>
-    <label class="drop" id="drop" for="file">${esc(t('drop'))}<input type="file" id="file" accept=".json,application/json" hidden></label>
+    <label class="drop" id="drop" for="file">${esc(t('drop'))}<input type="file" id="file" accept=".har,.json,application/json" hidden></label>
     <div class="hint">${esc(t('private'))}</div>
     <div class="status ${STATUS_ERR ? 'err' : ''}" role="status">${esc(STATUS)}</div>`;
   document.getElementById('howto').textContent = t('howto');
@@ -332,8 +385,8 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['bank', '🏦', t('tBank'), ''], ['find', '🧭', t('tFind'), '']];
-  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, bank:viewBank, find:viewFind}[tab] || viewOverview;
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['find', '🧭', t('tFind'), '']];
+  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, bank:viewBank, world:viewWorld, find:viewFind}[tab] || viewOverview;
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
@@ -345,7 +398,10 @@ document.addEventListener('click', e => {
   const s = e.target.closest('[data-src]'); if(s && !s.disabled){ SRC = s.dataset.src; store.set('rut:troves:src', SRC); use(); draw(); return; }
   if(e.target.closest('#forget')){ MINE = null; try{ localStorage.removeItem(MINE_KEY); }catch{} SRC = 'rock'; store.set('rut:troves:src', SRC); STATUS = ''; use(); draw(); }
 });
-document.addEventListener('change', e => { if(e.target.id === 'file') takeFile(e.target.files[0]); });
+document.addEventListener('change', e => {
+  if(e.target.id === 'file') takeFile(e.target.files[0]);
+  if(e.target.id === 'onlyMine'){ onlyMine = e.target.checked; store.set('rut:troves:onlyMine', onlyMine); draw(); }
+});
 document.addEventListener('input', e => {
   if(e.target.id === 'q'){ query = e.target.value; const pos = e.target.selectionStart; draw(); const q = document.getElementById('q'); q.focus(); q.setSelectionRange(pos, pos); }
 });
@@ -366,6 +422,7 @@ async function boot(){
     PLACES = new Map(p.troves.map(([name, cat, structures, plants, craftAt]) => [name, {cat, structures, plants, craftAt}]));
     ROCK = checkShape(r);
   }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
+  try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();
 }
 boot();
