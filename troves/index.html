@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo’s Troves</title>
+<meta name="description" content="Upland troves: what to find first, what you can craft right now, and what to bank without running out of what you need. Load your own troves file; it never leaves your browser.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.875rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.75rem;color:var(--muted);font-weight:600;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:.6875rem;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.tag.good{background:var(--accent);color:var(--accent-ink)}
+.tag.warn{background:var(--warn);color:#fff}
+.tag.bad{background:var(--bad);color:#fff}
+.src{display:grid;gap:10px}
+.src .row{align-items:flex-end}
+.drop{border:2px dashed var(--border);border-radius:10px;padding:12px 14px;text-align:center;color:var(--muted);cursor:pointer}
+.drop.over{border-color:var(--accent);color:var(--text)}
+.places{font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}
+.sec{margin:18px 0 6px}
+.sec p{margin:0 0 8px;color:var(--muted);font-size:.8125rem}
+details.more summary{cursor:pointer;color:var(--accent);font-size:.8125rem}
+.hint{font-size:.8125rem;color:var(--muted)}
+.howto{margin-top:14px;font-size:.8125rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <section class="card src" id="src"></section>
+  <div id="app"></div>
+  <p class="howto"><a href="howto/" id="howto"></a></p>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc, store} = Site;
+Site.register({
+  en:{
+    title:'Rockdrigo’s Troves', subtitle:'What to find first, what to craft now and what to bank.',
+    srcTitle:'Whose troves?', srcRock:'Rockdrigo’s (latest)', srcMine:'My own file', upload:'Upload your troves file', drop:'Drop your .json here, or click to choose it',
+    forget:'Forget my file', howto:'How do I get my troves file?', private:'Your file is read in this browser only. It is not uploaded anywhere.',
+    loaded:'Loaded {n} troves and {r} recipes from {d}.', loading:'Loading…',
+    upErrToken:'This file contains something that looks like a login token. It was not loaded. Do not share it: clean it first with the script on the how-to page.',
+    upErrHar:'This looks like a raw HAR file, which holds your login. It was not loaded. Run the script from the how-to page on it and upload the file it writes.',
+    upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
+    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tFind:'Look up',
+    kFound:'Troves found', kCraft:'Recipes you can craft', kOne:'One trove short', kBlock:'Troves missing', kStamina:'Stamina', kDate:'File from',
+    ovFirst:'Find these first', ovFirstN:'The troves that hold up the most recipes. Finding one finishes the recipes where it is the only thing missing.',
+    colTrove:'Trove', colBlocks:'Recipes held up', colAlone:'Finished by it alone', colHave:'You have', colNeed:'Need', colWhere:'Found in', colCraftAt:'Craft at', colIng:'Ingredients',
+    colLevel:'Level', colCost:'Cost', colHeld:'Held', colKeep:'Keep', colUsed:'Used in', colSites:'Found in', colCopies:'Can craft', colReach:'Reaches',
+    places:'{n} places', structs:'structures', plantsLbl:'plants', more:'all {n} places',
+    cNew:'New troves you can craft now', cNewN:'Troves that have never been in your inventory. Each one is a discovery.', cAgain:'More you can craft', cAgainN:'You have had these before. Craft them for banking, or when you need them.',
+    cNone:'Nothing here yet.', newTag:'new', forBank:'for banking',
+    bNow:'Safe to bank now', bNowN:'You hold enough to reach the next level and still keep a reserve for the recipes that need it.',
+    bCraft:'Craft to bank', bCraftN:'Troves you can craft in bulk from what you hold, without touching a protected ingredient.',
+    bProtect:'Do not bank these', bProtectN:'Recipes need them and they are scarce or you hold few. Banking would use them up.',
+    bMode:'Reserve', bCareful:'Careful', bRelaxed:'Relaxed', bModeN:'Careful keeps 5× what a recipe needs of scarce troves and 2× of the rest. Relaxed keeps 3× and 1×.',
+    colToGold:'Total to Gold', bronze:'Bronze', silver:'Silver', gold:'Gold',
+    fHint:'Type a trove name', fHeld:'You hold {n}', fNotOwned:'Not in your inventory', fFound:'Found in', fCraftedAt:'Crafted at', fUsedIn:'Used in', fNothing:'No troves match.',
+    updated:'Trove places updated {d}.'
+  },
+  es:{
+    title:'Los Troves de Rockdrigo', subtitle:'Qué buscar primero, qué craftear ya y qué guardar en el banco.',
+    srcTitle:'¿De quién son los troves?', srcRock:'De Rockdrigo (último)', srcMine:'Mi propio archivo', upload:'Sube tu archivo de troves', drop:'Suelta tu .json aquí, o haz clic para elegirlo',
+    forget:'Olvidar mi archivo', howto:'¿Cómo consigo mi archivo de troves?', private:'Tu archivo se lee solo en este navegador. No se sube a ningún lado.',
+    loaded:'Cargados {n} troves y {r} recetas de {d}.', loading:'Cargando…',
+    upErrToken:'Este archivo contiene algo que parece un token de sesión. No se cargó. No lo compartas: límpialo primero con el script de la página de ayuda.',
+    upErrHar:'Esto parece un archivo HAR sin limpiar, que contiene tu sesión. No se cargó. Pásale el script de la página de ayuda y sube el archivo que genera.',
+    upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
+    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tFind:'Consultar',
+    kFound:'Troves encontrados', kCraft:'Recetas que puedes craftear', kOne:'A un trove de lograrlo', kBlock:'Troves que faltan', kStamina:'Stamina', kDate:'Archivo del',
+    ovFirst:'Busca estos primero', ovFirstN:'Los troves que frenan más recetas. Encontrar uno completa las recetas donde es lo único que falta.',
+    colTrove:'Trove', colBlocks:'Recetas frenadas', colAlone:'Completa solo él', colHave:'Tienes', colNeed:'Necesitas', colWhere:'Se encuentra en', colCraftAt:'Se craftea en', colIng:'Ingredientes',
+    colLevel:'Nivel', colCost:'Costo', colHeld:'Tienes', colKeep:'Reserva', colUsed:'Usado en', colSites:'Se encuentra en', colCopies:'Puedes hacer', colReach:'Llega a',
+    places:'{n} lugares', structs:'estructuras', plantsLbl:'plantas', more:'los {n} lugares',
+    cNew:'Troves nuevos que puedes craftear ya', cNewN:'Troves que nunca han estado en tu inventario. Cada uno es un descubrimiento.', cAgain:'Más que puedes craftear', cAgainN:'Ya los tuviste antes. Craftéalos para el banco, o cuando los necesites.',
+    cNone:'Aquí aún no hay nada.', newTag:'nuevo', forBank:'para el banco',
+    bNow:'Seguro para el banco ya', bNowN:'Tienes suficiente para subir de nivel y aún guardar reserva para las recetas que lo necesitan.',
+    bCraft:'Craftear para el banco', bCraftN:'Troves que puedes craftear en cantidad con lo que tienes, sin tocar un ingrediente protegido.',
+    bProtect:'No los mandes al banco', bProtectN:'Las recetas los necesitan y son escasos o tienes pocos. Bancarlos los gastaría.',
+    bMode:'Reserva', bCareful:'Cuidadosa', bRelaxed:'Relajada', bModeN:'Cuidadosa guarda 5× lo que pide una receta de los troves escasos y 2× del resto. Relajada guarda 3× y 1×.',
+    colToGold:'Total hasta Oro', bronze:'Bronce', silver:'Plata', gold:'Oro',
+    fHint:'Escribe el nombre de un trove', fHeld:'Tienes {n}', fNotOwned:'No está en tu inventario', fFound:'Se encuentra en', fCraftedAt:'Se craftea en', fUsedIn:'Usado en', fNothing:'Ningún trove coincide.',
+    updated:'Lugares de troves actualizados el {d}.'
+  }
+});
+
+const FORMAT = 'upland-troves-v1';
+// Same patterns as the cleaning script: a login token anywhere in the text means the file is declined.
+const TOKEN = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}|[Bb]earer\s+[A-Za-z0-9._~+\/=-]{20,}|"(?:access_?token|refresh_?token|id_?token|authorization|cookie|set-cookie|secret|password)"\s*:\s*"[^"]{12,}"/i;
+const MAX_BYTES = 5 * 1024 * 1024;
+const MINE_KEY = 'rut:troves:mine';
+const n0 = x => Number(x).toLocaleString(Site.locale());
+const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+let PLACES = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
+let tab = store.get('rut:troves:tab', 'overview'), mode = store.get('rut:troves:mode', 'careful'), query = '';
+
+// ---------- reading a file ----------
+function fromBalance(b){
+  const items = b.categories.flatMap(c => c.items.map(i => [i.name, c.name, i.quantity, i.bankedLevel || 0, (i.bankingLevels || []).map(l => l.requiredTrovesCount)]));
+  const recipes = b.discoveredRecipes.map(r => [r.name, r.ingredients.filter(g => (g.assetType || 'trove') === 'trove').map(g => [g.name, g.required])]);
+  return {format:FORMAT, date:new Date().toISOString().slice(0, 10), troves:{found:b.totalCount, max:b.maxCount}, items, recipes};
+}
+function checkShape(j){
+  const num = x => typeof x === 'number' && isFinite(x);
+  if(!j || j.format !== FORMAT || !Array.isArray(j.items) || !Array.isArray(j.recipes)) return null;
+  if(j.items.length > 1500 || j.recipes.length > 3000) return null;
+  const items = j.items.filter(i => Array.isArray(i) && typeof i[0] === 'string' && num(i[2])).map(i => [String(i[0]).slice(0, 80), String(i[1] || '').slice(0, 40), i[2], num(i[3]) ? i[3] : 0, (Array.isArray(i[4]) ? i[4] : []).filter(num).slice(0, 5)]);
+  const recipes = j.recipes.filter(r => Array.isArray(r) && typeof r[0] === 'string' && Array.isArray(r[1])).map(r => [String(r[0]).slice(0, 80), r[1].filter(g => Array.isArray(g) && typeof g[0] === 'string' && num(g[1])).map(g => [String(g[0]).slice(0, 80), g[1]])]);
+  if(!items.length || !recipes.length) return null;
+  const st = j.stamina && num(j.stamina.current) ? {current:j.stamina.current, max:num(j.stamina.max) ? j.stamina.max : null} : null;
+  return {format:FORMAT, date:String(j.date || '').slice(0, 10), troves:{found:num(j.troves && j.troves.found) ? j.troves.found : items.length, max:num(j.troves && j.troves.max) ? j.troves.max : null}, items, recipes, stamina:st};
+}
+// Returns {data} or {err}. A file with a token, or a raw HAR, is declined before anything is kept.
+function readText(text){
+  if(text.length > MAX_BYTES) return {err:'upErrBig'};
+  if(TOKEN.test(text)) return {err:'upErrToken'};
+  let j; try{ j = JSON.parse(text); }catch{ return {err:'upErrJson'}; }
+  if(j && j.log && j.log.entries) return {err:'upErrHar'};
+  if(j && j.format === FORMAT){ const d = checkShape(j); return d ? {data:d} : {err:'upErrShape'}; }
+  const bal = j && j.discoveredRecipes ? j : (j && Array.isArray(j.responses) ? j.responses.map(r => r && r.body).find(b => b && b.discoveredRecipes) : null);
+  if(bal && bal.categories){ try{ const d = checkShape(fromBalance(bal)); if(d) return {data:d}; }catch{} }
+  return {err:'upErrShape'};
+}
+async function takeFile(file){
+  if(!file) return;
+  if(file.size > MAX_BYTES){ STATUS = t('upErrBig'); STATUS_ERR = true; return draw(); }
+  const r = readText(await file.text());
+  if(r.err){ STATUS = t(r.err); STATUS_ERR = true; return draw(); }
+  MINE = r.data; store.set(MINE_KEY, MINE); SRC = 'mine'; store.set('rut:troves:src', SRC);
+  STATUS = t('loaded', {n:MINE.items.length, r:MINE.recipes.length, d:MINE.date || '?'}); STATUS_ERR = false;
+  use(); draw();
+}
+
+// ---------- analysis ----------
+let A = null;
+function use(){
+  DATA = SRC === 'mine' && MINE ? MINE : ROCK;
+  A = DATA && PLACES ? analyse(DATA) : null;
+}
+function analyse(d){
+  const items = new Map(d.items.map(i => [i[0], {name:i[0], cat:i[1], q:i[2], lvl:i[3], th:i[4]}]));
+  const have = n => (items.get(n) || {q:0}).q;
+  const recs = d.recipes.map(([name, ings]) => {
+    const g = ings.map(([n, req]) => ({n, req, have:have(n)}));
+    const short = g.filter(x => x.have < x.req);
+    return {name, ings:g, ok:!short.length, short};
+  });
+  const need = new Map();   // trove -> {max needed in one recipe, recipes that use it}
+  recs.forEach(r => r.ings.forEach(g => { const e = need.get(g.n) || {max:0, uses:0}; e.max = Math.max(e.max, g.req); e.uses++; need.set(g.n, e); }));
+  const block = new Map();
+  recs.filter(r => !r.ok).forEach(r => r.short.forEach(s => {
+    const e = block.get(s.n) || {n:s.n, recipes:0, alone:0, gap:0}; e.recipes++; if(r.short.length === 1) e.alone++; e.gap = Math.max(e.gap, s.req - s.have); block.set(s.n, e);
+  }));
+  const blockers = [...block.values()].sort((a, b) => b.recipes - a.recipes || b.alone - a.alone);
+  const sites = n => { const p = PLACES.get(n); return p ? p.structures.length + p.plants.length : null; };
+  const [mS, mR] = mode === 'careful' ? [5, 2] : [3, 1];
+  const prot = new Set();
+  const rows = [];
+  items.forEach(i => {
+    const nd = need.get(i.name), s = sites(i.name);
+    const scarce = !!nd && ((s != null && s > 0 && s <= 10) || i.q < nd.max * 3);
+    if(scarce) prot.add(i.name);
+    const keep = nd ? nd.max * (scarce ? mS : mR) : 0;
+    const nxt = i.th[i.lvl];
+    rows.push({...i, keep, scarce, uses:nd ? nd.uses : 0, max:nd ? nd.max : 0, sites:s, nxt, toGold:i.th.slice(i.lvl).reduce((a, b) => a + b, 0), canBank:nxt != null && i.q - keep >= nxt});
+  });
+  const byRecipe = new Map();
+  recs.forEach(r => { (byRecipe.get(r.name) || byRecipe.set(r.name, []).get(r.name)).push(r); });
+  const craftable = [...byRecipe.entries()].filter(([, v]) => v.some(r => r.ok)).map(([name, v]) => ({name, versions:v.filter(r => r.ok), isNew:!items.has(name), item:items.get(name)}));
+  // Bulk crafting for the bank: copies you can make from unprotected ingredients, and the banking levels they would reach.
+  const bulk = [];
+  byRecipe.forEach((vs, name) => {
+    const it = items.get(name); if(!it || it.lvl >= it.th.length) return;
+    let best = 0;
+    vs.forEach(r => { if(r.ings.some(g => prot.has(g.n))) return; best = Math.max(best, Math.min(...r.ings.map(g => Math.floor(g.have / g.req)))); });
+    let lv = it.lvl, tot = it.q + best; while(lv < it.th.length && tot >= it.th[lv]){ tot -= it.th[lv]; lv++; }
+    if(lv > it.lvl) bulk.push({name, from:it.lvl, to:lv, held:it.q, copies:best, toGold:it.th.slice(it.lvl).reduce((a, b) => a + b, 0)});
+  });
+  bulk.sort((a, b) => (b.to - b.from) - (a.to - a.from) || a.toGold - b.toGold);
+  const oneShort = recs.filter(r => r.short.length === 1).length;
+  return {items, recs, blockers, rows, craftable, bulk, craftN:recs.filter(r => r.ok).length, oneShort, prot};
+}
+
+// ---------- drawing ----------
+const levelName = l => l ? t(['', 'bronze', 'silver', 'gold'][l] || 'gold') : '—';
+const placeList = (p, all) => {
+  if(!p) return '';
+  const st = p.structures, pl = p.plants, shown = all ? st : st.slice(0, 6);
+  const head = esc(shown.join(', ')) + (!all && st.length > 6 ? ` <span class="muted">+${st.length - 6}</span>` : '') + (pl.length ? ` · ${esc(t('plantsLbl'))}: ${esc(pl.join(', '))}` : '');
+  return head;
+};
+const whereCell = n => {
+  const p = PLACES.get(n); if(!p) return '<span class="muted">—</span>';
+  const total = p.structures.length + p.plants.length;
+  return `<div class="places">${placeList(p, false)}</div>${p.structures.length > 6 ? `<details class="more"><summary>${esc(t('more', {n:total}))}</summary><div class="places">${placeList(p, true)}</div></details>` : ''}`;
+};
+function tbl(head, rows){
+  return `<div class="tablewrap"><table><thead><tr>${head.map(h => `<th class="${h[1] || ''}">${esc(h[0])}</th>`).join('')}</tr></thead><tbody>${rows.join('') || `<tr><td colspan="${head.length}" class="muted">${esc(t('cNone'))}</td></tr>`}</tbody></table></div>`;
+}
+const sec = (title, note, body) => `<div class="sec"><h2>${esc(title)}</h2>${note ? `<p>${esc(note)}</p>` : ''}</div>${body}`;
+
+function viewOverview(){
+  const top = A.blockers.slice(0, 10);
+  return sec(t('ovFirst'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colWhere')]],
+    top.map(b => `<tr><td><b>${esc(b.n)}</b></td><td class="n">${b.recipes}</td><td class="n">${b.alone}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td>${whereCell(b.n)}</td></tr>`)));
+}
+function viewMissing(){
+  return sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
+    A.blockers.map(b => `<tr><td><b>${esc(b.n)}</b></td><td class="n">${b.recipes}</td><td class="n">${b.alone}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${whereCell(b.n)}</td></tr>`)));
+}
+function craftRow(c){
+  const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
+  const p = PLACES.get(c.name), at = p ? p.craftAt : [];
+  return `<tr><td><b>${esc(c.name)}</b>${c.isNew ? ` <span class="tag good">${esc(t('newTag'))}</span>` : ''}</td><td>${ing}</td><td><div class="places">${esc(at.slice(0, 8).join(', '))}${at.length > 8 ? ` <span class="muted">+${at.length - 8}</span>` : ''}</div></td></tr>`;
+}
+function viewCraft(){
+  const head = [[t('colTrove')], [t('colIng')], [t('colCraftAt')]];
+  const nw = A.craftable.filter(c => c.isNew).sort((a, b) => a.name.localeCompare(b.name));
+  const old = A.craftable.filter(c => !c.isNew).sort((a, b) => a.name.localeCompare(b.name));
+  return sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) + sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow)));
+}
+function viewBank(){
+  const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
+  const prot = A.rows.filter(r => r.scarce && r.nxt != null).sort((a, b) => b.uses - a.uses);
+  const modeSel = `<div class="row" style="margin:6px 0"><span class="small muted">${esc(t('bMode'))}</span><div class="seg" id="mode"><button type="button" data-mode="careful" class="${mode === 'careful' ? 'on' : ''}">${esc(t('bCareful'))}</button><button type="button" data-mode="relaxed" class="${mode === 'relaxed' ? 'on' : ''}">${esc(t('bRelaxed'))}</button></div></div><p class="hint">${esc(t('bModeN'))}</p>`;
+  return modeSel
+    + sec(t('bNow'), t('bNowN'), tbl([[t('colTrove')], [t('colLevel')], [t('colCost'), 'n'], [t('colHeld'), 'n'], [t('colKeep'), 'n'], [t('colToGold'), 'n']],
+        now.map(r => `<tr><td><b>${esc(r.name)}</b></td><td>${esc(levelName(r.lvl + 1))}</td><td class="n">${n0(r.nxt)}</td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.keep)}</td><td class="n">${n0(r.toGold)}</td></tr>`)))
+    + sec(t('bCraft'), t('bCraftN'), tbl([[t('colTrove')], [t('colReach')], [t('colHeld'), 'n'], [t('colCopies'), 'n'], [t('colToGold'), 'n']],
+        A.bulk.slice(0, 40).map(b => `<tr><td><b>${esc(b.name)}</b></td><td>${esc(levelName(b.from))} → ${esc(levelName(b.to))}</td><td class="n">${n0(b.held)}</td><td class="n">${n0(b.copies)}</td><td class="n">${n0(b.toGold)}</td></tr>`)))
+    + sec(t('bProtect'), t('bProtectN'), tbl([[t('colTrove')], [t('colHeld'), 'n'], [t('colNeed'), 'n'], [t('colUsed'), 'n'], [t('colSites'), 'n']],
+        prot.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.max)}</td><td class="n">${r.uses}</td><td class="n">${r.sites == null ? '—' : r.sites}</td></tr>`)));
+}
+function viewFind(){
+  const q = norm(query);
+  const names = new Set([...PLACES.keys(), ...A.items.keys()]);
+  const hits = q ? [...names].filter(n => norm(n).includes(q)).sort((a, b) => (norm(a).startsWith(q) ? 0 : 1) - (norm(b).startsWith(q) ? 0 : 1) || a.localeCompare(b)).slice(0, 15) : [];
+  const usedIn = n => [...new Set(A.recs.filter(r => r.ings.some(g => g.n === n)).map(r => r.name))].sort();
+  const body = hits.map(n => {
+    const p = PLACES.get(n), it = A.items.get(n), u = usedIn(n);
+    return `<div class="card" style="margin-bottom:10px"><h2 style="margin:0 0 4px">${esc(n)} <span class="tag">${esc(it ? t('fHeld', {n:n0(it.q)}) : t('fNotOwned'))}</span></h2>
+      ${p && (p.structures.length || p.plants.length) ? `<p class="places"><b>${esc(t('fFound'))}:</b> ${placeList(p, true)}</p>` : ''}
+      ${p && p.craftAt.length ? `<p class="places"><b>${esc(t('fCraftedAt'))}:</b> ${esc(p.craftAt.join(', '))}</p>` : ''}
+      ${u.length ? `<p class="places"><b>${esc(t('fUsedIn'))}:</b> ${esc(u.join(', '))}</p>` : ''}</div>`;
+  }).join('');
+  return `<div class="row" style="margin-bottom:10px"><input type="search" id="q" class="grow" placeholder="${esc(t('fHint'))}" value="${esc(query)}" autocomplete="off"></div><div id="hits">${q && !hits.length ? `<div class="card muted">${esc(t('fNothing'))}</div>` : body}</div>`;
+}
+
+function srcCard(){
+  const el = document.getElementById('src');
+  el.innerHTML = `<div class="row"><b>${esc(t('srcTitle'))}</b>
+      <div class="seg" id="srcSeg"><button type="button" data-src="rock" class="${SRC === 'rock' ? 'on' : ''}">${esc(t('srcRock'))}</button><button type="button" data-src="mine" class="${SRC === 'mine' ? 'on' : ''}" ${MINE ? '' : 'disabled'}>${esc(t('srcMine'))}</button></div>
+      ${MINE ? `<button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}</div>
+    <label class="drop" id="drop" for="file">${esc(t('drop'))}<input type="file" id="file" accept=".json,application/json" hidden></label>
+    <div class="hint">${esc(t('private'))}</div>
+    <div class="status ${STATUS_ERR ? 'err' : ''}" role="status">${esc(STATUS)}</div>`;
+  document.getElementById('howto').textContent = t('howto');
+}
+function draw(){
+  srcCard();
+  const app = document.getElementById('app');
+  if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
+  const st = DATA.stamina;
+  const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
+  const tabs = [['overview', t('tOverview')], ['missing', t('tMissing'), A.blockers.length], ['craft', t('tCraft'), A.craftable.filter(c => c.isNew).length], ['bank', t('tBank')], ['find', t('tFind')]];
+  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, bank:viewBank, find:viewFind}[tab] || viewOverview;
+  app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
+    <nav class="tabs" id="tabs">${tabs.map(([id, name, n]) => `<button type="button" data-tab="${id}" class="${tab === id ? 'on' : ''}">${esc(name)}${n != null ? `<span class="n">${n}</span>` : ''}</button>`).join('')}</nav>
+    <section>${view()}</section>`;
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]'); if(b){ tab = b.dataset.tab; store.set('rut:troves:tab', tab); draw(); return; }
+  const m = e.target.closest('[data-mode]'); if(m){ mode = m.dataset.mode; store.set('rut:troves:mode', mode); use(); draw(); return; }
+  const s = e.target.closest('[data-src]'); if(s && !s.disabled){ SRC = s.dataset.src; store.set('rut:troves:src', SRC); use(); draw(); return; }
+  if(e.target.closest('#forget')){ MINE = null; try{ localStorage.removeItem(MINE_KEY); }catch{} SRC = 'rock'; store.set('rut:troves:src', SRC); STATUS = ''; use(); draw(); }
+});
+document.addEventListener('change', e => { if(e.target.id === 'file') takeFile(e.target.files[0]); });
+document.addEventListener('input', e => {
+  if(e.target.id === 'q'){ query = e.target.value; const pos = e.target.selectionStart; draw(); const q = document.getElementById('q'); q.focus(); q.setSelectionRange(pos, pos); }
+});
+['dragover', 'dragleave', 'drop'].forEach(ev => document.addEventListener(ev, e => {
+  const z = e.target.closest && e.target.closest('#drop'); if(!z) return;
+  e.preventDefault(); z.classList.toggle('over', ev === 'dragover');
+  if(ev === 'drop') takeFile(e.dataTransfer.files[0]);
+}));
+
+let ROCK = null;
+async function boot(){
+  Site.mount({onChange:draw});
+  try{ MINE = store.get(MINE_KEY, null); if(MINE){ const r = readText(JSON.stringify(MINE)); MINE = r.data || null; } }catch{ MINE = null; }
+  if(SRC === 'mine' && !MINE) SRC = 'rock';
+  draw();
+  try{
+    const [p, r] = await Promise.all([fetch('../data/troves/places.json').then(x => x.json()), fetch('../data/troves/rockdrigo/latest.json').then(x => x.json())]);
+    PLACES = new Map(p.troves.map(([name, cat, structures, plants, craftAt]) => [name, {cat, structures, plants, craftAt}]));
+    ROCK = checkShape(r);
+  }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
+  use(); draw();
+}
+boot();
+</script>
+</body>
+</html>

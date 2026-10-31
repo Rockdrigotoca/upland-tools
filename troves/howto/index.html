@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to get your troves file</title>
+<meta name="description" content="How to turn your Upland Troves page into a small, token-free file you can load into Rockdrigo's Troves.">
+<link rel="stylesheet" href="../../shared/theme.css">
+<style>
+ol.steps{padding-left:1.2rem;display:grid;gap:14px}
+ol.steps li{padding-left:4px}
+code,pre{background:var(--surface-2);border-radius:6px;font-size:.8125rem}
+code{padding:1px 5px}
+pre{padding:10px 12px;overflow-x:auto;margin:6px 0}
+.dl{margin:8px 0 2px}
+.safe{border-left:5px solid var(--accent)}
+.safe h2{margin-top:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <main>
+    <p><a href="../">← Back to Rockdrigo’s Troves</a></p>
+    <section class="card">
+      <h2 data-i="h">How to get your troves file</h2>
+      <p data-i="intro"></p>
+      <div class="dl"><a class="btn primary" href="../clean_har.py" download="clean_har.py" data-i="dl">Download clean_har.py</a></div>
+      <p class="small muted" data-i="dlNote"></p>
+    </section>
+    <section class="card" style="margin-top:12px">
+      <ol class="steps">
+        <li id="s1"></li><li id="s2"></li><li id="s3"></li><li id="s4"></li><li id="s5"></li>
+      </ol>
+    </section>
+    <section class="card safe" style="margin-top:12px">
+      <h2 data-i="safeH">Is this safe?</h2>
+      <ul id="safe"></ul>
+    </section>
+  </main>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../../shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc} = Site;
+Site.register({
+  en:{
+    title:'Rockdrigo’s Troves: your file', subtitle:'Turn your Troves page into a small file with no login in it.',
+    h:'How to get your troves file',
+    intro:'The Troves page can’t read your inventory from Upland for you, so you save it from your own browser and clean it on your own computer. It takes about two minutes. You only need Python 3.',
+    dl:'Download clean_har.py', dlNote:'One small script. Read it before you run it: it only reads one file and writes one file.',
+    s1:'<b>Put the script somewhere easy</b>, for example a new folder called <code>troves</code>. Python 3 must be installed (on a Mac it usually is; on Windows get it from python.org).',
+    s2:'<b>Open your Troves page in Upland</b> in your browser, then open the developer tools: <code>Safari:</code> Develop → Show Web Inspector (turn on the Develop menu in Safari Settings → Advanced first). <code>Chrome, Brave or Edge:</code> press F12 (or Cmd+Option+I on a Mac). Click the <b>Network</b> tab.',
+    s3:'<b>Reload the page</b> with the Network tab open, and wait for your troves to appear. Then save everything the tab recorded as a HAR: <code>Safari:</code> the Export button at the top right of the Network tab. <code>Chrome, Brave or Edge:</code> the download arrow (“Export HAR”). Save it as <code>trove_balance.har</code> in the same folder as the script.',
+    s4:'<b>Run the script</b> in that folder:<pre>python3 clean_har.py</pre>It writes <code>trove_balance-YYYY-MM-DD.json</code> next to it and then <b>deletes the HAR</b>, because the HAR is the file that holds your login. If it can’t find your troves in the HAR it tells you and keeps everything as it was.',
+    s5:'<b>Upload the new .json</b> on <a href="../">Rockdrigo’s Troves</a> (drop it on the box at the top). It shows what to find first, what you can craft and what to bank.',
+    safeH:'Is this safe?',
+    safe1:'A HAR is a recording of your whole browser session, including your login. <b>Never send or upload a HAR to anyone.</b> That is why the script exists.',
+    safe2:'The script keeps only your trove names, how many you hold, your banking levels and your discovered recipes. No headers, no cookies, no token, no username.',
+    safe3:'Before it writes anything it checks the result for anything that looks like a login token, and refuses if it finds one.',
+    safe4:'The Troves page checks again: a file that contains something that looks like a token, or a raw HAR, is declined and not loaded.',
+    safe5:'Your file is read in your browser only. Nothing is uploaded to a server. The page keeps a copy in your browser so it is there next time; use “Forget my file” to remove it.',
+    safe6:'If you want to be sure, open the .json it wrote in any text editor: it is short and readable.'
+  },
+  es:{
+    title:'Los Troves de Rockdrigo: tu archivo', subtitle:'Convierte tu página de Troves en un archivo pequeño sin tu sesión.',
+    h:'Cómo conseguir tu archivo de troves',
+    intro:'La página de Troves no puede leer tu inventario de Upland por ti, así que lo guardas desde tu navegador y lo limpias en tu computadora. Toma unos dos minutos. Solo necesitas Python 3.',
+    dl:'Descargar clean_har.py', dlNote:'Un script pequeño. Léelo antes de correrlo: solo lee un archivo y escribe otro.',
+    s1:'<b>Pon el script en un lugar fácil</b>, por ejemplo una carpeta nueva llamada <code>troves</code>. Debes tener Python 3 (en Mac casi siempre está; en Windows bájalo de python.org).',
+    s2:'<b>Abre tu página de Troves en Upland</b> en el navegador y abre las herramientas de desarrollo: <code>Safari:</code> Desarrollo → Mostrar inspector web (activa antes el menú Desarrollo en Ajustes de Safari → Avanzado). <code>Chrome, Brave o Edge:</code> F12 (o Cmd+Opción+I en Mac). Haz clic en la pestaña <b>Network</b> (Red).',
+    s3:'<b>Recarga la página</b> con Network abierta y espera a que aparezcan tus troves. Luego guarda todo lo que grabó como HAR: <code>Safari:</code> el botón Exportar arriba a la derecha de Network. <code>Chrome, Brave o Edge:</code> la flecha de descarga (“Export HAR”). Guárdalo como <code>trove_balance.har</code> en la misma carpeta que el script.',
+    s4:'<b>Corre el script</b> en esa carpeta:<pre>python3 clean_har.py</pre>Escribe <code>trove_balance-AAAA-MM-DD.json</code> al lado y luego <b>borra el HAR</b>, porque el HAR es el archivo que guarda tu sesión. Si no encuentra tus troves en el HAR te avisa y deja todo como estaba.',
+    s5:'<b>Sube el nuevo .json</b> en <a href="../">Los Troves de Rockdrigo</a> (suéltalo en la caja de arriba). Te muestra qué buscar primero, qué puedes craftear y qué mandar al banco.',
+    safeH:'¿Es seguro?',
+    safe1:'Un HAR es una grabación de toda tu sesión del navegador, incluida tu sesión de Upland. <b>Nunca mandes ni subas un HAR a nadie.</b> Para eso existe el script.',
+    safe2:'El script guarda solo los nombres de tus troves, cuántos tienes, tus niveles de banco y tus recetas descubiertas. Sin cabeceras, sin cookies, sin token, sin usuario.',
+    safe3:'Antes de escribir revisa que el resultado no tenga nada que parezca un token de sesión, y se niega si lo encuentra.',
+    safe4:'La página de Troves revisa otra vez: un archivo con algo que parezca un token, o un HAR sin limpiar, se rechaza y no se carga.',
+    safe5:'Tu archivo se lee solo en tu navegador. No se sube a ningún servidor. La página guarda una copia en tu navegador para la próxima vez; usa “Olvidar mi archivo” para quitarla.',
+    safe6:'Si quieres estar seguro, abre el .json que escribió en cualquier editor de texto: es corto y legible.'
+  }
+});
+function draw(){
+  ['s1', 's2', 's3', 's4', 's5'].forEach(k => document.getElementById(k).innerHTML = t(k));
+  document.getElementById('safe').innerHTML = [1, 2, 3, 4, 5, 6].map(i => `<li>${t('safe' + i)}</li>`).join('');
+  document.querySelectorAll('[data-i]').forEach(el => { const v = t(el.dataset.i); if(v !== el.dataset.i) el.textContent = v; });
+}
+Site.mount({onChange:draw});
+draw();
+</script>
+</body>
+</html>
