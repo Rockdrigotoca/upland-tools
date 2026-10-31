@@ -24,7 +24,7 @@ from collect_structures import Pacer   # noqa: E402
 
 API = 'https://api.prod.upland.me/api'
 # Collected in this order: Rockdrigo first, then mstullis, missmarlow, talljames, bielykvietok, leflof2p and maikn1 last.
-GROUP = ['rockdrigo', 'mstullis', 'missmarlow', 'talljames', 'bielykvietok', 'leflof2p', 'maikn1', 'rjonk', 'wamawa']
+GROUP = ['rockdrigo', 'mstullis', 'missmarlow', 'talljames', 'bielykvietok', 'leflof2p', 'maikn1', 'rjonk', 'wamawa', 'huskyb']
 REFRESH_DAYS = 30
 
 
