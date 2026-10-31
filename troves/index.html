@@ -58,13 +58,13 @@ Site.register({
     upErrHar:'This looks like a raw HAR file, which holds your login. It was not loaded. Run the script from the how-to page on it and upload the file it writes.',
     upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
     tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tFind:'Look up',
-    eNow:'Bank right now', eNowN:'One step each, cheapest first. You hold enough already and still keep what recipes need.', eCraft:'A few crafts away', eCraftN:'Craft the extra copies from ingredients you can spare, then bank. Fewest crafts first.', eNeed:'Craft', eStep:'Step', eNone:'Nothing easy right now.', cTabN:'{n} new', eTabN:'{n} steps',
+    eNow:'Bank right now', eNowN:'One step each, cheapest first. You hold enough already and still keep what recipes need.', eCraft:'A few crafts away', eCraftN:'Craft the extra copies from ingredients you can spare, then bank. Fewest crafts first.', eNeed:'Craft', eStep:'Step', eNone:'Nothing easy right now.', eCraftVerb:'craft {n} more', eBankVerb:'bank {n}', eHold:'hold {n}', eSum:'Doing all of this: {c} crafts and {b} banking levels, with the reserve kept and no protected trove touched.', ePlan:'Craft, then bank', ePlanN:'Each row is a whole plan for one trove: how many to craft in total and the level it ends at. The plans share ingredients, so you can do them all together.', eJust:'Just bank (no crafting)', eJustN:'You already hold enough.', colNow:'Now', colCraftTot:'Craft in total', colEnds:'Ends at', colSteps:'Step by step', colUses:'Uses', cUpTo:'Up to', cLimit:'limited by {x}', cReach:'Reaches', cLeft:'{n} left', cAfter:'bank levels show once you hold one', cOnly:'only 1 (or none) to craft', cTabN:'{n} new', eTabN:'{n} steps',
     kFound:'Troves found', kCraft:'Recipes you can craft', kOne:'One trove short', kBlock:'Troves missing', kStamina:'Stamina', kDate:'File from',
     ovFirst:'Find these first', ovFirstN:'The troves that hold up the most recipes. Finding one finishes the recipes where it is the only thing missing.',
     colTrove:'Trove', colBlocks:'Recipes held up', colAlone:'Finished by it alone', colHave:'You have', colNeed:'Need', colWhere:'Found in', colCraftAt:'Craft at', colIng:'Ingredients',
     colLevel:'Level', colCost:'Cost', colHeld:'Held', colKeep:'Keep', colUsed:'Used in', colSites:'Found in', colCopies:'Can craft', colReach:'Reaches',
     places:'{n} places', structs:'structures', plantsLbl:'plants', more:'all {n} places',
-    cNew:'New troves you can craft now', cNewN:'Troves that have never been in your inventory. Each one is a discovery.', cAgain:'More you can craft', cAgainN:'You have had these before. Craft them for banking, or when you need them.',
+    cNew:'New troves you can craft now', cNewN:'Troves that have never been in your inventory. Each one is a discovery.', cAgain:'More you can craft', cAgainN:'You have had these before. Craft them for banking, or when you need them. “Up to” counts all your stock; the Easy wins tab keeps a reserve.',
     cNone:'Nothing here yet.', newTag:'new', forBank:'for banking',
     bNow:'Safe to bank now', bNowN:'You hold enough to reach the next level and still keep a reserve for the recipes that need it.',
     bCraft:'Craft to bank', bCraftN:'Troves you can craft in bulk from what you hold, without touching a protected ingredient.',
@@ -83,13 +83,13 @@ Site.register({
     upErrHar:'Esto parece un archivo HAR sin limpiar, que contiene tu sesión. No se cargó. Pásale el script de la página de ayuda y sube el archivo que genera.',
     upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
     tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tFind:'Consultar',
-    eNow:'Al banco ya', eNowN:'Un paso cada uno, los más baratos primero. Ya tienes suficiente y aún guardas lo que piden las recetas.', eCraft:'A pocos crafteos', eCraftN:'Craftea las copias extra con ingredientes que te sobran y luego al banco. Los que menos crafteos piden, primero.', eNeed:'Craftear', eStep:'Paso', eNone:'Nada fácil por ahora.', cTabN:'{n} nuevos', eTabN:'{n} pasos',
+    eNow:'Al banco ya', eNowN:'Un paso cada uno, los más baratos primero. Ya tienes suficiente y aún guardas lo que piden las recetas.', eCraft:'A pocos crafteos', eCraftN:'Craftea las copias extra con ingredientes que te sobran y luego al banco. Los que menos crafteos piden, primero.', eNeed:'Craftear', eStep:'Paso', eNone:'Nada fácil por ahora.', eCraftVerb:'craftea {n} más', eBankVerb:'banquea {n}', eHold:'tienes {n}', eSum:'Haciendo todo esto: {c} crafteos y {b} niveles de banco, guardando la reserva y sin tocar ningún trove protegido.', ePlan:'Craftear y luego al banco', ePlanN:'Cada fila es un plan completo para un trove: cuántos craftear en total y el nivel en que termina. Los planes comparten ingredientes, así que puedes hacerlos todos juntos.', eJust:'Solo al banco (sin craftear)', eJustN:'Ya tienes suficiente.', colNow:'Ahora', colCraftTot:'Craftear en total', colEnds:'Termina en', colSteps:'Paso a paso', colUses:'Usa', cUpTo:'Hasta', cLimit:'limitado por {x}', cReach:'Llega a', cLeft:'sobran {n}', cAfter:'los niveles de banco se ven cuando tengas uno', cOnly:'solo 1 (o ninguno)', cTabN:'{n} nuevos', eTabN:'{n} pasos',
     kFound:'Troves encontrados', kCraft:'Recetas que puedes craftear', kOne:'A un trove de lograrlo', kBlock:'Troves que faltan', kStamina:'Stamina', kDate:'Archivo del',
     ovFirst:'Busca estos primero', ovFirstN:'Los troves que frenan más recetas. Encontrar uno completa las recetas donde es lo único que falta.',
     colTrove:'Trove', colBlocks:'Recetas frenadas', colAlone:'Completa solo él', colHave:'Tienes', colNeed:'Necesitas', colWhere:'Se encuentra en', colCraftAt:'Se craftea en', colIng:'Ingredientes',
     colLevel:'Nivel', colCost:'Costo', colHeld:'Tienes', colKeep:'Reserva', colUsed:'Usado en', colSites:'Se encuentra en', colCopies:'Puedes hacer', colReach:'Llega a',
     places:'{n} lugares', structs:'estructuras', plantsLbl:'plantas', more:'los {n} lugares',
-    cNew:'Troves nuevos que puedes craftear ya', cNewN:'Troves que nunca han estado en tu inventario. Cada uno es un descubrimiento.', cAgain:'Más que puedes craftear', cAgainN:'Ya los tuviste antes. Craftéalos para el banco, o cuando los necesites.',
+    cNew:'Troves nuevos que puedes craftear ya', cNewN:'Troves que nunca han estado en tu inventario. Cada uno es un descubrimiento.', cAgain:'Más que puedes craftear', cAgainN:'Ya los tuviste antes. Craftéalos para el banco, o cuando los necesites. “Hasta” cuenta todo tu stock; la pestaña Fáciles guarda una reserva.',
     cNone:'Aquí aún no hay nada.', newTag:'nuevo', forBank:'para el banco',
     bNow:'Seguro para el banco ya', bNowN:'Tienes suficiente para subir de nivel y aún guardar reserva para las recetas que lo necesitan.',
     bCraft:'Craftear para el banco', bCraftN:'Troves que puedes craftear en cantidad con lo que tienes, sin tocar un ingrediente protegido.',
@@ -184,7 +184,13 @@ function analyse(d){
   });
   const byRecipe = new Map();
   recs.forEach(r => { (byRecipe.get(r.name) || byRecipe.set(r.name, []).get(r.name)).push(r); });
-  const craftable = [...byRecipe.entries()].filter(([, v]) => v.some(r => r.ok)).map(([name, v]) => ({name, versions:v.filter(r => r.ok), isNew:!items.has(name), item:items.get(name)}));
+  // How many copies of a recipe the stock allows (all stock, no reserve), and which ingredient runs out first.
+  const maxOf = v => { let n = Infinity, limit = ''; v.ings.forEach(g => { const c = Math.floor(g.have / g.req); if(c < n){ n = c; limit = g.n; } }); return {n, limit}; };
+  const reachOf = (it, copies) => { let lv = it.lvl, tot = it.q + copies; while(lv < it.th.length && tot >= it.th[lv]){ tot -= it.th[lv]; lv++; } return {lv, left:tot}; };
+  const craftable = [...byRecipe.entries()].filter(([, v]) => v.some(r => r.ok)).map(([name, v]) => {
+    const vs = v.filter(r => r.ok), best = vs.map(r => ({r, ...maxOf(r)})).sort((a, b) => b.n - a.n)[0], item = items.get(name);
+    return {name, versions:vs, isNew:!item, item, copies:best.n, limit:best.limit, reach:item ? reachOf(item, best.n) : null};
+  });
   // Bulk crafting for the bank: copies you can make from unprotected ingredients, and the banking levels they would reach.
   const bulk = [];
   byRecipe.forEach((vs, name) => {
@@ -195,16 +201,36 @@ function analyse(d){
     if(lv > it.lvl) bulk.push({name, from:it.lvl, to:lv, held:it.q, copies:best, toGold:it.th.slice(it.lvl).reduce((a, b) => a + b, 0)});
   });
   bulk.sort((a, b) => (b.to - b.from) - (a.to - a.from) || a.toGold - b.toGold);
-  const copiesOf = name => { let best = 0; (byRecipe.get(name) || []).forEach(r => { if(r.ings.some(g => prot.has(g.n))) return; best = Math.max(best, Math.min(...r.ings.map(g => Math.floor(g.have / g.req)))); }); return best; };
-  // One banking step at a time: ready now, or a few crafts away. Cheapest first.
-  const easy = [];
-  rows.forEach(r => {
-    if(r.nxt == null) return;
-    const need = Math.max(0, r.nxt + r.keep - r.q);
-    if(need === 0) easy.push({...r, need, ready:true});
-    else { const c = copiesOf(r.name); if(c >= need) easy.push({...r, need, ready:false, copies:c}); }
-  });
-  easy.sort((a, b) => (b.ready - a.ready) || (a.ready ? a.nxt - b.nxt : a.need - b.need) || a.toGold - b.toGold);
+  // The plan: take the cheapest next banking step anywhere (bank now, or craft a few and bank), spend the ingredients, repeat.
+  // Reserves are respected and protected ingredients are never used, so the plan can be done in full, in one go.
+  const keepOf = new Map(rows.map(r => [r.name, r.keep]));
+  const stock = new Map([...items].map(([n, i]) => [n, i.q]));
+  const lvl = new Map([...items].map(([n, i]) => [n, i.lvl]));
+  const plan = new Map();
+  for(let guard = 0; guard < 4000; guard++){
+    let best = null;
+    for(const [name, it] of items){
+      const L = lvl.get(name), nxt = it.th[L]; if(nxt == null) continue;
+      const need = Math.max(0, nxt + (keepOf.get(name) || 0) - stock.get(name));
+      let pick = null;
+      if(need > 0){
+        for(const v of (byRecipe.get(name) || [])){
+          if(v.ings.some(g => prot.has(g.n))) continue;
+          if(v.ings.every(g => (stock.get(g.n) || 0) - (keepOf.get(g.n) || 0) >= g.req * need)){ pick = v; break; }
+        }
+        if(!pick) continue;
+      }
+      if(!best || need < best.need || (need === best.need && nxt < best.nxt)) best = {name, it, need, nxt, pick, L};
+    }
+    if(!best) break;
+    const e = plan.get(best.name) || {name:best.name, from:best.L, q0:items.get(best.name).q, crafts:0, steps:[], uses:new Map(), gold:items.get(best.name).th.reduce((a, b) => a + b, 0)};
+    if(best.need > 0) best.pick.ings.forEach(g => { stock.set(g.n, (stock.get(g.n) || 0) - g.req * best.need); e.uses.set(g.n, (e.uses.get(g.n) || 0) + g.req * best.need); });
+    stock.set(best.name, stock.get(best.name) + best.need - best.nxt);
+    lvl.set(best.name, best.L + 1);
+    e.crafts += best.need; e.to = best.L + 1; e.steps.push({to:best.L + 1, craft:best.need, cost:best.nxt});
+    plan.set(best.name, e);
+  }
+  const easy = [...plan.values()].sort((a, b) => (b.to - b.from) - (a.to - a.from) || a.crafts - b.crafts);
   const oneShort = recs.filter(r => r.short.length === 1).length;
   return {items, recs, blockers, rows, craftable, bulk, easy, craftN:recs.filter(r => r.ok).length, oneShort, prot};
 }
@@ -239,10 +265,14 @@ function viewMissing(){
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
   const p = PLACES.get(c.name), at = p ? p.craftAt : [];
-  return `<tr><td><b>${esc(c.name)}</b>${c.isNew ? ` <span class="tag good">${esc(t('newTag'))}</span>` : ''}</td><td>${ing}</td><td><div class="places">${esc(at.slice(0, 8).join(', '))}${at.length > 8 ? ` <span class="muted">+${at.length - 8}</span>` : ''}</div></td></tr>`;
+  const many = c.copies > 1 && c.copies !== Infinity;
+  const reach = c.reach && c.reach.lv > c.item.lvl ? `<span class="tag good">${esc(levelName(c.reach.lv))}</span> <span class="muted">${esc(t('cLeft', {n:n0(c.reach.left)}))}</span>` : (c.isNew ? `<span class="muted">${esc(t('cAfter'))}</span>` : '');
+  return `<tr><td><b>${esc(c.name)}</b>${c.isNew ? ` <span class="tag good">${esc(t('newTag'))}</span>` : ''}</td>
+    <td class="n"><b>${n0(c.copies)}</b><div class="muted small">${esc(t('cLimit', {x:c.limit}))}</div></td><td>${reach}</td><td>${ing}</td>
+    <td><div class="places">${esc(at.slice(0, 6).join(', '))}${at.length > 6 ? ` <span class="muted">+${at.length - 6}</span>` : ''}</div></td></tr>`;
 }
 function viewCraft(){
-  const head = [[t('colTrove')], [t('colIng')], [t('colCraftAt')]];
+  const head = [[t('colTrove')], [t('cUpTo'), 'n'], [t('cReach')], [t('colIng')], [t('colCraftAt')]];
   const nw = A.craftable.filter(c => c.isNew).sort((a, b) => a.name.localeCompare(b.name));
   const old = A.craftable.filter(c => !c.isNew).sort((a, b) => a.name.localeCompare(b.name));
   return sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) + sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow)));
@@ -260,11 +290,16 @@ function viewBank(){
         prot.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.max)}</td><td class="n">${r.uses}</td><td class="n">${r.sites == null ? '—' : r.sites}</td></tr>`)));
 }
 function viewEasy(){
-  const now = A.easy.filter(e => e.ready), soon = A.easy.filter(e => !e.ready);
-  const row = e => `<tr><td><b>${esc(e.name)}</b></td><td>${esc(levelName(e.lvl))} → ${esc(levelName(e.lvl + 1))}</td><td class="n">${n0(e.nxt)}</td><td class="n">${n0(e.q)}</td>${e.ready ? '' : `<td class="n">${n0(e.need)}</td>`}<td class="n">${n0(e.toGold)}</td></tr>`;
-  const h1 = [[t('colTrove')], [t('eStep')], [t('colCost'), 'n'], [t('colHeld'), 'n'], [t('colToGold'), 'n']];
-  const h2 = [[t('colTrove')], [t('eStep')], [t('colCost'), 'n'], [t('colHeld'), 'n'], [t('eNeed'), 'n'], [t('colToGold'), 'n']];
-  return sec(t('eNow'), t('eNowN'), tbl(h1, now.map(row))) + sec(t('eCraft'), t('eCraftN'), tbl(h2, soon.map(row)));
+  const levels = A.easy.reduce((a, e) => a + (e.to - e.from), 0), crafts = A.easy.reduce((a, e) => a + e.crafts, 0);
+  const just = A.easy.filter(e => e.crafts === 0), work = A.easy.filter(e => e.crafts > 0);
+  const uses = e => [...e.uses.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([n, q]) => `${esc(n)} ×${n0(q)}`).join(', ') + (e.uses.size > 4 ? ` <span class="muted">+${e.uses.size - 4}</span>` : '');
+  const steps = e => e.steps.map(s => `→ <span class="tag">${esc(levelName(s.to))}</span> ${s.craft ? esc(t('eCraftVerb', {n:n0(s.craft)})) + ', ' : ''}${esc(t('eBankVerb', {n:n0(s.cost)}))}`).join('<br>');
+  const now = e => `${esc(levelName(e.from))} · ${esc(t('eHold', {n:n0(e.q0)}))}`;
+  const h1 = [[t('colTrove')], [t('colNow')], [t('colEnds')], [t('colSteps')], [t('colToGold'), 'n']];
+  const h2 = [[t('colTrove')], [t('colNow')], [t('colCraftTot'), 'n'], [t('colEnds')], [t('colSteps')], [t('colUses')]];
+  return `<div class="card" style="margin:0 0 6px">${esc(t('eSum', {c:n0(crafts), b:n0(levels)}))}</div>`
+    + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td></tr>`)))
+    + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
 }
 function viewFind(){
   const q = norm(query);
