@@ -83,7 +83,7 @@ Site.register({
     tmPay:'You send the lender {s} UPX (it costs you {c} with Upland’s fee, and they receive {r}), which leaves you both with {h} UPX', tmGet:'The borrower sends you {s} UPX (you receive {r} after Upland’s fee), which leaves you both with {h} UPX',
     swPartner:'Swap with:', swNote:'Pairs your loan with theirs: you borrow from them to finish one of your collections, and they borrow from you to finish one of theirs. Same-rarity swaps come first, then different rarities with the closest value, then loans that only go one way. Both loans are settled with a single payment, so Upland’s fee is only charged on the difference.',
     swTier1:'Even swaps, same rarity', swTier1n:'Each side finishes a collection of the same rarity, so it’s easiest to agree.', swTier2:'Swaps across rarities', swTier2n:'Different rarities, paired by closest value; the balance evens it out.', swTier3:'One-sided loans', swTier3n:'One of you borrows and the other has nothing to borrow back right now.',
-    swCard:'You get {a} · {p} gets {b}', swEven:'Even', swYouPay:'You pay {p} ≈ {n} UPX ({c} with Upland’s fee)', swTheyPay:'{p} pays you ≈ {n} UPX ({r} after Upland’s fee)', swBorrowH:'You borrow, to finish {c}', swLendH:'{p} borrows from you, to finish {c}', swNone:'No swaps found with {p}. They may not need anything of yours yet, or the group data is still being collected.',
+    swCard:'You get {a} · {p} gets {b}', swGetAddr:'You finish {c}:', swGiveAddr:'{p} finishes {c}:', swFrom:'{o}', swEven:'Even', swYouPay:'You pay {p} ≈ {n} UPX ({c} with Upland’s fee)', swTheyPay:'{p} pays you ≈ {n} UPX ({r} after Upland’s fee)', swBorrowH:'You borrow, to finish {c}', swLendH:'{p} borrows from you, to finish {c}', swNone:'No swaps found with {p}. They may not need anything of yours yet, or the group data is still being collected.',
     burnTitle:'Burner properties', burnSum:'{a} sit in none of your best collections; {m} marked by you', burnNote:'A burner costs you nothing to lend, because it holds up no collection. Tick any you don’t mind lending even though they sit in a collection today. These are the properties your friends’ collections would use.',
     burnHolds:'holds {c} ({g} UPX/month)', burnFree:'in no collection', burnUsed:'useful for {n} loans',
     cmpNote:'See which collections two players have collected, and which each could give the other.', cmpPartner:'Compare with:', cmpOther:'Another player (collections only):', cmpBoth:'Both', cmpOnlyYou:'Only you', cmpOnlyThem:'Only them',
@@ -138,7 +138,7 @@ Site.register({
     tmPay:'Le envías al que presta {s} UPX (te cuestan {c} con la comisión de Upland y él recibe {r}), y a los dos les quedan {h} UPX', tmGet:'Quien pide te envía {s} UPX (tú recibes {r} tras la comisión de Upland), y a los dos les quedan {h} UPX',
     swPartner:'Intercambiar con:', swNote:'Empareja tu préstamo con el suyo: tú les pides para terminar una de tus colecciones y ellos te piden para terminar una de las suyas. Primero los intercambios de la misma rareza, luego rarezas distintas con el valor más parecido, y al final los préstamos que van en un solo sentido. Ambos préstamos se saldan con un solo pago, así que la comisión de Upland solo se cobra sobre la diferencia.',
     swTier1:'Intercambios parejos, misma rareza', swTier1n:'Cada lado termina una colección de la misma rareza, así que es lo más fácil de acordar.', swTier2:'Intercambios entre rarezas', swTier2n:'Rarezas distintas, emparejadas por valor parecido; el saldo lo empareja.', swTier3:'Préstamos de un solo sentido', swTier3n:'Uno pide y el otro no tiene nada que pedir de vuelta por ahora.',
-    swCard:'Tú obtienes {a} · {p} obtiene {b}', swEven:'Parejo', swYouPay:'Le pagas a {p} ≈ {n} UPX ({c} con la comisión de Upland)', swTheyPay:'{p} te paga ≈ {n} UPX (recibes {r} tras la comisión de Upland)', swBorrowH:'Tú pides, para terminar {c}', swLendH:'{p} te pide, para terminar {c}', swNone:'No hay intercambios con {p}. Quizá todavía no necesita nada tuyo, o los datos del grupo aún se están recolectando.',
+    swCard:'Tú obtienes {a} · {p} obtiene {b}', swGetAddr:'Tú completas {c}:', swGiveAddr:'{p} completa {c}:', swFrom:'{o}', swEven:'Parejo', swYouPay:'Le pagas a {p} ≈ {n} UPX ({c} con la comisión de Upland)', swTheyPay:'{p} te paga ≈ {n} UPX (recibes {r} tras la comisión de Upland)', swBorrowH:'Tú pides, para terminar {c}', swLendH:'{p} te pide, para terminar {c}', swNone:'No hay intercambios con {p}. Quizá todavía no necesita nada tuyo, o los datos del grupo aún se están recolectando.',
     burnTitle:'Propiedades prescindibles', burnSum:'{a} no están en ninguna de tus mejores colecciones; {m} marcadas por ti', burnNote:'Una propiedad prescindible no te cuesta nada prestarla, porque no sostiene ninguna colección. Marca las que no te importe prestar aunque hoy estén en una colección. Son las propiedades que usarían las colecciones de tus amigos.',
     burnHolds:'sostiene {c} ({g} UPX/mes)', burnFree:'en ninguna colección', burnUsed:'sirve para {n} préstamos',
     cmpNote:'Mira qué colecciones ha cobrado cada jugador y cuáles podría darle uno al otro.', cmpPartner:'Comparar con:', cmpOther:'Otro jugador (solo colecciones):', cmpBoth:'Ambos', cmpOnlyYou:'Solo tú', cmpOnlyThem:'Solo ellos',
@@ -617,12 +617,15 @@ function burnersHtml(){
     ${b.cand.slice(0, 40).map(e => `<label class="row small" style="gap:8px;margin:5px 0;align-items:flex-start"><input type="checkbox" data-burn="${e.p.id}" ${BURN.has(e.p.id) ? 'checked' : ''}>
       <span>${esc(e.p.a)}, ${esc(e.p.cn || '')} · ${esc(e.holds ? t('burnHolds', {c:e.holds.c.name, g:n0(e.holds.gain)}) : t('burnFree'))} · ${esc(t('burnUsed', {n:e.n}))}</span></label>`).join('') || `<p class="note">${esc(t('nothing'))}</p>`}</div></details>`;
 }
+// Every address of the set on the closed card, with whose it is today: whoever makes the swap needs all of them.
+const swapAddrs = (label, x) => `<span class="small"><b>${esc(label)}</b> ${x.set.map(p => `${esc(p.a)}${p.cn ? ', ' + esc(p.cn) : ''} <span class="muted">(${esc(p.owner === D.user.toLowerCase() ? t('you') : t('swFrom', {o:p.owner}))})</span>`).join(' · ')}</span>`;
+const addrRow = html => html ? `<div class="small" style="flex-basis:100%;display:flex;flex-direction:column;gap:2px">${html}</div>` : '';
 function loanCard(x, role){
   const me = D.user.toLowerCase();
   const sum = role === 'borrow' ? t('borrowSum', {k:x.borrowed.length, h:n0(x.tm.half), s:n0(x.tm.pays)})
     : t('lendSum', {f:x.borrower, k:x.borrowed.filter(p => p.owner === me).length, h:n0(x.tm.half), s:n0(x.tm.gets)});
   return `<details class="coll" style="--c:var(--r${x.c.category})"><summary><span class="nm">${esc(x.c.name)}</span>${rar(x.c)}
-      <span class="small muted">${esc(t('needs', {a:x.c.amount}))} · ${esc(t('boost', {b:x.c.yield_boost}))}</span><span class="gain">${esc(sum)}</span></summary>
+      <span class="small muted">${esc(t('needs', {a:x.c.amount}))} · ${esc(t('boost', {b:x.c.yield_boost}))}</span><span class="gain">${esc(sum)}</span>${addrRow(swapAddrs(t(role === 'borrow' ? 'swGetAddr' : 'swGiveAddr', {p:x.borrower, c:x.c.name}), x))}</summary>
     <div class="body"><div class="req">${esc(x.c.requirements || '')}</div>${setTableHtml(x)}${termsHtml(x, role)}</div></details>`;
 }
 function groupBanner(){ return G.have < G.total ? `<p class="note"><b>${esc(t('partialGroup', {n:n0(G.have), t:n0(G.total)}))}</b></p>` : ''; }
@@ -663,7 +666,7 @@ function swapHtml(){
     const pay = p.a.tm.settle - p.b.tm.settle;
     const r = loan.fee / 100;
     const bal = Math.abs(pay) < 1 ? t('swEven') : (pay > 0 ? t('swYouPay', {p:partner, n:n0(pay), c:n0(pay * (1 + r))}) : t('swTheyPay', {p:partner, n:n0(-pay), r:n0(-pay * (1 - r))}));
-    return `<details class="coll" style="--c:var(--r${p.a.c.category})"><summary><span class="nm">${esc(t('swCard', {a:p.a.c.name, p:partner, b:p.b.c.name}))}</span>${rar(p.a.c)}${rar(p.b.c)}<span class="gain">${esc(bal)}</span></summary>
+    return `<details class="coll" style="--c:var(--r${p.a.c.category})"><summary><span class="nm">${esc(t('swCard', {a:p.a.c.name, p:partner, b:p.b.c.name}))}</span>${rar(p.a.c)}${rar(p.b.c)}<span class="gain">${esc(bal)}</span>${addrRow(swapAddrs(t('swGetAddr', {c:p.a.c.name}), p.a) + swapAddrs(t('swGiveAddr', {p:partner, c:p.b.c.name}), p.b))}</summary>
       <div class="body"><h3 class="small">${esc(t('swBorrowH', {c:p.a.c.name}))}</h3>${setTableHtml(p.a)}${termsHtml(p.a, 'borrow')}
       <h3 class="small">${esc(t('swLendH', {p:partner, c:p.b.c.name}))}</h3>${setTableHtml(p.b)}${termsHtml(p.b, 'lend')}</div></details>`;
   };
