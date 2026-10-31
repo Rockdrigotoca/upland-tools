@@ -16,6 +16,14 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tag.good{background:var(--accent);color:var(--accent-ink)}
 .tag.warn{background:var(--warn);color:#fff}
 .tag.bad{background:var(--bad);color:#fff}
+.boxtabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:8px;margin:0 0 14px}
+.boxtab{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;min-width:0}
+.boxtab:hover{border-color:var(--muted)}
+.boxtab .ic{font-size:1.15rem;line-height:1}
+.boxtab .nm{font-weight:700;font-size:.9375rem;overflow-wrap:anywhere}
+.boxtab .ct{font-size:.75rem;color:var(--muted);min-height:1em}
+.boxtab.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.boxtab.on .ct{color:inherit;opacity:.85}
 .src{display:grid;gap:10px}
 .src .row{align-items:flex-end}
 .drop{border:2px dashed var(--border);border-radius:10px;padding:12px 14px;text-align:center;color:var(--muted);cursor:pointer}
@@ -49,7 +57,8 @@ Site.register({
     upErrToken:'This file contains something that looks like a login token. It was not loaded. Do not share it: clean it first with the script on the how-to page.',
     upErrHar:'This looks like a raw HAR file, which holds your login. It was not loaded. Run the script from the how-to page on it and upload the file it writes.',
     upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
-    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tFind:'Look up',
+    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tFind:'Look up',
+    eNow:'Bank right now', eNowN:'One step each, cheapest first. You hold enough already and still keep what recipes need.', eCraft:'A few crafts away', eCraftN:'Craft the extra copies from ingredients you can spare, then bank. Fewest crafts first.', eNeed:'Craft', eStep:'Step', eNone:'Nothing easy right now.', cTabN:'{n} new', eTabN:'{n} steps',
     kFound:'Troves found', kCraft:'Recipes you can craft', kOne:'One trove short', kBlock:'Troves missing', kStamina:'Stamina', kDate:'File from',
     ovFirst:'Find these first', ovFirstN:'The troves that hold up the most recipes. Finding one finishes the recipes where it is the only thing missing.',
     colTrove:'Trove', colBlocks:'Recipes held up', colAlone:'Finished by it alone', colHave:'You have', colNeed:'Need', colWhere:'Found in', colCraftAt:'Craft at', colIng:'Ingredients',
@@ -73,7 +82,8 @@ Site.register({
     upErrToken:'Este archivo contiene algo que parece un token de sesión. No se cargó. No lo compartas: límpialo primero con el script de la página de ayuda.',
     upErrHar:'Esto parece un archivo HAR sin limpiar, que contiene tu sesión. No se cargó. Pásale el script de la página de ayuda y sube el archivo que genera.',
     upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
-    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tFind:'Consultar',
+    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tFind:'Consultar',
+    eNow:'Al banco ya', eNowN:'Un paso cada uno, los más baratos primero. Ya tienes suficiente y aún guardas lo que piden las recetas.', eCraft:'A pocos crafteos', eCraftN:'Craftea las copias extra con ingredientes que te sobran y luego al banco. Los que menos crafteos piden, primero.', eNeed:'Craftear', eStep:'Paso', eNone:'Nada fácil por ahora.', cTabN:'{n} nuevos', eTabN:'{n} pasos',
     kFound:'Troves encontrados', kCraft:'Recetas que puedes craftear', kOne:'A un trove de lograrlo', kBlock:'Troves que faltan', kStamina:'Stamina', kDate:'Archivo del',
     ovFirst:'Busca estos primero', ovFirstN:'Los troves que frenan más recetas. Encontrar uno completa las recetas donde es lo único que falta.',
     colTrove:'Trove', colBlocks:'Recetas frenadas', colAlone:'Completa solo él', colHave:'Tienes', colNeed:'Necesitas', colWhere:'Se encuentra en', colCraftAt:'Se craftea en', colIng:'Ingredientes',
@@ -185,8 +195,18 @@ function analyse(d){
     if(lv > it.lvl) bulk.push({name, from:it.lvl, to:lv, held:it.q, copies:best, toGold:it.th.slice(it.lvl).reduce((a, b) => a + b, 0)});
   });
   bulk.sort((a, b) => (b.to - b.from) - (a.to - a.from) || a.toGold - b.toGold);
+  const copiesOf = name => { let best = 0; (byRecipe.get(name) || []).forEach(r => { if(r.ings.some(g => prot.has(g.n))) return; best = Math.max(best, Math.min(...r.ings.map(g => Math.floor(g.have / g.req)))); }); return best; };
+  // One banking step at a time: ready now, or a few crafts away. Cheapest first.
+  const easy = [];
+  rows.forEach(r => {
+    if(r.nxt == null) return;
+    const need = Math.max(0, r.nxt + r.keep - r.q);
+    if(need === 0) easy.push({...r, need, ready:true});
+    else { const c = copiesOf(r.name); if(c >= need) easy.push({...r, need, ready:false, copies:c}); }
+  });
+  easy.sort((a, b) => (b.ready - a.ready) || (a.ready ? a.nxt - b.nxt : a.need - b.need) || a.toGold - b.toGold);
   const oneShort = recs.filter(r => r.short.length === 1).length;
-  return {items, recs, blockers, rows, craftable, bulk, craftN:recs.filter(r => r.ok).length, oneShort, prot};
+  return {items, recs, blockers, rows, craftable, bulk, easy, craftN:recs.filter(r => r.ok).length, oneShort, prot};
 }
 
 // ---------- drawing ----------
@@ -239,6 +259,13 @@ function viewBank(){
     + sec(t('bProtect'), t('bProtectN'), tbl([[t('colTrove')], [t('colHeld'), 'n'], [t('colNeed'), 'n'], [t('colUsed'), 'n'], [t('colSites'), 'n']],
         prot.map(r => `<tr><td><b>${esc(r.name)}</b></td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.max)}</td><td class="n">${r.uses}</td><td class="n">${r.sites == null ? '—' : r.sites}</td></tr>`)));
 }
+function viewEasy(){
+  const now = A.easy.filter(e => e.ready), soon = A.easy.filter(e => !e.ready);
+  const row = e => `<tr><td><b>${esc(e.name)}</b></td><td>${esc(levelName(e.lvl))} → ${esc(levelName(e.lvl + 1))}</td><td class="n">${n0(e.nxt)}</td><td class="n">${n0(e.q)}</td>${e.ready ? '' : `<td class="n">${n0(e.need)}</td>`}<td class="n">${n0(e.toGold)}</td></tr>`;
+  const h1 = [[t('colTrove')], [t('eStep')], [t('colCost'), 'n'], [t('colHeld'), 'n'], [t('colToGold'), 'n']];
+  const h2 = [[t('colTrove')], [t('eStep')], [t('colCost'), 'n'], [t('colHeld'), 'n'], [t('eNeed'), 'n'], [t('colToGold'), 'n']];
+  return sec(t('eNow'), t('eNowN'), tbl(h1, now.map(row))) + sec(t('eCraft'), t('eCraftN'), tbl(h2, soon.map(row)));
+}
 function viewFind(){
   const q = norm(query);
   const names = new Set([...PLACES.keys(), ...A.items.keys()]);
@@ -270,10 +297,10 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', t('tOverview')], ['missing', t('tMissing'), A.blockers.length], ['craft', t('tCraft'), A.craftable.filter(c => c.isNew).length], ['bank', t('tBank')], ['find', t('tFind')]];
-  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, bank:viewBank, find:viewFind}[tab] || viewOverview;
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['bank', '🏦', t('tBank'), ''], ['find', '🧭', t('tFind'), '']];
+  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, bank:viewBank, find:viewFind}[tab] || viewOverview;
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
-    <nav class="tabs" id="tabs">${tabs.map(([id, name, n]) => `<button type="button" data-tab="${id}" class="${tab === id ? 'on' : ''}">${esc(name)}${n != null ? `<span class="n">${n}</span>` : ''}</button>`).join('')}</nav>
+    <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
 }
 
