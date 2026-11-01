@@ -358,8 +358,63 @@
    "finds": [
     "Marble @ 1535 Trafalgar St, Vancouver"
    ]
+  },
+  "139": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Left after the first visit. Nothing from the special builds beyond Potato and Apple, and little built around.",
+   "gain": 35,
+   "types": 22,
+   "byCat": {
+    "resources": 16,
+    "utility": 1,
+    "social": 5,
+    "care": 5,
+    "valuables": 4,
+    "junk": 4
+   },
+   "top": [
+    [
+     "Salt",
+     4
+    ],
+    [
+     "Trove Dust",
+     4
+    ],
+    [
+     "Sunlight",
+     3
+    ],
+    [
+     "Apple",
+     2
+    ],
+    [
+     "Potato",
+     2
+    ],
+    [
+     "Grin",
+     2
+    ],
+    [
+     "Shy Giggle",
+     2
+    ],
+    [
+     "Brass Token",
+     2
+    ]
+   ],
+   "new": [],
+   "found": [
+    312,
+    312
+   ],
+   "finds": []
   }
  },
  "updatedAt": "2026-11-01",
- "next": 139
+ "next": 120
 }
