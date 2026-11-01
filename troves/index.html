@@ -83,7 +83,8 @@ Site.register({
     upErrToken:'This file contains something that looks like a login token. It was not loaded, and you should not share it.',
     upErrNoInv:'Your trove inventory is not in this HAR. Open your Troves page with the Network tab recording, reload it, and save the HAR again.',
     upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
-    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tWorld:'Grind map', tFind:'Look up',
+    tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tWorld:'Grind map', tSpecial:'Special builds', tFind:'Look up',
+    spH:'Structures that exist in only one city', spN:'Each of these is built in a single scanned city. Troves have a one-hour cooldown, so plan 3 or 4 searches per city. The order below is the shortest trip by air distance, starting from {start}.', spRoute:'Suggested trip', spLeg:'{km} km from the last stop', spStart:'Start', spBuilt:'{n} built', spGives:'Gives', spNoTroves:'No troves known for this one yet. It may hold a trove we have not seen: worth a visit to find out.', spNeed:'you need it', spTotal:'{n} cities, about {km} km in all', spVisit:'Properties to visit',
     dFound:'Troves discovered', dHidden:'{n} still hidden', dBank:'Banking', dBankLv:'{a} of {b} banking levels', dReady:'{n} steps ready now, {l} levels more with {c} crafts (see Easy wins)', dGold:'Gold', dSilver:'Silver', dBronze:'Bronze', dNotBanked:'Not banked',
     dRecipes:'Recipes', dCraftable:'Craftable now', dOneShort:'1 trove short', dTwoShort:'2 short', dMoreShort:'3 or more short', dNewCraft:'{n} new troves you can craft right now', dMoves:'Next moves',
     mFind:'Find {names}: they hold up the most recipes (Find first).', mCraft:'Craft {n} new troves (Craft now). Each is a discovery.', mBank:'Bank {n} steps that are ready, and craft toward {m} more levels (Easy wins).', mCity:'Go to {city}: it has {n} of your {m} missing troves (Grind map).',
@@ -119,7 +120,8 @@ Site.register({
     upErrToken:'Este archivo contiene algo que parece un token de sesión. No se cargó, y no deberías compartirlo.',
     upErrNoInv:'Tu inventario de troves no está en este HAR. Abre tu página de Troves con la pestaña Network grabando, recárgala y guarda el HAR otra vez.',
     upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
-    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tWorld:'Mapa de grind', tFind:'Consultar',
+    tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tWorld:'Mapa de grind', tSpecial:'Construcciones especiales', tFind:'Consultar',
+    spH:'Estructuras que existen en una sola ciudad', spN:'Cada una está construida en una sola ciudad escaneada. Los troves tienen una hora de espera, así que planea 3 o 4 búsquedas por ciudad. El orden de abajo es el viaje más corto por distancia aérea, empezando en {start}.', spRoute:'Viaje sugerido', spLeg:'{km} km desde la parada anterior', spStart:'Inicio', spBuilt:'{n} construidas', spGives:'Da', spNoTroves:'Aún no se conocen troves de esta. Puede tener uno que no hemos visto: vale la visita para averiguarlo.', spNeed:'te falta', spTotal:'{n} ciudades, unos {km} km en total', spVisit:'Propiedades para visitar',
     dFound:'Troves descubiertos', dHidden:'{n} aún ocultos', dBank:'Banco', dBankLv:'{a} de {b} niveles de banco', dReady:'{n} pasos listos ya, {l} niveles más con {c} crafteos (ver Fáciles)', dGold:'Oro', dSilver:'Plata', dBronze:'Bronce', dNotBanked:'Sin bancar',
     dRecipes:'Recetas', dCraftable:'Crafteables ya', dOneShort:'Falta 1 trove', dTwoShort:'Faltan 2', dMoreShort:'Faltan 3 o más', dNewCraft:'{n} troves nuevos que puedes craftear ya', dMoves:'Próximos pasos',
     mFind:'Busca {names}: frenan más recetas (Buscar primero).', mCraft:'Craftea {n} troves nuevos (Craftear ya). Cada uno es un descubrimiento.', mBank:'Banquea {n} pasos listos y craftea hacia {m} niveles más (Fáciles).', mCity:'Ve a {city}: tiene {n} de tus {m} troves faltantes (Mapa de grind).',
@@ -157,7 +159,7 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let IMG = null;
+let IMG = null, SPECIAL = null;
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
@@ -417,6 +419,19 @@ function viewOverview(){
   <div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 6px">${esc(t('dCats'))}</h2>${tbl([[t('dCat')], [t('dTotal'), 'n'], [t('dBank')]], [catRows])}</div>
   <details class="card help"><summary>${esc(t('hHow'))}</summary><dl>${help.map(([a, b]) => `<div><dt>${esc(t(a))}</dt><dd>${esc(t(b))}</dd></div>`).join('')}</dl></details>`;
 }
+function viewSpecial(){
+  if(!SPECIAL) return `<div class="card muted">${esc(t('wNone'))}</div>`;
+  const km = (a, b) => { const r = x => x * Math.PI / 180, h = Math.sin(r(b[0] - a[0]) / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(r((b[1] - a[1])) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
+  const need = new Set(A.blockers.map(b => b.n));
+  const stops = SPECIAL.route.map((cid, i) => { const c = SPECIAL.cities[cid], prev = i ? SPECIAL.cities[SPECIAL.route[i - 1]] : null; return {cid, c, leg: prev ? km(prev.pos, c.pos) : 0, list:SPECIAL.structures.filter(s => String(s.city) === String(cid))}; });
+  const first = SPECIAL.cities[SPECIAL.route[0]].name;
+  const head = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('spH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('spN', {start:first}))}</p>
+    <div class="small"><b>${esc(t('spRoute'))}:</b> ${stops.map(s => esc(s.c.name)).join(' → ')}<br><span class="muted">${esc(t('spTotal', {n:stops.length, km:n0(SPECIAL.routeKm)}))}</span></div></div>`;
+  return head + stops.map((s, i) => `<div class="card" style="margin-bottom:10px"><h2 style="margin:0 0 2px">${i + 1}. ${esc(s.c.name)}</h2><div class="small muted" style="margin-bottom:6px">${esc(i ? t('spLeg', {km:n0(s.leg)}) : t('spStart'))}</div>
+    ${s.list.map(x => `<div style="margin:8px 0;padding-top:8px;border-top:1px solid var(--border)"><b>${esc(x.name)}</b> <span class="tag">${esc(t('spBuilt', {n:x.n}))}</span>
+      <div class="small" style="margin:4px 0">${x.troves.length ? `<span class="muted">${esc(t('spGives'))}:</span> ${x.troves.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}${need.has(n) ? ` <span class="tag good">${esc(t('spNeed'))}</span>` : ''}</span>`).join(', ')}` : `<span class="muted">${esc(t('spNoTroves'))}</span>`}</div>
+      <div class="muted small">${esc(t('spVisit'))}</div><div class="spots">${x.spots.map(p => `<a class="btn small" target="_blank" rel="noopener" href="${UPLAND(p[0])}">📍 ${esc(p[1])} · ${esc(p[2])} ↗</a>`).join('')}</div></div>`).join('')}</div>`).join('');
+}
 function viewMissing(){
   return cityBar() + sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
     A.blockers.map(b => `<tr><td><div class="row" style="gap:0;flex-wrap:nowrap">${thumb(b.n)}${nameWith(b.n)}</div></td><td class="n">${b.recipes}</td><td class="n">${b.alone}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${spotBtns((PLACES.get(b.n) || {structures:[]}).structures)}</td></tr>`)));
@@ -573,8 +588,8 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['find', '🧭', t('tFind'), '']];
-  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, bank:viewBank, world:viewWorld, find:viewFind}[tab] || viewOverview;
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['special', '🏛', t('tSpecial'), SPECIAL ? t('wScanned', {n:Object.keys(SPECIAL.cities).length}) : ''], ['find', '🧭', t('tFind'), '']];
+  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, bank:viewBank, world:viewWorld, special:viewSpecial, find:viewFind}[tab] || viewOverview;
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
@@ -619,6 +634,7 @@ async function boot(){
     ROCK = checkShape(r);
   }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
   try{ IMG = await fetch('../data/troves/images.json').then(x => x.ok ? x.json() : null); }catch{ IMG = null; }
+  try{ SPECIAL = await fetch('../data/troves/city-specific.json').then(x => x.ok ? x.json() : null); }catch{ SPECIAL = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();
 }
