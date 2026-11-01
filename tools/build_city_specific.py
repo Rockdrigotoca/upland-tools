@@ -67,6 +67,7 @@ def route(points, start):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--start', default='Bermuda', help='city to start the route from')
+    ap.add_argument('--also', default='Bakersfield:Los Angeles', help='NAME:AFTER,... cities without a special build to visit anyway, placed right after another city of the route')
     args = ap.parse_args()
     world = json.load(open(os.path.join(DATA, 'world.json')))
     cities = {c['id']: c for c in world['cities']}
@@ -109,8 +110,21 @@ def main():
     else:
         start = min(used)
     order, total = route({c: coords[c] for c in used}, start)
+    plain = []
+    for pair in [x for x in args.also.split(',') if x]:
+        name, after = [x.strip() for x in pair.split(':')]
+        cid = next(c for c, v in cities.items() if v['name'] == name)
+        anchor = next(c for c, v in cities.items() if v['name'] == after)
+        cd = json.load(open(os.path.join(DATA, 'places', f'{cid}.json')))
+        coords[cid] = [round(sum(p[2] for p in cd['props']) / len(cd['props']), 4), round(sum(p[3] for p in cd['props']) / len(cd['props']), 4)]
+        used.add(cid)
+        if cid in order:
+            order.remove(cid)
+        order.insert(order.index(anchor) + 1, cid)
+        plain.append(cid)
+    total = sum(km(coords[a], coords[b]) for a, b in zip(order, order[1:]))
     res = {'updatedAt': world.get('updatedAt'), 'cities': {str(c): {'name': cities[c]['name'], 'pos': coords[c]} for c in used},
-           'route': order, 'routeKm': round(total), 'structures': out}
+           'route': order, 'routeKm': round(total), 'plain': [c for c in plain if not any(x['city'] == c for x in out)], 'structures': out}
     with open(os.path.join(DATA, 'city-specific.json'), 'w') as f:
         json.dump(res, f, ensure_ascii=False, separators=(',', ':'))
     print(len(out), 'structures in', len(used), 'cities; route', ' > '.join(cities[c]['name'] for c in order), f'({total:,.0f} km)')
