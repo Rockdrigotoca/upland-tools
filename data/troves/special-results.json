@@ -181,6 +181,65 @@
    ],
    "finds": [
     "Chickpea @ Ramen Restaurant, 7030 Oso Ave (Los Angeles)"
+   ],
+   "more": [
+    {
+     "status": "done",
+     "date": "2026-11-01",
+     "note": "Second, more focused visit to Los Angeles, before Seattle. Rubber Duck found (0 to 1), which makes Running Gag craftable.",
+     "gain": 808,
+     "types": 118,
+     "byCat": {
+      "resources": 201,
+      "utility": 65,
+      "social": 267,
+      "care": 157,
+      "valuables": 86,
+      "junk": 32
+     },
+     "top": [
+      [
+       "Shy Giggle",
+       53
+      ],
+      [
+       "Sunlight",
+       49
+      ],
+      [
+       "Wink",
+       36
+      ],
+      [
+       "Salt",
+       32
+      ],
+      [
+       "Trove Dust",
+       32
+      ],
+      [
+       "Eye Roll",
+       24
+      ],
+      [
+       "Thumbs Up",
+       24
+      ],
+      [
+       "Hooray",
+       22
+      ]
+     ],
+     "new": [],
+     "found": [
+      311,
+      311
+     ],
+     "finds": [
+      "Rubber Duck (first one)"
+     ]
+    }
    ]
   }
  },

@@ -6,6 +6,7 @@
 --before / --after are a balance file or a git revision of data/troves/rockdrigo/latest.json (after defaults to the file as it is now).
 The difference is the net trove count gained, with the levels banked in between added back.
 --together 138,32 stores the same result on each of those cities (two cities visited before one balance was taken).
+--append adds a later visit to a city that already has a result.
 --next ID marks the city to visit next. Results go to data/troves/special-results.json.
 """
 import argparse
@@ -52,6 +53,7 @@ def main():
     ap.add_argument('--find', action='append', default=[], help='"Trove @ where", repeatable')
     ap.add_argument('--note', default='')
     ap.add_argument('--date', default=time.strftime('%Y-%m-%d'))
+    ap.add_argument('--append', action='store_true', help='another visit to a city that already has a result: keep the first and add this one')
     ap.add_argument('--next', type=int, help='city id to visit next')
     args = ap.parse_args()
     d = json.load(open(OUT)) if os.path.exists(OUT) else {'cities': {}}
@@ -62,9 +64,13 @@ def main():
             rec.update(diff(balance(args.before), balance(args.after)))
         if len(ids) > 1:
             rec['together'] = ids
+        rec['finds'] = args.find
         for cid in ids:
             old = d['cities'].get(str(cid), {})
-            d['cities'][str(cid)] = {**old, **rec, 'finds': args.find or old.get('finds', [])}
+            if args.append and old:
+                old.setdefault('more', []).append(rec)
+            else:
+                d['cities'][str(cid)] = {**old, **rec, 'finds': args.find or old.get('finds', [])}
     if args.next:
         d['next'] = args.next
     d['updatedAt'] = time.strftime('%Y-%m-%d')
