@@ -55,3 +55,19 @@ confirms which are real city-only structures, and which troves each one holds.
 - A "Where in the world" tab on the Troves page, from the world files plus the trove places.
 - `tools/analyse_world.py`: the city-specific list, written to `data/troves/city-specific.json`.
 - A `world` job in the collectors workflow, off until Rockdrigo says go.
+
+## Living units are not structures
+
+Homes (Micro House, Apartment Building, Town House, Paris Condos, Ivory Rising residences and the like) hold no troves. They are listed in
+`data/structures/world/kinds.json` and kept apart: `analyse_world.py` marks them `living` and never counts them as structures, and
+`build_city_places.py` leaves them out of the address files. The list is curated by name for now; the plan is to confirm it against the
+building type in Upland's property record.
+
+## Later: a market listener
+
+Goal: a message when a property goes on sale in a neighbourhood or collection we are chasing.
+- The map already says `For sale` per property (the same request used to list a neighbourhood: one per neighbourhood). A small
+  scheduled job on the Cloudflare Worker (Sir Quailbert) could poll the watched neighbourhoods every few minutes, compare with the last
+  answer, and post new "for sale" properties to a Discord channel or DM.
+- The chain history server (used for sales) can confirm real listings and prices where the map only says "for sale".
+- The watch list comes from the Collection Hoarder: the collections still missing, and the neighbourhoods they need.

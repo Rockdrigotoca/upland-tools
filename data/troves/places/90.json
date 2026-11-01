@@ -1,0 +1,7 @@
+{
+"city":90,
+"name":"BHX",
+"hoods":["BHX"],
+"structs":["MV Aviation Hangar"],
+"props":[["88685743537812","General Aviation Airport Lot 1/10",52.45523,-1.76429,0,[0]],["88685743537872","General Aviation Airport Lot 5/10",52.45523,-1.76163,0,[0]],["88685743537857","General Aviation Airport Lot 4/10",52.45523,-1.7623,0,[0]],["88685743537902","General Aviation Airport Lot 7/10",52.45523,-1.76031,0,[0]],["88685743537887","General Aviation Airport Lot 6/10",52.45523,-1.76097,0,[0]],["88685743537827","General Aviation Airport Lot 2/10",52.45523,-1.76362,0,[0]],["88685743537842","General Aviation Airport Lot 3/10",52.45523,-1.76296,0,[0]],["88685743537947","General Aviation Airport Lot 10/10",52.45523,-1.75832,0,[0]],["88685743537932","General Aviation Airport Lot 9/10",52.45523,-1.75898,0,[0]],["88685743537917","General Aviation Airport Lot 8/10",52.45523,-1.75964,0,[0]]]
+}

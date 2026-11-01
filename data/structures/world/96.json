@@ -1,0 +1,14 @@
+{
+"city_id":96,
+"name":"Hayward Executive Airport",
+"hoods":{"2596":"Hayward Executive Airport"},
+"next":4,
+"read":4,
+"failed":0,
+"built":{"MV Aviation Hangar":3},
+"building":{},
+"byHood":{"2596":{"MV Aviation Hangar":3}},
+"total":4,
+"done":true,
+"updatedAt":"2026-11-01T00:51:17Z"
+}

@@ -1,0 +1,14 @@
+{
+"city_id":90,
+"name":"BHX",
+"hoods":{"2532":"BHX"},
+"next":10,
+"read":10,
+"failed":0,
+"built":{"MV Aviation Hangar":10},
+"building":{},
+"byHood":{"2532":{"MV Aviation Hangar":10}},
+"total":10,
+"done":true,
+"updatedAt":"2026-11-01T00:51:21Z"
+}

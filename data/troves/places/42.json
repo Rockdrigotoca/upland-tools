@@ -1,0 +1,7 @@
+{
+"city":42,
+"name":"Arlington",
+"hoods":["CENTRAL"],
+"structs":["Totally Official Cup Merch Kiosk","Nursery","Fire Station","Bus Stop","Kiosk - Donuts","Small Farmers Market","East Coast Modular Apartments: Bank Edition","Small Office"],
+"props":[["76406061497088","120 Parkwood Ave",32.73005,-97.12951,0,[0]],["76417922988908","1012 Ross Trl",32.7491,-97.12607,0,[1]],["76418375974290","208 W Randol Mill Rd",32.74985,-97.10869,0,[2]],["76413611244690","809 Bowie St",32.74227,-97.11677,0,[3]],["76409114950749","206 Hancock St",32.735,-97.11845,0,[4]],["76414332665412","505 N East St",32.74334,-97.10277,0,[5]],["76408427084962","714 Border Pl",32.7339,-97.11617,0,[3,6,7]]]
+}

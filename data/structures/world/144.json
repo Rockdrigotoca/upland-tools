@@ -1,0 +1,14 @@
+{
+"city_id":144,
+"name":"Istanbul",
+"hoods":{"3215":"AKSARAY","3216":"AKSEMSETTIN","3217":"ALEMDAR","3218":"ALI KUSCU","3223":"BALABANAGA","3228":"BEYAZIT","3229":"BINBIRDIREK","3233":"CANKURTARAN","3235":"CERRAHPASA","3236":"CIBALI","3240":"DEMIRTAS","3243":"EMIN SINAN","3248":"HACI KADIN","3251":"HASEKI SULTAN","3253":"HOBYAR","3254":"HOCA GIYASETTIN","3255":"HOCAPASA","3257":"ISKENDERPASA","3260":"KALENDERHANE","3265":"KATIP KASIM","3267":"KAZLICESME","3269":"KEMALPASA","3272":"KOCA MUSTAFAPASA","3274":"KUCUK AYASOFYA","3279":"MERCAN","3280":"MERKEZEFENDI","3281":"MESIHPASA","3283":"MIMAR HAYRETTIN","3284":"MIMAR KEMALETTIN","3285":"MOLLA FENARI","3286":"MOLLA GURANI","3287":"MOLLA HUSREV","3289":"MUHSINE HATUN","3290":"NISANCA","3291":"NURIPASA","3294":"RUSTEMPASA","3296":"SARAC ISHAK","3297":"SARIDEMIR","3299":"SEHREMINI","3300":"SEHSUVAR BEY","3302":"SEYYID OMER","3303":"SILIVRIKAPI","3304":"SULEYMANIYE","3305":"SULTAN AHMET","3306":"SUMBUL EFENDI","3308":"SURURI","3310":"TAHTAKALE","3311":"TAYA HATUN","3317":"YAVUZ SINAN","3318":"YAVUZ SULTAN SELIM","3319":"YEDIKULE","3320":"YENIDOGAN","3323":"ZEYREK"},
+"next":54,
+"read":54,
+"failed":0,
+"built":{"Bus Stop":1,"Totally Official Cup Merch Kiosk":1},
+"building":{"Crêpe Stand":1,"Empanada Stand":1,"Kiosk - Donuts":2,"Kiosk - Fried Chicken":1,"Pizzeria":3,"Coffee Stand":5,"Bakery":2,"Bus Stop":10,"Fine Dining Restaurant":1,"Fire Station":1,"Laundromat":1,"Neighborhood Market":1,"The Grand Bazaar Spice Shop":13,"Fresh Pick Fruit Stand":2,"Mother Cluckers Chicken":1,"Shawarma Street Co.":2,"The Crispy Crust Pizza":1,"Totally Official Cup Merch Kiosk":4,"Nursery":7,"Pub":1,"Small Town House ":1,"Coffee Shop":2,"Small Office":2,"Grim Hollow Tombstone Makers":1,"Kentucky Fried Kiosk":1,"Local Brewery":1,"Main Squeeze Lemonade":1,"More Than Three Bottles Condiment Kiosk":3,"Newspaper Stand":1,"Small Farmers Market":1,"The Corner Drugstore":1,"The Crispy Empanada Kiosk":1,"The Flickering Wick":1,"The Golden Vault Bank":1,"The Grimwood Hotel":1,"The Happy Harvest Cider House":1,"The Moonbeam Bookstore":1,"Micro House":3,"The Upland Needle":1,"Luxury Restaurant":1,"Big Fish Balls":1,"Kiosk - Pizza":1,"Istanbul Townhouse":5,"Massage Parlor":1,"Old Crow Farm Market":1,"Day Care Center":1,"The Patty Shack":1,"High-Rise Residential Tower":1,"The Tipsy Pilgrim Tavern":1,"Coastal Tower House":1,"STEM Foundry":1,"Town House":1,"Apartment Building":2,"Kiosk - Gelato":1,"Kiosk - Sushi":1,"Olde Wonder Toys":1},
+"byHood":{"3236":{"Bus Stop":1},"3291":{"Totally Official Cup Merch Kiosk":1}},
+"total":54,
+"done":true,
+"updatedAt":"2026-10-31T21:42:47Z"
+}

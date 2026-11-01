@@ -1,0 +1,14 @@
+{
+"city_id":42,
+"name":"Arlington",
+"hoods":{"1992":"CENTRAL","1994":"EAST","1999":"WEST"},
+"next":7,
+"read":7,
+"failed":0,
+"built":{"Totally Official Cup Merch Kiosk":1,"Nursery":1,"Fire Station":1,"Apartment Building":1,"Bus Stop":2,"Kiosk - Donuts":1,"Micro House":2,"Small Farmers Market":1,"East Coast Modular Apartments: Bank Edition":1,"Small Office":1},
+"building":{"Dollar Store":1},
+"byHood":{"1992":{"Totally Official Cup Merch Kiosk":1,"Nursery":1,"Fire Station":1,"Apartment Building":1,"Bus Stop":2,"Kiosk - Donuts":1,"Micro House":2,"Small Farmers Market":1,"East Coast Modular Apartments: Bank Edition":1,"Small Office":1}},
+"total":7,
+"done":true,
+"updatedAt":"2026-10-31T22:43:58Z"
+}

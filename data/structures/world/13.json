@@ -1,0 +1,14 @@
+{
+"city_id":13,
+"name":"Rutherford",
+"hoods":{"947":"EAST RUTHERFORD","948":"RUTHERFORD"},
+"next":73,
+"read":73,
+"failed":0,
+"built":{"Coffee Stand":2,"Cornerstone":3,"Medium Factory I":3,"Newspaper Stand":1,"Bakery":2,"Barbershop":2,"Bodega":4,"Large Factory I":1,"Large Showroom I":2,"Micro Factory I":4,"Medium Factory II":1,"Gym":4,"Small Factory I":6,"Cinnamon Bun Stand":1,"Coffee Shop":5,"Kiosk - Sushi":1,"Pub":2,"Small Town House ":1,"High School":1,"Hospital":1,"Elementary School":2,"High-Rise Residential Tower":1,"Pizzeria":1,"Casual Dining Restaurant":3,"Arcade":2,"Kiosk - Hot Dog":1,"Nursery":1,"Micro House":2,"Nathan’s Infamous Hot Dog Stand":1,"Veterinary Clinic":1,"East Coast Modular Apartments: Mobile Phone Store":1,"Kiosk - Fried Chicken":1,"Modern Hotel":1,"Pixel Pulse Arcade":1,"Game Exchange":1,"SynthTag Laser Tag":1,"Martial Arts Dojo":1,"Totally Official Cup Merch Kiosk":1,"Town House":1,"Small Office":1,"Kiosk - Donuts":1},
+"building":{"Coffee Stand":3,"Casual Dining Restaurant":3,"Brewery":1,"Kiosk - Hot Dog":1,"Aquarium":1,"Art Museum":1,"Auto Repair":1,"DMV":1,"Fire Station":1,"Hardware Store":1,"Sports Courts":1,"Ramen Restaurant":1,"Arcade":1,"Barbershop":2,"Mainstreet Modular Apartments: Cafe Edition building":1,"Gym":1,"Pixel Pulse Arcade":1,"Fish Deli":1},
+"byHood":{"947":{"Coffee Stand":2,"Cornerstone":2,"Medium Factory I":3,"Newspaper Stand":1,"Bakery":1,"Barbershop":2,"Bodega":2,"Large Factory I":1,"Large Showroom I":2,"Micro Factory I":2,"Medium Factory II":1,"Gym":3,"Small Factory I":3,"Cinnamon Bun Stand":1,"Coffee Shop":2,"Kiosk - Sushi":1,"Pub":2,"Small Town House ":1,"High School":1,"Hospital":1,"Elementary School":1,"High-Rise Residential Tower":1,"Pizzeria":1},"948":{"Casual Dining Restaurant":3,"Arcade":2,"Kiosk - Hot Dog":1,"Bodega":2,"Coffee Shop":3,"Elementary School":1,"Nursery":1,"Micro House":2,"Nathan’s Infamous Hot Dog Stand":1,"Small Factory I":3,"Veterinary Clinic":1,"East Coast Modular Apartments: Mobile Phone Store":1,"Bakery":1,"Micro Factory I":2,"Kiosk - Fried Chicken":1,"Modern Hotel":1,"Pixel Pulse Arcade":1,"Game Exchange":1,"SynthTag Laser Tag":1,"Martial Arts Dojo":1,"Totally Official Cup Merch Kiosk":1,"Town House":1,"Gym":1,"Small Office":1,"Cornerstone":1,"Kiosk - Donuts":1}},
+"total":73,
+"done":true,
+"updatedAt":"2026-10-31T22:44:24Z"
+}

@@ -24,7 +24,12 @@ def norm(name):
     return re.sub(r' 1$', '', re.sub(r'[^a-z0-9]+', ' ', n).strip())
 
 
+def living_set():
+    return {norm(n) for n in load('structures/world/kinds.json', {}).get('living', [])}
+
+
 def main():
+    living = living_set()
     names = {**NAMES, **{int(k): v for k, v in load('structures/world/cities.json', {}).items()}}
     cities, structures = {}, {}
 
@@ -32,8 +37,14 @@ def main():
         cities[cid] = {'id': cid, 'name': names.get(cid) or label or f'City {cid}', 'kind': kind, 'read': read, 'total': total, 'done': done}
         for n, c in built.items():
             e = structures.setdefault(norm(n), {'name': n, 'c': {}})
+            if norm(n) in living:
+                e['living'] = True   # a home, not a service structure: kept apart so it is never counted as one
+                e.setdefault('h', {})[str(cid)] = e.get('h', {}).get(str(cid), 0) + c
+                continue
             e['c'][str(cid)] = e['c'].get(str(cid), 0) + c
         for n, c in building.items():
+            if norm(n) in living:
+                continue
             e = structures.setdefault(norm(n), {'name': n, 'c': {}})
             e.setdefault('b', {})[str(cid)] = e.get('b', {}).get(str(cid), 0) + c
 
