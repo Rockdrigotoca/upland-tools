@@ -137,7 +137,7 @@ jobs:
       - name: Save teleport prices
         if: contains(format(',{0},', env.JOBS), ',fees,')
         run: |
-          bash tools/commit_data.sh "data: refresh teleport prices" data/troves/fees.json
+          bash tools/commit_data.sh "data: refresh teleport prices" data/troves/fees.json data/troves/fees-state.json
 
       # GitHub turns off schedules in public repos after 60 days without activity; this keeps it on.
       - name: Keep schedule alive

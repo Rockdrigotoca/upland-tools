@@ -59,6 +59,11 @@ def main():
             ids += [p[0] for p in cd['props'] if any(sn[i] in wanted for i in p[5])]
     out = load('troves/fees.json', {'fees': {}})
     todo = [i for i in dict.fromkeys(ids) if i not in out['fees']]
+    total = len(set(ids))
+
+    def state():   # a small file for the Backstage page, so it need not load the whole price list
+        save('troves/fees-state.json', {'updatedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'total': total, 'done': sum(1 for i in set(ids) if i in out['fees'])})
+
     log(f'{len(todo)} properties to read ({len(out["fees"])} already)')
     pacer = Pacer(1.0 / args.rate)
 
@@ -78,9 +83,11 @@ def main():
             if n % 300 == 0:
                 out['updatedAt'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
                 save('troves/fees.json', out)
+                state()
                 log(f'  {n} of {len(todo)}')
     out['updatedAt'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
     save('troves/fees.json', out)
+    state()
     log(f'done: {len(out["fees"])} fees')
 
 

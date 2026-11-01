@@ -40,7 +40,7 @@ const REPO = 'Rockdrigotoca/upland-tools';
 Site.register({
   en:{
     title:'Rockdrigo’s Backstage', subtitle:'Which data jobs are running, when each last ran, and how far the long ones have got.',
-    jPrices:'Ornament prices', jBuy:'Properties for sale', jCollections:'Group collections', jLedger:'Sales ledger', jStruct:'Neighbourhood structures', jWorld:'World structure scan',
+    jPrices:'Ornament prices', jBuy:'Properties for sale', jCollections:'Group collections', jLedger:'Sales ledger', jStruct:'Neighbourhood structures', jWorld:'World structure scan', jFees:'Teleport prices', dFees:'The visitor fee of every property with a service structure, to find a closer or cheaper one to visit. Feeds the Troves page.', cFees:'{n} of {m} properties read.',
     dStruct:'Which service structures each neighbourhood has and lacks.', dWorld:'Service structures of every Upland city. Feeds the Troves grind map.', cWorld:'{n} cities scanned.', cStruct:'{n} structure types listed.',
     jHoro:'Property Horoscope · Philomena at work', dHoro:'The stars, but for land. Entirely run by Philomena, who is very sure.',
     horo:['Reading star charts: 3 of 12 (two were upside down)','Asking Mercury about your corner lot: “it’s complicated”','Converting Mars retrograde into UPX: rate unknown, mood excellent','Checking whether Taurus owns property (Taurus declined to comment)','Drafting your reading: it begins “Beware of a tall building”'], horoPct:'{n}% done, give or take a planet', horoEta:'Expected: when the stars align. They have been told.',
@@ -54,7 +54,7 @@ Site.register({
   },
   es:{
     title:'Backstage de Rockdrigo', subtitle:'Qué trabajos de datos están corriendo, cuándo corrió cada uno y cuánto llevan los largos.',
-    jPrices:'Precios de ornamentos', jBuy:'Propiedades en venta', jCollections:'Colecciones del grupo', jLedger:'Libro de ventas', jStruct:'Estructuras por barrio', jWorld:'Escaneo mundial de estructuras',
+    jPrices:'Precios de ornamentos', jBuy:'Propiedades en venta', jCollections:'Colecciones del grupo', jLedger:'Libro de ventas', jStruct:'Estructuras por barrio', jWorld:'Escaneo mundial de estructuras', jFees:'Precios de teletransporte', dFees:'La cuota de visita de cada propiedad con una estructura de servicio, para encontrar una más cercana o barata. Alimenta la página de Troves.', cFees:'{n} de {m} propiedades leídas.',
     dStruct:'Qué estructuras de servicio tiene y le faltan a cada barrio.', dWorld:'Estructuras de servicio de cada ciudad de Upland. Alimenta el mapa de grind de Troves.', cWorld:'{n} ciudades escaneadas.', cStruct:'{n} tipos de estructura listados.',
     jHoro:'Horóscopo de Propiedades · Philomena trabajando', dHoro:'Las estrellas, pero para terrenos. La lleva toda Philomena, que está muy segura.',
     horo:['Leyendo cartas astrales: 3 de 12 (dos estaban de cabeza)','Preguntándole a Mercurio por tu esquina: “es complicado”','Convirtiendo Marte retrógrado a UPX: tasa desconocida, ánimo excelente','Revisando si Tauro tiene propiedades (Tauro prefirió no opinar)','Redactando tu lectura: empieza con “Cuidado con un edificio alto”'], horoPct:'{n}% listo, más o menos un planeta', horoEta:'Se espera: cuando se alineen los astros. Ya se les avisó.',
@@ -105,7 +105,7 @@ function hero(){
 }
 function render(){
   if(!D) return;
-  const [pr, buy, col, led, st, wd] = D;
+  const [pr, buy, col, led, st, wd, fe] = D;
   const day = x => new Date(x + 'Z').toLocaleDateString(loc(), {month:'short', day:'numeric', year:'numeric'});
   const total = 12100; // roughly the group's properties
   $('#jobs').innerHTML = [
@@ -114,7 +114,8 @@ function render(){
     job(t('jCollections'), t('dCollections'), col && col.updatedAt, col ? t('cCollections', {n: Number(col.remaining).toLocaleString(loc())}) : '', col ? 100 - col.remaining * 100 / total : null),
     job(t('jLedger'), t('dLedger'), led && led.updatedAt, led ? t('cLedger', {a: day(led.from), b: day(led.to)}) : ''),
     job(t('jStruct'), t('dStruct'), st && st.updatedAt, st ? t('cStruct', {n: (st.structures || []).length}) : ''),
-    job(t('jWorld'), t('dWorld'), wd && wd.updatedAt, wd ? t('cWorld', {n: (wd.cities || []).filter(c => c.done).length}) : '')
+    job(t('jWorld'), t('dWorld'), wd && wd.updatedAt, wd ? t('cWorld', {n: (wd.cities || []).filter(c => c.done).length}) : ''),
+    job(t('jFees'), t('dFees'), fe && fe.updatedAt, fe ? t('cFees', {n: Number(fe.done).toLocaleString(loc()), m: Number(fe.total).toLocaleString(loc())}) : '', fe && fe.total ? fe.done * 100 / fe.total : null)
   ].join('');
   hero();
   // Philomena's progress: it moves a little every minute, never gets anywhere, and is never wrong.
@@ -130,7 +131,7 @@ function render(){
 }
 Site.mount({onChange: render});
 function load(){
-  Promise.all(['state.json', 'buy/state.json', 'collections/state.json', 'ledger/state.json', 'structures/master.json', 'troves/world.json'].map(get)).then(d => { D = d; render(); });
+  Promise.all(['state.json', 'buy/state.json', 'collections/state.json', 'ledger/state.json', 'structures/master.json', 'troves/world.json', 'troves/fees-state.json'].map(get)).then(d => { D = d; render(); });
   Upland.getJSON(`https://api.github.com/repos/${REPO}/actions/workflows/collect.yml/runs?per_page=1`).then(r => { RUN = (r.workflow_runs || [])[0] || null; render(); }).catch(() => {});
 }
 load(); setInterval(load, 60000);
