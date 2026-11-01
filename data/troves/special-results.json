@@ -241,8 +241,68 @@
      ]
     }
    ]
+  },
+  "125": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Only Extension Cords came from the special builds in Seattle. Clam and Mussel came from ordinary properties; the Mussel on the second visit.",
+   "gain": 201,
+   "types": 74,
+   "byCat": {
+    "resources": 63,
+    "utility": 7,
+    "social": 43,
+    "care": 48,
+    "valuables": 29,
+    "junk": 11
+   },
+   "top": [
+    [
+     "Salt",
+     12
+    ],
+    [
+     "Wink",
+     11
+    ],
+    [
+     "Trove Dust",
+     11
+    ],
+    [
+     "Sunlight",
+     9
+    ],
+    [
+     "Kind Word",
+     8
+    ],
+    [
+     "Shy Giggle",
+     7
+    ],
+    [
+     "Thumbs Up",
+     6
+    ],
+    [
+     "Warm Hug",
+     6
+    ]
+   ],
+   "new": [
+    "Mussel"
+   ],
+   "found": [
+    311,
+    312
+   ],
+   "finds": [
+    "Clam @ 1058 N 36th St, Seattle",
+    "Mussel @ 1115 8th Ave W, Seattle (2nd visit)"
+   ]
   }
  },
  "updatedAt": "2026-11-01",
- "next": 125
+ "next": 122
 }
