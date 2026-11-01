@@ -53,6 +53,8 @@ details.more summary{cursor:pointer;color:var(--accent);font-size:.8125rem}
 .need .it{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:6px 8px;background:var(--surface)}
 .need .thumb{width:40px;height:40px;margin:0}
 .spots{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.btn.cool{opacity:.45;filter:grayscale(1)}
+.cd{font-weight:700;margin-left:4px}
 .spots .btn{font-size:.75rem;padding:5px 9px;white-space:normal;text-align:left}
 details.more summary{cursor:pointer}
 .chips2{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
@@ -93,8 +95,11 @@ Site.register({
     hHow:'How to use each part', hOver:'Overview', hOverD:'The big picture: how much you have discovered, banked and can craft, and the next three things to do.', hFirst:'Find first', hFirstD:'Every trove you are missing, ordered by how many recipes it holds up, with the structures where it can be found.', hCraft:'Craft now', hCraftD:'What you can craft right now. New troves (never in your inventory) come first. “Up to” is how many copies your stock allows.', hEasy:'Easy wins', hEasyD:'A plan that adds banking levels with the least effort: which to bank now, and how many to craft and bank for more. It keeps a reserve of anything recipes need.', hBank:'Bank', hBankD:'The rules behind Easy wins: what is safe to bank, what to craft to bank, and what never to bank. Change the reserve with Careful or Relaxed.', hWorld:'Grind map', hWorldD:'Pick a city: it shows which of your missing troves it has, and the exact properties and neighbourhoods where to get them, with a button to open each one in Upland.', hFind:'Look up', hFindD:'Type any trove to see where it is found, where it is crafted and which recipes use it.',
     wCity2:'City', wHot:'Where to go in {city}', wHotN:'Properties ranked by how many of your missing troves their structures give you (more recipes held up counts more). Open one to go straight there in Upland.', wAll:'All neighbourhoods', wAny:'All my missing troves', wTrove:'Trove', wHood:'Neighbourhood', wAddr:'Address', wOpen:'Open in Upland', wCopy:'Copy', wVia:'Structures here', wGivesList:'Gives', wNoAddr:'There are no addresses for this city yet: only the structure counts. They come with the full scan.', wShown:'Showing {a} of {b} properties.', wPartial:'This city is only partly scanned ({n} properties read of {t}).',
     needH:'Collect these to fill your recipes', needN:'{n} troves are all that stand between you and {m} unfinished recipes. Under each name: how many recipes it holds up, and how many more you need.', needMore:'{r} recipes · {g} more', dlClean:'Download cleaned file', dlNote:'A small file with only trove names and numbers, no token. Send it to a phone and upload it there.',
-    gH:'What do you want to do?', gN:'Tick what you are after. The whole page follows: tabs, plans and next moves.', gBank:'Bank levels', gBonus:'Craft many, for bonus chances', gDisc:'Discover new troves', gTarget:'Crafts of each', gNone:'Tick at least one goal above to see a plan here.',
-    bnH:'Craft many for bonus chances', bnN:'The more you craft of a trove, the better the chance of a bonus item. Target: {T} of each. {n} of {m} can reach it now with ingredients you can spare (reserves kept, scarce troves never used). Ingredients are spent once, so crafts further down get what is left.', bnPlan:'Can craft', bnTarget:'Target', bnHeld:'You hold', bnUses:'Ingredients', bnLack:'To reach the target', bnNew:'new', bnMore:'+{n} {name}',
+    coolLeft:'{n} min', coolClear:'Clear the timers', coolHint:'A property you open turns grey with a 60-minute timer: that is when you can search it again.', wFee:'Fee (UPX)', wDist:'km from the last one', bnxH:'Structures to build next', bnxN:'To craft the rest in your own structures, build these. Priority is how many of the {n} crafts each one unlocks, after the ones above it. Where: your empty properties that are big enough, by city.', bnxSize:'Needs', bnxUp2:'{n} UP2', bnxSug:'≤ {n} UP2 (suggested)', bnxUnk:'size unknown', bnxIn:'Build in', bnxNoFit:'None of your empty properties is big enough', bnxUnlocks:'Unlocks',
+    owH:'Craft in your own structures', owN:'Crafting at a structure you own means no visit to someone else’s. These stops cover {n} of {m} crafts, fewest stops first, grouped by city.', owStop:'Stop', owCity:'City', owWhere:'Where', owCrafts:'Craft here', owNone:'Nothing you want to craft can be done in your own structures.',
+    owTravelH:'Crafts that need another structure', owTravelN:'None of your structures can craft these. For each: the closest option in {city} (from the last property you opened, or the city centre) and the cheapest one we know the teleport price of.', owNear:'Closest', owCheap:'Cheapest', owSave:'saves {u} UPX, {k} km further', owSame:'it is also the closest', owUnk:'price unknown', owFeeNote:'The price shown is the teleport price, which is also the visitor fee.', owPlain:'{km} km · {fee}',
+    wSites:'Places that give them', gH:'What do you want to do?', gN:'Tick what you are after. The whole page follows: tabs, plans and next moves.', gBank:'Bank levels', gBonus:'Craft many, for bonus chances', gDisc:'Discover new troves', gTarget:'Crafts of each', gNone:'Tick at least one goal above to see a plan here.',
+    bnH:'Craft many for bonus chances', bnN:'The more you craft of a trove, the better the chance of a bonus item. Target: {T} of each. {n} of {m} can reach it now with ingredients you can spare (reserves kept, scarce troves never used). Ingredients are spent once, so crafts further down get what is left.', bnPlan:'Can craft in all', bnTarget:'Target', bnHeld:'You hold', bnUses:'Ingredients', bnLack:'To reach the target', bnNew:'new', bnMore:'+{n} {name}',
     clH:'Crafts that compete for the same troves', clN:'Each new trove is crafted once here. These ingredients are asked for by several crafts, and you do not hold enough for all of them.', clRow:'{name}: needs {need} in all, you hold {have}', clFor:'for {list}', mBonus:'Craft toward {T} of each (Easy wins): {n} troves can get there now.',
     spCity:'City to look in', spLoad:'Loading properties…', spNone:'None in this city', spMore:'+{n} more', spHint:'Buttons open the property in Upland. Click a trove name to see which structures give it.', spCraft:'Craft at',
     xH:'Troves we do not know yet', xN:'You know {n} troves that are not in our list. If you share them, we learn where they are found.', xAsk:'Nothing is sent unless you click. Sharing posts only these trove names and the structures that give them on this project’s public GitHub page, with your GitHub name if you are signed in. May we use them to improve the tool?', xShare:'Yes, share on GitHub', xCopy:'Copy', xDone:'Copied.',
@@ -133,8 +138,11 @@ Site.register({
     hHow:'Cómo usar cada parte', hOver:'Resumen', hOverD:'El panorama: cuánto has descubierto, bancado y puedes craftear, y los tres próximos pasos.', hFirst:'Buscar primero', hFirstD:'Todos los troves que te faltan, ordenados por cuántas recetas frenan, con las estructuras donde se encuentran.', hCraft:'Craftear ya', hCraftD:'Lo que puedes craftear ahora. Primero los troves nuevos (nunca en tu inventario). “Hasta” es cuántas copias permite tu stock.', hEasy:'Fáciles', hEasyD:'Un plan que suma niveles de banco con el menor esfuerzo: qué bancar ya y cuántos craftear y bancar para más. Guarda reserva de lo que piden las recetas.', hBank:'Banco', hBankD:'Las reglas detrás de Fáciles: qué es seguro bancar, qué craftear para bancar y qué nunca bancar. Cambia la reserva con Cuidadosa o Relajada.', hWorld:'Mapa de grind', hWorldD:'Elige una ciudad: te dice cuáles de tus troves faltantes tiene y las propiedades y barrios exactos donde conseguirlos, con un botón para abrir cada una en Upland.', hFind:'Consultar', hFindD:'Escribe cualquier trove para ver dónde se encuentra, dónde se craftea y qué recetas lo usan.',
     wCity2:'Ciudad', wHot:'Adónde ir en {city}', wHotN:'Propiedades ordenadas por cuántos de tus troves faltantes dan sus estructuras (cuenta más lo que frena más recetas). Abre una para ir directo en Upland.', wAll:'Todos los barrios', wAny:'Todos mis troves faltantes', wTrove:'Trove', wHood:'Barrio', wAddr:'Dirección', wOpen:'Abrir en Upland', wCopy:'Copiar', wVia:'Estructuras aquí', wGivesList:'Da', wNoAddr:'Aún no hay direcciones de esta ciudad: solo el conteo de estructuras. Llegan con el escaneo completo.', wShown:'Mostrando {a} de {b} propiedades.', wPartial:'Esta ciudad está escaneada solo en parte ({n} propiedades leídas de {t}).',
     needH:'Junta estos para completar tus recetas', needN:'{n} troves son lo único que te separa de {m} recetas sin completar. Debajo de cada nombre: cuántas recetas frena y cuántos más necesitas.', needMore:'{r} recetas · {g} más', dlClean:'Descargar archivo limpio', dlNote:'Un archivo pequeño solo con nombres y números de troves, sin token. Envíalo a un teléfono y súbelo ahí.',
-    gH:'¿Qué quieres hacer?', gN:'Marca lo que buscas. Toda la página lo sigue: pestañas, planes y próximos pasos.', gBank:'Subir niveles de banco', gBonus:'Craftear muchos, por más bonus', gDisc:'Descubrir troves nuevos', gTarget:'Crafteos de cada uno', gNone:'Marca al menos una meta arriba para ver un plan aquí.',
-    bnH:'Craftea muchos para ganar bonus', bnN:'Mientras más crafteas de un trove, mayor la posibilidad de un objeto extra. Meta: {T} de cada uno. {n} de {m} pueden llegar ya con ingredientes que puedes gastar (se respetan las reservas y nunca se usan troves escasos). Los ingredientes se gastan una sola vez, así que los de abajo reciben lo que queda.', bnPlan:'Puedes craftear', bnTarget:'Meta', bnHeld:'Tienes', bnUses:'Ingredientes', bnLack:'Para llegar a la meta', bnNew:'nuevo', bnMore:'+{n} {name}',
+    coolLeft:'{n} min', coolClear:'Borrar los temporizadores', coolHint:'Una propiedad que abres se pone gris con un temporizador de 60 minutos: ahí puedes buscar de nuevo.', wFee:'Costo (UPX)', wDist:'km desde la última', bnxH:'Estructuras por construir', bnxN:'Para craftear el resto en tus propias estructuras, construye estas. La prioridad es cuántos de los {n} crafteos desbloquea cada una, después de las de arriba. Dónde: tus propiedades vacías que son lo bastante grandes, por ciudad.', bnxSize:'Pide', bnxUp2:'{n} UP2', bnxSug:'≤ {n} UP2 (sugerido)', bnxUnk:'tamaño desconocido', bnxIn:'Construir en', bnxNoFit:'Ninguna de tus propiedades vacías es lo bastante grande', bnxUnlocks:'Desbloquea',
+    owH:'Craftea en tus propias estructuras', owN:'Craftear en una estructura tuya evita visitar la de otro. Estas paradas cubren {n} de {m} crafteos, las menos paradas posibles, agrupadas por ciudad.', owStop:'Parada', owCity:'Ciudad', owWhere:'Dónde', owCrafts:'Craftea aquí', owNone:'Nada de lo que quieres craftear se puede hacer en tus estructuras.',
+    owTravelH:'Crafteos que necesitan otra estructura', owTravelN:'Ninguna de tus estructuras puede craftear esto. Para cada uno: la opción más cercana en {city} (desde la última propiedad que abriste, o el centro de la ciudad) y la más barata de la que sabemos el precio de teletransporte.', owNear:'Más cercana', owCheap:'Más barata', owSave:'ahorra {u} UPX, {k} km más lejos', owSame:'también es la más cercana', owUnk:'precio desconocido', owFeeNote:'El precio mostrado es el de teletransporte, que también es la cuota de visita.', owPlain:'{km} km · {fee}',
+    wSites:'Lugares que los dan', gH:'¿Qué quieres hacer?', gN:'Marca lo que buscas. Toda la página lo sigue: pestañas, planes y próximos pasos.', gBank:'Subir niveles de banco', gBonus:'Craftear muchos, por más bonus', gDisc:'Descubrir troves nuevos', gTarget:'Crafteos de cada uno', gNone:'Marca al menos una meta arriba para ver un plan aquí.',
+    bnH:'Craftea muchos para ganar bonus', bnN:'Mientras más crafteas de un trove, mayor la posibilidad de un objeto extra. Meta: {T} de cada uno. {n} de {m} pueden llegar ya con ingredientes que puedes gastar (se respetan las reservas y nunca se usan troves escasos). Los ingredientes se gastan una sola vez, así que los de abajo reciben lo que queda.', bnPlan:'Puedes craftear en total', bnTarget:'Meta', bnHeld:'Tienes', bnUses:'Ingredientes', bnLack:'Para llegar a la meta', bnNew:'nuevo', bnMore:'+{n} {name}',
     clH:'Crafteos que compiten por los mismos troves', clN:'Aquí cada trove nuevo se craftea una vez. Estos ingredientes los piden varios crafteos y no tienes para todos.', clRow:'{name}: pide {need} en total, tienes {have}', clFor:'para {list}', mBonus:'Craftea hacia {T} de cada uno (Fáciles): {n} troves pueden llegar ya.',
     spCity:'Ciudad donde buscar', spLoad:'Cargando propiedades…', spNone:'Ninguna en esta ciudad', spMore:'+{n} más', spHint:'Los botones abren la propiedad en Upland. Toca el nombre de un trove para ver qué estructuras lo dan.', spCraft:'Craftear en',
     xH:'Troves que aún no conocemos', xN:'Conoces {n} troves que no están en nuestra lista. Si los compartes, aprendemos dónde se encuentran.', xAsk:'No se envía nada si no haces clic. Compartir publica solo estos nombres de troves y las estructuras que los dan en la página pública de GitHub del proyecto, con tu nombre de GitHub si tienes sesión. ¿Podemos usarlos para mejorar la herramienta?', xShare:'Sí, compartir en GitHub', xCopy:'Copiar', xDone:'Copiado.',
@@ -166,7 +174,7 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let IMG = null, SPECIAL = null;
+let IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
@@ -336,7 +344,7 @@ function analyse(d){
       const lack = per.v.ings.map(g => ({n:g.n, miss:Math.max(0, g.req * T - (spare.get(g.n) || 0))})).filter(x => x.miss > 0).sort((a, b) => b.miss - a.miss);
       if(k > 0) per.v.ings.forEach(g => spare.set(g.n, spare.get(g.n) - g.req * k));
       const it = items.get(c.name);
-      out.push({name:c.name, k, T, held:it ? it.q : null, isNew:!it, ings:per.v.ings, lack});
+      out.push({name:c.name, k, T, total:per.n, held:it ? it.q : null, isNew:!it, ings:per.v.ings, lack});
     });
     return out.sort((a, b) => (b.k >= b.T) - (a.k >= a.T) || b.k - a.k || a.name.localeCompare(b.name));
   };
@@ -376,7 +384,8 @@ function spots(names, k){
   }
   return spotMemo.get(key).slice(0, k);
 }
-const spotBtn = pr => `<a class="btn small" target="_blank" rel="noopener" href="${UPLAND(pr[0])}">📍 ${esc(pr[1])} ↗</a>`;
+const feeTxt = pid => FEES && FEES[pid] != null ? ` · ${FEES[pid]} UPX` : '';
+const spotBtn = pr => `<a class="btn small" target="_blank" rel="noopener" data-pid="${pr[0]}" href="${UPLAND(pr[0])}">📍 ${esc(pr[1])}${feeTxt(pr[0])} ↗</a>`;
 function spotBtns(names, k = 3){
   const r = spots(names, 10);
   if(r === null) return `<span class="muted small">${esc(t('spLoad'))}</span>`;
@@ -387,7 +396,7 @@ function cityBar(){
   ensureCity();
   const cs = (WORLD ? WORLD.cities : []).filter(c => c.kind === 'scan' && c.done).sort((a, b) => a.name.localeCompare(b.name));
   if(!cs.length) return '';
-  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label></div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))}</p>`;
+  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label></div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))} ${esc(t('coolHint'))} <button type="button" class="btn small" id="clearCool">${esc(t('coolClear'))}</button></p>`;
 }
 // a trove name that opens to the structures that give it
 const nameWith = n => { const p = PLACES.get(n); return p && p.structures.length ? `<details class="more"><summary><b>${esc(n)}</b></summary><div class="places">${esc(p.structures.join(', '))}${p.plants.length ? ` · ${esc(t('plantsLbl'))}: ${esc(p.plants.join(', '))}` : ''}</div></details>` : `<b>${esc(n)}</b>`; };
@@ -432,8 +441,87 @@ function bonusSection(){
   const head = [[t('colTrove')], [t('bnPlan'), 'n'], [t('bnTarget'), 'n'], [t('bnHeld'), 'n'], [t('bnUses')], [t('bnLack')]];
   return sec(t('bnH'), t('bnN', {T:BONUS_T, n:got, m:rows.length}), tbl(head, rows.map(r => {
     const lack = r.lack.length ? `${r.lack.slice(0, 2).map(x => `+${n0(x.miss)} ${esc(x.n)}`).join(', ')}${r.lack.length > 2 ? ` <span class="muted">${esc(t('bnMore', {n:r.lack.length - 2, name:''}))}</span>` : ''}${spotBtns((PLACES.get(r.lack[0].n) || {structures:[]}).structures, 2)}` : `<span class="tag good">✓</span>`;
-    return `<tr><td>${thumb(r.name)}<b>${esc(r.name)}</b>${r.isNew ? ` <span class="tag good">${esc(t('bnNew'))}</span>` : ''}</td><td class="n"><b>${n0(r.k)}</b></td><td class="n">${r.T}</td><td class="n">${r.held == null ? '—' : n0(r.held)}</td><td class="small">${r.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')}</td><td class="small">${lack}</td></tr>`;
+    return `<tr><td>${thumb(r.name)}<b>${esc(r.name)}</b>${r.isNew ? ` <span class="tag good">${esc(t('bnNew'))}</span>` : ''}</td><td class="n"><b>${n0(r.total)}</b></td><td class="n">${r.T}</td><td class="n">${r.held == null ? '—' : n0(r.held)}</td><td class="small">${r.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')}</td><td class="small">${lack}</td></tr>`;
   })));
+}
+const kmBetween = (a, b, c, d) => { const r = x => x * Math.PI / 180, h = Math.sin(r(c - a) / 2) ** 2 + Math.cos(r(a)) * Math.cos(r(c)) * Math.sin(r(d - b) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
+// Everything the current goals ask you to craft, so the page can say where.
+function wantedCrafts(){
+  const out = new Set();
+  if(GOAL.discover) A.craftable.filter(c => c.isNew).forEach(c => out.add(c.name));
+  if(GOAL.bonus) A.bonusFor(BONUS_T).filter(r => r.total > 0).forEach(r => out.add(r.name));
+  if(GOAL.bank) A.easy.filter(e => e.crafts > 0).forEach(e => out.add(e.name));
+  return [...out].filter(n => PLACES.get(n) && PLACES.get(n).craftAt.length);
+}
+function nearBy(names){
+  const cd = CITYDATA[CITY]; if(!cd) return null;
+  const want = new Set(names.map(x => norm(x).replace(/ 1$/, ''))), sn = cd.structs.map(x => norm(x).replace(/ 1$/, ''));
+  const ref = (LAST && cd.props.find(p => String(p[0]) === String(LAST))) || cd.props.reduce((a, p) => [0, 0, a[2] + p[2] / cd.props.length, a[3] + p[3] / cd.props.length], [0, 0, 0, 0]);
+  const opts = cd.props.filter(p => p[5].some(i => want.has(sn[i]))).map(p => ({p, km:kmBetween(ref[2], ref[3], p[2], p[3]), fee:FEES && FEES[p[0]] != null ? FEES[p[0]] : null}));
+  if(!opts.length) return {near:null};
+  const near = opts.reduce((a, b) => b.km < a.km ? b : a);
+  const known = opts.filter(o => o.fee != null);
+  const cheap = known.length ? known.reduce((a, b) => (b.fee < a.fee || (b.fee === a.fee && b.km < a.km)) ? b : a) : null;
+  return {near, cheap};
+}
+// The structures to build so that the remaining crafts can be done at your own properties: most crafts unlocked first.
+function buildNextCard(left){
+  const cand = new Map();
+  left.forEach(n => PLACES.get(n).craftAt.forEach(x => { const k = norm(x).replace(/ 1$/, ''); const e = cand.get(k) || {name:x, troves:new Set()}; e.troves.add(n); cand.set(k, e); }));
+  const todo = new Set(left), picks = [];
+  while(todo.size){
+    let best = null;
+    cand.forEach(e => { const got = [...e.troves].filter(n => todo.has(n)); if(got.length && (!best || got.length > best.got.length)) best = {e, got}; });
+    if(!best) break;
+    best.got.forEach(n => todo.delete(n));
+    picks.push(best);
+  }
+  const vacant = (OWN || []).filter(r => !r[6].length && !r[7].length && !r[8]);
+  const rows = picks.map((pk, i) => {
+    const sz = SIZE.get(pk.e.name.trim().toLowerCase()), need = sz ? (sz.up2 != null ? sz.up2 : sz.sug) : null;
+    const size = !sz ? t('bnxUnk') : sz.up2 != null ? t('bnxUp2', {n:sz.up2}) : t('bnxSug', {n:sz.sug});
+    const fit = vacant.filter(r => need == null || (r[3] || 0) >= need).sort((a, b) => (a[3] || 0) - (b[3] || 0));
+    const byCity = new Map(); fit.forEach(r => byCity.set(r[2], [...(byCity.get(r[2]) || []), r]));
+    const cs = [...byCity.entries()].sort((a, b) => b[1].length - a[1].length), extra = cs.length > 5 ? `<div class="small muted">${esc(t('spMore', {n:cs.length - 5}))}</div>` : '';
+    const where = byCity.size ? cs.slice(0, 5).map(([c, rs]) => `<div class="small"><b>${esc(c)}</b> <span class="muted">(${rs.length})</span> ${rs.slice(0, 2).map(r => `<a class="btn small" target="_blank" rel="noopener" data-pid="${r[0]}" href="${UPLAND(r[0])}">📍 ${esc(r[1])} · ${r[3]} UP2 ↗</a>`).join(' ')}</div>`).join('') + extra : `<span class="muted small">${esc(t('bnxNoFit'))}</span>`;
+    return `<tr><td class="n">${i + 1}</td><td><b>${esc(pk.e.name)}</b></td><td class="n" data-v="${pk.got.length}"><b>${pk.got.length}</b></td><td class="small">${pk.got.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}</span>`).join(', ')}</td><td class="small">${esc(size)}</td><td>${where}</td></tr>`;
+  });
+  return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('bnxH'))} <span class="tag">${picks.length}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('bnxN', {n:left.length}))}</p>
+    ${tbl([['#', 'n'], [t('colStruct') === 'colStruct' ? 'Structure' : t('colStruct')], [t('bnxUnlocks'), 'n'], [t('owCrafts')], [t('bnxSize')], [t('bnxIn')]], rows)}</div>`;
+}
+function ownCraftCard(){
+  if(!OWN || SRC !== 'rock') return '';
+  ensureCity();
+  const wanted = wantedCrafts(), need = new Map(wanted.map(n => [n, new Set(PLACES.get(n).craftAt.map(x => norm(x).replace(/ 1$/, '')))]));
+  const props = OWN.filter(r => r[6].length).map(r => ({r, can:new Map(r[6].map(b => [norm(b).replace(/ 1$/, ''), b]))}));
+  const left = new Set(wanted), stops = [];
+  while(left.size){
+    let best = null;
+    props.forEach(pp => { const got = [...left].filter(n => [...need.get(n)].some(x => pp.can.has(x))); if(got.length && (!best || got.length > best.got.length)) best = {pp, got}; });
+    if(!best) break;
+    const via = best.pp, byStruct = new Map();
+    best.got.forEach(n => { const x = [...need.get(n)].find(k => via.can.has(k)), st = via.can.get(x); byStruct.set(st, [...(byStruct.get(st) || []), n]); left.delete(n); });
+    stops.push({r:via.r, byStruct});
+  }
+  stops.sort((a, b) => String(a.r[2]).localeCompare(String(b.r[2])) || a.r[1].localeCompare(b.r[1]));
+  const covered = wanted.length - left.size;
+  const rows = stops.map((s, i) => `<tr><td class="n">${i + 1}</td><td>${esc(s.r[2])}</td><td><a class="btn small" target="_blank" rel="noopener" data-pid="${s.r[0]}" href="${UPLAND(s.r[0])}">📍 ${esc(s.r[1])} ↗</a></td>
+    <td>${[...s.byStruct.entries()].map(([st, ns]) => `<div class="small"><b>${esc(st)}</b>: ${ns.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}</span>`).join(', ')}</div>`).join('')}</td><td class="n">${[...s.byStruct.values()].reduce((a, b) => a + b.length, 0)}</td></tr>`);
+  const own = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('owN', {n:covered, m:wanted.length}))}</p>
+    ${rows.length ? tbl([[t('owStop'), 'n'], [t('owCity')], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) : `<p class="muted small" style="margin:0">${esc(t('owNone'))}</p>`}</div>`;
+  if(!left.size) return own;
+  const buildNext = buildNextCard([...left]);
+  const fmt = o => t('owPlain', {km:o.km.toFixed(1), fee:o.fee == null ? t('owUnk') : o.fee + ' UPX'});
+  const btn = o => `<a class="btn small" target="_blank" rel="noopener" data-pid="${o.p[0]}" href="${UPLAND(o.p[0])}">📍 ${esc(o.p[1])} ↗</a>`;
+  const trows = [...left].sort().map(n => {
+    const r = nearBy(PLACES.get(n).craftAt);
+    if(r === null) return `<tr><td>${thumb(n)}<b>${esc(n)}</b></td><td class="muted small">${esc(t('spLoad'))}</td></tr>`;
+    if(!r.near) return `<tr><td>${thumb(n)}<b>${esc(n)}</b></td><td class="muted small">${esc(t('spNone'))}</td></tr>`;
+    const cheap = r.cheap && r.cheap.p[0] !== r.near.p[0] ? `<div class="small" style="margin-top:4px"><b>${esc(t('owCheap'))}:</b> ${btn(r.cheap)} <span class="muted">${esc(fmt(r.cheap))}${r.near.fee != null && r.near.fee > r.cheap.fee ? ' · ' + esc(t('owSave', {u:r.near.fee - r.cheap.fee, k:(r.cheap.km - r.near.km).toFixed(1)})) : ''}</span></div>` : (r.cheap ? `<div class="small muted" style="margin-top:4px">${esc(t('owSame'))}</div>` : '');
+    return `<tr><td>${thumb(n)}<b>${esc(n)}</b></td><td><div class="small"><b>${esc(t('owNear'))}:</b> ${btn(r.near)} <span class="muted">${esc(fmt(r.near))}</span></div>${cheap}</td></tr>`;
+  });
+  const city = (WORLD && (WORLD.cities.find(c => String(c.id) === String(CITY)) || {}).name) || '';
+  return own + buildNext + `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owTravelH'))} <span class="tag">${left.size}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('owTravelN', {city}))} ${esc(t('owFeeNote'))}</p>${tbl([[t('colTrove')], [t('owWhere')]], trows)}</div>`;
 }
 function clashCard(){
   if(!A.clash.length) return '';
@@ -450,7 +538,7 @@ function viewOverview(){
   const newCraft = A.craftable.filter(c => c.isNew).length;
   // the scanned city that has most of what is missing
   let city = null;
-  if(WORLD){ const c0 = WORLD.cities.filter(c => c.done && c.kind === 'scan').map(c => ({c, got:A.blockers.filter(b => presence(b.n).has(String(c.id)))})).sort((a, b) => b.got.reduce((x, y) => x + y.recipes, 0) - a.got.reduce((x, y) => x + y.recipes, 0))[0]; if(c0 && c0.got.length) city = {name:c0.c.name, n:c0.got.length}; }
+  if(WORLD){ const c0 = WORLD.cities.filter(c => c.done && c.kind === 'scan').map(c => { const got = A.blockers.filter(b => presence(b.n).has(String(c.id))); return {c, got, sites:got.reduce((x, y) => x + presence(y.n).get(String(c.id)).n, 0)}; }).sort((a, b) => b.got.reduce((x, y) => x + y.recipes, 0) - a.got.reduce((x, y) => x + y.recipes, 0) || b.sites - a.sites)[0]; if(c0 && c0.got.length) city = {name:c0.c.name, n:c0.got.length}; }
   const moves = [
     ['🔎', t('mFind', {names:A.blockers.slice(0, 3).map(b => b.n).join(', ')}), 'missing'],
     ...(GOAL.discover ? [['🛠', t('mCraft', {n:newCraft}), 'craft']] : []),
@@ -484,7 +572,7 @@ function viewSpecial(){
   return head + stops.map((s, i) => `<div class="card" style="margin-bottom:10px"><h2 style="margin:0 0 2px">${i + 1}. ${esc(s.c.name)}</h2><div class="small muted" style="margin-bottom:6px">${esc(i ? t('spLeg', {km:n0(s.leg)}) : t('spStart'))}</div>
     ${s.list.length ? '' : `<p class="hint" style="margin:0">${esc(t('spFishOnly'))}</p>`}${s.list.map(x => `<div style="margin:8px 0;padding-top:8px;border-top:1px solid var(--border)"><b>${esc(x.name)}</b> <span class="tag">${esc(t('spBuilt', {n:x.n}))}</span>
       <div class="small" style="margin:4px 0">${x.troves.length ? `<span class="muted">${esc(t('spGives'))}:</span> ${x.troves.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}${need.has(n) ? ` <span class="tag good">${esc(t('spNeed'))}</span>` : ''}</span>`).join(', ')}` : `<span class="muted">${esc(t('spNoTroves'))}</span>`}</div>
-      <div class="muted small">${esc(t('spVisit'))}</div><div class="spots">${x.spots.map(p => `<a class="btn small" target="_blank" rel="noopener" href="${UPLAND(p[0])}">📍 ${esc(p[1])} · ${esc(p[2])} ↗</a>`).join('')}</div></div>`).join('')}</div>`).join('');
+      <div class="muted small">${esc(t('spVisit'))}</div><div class="spots">${x.spots.map(p => `<a class="btn small" target="_blank" rel="noopener" data-pid="${p[0]}" href="${UPLAND(p[0])}">📍 ${esc(p[1])} · ${esc(p[2])}${feeTxt(p[0])} ↗</a>`).join('')}</div></div>`).join('')}</div>`).join('');
 }
 function viewMissing(){
   return cityBar() + sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
@@ -503,7 +591,7 @@ function viewCraft(){
   const head = [[t('colTrove')], [t('cUpTo'), 'n'], [t('cReach')], [t('colIng')], [t('colCraftAt')]];
   const nw = A.craftable.filter(c => c.isNew).sort((a, b) => a.name.localeCompare(b.name));
   const old = A.craftable.filter(c => !c.isNew).sort((a, b) => a.name.localeCompare(b.name));
-  return cityBar() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return cityBar() + ownCraftCard() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 function viewBank(){
   const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
@@ -529,7 +617,7 @@ function viewEasy(){
     + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td><td>${spotBtns((PLACES.get(e.name) || {craftAt:[]}).craftAt)}</td></tr>`)))
     + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
   const either = GOAL.bonus || GOAL.bank;
-  return cityBar() + (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return cityBar() + ownCraftCard() + (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 // Which scanned cities hold a trove: cities where at least one of its structures is built, with the structures found there.
 const presence = (() => { const memo = new Map(); return name => {
@@ -543,10 +631,10 @@ function viewWorldTables(){
   const cover = `<div class="card" style="margin-bottom:6px">${esc(t('wCover', {list:WORLD.cities.map(c => c.name + (c.done ? '' : ' ' + n0(c.read) + '/' + n0(c.total))).join(', ')}))}</div>`;
   const best = WORLD.cities.map(c => {
     const got = A.blockers.filter(b => presence(b.n).has(String(c.id))), miss = A.blockers.filter(b => !presence(b.n).has(String(c.id)));
-    return {c, got, miss, w:got.reduce((a, b) => a + b.recipes, 0)};
-  }).sort((a, b) => b.w - a.w);
-  const bestT = tbl([[t('wCity')], [t('wGives'), 'n'], [t('wUnlock'), 'n'], [t('wMissing')]],
-    best.map(r => `<tr><td><b>${esc(r.c.name)}</b></td><td class="n">${r.got.length} / ${A.blockers.length}</td><td class="n">${r.w}</td><td class="places">${esc(r.miss.map(b => b.n).join(', '))}</td></tr>`));
+    return {c, got, miss, w:got.reduce((a, b) => a + b.recipes, 0), sites:got.reduce((a, b) => a + presence(b.n).get(String(c.id)).n, 0)};
+  }).sort((a, b) => b.w - a.w || b.sites - a.sites);
+  const bestT = tbl([[t('wCity')], [t('wGives'), 'n'], [t('wUnlock'), 'n'], [t('wSites'), 'n'], [t('wMissing')]],
+    best.map(r => `<tr><td><b>${esc(r.c.name)}</b></td><td class="n">${r.got.length} / ${A.blockers.length}</td><td class="n">${r.w}</td><td class="n">${n0(r.sites)}</td><td class="places">${esc(r.miss.map(b => b.n).join(', '))}</td></tr>`));
   const mine = new Set([...A.items.values()].filter(i => i.q > 0).map(i => i.name));
   const rows = [];
   PLACES.forEach((p, name) => {
@@ -585,6 +673,12 @@ function hotspots(cd){
   out.sort((a, b) => b.w - a.w || b.gives.length - a.gives.length);
   return out;
 }
+function distTo(cd, pr){
+  const l = LAST && cd.props.find(p => String(p[0]) === String(LAST));
+  if(!l) return '—';
+  const r = x => x * Math.PI / 180, h = Math.sin(r(pr[2] - l[2]) / 2) ** 2 + Math.cos(r(l[2])) * Math.cos(r(pr[2])) * Math.sin(r(pr[3] - l[3]) / 2) ** 2;
+  return (12742 * Math.asin(Math.sqrt(h))).toFixed(1);
+}
 function viewWorld(){
   if(!WORLD || !WORLD.cities.length) return `<div class="card muted">${esc(t('wNone'))}</div>`;
   const cities = WORLD.cities.filter(c => c.kind === 'scan').sort((a, b) => a.name.localeCompare(b.name));
@@ -599,13 +693,13 @@ function viewWorld(){
   else if(cd === false) body = `<div class="card muted">${esc(t('wNoAddr'))}</div>`;
   else {
     if(HOOD >= cd.hoods.length) HOOD = -1;
-    const all = hotspots(cd), shown = all.slice(0, 30);
+    const all = hotspots(cd), shown = all.slice(0, 60);
     const byHood = new Map(); hotspots({...cd, props:cd.props}).forEach(h => byHood.set(h.pr[4], (byHood.get(h.pr[4]) || 0) + h.w));
     const hoodW = [...byHood.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
     body = `<div class="chips2"><button type="button" data-hood="-1" class="${HOOD === -1 ? 'on' : ''}">${esc(t('wAll'))}</button>${hoodW.map(([h]) => `<button type="button" data-hood="${h}" class="${HOOD === h ? 'on' : ''}">${esc(cd.hoods[h])}</button>`).join('')}</div>`
-      + tbl([[t('wAddr')], [t('wHood')], [t('wGivesList')], [t('wVia')], ['']], shown.map(h => `<tr><td><b>${esc(h.pr[1])}</b></td><td class="small">${esc(cd.hoods[h.pr[4]])}</td>
-          <td><b>${h.gives.length}</b> <span class="muted small">· ${esc(h.gives.join(', '))}</span></td><td class="places">${esc(h.via.join(', '))}</td>
-          <td style="white-space:nowrap"><a class="btn small primary" target="_blank" rel="noopener" href="${UPLAND(h.pr[0])}">${esc(t('wOpen'))} ↗</a> <button type="button" class="btn small" data-copy="${esc(h.pr[1])}">${esc(t('wCopy'))}</button></td></tr>`))
+      + tbl([[t('wAddr')], [t('wHood')], [t('wGivesList')], [t('wVia')], [t('wFee'), 'n'], [t('wDist'), 'n'], ['']], shown.map(h => `<tr><td><b>${esc(h.pr[1])}</b></td><td class="small">${esc(cd.hoods[h.pr[4]])}</td>
+          <td><b>${h.gives.length}</b> <span class="muted small">· ${esc(h.gives.join(', '))}</span></td><td class="places">${esc(h.via.join(', '))}</td><td class="n">${FEES && FEES[h.pr[0]] != null ? FEES[h.pr[0]] : '—'}</td><td class="n">${distTo(cd, h.pr)}</td>
+          <td style="white-space:nowrap"><a class="btn small primary" target="_blank" rel="noopener" data-pid="${h.pr[0]}" href="${UPLAND(h.pr[0])}">${esc(t('wOpen'))} ↗</a> <button type="button" class="btn small" data-copy="${esc(h.pr[1])}">${esc(t('wCopy'))}</button></td></tr>`))
       + `<p class="hint">${esc(t('wShown', {a:shown.length, b:all.length}))}</p>`;
   }
   const partial = !city.done ? `<div class="card" style="margin-bottom:8px">${esc(t('wPartial', {n:n0(city.read), t:n0(city.total)}))}</div>` : '';
@@ -652,9 +746,24 @@ function draw(){
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
+  paintCool();
 }
 
+// Opening a property starts a 60-minute timer on its button: troves can be searched there again an hour later.
+function paintCool(){
+  const now = Date.now();
+  document.querySelectorAll('a[data-pid]').forEach(a => {
+    const at = COOL[a.dataset.pid], left = at ? Math.ceil((at + 36e5 - now) / 6e4) : 0;
+    let cd = a.querySelector('.cd');
+    a.classList.toggle('cool', left > 0);
+    if(left > 0){ if(!cd){ cd = document.createElement('span'); cd.className = 'cd'; a.appendChild(cd); } cd.textContent = ' ⏱ ' + t('coolLeft', {n:left}); }
+    else if(cd) cd.remove();
+  });
+}
+setInterval(paintCool, 30000);
 document.addEventListener('click', e => {
+  const op = e.target.closest('a[data-pid]'); if(op){ COOL[op.dataset.pid] = Date.now(); LAST = op.dataset.pid; store.set('rut:troves:cool', COOL); store.set('rut:troves:last', LAST); setTimeout(paintCool, 50); }
+  if(e.target.closest('#clearCool')){ COOL = {}; store.set('rut:troves:cool', COOL); paintCool(); return; }
   const go = e.target.closest('[data-go]'); if(go){ e.preventDefault(); tab = go.dataset.go; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   const hd = e.target.closest('[data-hood]'); if(hd){ HOOD = Number(hd.dataset.hood); draw(); return; }
   const cp = e.target.closest('[data-copy]'); if(cp){ try{ navigator.clipboard.writeText(cp.dataset.copy); cp.textContent = t('xDone'); }catch{} return; }
@@ -695,6 +804,13 @@ async function boot(){
     ROCK = checkShape(r);
   }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
   try{ IMG = await fetch('../data/troves/images.json').then(x => x.ok ? x.json() : null); }catch{ IMG = null; }
+  try{
+    const [m, g] = await Promise.all(['master.json', 'up2-suggestions.json'].map(f => fetch('../data/structures/' + f).then(x => x.ok ? x.json() : null).catch(() => null)));
+    ((m || {}).structures || []).forEach(x => { if(x.up2) SIZE.set(x.name.trim().toLowerCase(), {up2:x.up2}); });
+    Object.values((g || {}).structures || {}).forEach(x => { const k = x.name.trim().toLowerCase(); if(!SIZE.has(k)) SIZE.set(k, {sug:x.min}); });
+  }catch{}
+  try{ const o = await fetch('../data/structures/players/rockdrigo.json').then(x => x.ok ? x.json() : null); OWN = o ? o.rows : null; }catch{ OWN = null; }
+  try{ const f = await fetch('../data/troves/fees.json').then(x => x.ok ? x.json() : null); FEES = f ? f.fees : null; }catch{ FEES = null; }
   try{ SPECIAL = await fetch('../data/troves/city-specific.json').then(x => x.ok ? x.json() : null); }catch{ SPECIAL = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();

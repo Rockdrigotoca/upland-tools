@@ -62,11 +62,13 @@ Site.register({
   }
 });
 
-const PLAYERS = [['rockdrigo', 'Rockdrigo'], ['mstullis', 'MsTullis'], ['talljames', 'TallJames'], ['missmarlow', 'Miss Marlow']];
+const PLAYERS = [['rockdrigo', 'Rockdrigo'], ['mstullis', 'MsTullis'], ['talljames', 'TallJames'], ['missmarlow', 'Miss Marlow'], ['wamawa', 'Wamawa']];
 const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
 const n0 = x => Number(x).toLocaleString();
 let SHARED = false, PLAN = {}, SUGG = new Map(), SIZES = new Map(), HOODS = null, HOOD = store.get('rut:builder:hood', 'nomentano'), TIER = new Set(store.get('rut:builder:tier', [])), ON = new Set(store.get('rut:builder:on', PLAYERS.map(p => p[0]))), HD = null, PD = {}, EXPAND = new Set();
 
+// a player added later starts switched on
+{ const known = new Set(store.get('rut:builder:known', [])); PLAYERS.forEach(([u]) => { if(!known.has(u)){ ON.add(u); known.add(u); } }); store.set('rut:builder:known', [...known]); store.set('rut:builder:on', [...ON]); }
 function mine(u){
   // this player's properties inside the chosen neighbourhood: [id, address, city, up2, lat, lng, built, going, home]
   const ids = new Set((HOODS.hoods[HOOD] || {ids:[]}).ids.map(String));
