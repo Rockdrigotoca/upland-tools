@@ -403,10 +403,23 @@ function analyse(d){
     });
     return out.sort((a, b) => (b.k >= b.T) - (a.k >= a.T) || b.k - a.k || a.name.localeCompare(b.name));
   };
-  // Craft-now recipes compete for the same ingredients: where one copy of each needs more than you hold.
-  const want = new Map();
-  craftable.filter(c => c.isNew).forEach(c => c.versions[0].ings.forEach(g => { const e = want.get(g.n) || {n:g.n, need:0, by:[]}; e.need += g.req; e.by.push(c.name); want.set(g.n, e); }));
-  const clash = [...want.values()].map(e => ({...e, have:have(e.n)})).filter(e => e.need > e.have).sort((a, b) => (b.need - b.have) - (a.need - a.have));
+  // Craft-now recipes compete for the same ingredients. Give each one a version it can still afford (the most constrained first), and
+  // warn only about crafts left with no affordable version.
+  const left = new Map(), usedBy = new Map(), clashMap = new Map();
+  const stockOf = n => left.has(n) ? left.get(n) : have(n);
+  craftable.filter(c => c.isNew).sort((a, b) => a.versions.length - b.versions.length || a.name.localeCompare(b.name)).forEach(c => {
+    const fits = c.versions.filter(v => v.ings.every(g => stockOf(g.n) >= g.req));
+    if(fits.length){
+      const v = fits.sort((x, y) => Math.min(...y.ings.map(g => stockOf(g.n) - g.req)) - Math.min(...x.ings.map(g => stockOf(g.n) - g.req)))[0];
+      v.ings.forEach(g => { left.set(g.n, stockOf(g.n) - g.req); usedBy.set(g.n, [...(usedBy.get(g.n) || []), c.name]); });
+      return;
+    }
+    c.versions[0].ings.filter(g => stockOf(g.n) < g.req).forEach(g => {
+      const e = clashMap.get(g.n) || {n:g.n, need:have(g.n) - stockOf(g.n), have:have(g.n), by:[...(usedBy.get(g.n) || [])]};
+      e.need += g.req; e.by.push(c.name); clashMap.set(g.n, e);
+    });
+  });
+  const clash = [...clashMap.values()].sort((a, b) => (b.need - b.have) - (a.need - a.have));
   const oneShort = recs.filter(r => r.short.length === 1).length;
   return {items, recs, blockers, rows, craftable, bulk, easy, bonusFor, gold, goldCraft, clash, craftN:recs.filter(r => r.ok).length, oneShort, prot};
 }
