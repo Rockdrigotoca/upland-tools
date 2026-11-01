@@ -1,9 +1,9 @@
 {
-"backfillCursor":"2026-09-22T20:24:38",
-"chainCursor":"2026-10-31T19:14:03",
-"updatedAt":"2026-10-31T19:17:03Z",
-"historyFrom":"2026-09-22T20:24:38",
-"months":["2026-09","2026-10"],
-"lastSnapshotAt":"2026-10-31T19:17:03",
-"histMonths":["2026-10"]
+"backfillCursor":"2026-09-18T20:24:38",
+"chainCursor":"2026-11-01T10:23:59",
+"updatedAt":"2026-11-01T10:26:59Z",
+"historyFrom":"2026-09-18T20:24:38",
+"months":["2026-09","2026-10","2026-11"],
+"lastSnapshotAt":"2026-11-01T10:26:59",
+"histMonths":["2026-10","2026-11"]
 }
