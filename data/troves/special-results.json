@@ -1,0 +1,189 @@
+{
+ "cities": {
+  "82": {
+   "status": "done",
+   "date": "2026-10-31",
+   "note": "17 properties visited. No fish found, and no balance of its own was taken, so there is no gain to show.",
+   "finds": []
+  },
+  "4": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Between the balances of the evening of 31 October and the morning of 1 November.",
+   "gain": 869,
+   "types": 124,
+   "byCat": {
+    "resources": 200,
+    "utility": 98,
+    "social": 210,
+    "care": 198,
+    "valuables": 139,
+    "junk": 24
+   },
+   "top": [
+    [
+     "Shy Giggle",
+     35
+    ],
+    [
+     "Sunlight",
+     31
+    ],
+    [
+     "Salt",
+     28
+    ],
+    [
+     "Wink",
+     27
+    ],
+    [
+     "Knowing Nod",
+     26
+    ],
+    [
+     "Thumbs Up",
+     25
+    ],
+    [
+     "Trove Dust",
+     24
+    ],
+    [
+     "Thread",
+     23
+    ]
+   ],
+   "new": [],
+   "found": [
+    311,
+    311
+   ],
+   "finds": []
+  },
+  "138": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Omaha and Los Angeles, two rounds, one balance.",
+   "gain": 322,
+   "types": 96,
+   "byCat": {
+    "resources": 67,
+    "utility": 29,
+    "social": 97,
+    "care": 67,
+    "valuables": 48,
+    "junk": 14
+   },
+   "top": [
+    [
+     "Shy Giggle",
+     15
+    ],
+    [
+     "Trove Dust",
+     14
+    ],
+    [
+     "Thumbs Up",
+     13
+    ],
+    [
+     "Kind Word",
+     10
+    ],
+    [
+     "Handshake",
+     9
+    ],
+    [
+     "Sunlight",
+     9
+    ],
+    [
+     "Hooray",
+     8
+    ],
+    [
+     "Shrug",
+     8
+    ]
+   ],
+   "new": [],
+   "found": [
+    311,
+    311
+   ],
+   "together": [
+    138,
+    32
+   ],
+   "finds": [
+    "Chickpea @ Ramen Restaurant, 7030 Oso Ave (Los Angeles)"
+   ]
+  },
+  "32": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Omaha and Los Angeles, two rounds, one balance.",
+   "gain": 322,
+   "types": 96,
+   "byCat": {
+    "resources": 67,
+    "utility": 29,
+    "social": 97,
+    "care": 67,
+    "valuables": 48,
+    "junk": 14
+   },
+   "top": [
+    [
+     "Shy Giggle",
+     15
+    ],
+    [
+     "Trove Dust",
+     14
+    ],
+    [
+     "Thumbs Up",
+     13
+    ],
+    [
+     "Kind Word",
+     10
+    ],
+    [
+     "Handshake",
+     9
+    ],
+    [
+     "Sunlight",
+     9
+    ],
+    [
+     "Hooray",
+     8
+    ],
+    [
+     "Shrug",
+     8
+    ]
+   ],
+   "new": [],
+   "found": [
+    311,
+    311
+   ],
+   "together": [
+    138,
+    32
+   ],
+   "finds": [
+    "Chickpea @ Ramen Restaurant, 7030 Oso Ave (Los Angeles)"
+   ]
+  }
+ },
+ "updatedAt": "2026-11-01",
+ "next": 125
+}

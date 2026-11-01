@@ -14,8 +14,8 @@ import unicodedata
 
 DATA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'troves')
 SPOTS = 6
-# Confirmed by the player: factories give no troves, so they are not worth a visit.
-SKIP = re.compile(r'factory', re.I)
+# Confirmed by the player: factories and nurseries give no troves, so they are not worth a visit.
+SKIP = re.compile(r'factory|nursery', re.I)
 
 
 def norm(s):
