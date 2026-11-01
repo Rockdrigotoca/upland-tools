@@ -12,6 +12,11 @@
 .job .when{font-size:0.9rem;margin:6px 0}
 .dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;margin-right:6px;background:var(--muted)}
 .dot.ok{background:var(--accent)}.dot.old{background:#d4a017}.dot.run{background:#3b82f6}
+.hero{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hero b{font-size:1.05rem}
+.dot.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,.55)}50%{box-shadow:0 0 0 7px rgba(59,130,246,0)}}
+@media (prefers-reduced-motion:reduce){.dot.pulse{animation:none}}
 .bar{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;margin:8px 0 2px}
 .bar i{display:block;height:100%;background:var(--accent)}
 </style>
@@ -19,7 +24,7 @@
 <body>
 <div class="wrap">
   <header id="site-header"></header>
-  <section class="card"><div id="run" class="small"></div></section>
+  <section class="card"><div class="hero" id="hero"></div><div id="run" class="small muted"></div></section>
   <main><div class="jobs" id="jobs"></div></main>
   <p class="note" id="note"></p>
   <footer id="site-footer"></footer>
@@ -35,7 +40,9 @@ const REPO = 'Rockdrigotoca/upland-tools';
 Site.register({
   en:{
     title:'Rockdrigo’s Backstage', subtitle:'Which data jobs are running, when each last ran, and how far the long ones have got.',
-    jPrices:'Ornament prices', jBuy:'Properties for sale', jCollections:'Group collections', jLedger:'Sales ledger',
+    jPrices:'Ornament prices', jBuy:'Properties for sale', jCollections:'Group collections', jLedger:'Sales ledger', jStruct:'Neighbourhood structures', jWorld:'World structure scan',
+    dStruct:'Which service structures each neighbourhood has and lacks.', dWorld:'Service structures of every Upland city. Feeds the Troves grind map.', cWorld:'{n} cities scanned.', cStruct:'{n} structure types listed.',
+    liveRun:'Running now', liveIdle:'All quiet, next run in {n}', liveSince:'since {t}', liveAuto:'This page refreshes by itself every minute.',
     dPrices:'Ornament sales and listings. Feeds Cheapskate and the Optimizer.', dBuy:'Cheapest properties for sale per collection. Feeds the Hoarder’s Buy tab.',
     dCollections:'Every group player’s properties and collections. Feeds the Hoarder.', dLedger:'Sales from the chain history. Feeds Receipts.',
     updated:'Updated {t} ({a})', never:'Hasn’t delivered data yet.', ago:'{n} ago', min:'{n} min', hr:'{n} h', day:'{n} d',
@@ -45,7 +52,9 @@ Site.register({
   },
   es:{
     title:'Backstage de Rockdrigo', subtitle:'Qué trabajos de datos están corriendo, cuándo corrió cada uno y cuánto llevan los largos.',
-    jPrices:'Precios de ornamentos', jBuy:'Propiedades en venta', jCollections:'Colecciones del grupo', jLedger:'Libro de ventas',
+    jPrices:'Precios de ornamentos', jBuy:'Propiedades en venta', jCollections:'Colecciones del grupo', jLedger:'Libro de ventas', jStruct:'Estructuras por barrio', jWorld:'Escaneo mundial de estructuras',
+    dStruct:'Qué estructuras de servicio tiene y le faltan a cada barrio.', dWorld:'Estructuras de servicio de cada ciudad de Upland. Alimenta el mapa de grind de Troves.', cWorld:'{n} ciudades escaneadas.', cStruct:'{n} tipos de estructura listados.',
+    liveRun:'Corriendo ahora', liveIdle:'Todo en calma, próxima corrida en {n}', liveSince:'desde {t}', liveAuto:'Esta página se actualiza sola cada minuto.',
     dPrices:'Ventas y listados de ornamentos. Alimenta a Cheapskate y al Optimizador.', dBuy:'Las propiedades más baratas en venta por colección. Alimenta la pestaña Comprar del Acaparador.',
     dCollections:'Propiedades y colecciones de cada jugador del grupo. Alimenta al Acaparador.', dLedger:'Ventas del historial de la cadena. Alimenta a Recibos.',
     updated:'Actualizado {t} ({a})', never:'Todavía no ha entregado datos.', ago:'hace {n}', min:'{n} min', hr:'{n} h', day:'{n} d',
@@ -80,25 +89,41 @@ function job(name, desc, at, line, pct){
     ${line ? `<div class="small">${esc(line)}</div>` : ''}
     ${pct != null ? `<div class="bar"><i style="width:${Math.max(1, Math.min(100, pct)).toFixed(0)}%"></i></div>` : ''}</section>`;
 }
+function nextRun(){
+  const now = new Date(), c = [];
+  for(let d = 0; d < 2; d++) for(const h of [3, 15]){ const x = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + d, h, 17)); if(x > now) c.push(x); }
+  return Math.min(...c);
+}
+const span = ms => { const m = Math.round(ms / 6e4); return m < 90 ? t('min', {n:m}) : t('hr', {n:Math.round(m / 60)}); };
+function hero(){
+  const live = RUN && RUN.status !== 'completed';
+  $('#hero').innerHTML = `<span class="dot ${live ? 'run pulse' : 'ok'}"></span><b>${esc(live ? t('liveRun') : t('liveIdle', {n:span(nextRun() - Date.now())}))}</b>${live ? `<span class="small muted">${esc(t('liveSince', {t:fmt(RUN.run_started_at)}))}</span>` : ''}`;
+}
 function render(){
   if(!D) return;
-  const [pr, buy, col, led] = D;
+  const [pr, buy, col, led, st, wd] = D;
   const day = x => new Date(x + 'Z').toLocaleDateString(loc(), {month:'short', day:'numeric', year:'numeric'});
   const total = 12100; // roughly the group's properties
   $('#jobs').innerHTML = [
     job(t('jPrices'), t('dPrices'), pr && pr.updatedAt, pr && pr.chainCursor ? t('cPrices', {d: fmt(pr.chainCursor + 'Z')}) : ''),
     job(t('jBuy'), t('dBuy'), buy && buy.updatedAt, buy ? t('cBuy', {n: buy.priced, m: buy.priceable}) : '', buy && buy.priceable ? buy.priced * 100 / buy.priceable : null),
     job(t('jCollections'), t('dCollections'), col && col.updatedAt, col ? t('cCollections', {n: Number(col.remaining).toLocaleString(loc())}) : '', col ? 100 - col.remaining * 100 / total : null),
-    job(t('jLedger'), t('dLedger'), led && led.updatedAt, led ? t('cLedger', {a: day(led.from), b: day(led.to)}) : '')
+    job(t('jLedger'), t('dLedger'), led && led.updatedAt, led ? t('cLedger', {a: day(led.from), b: day(led.to)}) : ''),
+    job(t('jStruct'), t('dStruct'), st && st.updatedAt, st ? t('cStruct', {n: (st.structures || []).length}) : ''),
+    job(t('jWorld'), t('dWorld'), wd && wd.updatedAt, wd ? t('cWorld', {n: (wd.cities || []).filter(c => c.done).length}) : '')
   ].join('');
-  $('#note').textContent = t('note');
+  hero();
+  $('#note').textContent = t('note') + ' ' + t('liveAuto');
   if(!RUN) $('#run').textContent = t('runNone');
   else if(RUN.status !== 'completed') $('#run').textContent = t('runNow', {t: fmt(RUN.run_started_at)});
   else $('#run').textContent = t('runLast', {r: t(RUN.conclusion === 'success' ? 'success' : RUN.conclusion === 'cancelled' ? 'cancelled' : 'failure'), t: fmt(RUN.updated_at)});
 }
 Site.mount({onChange: render});
-Promise.all(['state.json', 'buy/state.json', 'collections/state.json', 'ledger/state.json'].map(get)).then(d => { D = d; render(); });
-Upland.getJSON(`https://api.github.com/repos/${REPO}/actions/workflows/collect.yml/runs?per_page=1`).then(r => { RUN = (r.workflow_runs || [])[0] || null; render(); }).catch(() => {});
+function load(){
+  Promise.all(['state.json', 'buy/state.json', 'collections/state.json', 'ledger/state.json', 'structures/master.json', 'troves/world.json'].map(get)).then(d => { D = d; render(); });
+  Upland.getJSON(`https://api.github.com/repos/${REPO}/actions/workflows/collect.yml/runs?per_page=1`).then(r => { RUN = (r.workflow_runs || [])[0] || null; render(); }).catch(() => {});
+}
+load(); setInterval(load, 60000);
 </script>
 </body>
 </html>

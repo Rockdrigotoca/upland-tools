@@ -38,6 +38,7 @@ Site.register({
     grabberName:'Rockdrigo’s Collection Hoarder', grabberDesc:'How many collections you have and are missing, where each property should sit for the highest monthly yield, and the Freeloader: which properties to borrow from (or lend to) friends to unlock more bonuses.',
     horoscopeName:'Rockdrigo’s Property Horoscope', horoscopeDesc:'Your property’s fortune for the week, read from its street number and the alignment of nearby Uppies. Scientifically unproven. Legally distinct from advice.',
     trovesName:'Rockdrigo’s Troves', trovesDesc:'What to find first, what you can craft right now, and what to bank without running out of what you need. Load your own troves file; it never leaves your browser.',
+    builderName:'Rockdrigo’s Builder', builderDesc:'Which structures a neighbourhood still lacks, and which empty properties in the group are big enough to build each one.',
     pricesName:'Rockdrigo’s Cheapskate', pricesDesc:'Ornament prices: what they actually sell for in UPX, what they are listed at in UPX and USD, which showroom has them, and what your own ornaments are worth.'
   },
   es:{
@@ -49,6 +50,7 @@ Site.register({
     grabberName:'El Acaparador de Colecciones de Rockdrigo', grabberDesc:'Cuántas colecciones tienes y te faltan, dónde debe ir cada propiedad para el mayor rendimiento mensual, y El Gorrón: qué propiedades pedir prestadas (o prestar) a tus amigos para desbloquear más bonos.',
     horoscopeName:'El Horóscopo Inmobiliario de Rockdrigo', horoscopeDesc:'La suerte de tu propiedad esta semana, leída en su número de calle y la alineación de los Uppies cercanos. Sin respaldo científico. Legalmente no es un consejo.',
     trovesName:'Los Troves de Rockdrigo', trovesDesc:'Qué buscar primero, qué puedes craftear ya y qué mandar al banco sin quedarte sin lo que necesitas. Carga tu propio archivo de troves; nunca sale de tu navegador.',
+    builderName:'El Constructor de Rockdrigo', builderDesc:'Qué estructuras le faltan a un barrio y qué propiedades vacías del grupo son lo bastante grandes para cada una.',
     pricesName:'El Codo de Rockdrigo', pricesDesc:'Precios de ornamentos: en cuánto se venden de verdad en UPX, a cuánto están listados en UPX y USD, en qué showroom están y cuánto valen los tuyos.'
   },
   en_cunk:{
@@ -60,6 +62,7 @@ Site.register({
     grabberName:'Rockdrigo’s Collection Hoarder: A History of Wanting More', grabberDesc:'People have always wanted more than they have, including other people’s things. This counts it all, then helps you borrow the rest.',
     horoscopeName:'Rockdrigo’s Property Horoscope: The Stars, But for Land', horoscopeDesc:'Astrology has never been applied to real estate. There may be a reason. We intend to find out.',
     trovesName:'Rockdrigo’s Troves: A History of Things Found in Other Things', trovesDesc:'Since the dawn of the game, people have found items inside buildings. This tells you which, where, and which not to throw away.',
+    builderName:'Rockdrigo’s Builder: A Treatise on Lots, Both Large and Small', builderDesc:'Which buildings a district still wants, and which empty plots of the company are large enough to receive them.',
     pricesName:'Rockdrigo’s Cheapskate: A History of Paying Less', pricesDesc:'Find out what things are worth, a question that has troubled economists since money.'
   },
   es_cunk:{
@@ -71,16 +74,17 @@ Site.register({
     grabberName:'El Acaparador de Rockdrigo: una historia de querer más', grabberDesc:'La gente siempre ha querido más de lo que tiene, incluidas las cosas de otros. Esto lo cuenta todo y luego te ayuda a pedir prestado el resto.',
     horoscopeName:'El Horóscopo Inmobiliario de Rockdrigo: los astros, pero para terrenos', horoscopeDesc:'Nunca se ha aplicado la astrología a los bienes raíces. Quizá haya una razón. Pensamos averiguarlo.',
     trovesName:'Los Troves de Rockdrigo: una historia de cosas dentro de otras cosas', trovesDesc:'Desde el principio del juego, la gente encuentra objetos dentro de edificios. Esto dice cuáles, dónde y cuáles no tirar.',
+    builderName:'El Constructor de Rockdrigo: tratado sobre terrenos grandes y chicos', builderDesc:'Qué edificios le faltan a un distrito y qué terrenos vacíos de la compañía son lo bastante grandes para recibirlos.',
     pricesName:'El Codo de Rockdrigo: una historia de pagar menos', pricesDesc:'Averigua cuánto valen las cosas, una pregunta que inquieta a los economistas desde que existe el dinero.'
   }
 });
 
+// Cheapskate (key 'prices') and Receipts are on hold: their pages stay, they are just not listed here.
 const TOOLS = [
   {key:'optimizer', href:'ornament-optimizer/', live:true},
-  {key:'prices', href:'cheapskate/', live:true},
   {key:'grabber', href:'hoarder/', live:true},
   {key:'troves', href:'troves/', live:true},
-  {key:'receipts', href:'receipts/', live:true},
+  {key:'builder', href:'builder/', live:true},
   {key:'status', href:'status/', live:true},
   {key:'horoscope', href:null, live:false}
 ];

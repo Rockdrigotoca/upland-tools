@@ -368,6 +368,8 @@ async function loadLive(user){
   }
   // Structures that host a shop (metaventure) can't be dressed. Only the types that can host one are checked,
   // one property at a time, and the answer is remembered for 30 days.
+  // Showrooms can't be dressed either, so they never count as a place to put an ornament.
+  for(let i = structures.length - 1; i >= 0; i--) if(/showroom/i.test(structures[i].type || '')) structures.splice(i, 1);
   const vent = applyVentureCache(structures);
   structures.splice(0, structures.length, ...vent.structures);
   // City names: prefer the game's map city from structures/properties over the ornament's neighborhood city.

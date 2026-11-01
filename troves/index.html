@@ -48,6 +48,13 @@ details.more summary{cursor:pointer;color:var(--accent);font-size:.8125rem}
 .help summary{cursor:pointer;font-weight:600}
 .help dl{margin:8px 0 0;display:grid;gap:8px}
 .help dt{font-weight:700}.help dd{margin:0;color:var(--muted);font-size:.875rem}
+.thumb{width:28px;height:28px;border-radius:6px;object-fit:contain;background:var(--surface-2);vertical-align:middle;margin-right:6px;flex:none}
+.need{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px}
+.need .it{display:flex;gap:8px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:6px 8px;background:var(--surface)}
+.need .thumb{width:40px;height:40px;margin:0}
+.spots{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.spots .btn{font-size:.75rem;padding:5px 9px;white-space:normal;text-align:left}
+details.more summary{cursor:pointer}
 .chips2{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
 .chips2 button{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 10px;cursor:pointer;font-size:.8125rem}
 .chips2 button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -83,7 +90,9 @@ Site.register({
     dCats:'By category', dCat:'Category', dTotal:'Troves',
     hHow:'How to use each part', hOver:'Overview', hOverD:'The big picture: how much you have discovered, banked and can craft, and the next three things to do.', hFirst:'Find first', hFirstD:'Every trove you are missing, ordered by how many recipes it holds up, with the structures where it can be found.', hCraft:'Craft now', hCraftD:'What you can craft right now. New troves (never in your inventory) come first. “Up to” is how many copies your stock allows.', hEasy:'Easy wins', hEasyD:'A plan that adds banking levels with the least effort: which to bank now, and how many to craft and bank for more. It keeps a reserve of anything recipes need.', hBank:'Bank', hBankD:'The rules behind Easy wins: what is safe to bank, what to craft to bank, and what never to bank. Change the reserve with Careful or Relaxed.', hWorld:'Grind map', hWorldD:'Pick a city: it shows which of your missing troves it has, and the exact properties and neighbourhoods where to get them, with a button to open each one in Upland.', hFind:'Look up', hFindD:'Type any trove to see where it is found, where it is crafted and which recipes use it.',
     wCity2:'City', wHot:'Where to go in {city}', wHotN:'Properties ranked by how many of your missing troves their structures give you (more recipes held up counts more). Open one to go straight there in Upland.', wAll:'All neighbourhoods', wAny:'All my missing troves', wTrove:'Trove', wHood:'Neighbourhood', wAddr:'Address', wOpen:'Open in Upland', wCopy:'Copy', wVia:'Structures here', wGivesList:'Gives', wNoAddr:'There are no addresses for this city yet: only the structure counts. They come with the full scan.', wShown:'Showing {a} of {b} properties.', wPartial:'This city is only partly scanned ({n} properties read of {t}).',
-    xH:'Troves we do not know yet', xN:'You know {n} troves that are not in our list. If you share them, we learn where they are found.', xShare:'Share on GitHub', xCopy:'Copy', xDone:'Copied.',
+    needH:'Collect these to fill your recipes', needN:'{n} troves are all that stand between you and {m} unfinished recipes. Under each name: how many recipes it holds up, and how many more you need.', needMore:'{r} recipes · {g} more', dlClean:'Download cleaned file', dlNote:'A small file with only trove names and numbers, no token. Send it to a phone and upload it there.',
+    spCity:'City to look in', spLoad:'Loading properties…', spNone:'None in this city', spMore:'+{n} more', spHint:'Buttons open the property in Upland. Click a trove name to see which structures give it.', spCraft:'Craft at',
+    xH:'Troves we do not know yet', xN:'You know {n} troves that are not in our list. If you share them, we learn where they are found.', xAsk:'Nothing is sent unless you click. Sharing posts only these trove names and the structures that give them on this project’s public GitHub page, with your GitHub name if you are signed in. May we use them to improve the tool?', xShare:'Yes, share on GitHub', xCopy:'Copy', xDone:'Copied.',
     wCover:'Cities scanned so far: {list}. Everything here is “so far”: it changes as more cities are scanned.', wNone:'The world scan has not produced data yet.', wBestH:'Best cities for what you are missing', wBestN:'For each scanned city: how many of your missing troves it can give you, and how many recipes that would unlock. Partial cities (one neighbourhood) only show what that neighbourhood has.',
     wCity:'City', wGives:'Gives you', wUnlock:'Recipes held up', wMissing:'Not here', wGrindH:'Troves tied to few cities', wGrindN:'Troves whose structures exist in only one or two of the scanned cities, or in none yet. These are the ones to grind for on purpose.', wOnlyMine:'Only troves I am missing', wCities:'Cities', wNoCity:'in no scanned city yet', wScanned:'{n} cities', wStructs:'Structures', wTabN:'{n} to grind',
     eNow:'Bank right now', eNowN:'One step each, cheapest first. You hold enough already and still keep what recipes need.', eCraft:'A few crafts away', eCraftN:'Craft the extra copies from ingredients you can spare, then bank. Fewest crafts first.', eNeed:'Craft', eStep:'Step', eNone:'Nothing easy right now.', eCraftVerb:'craft {n} more', eBankVerb:'bank {n}', eHold:'hold {n}', eSum:'Doing all of this: {c} crafts and {b} banking levels, with the reserve kept and no protected trove touched.', ePlan:'Craft, then bank', ePlanN:'Each row is a whole plan for one trove: how many to craft in total and the level it ends at. The plans share ingredients, so you can do them all together.', eJust:'Just bank (no crafting)', eJustN:'You already hold enough.', colNow:'Now', colCraftTot:'Craft in total', colEnds:'Ends at', colSteps:'Step by step', colUses:'Uses', cUpTo:'Up to', cLimit:'limited by {x}', cReach:'Reaches', cLeft:'{n} left', cAfter:'bank levels show once you hold one', cOnly:'only 1 (or none) to craft', cTabN:'{n} new', eTabN:'{n} steps',
@@ -117,7 +126,9 @@ Site.register({
     dCats:'Por categoría', dCat:'Categoría', dTotal:'Troves',
     hHow:'Cómo usar cada parte', hOver:'Resumen', hOverD:'El panorama: cuánto has descubierto, bancado y puedes craftear, y los tres próximos pasos.', hFirst:'Buscar primero', hFirstD:'Todos los troves que te faltan, ordenados por cuántas recetas frenan, con las estructuras donde se encuentran.', hCraft:'Craftear ya', hCraftD:'Lo que puedes craftear ahora. Primero los troves nuevos (nunca en tu inventario). “Hasta” es cuántas copias permite tu stock.', hEasy:'Fáciles', hEasyD:'Un plan que suma niveles de banco con el menor esfuerzo: qué bancar ya y cuántos craftear y bancar para más. Guarda reserva de lo que piden las recetas.', hBank:'Banco', hBankD:'Las reglas detrás de Fáciles: qué es seguro bancar, qué craftear para bancar y qué nunca bancar. Cambia la reserva con Cuidadosa o Relajada.', hWorld:'Mapa de grind', hWorldD:'Elige una ciudad: te dice cuáles de tus troves faltantes tiene y las propiedades y barrios exactos donde conseguirlos, con un botón para abrir cada una en Upland.', hFind:'Consultar', hFindD:'Escribe cualquier trove para ver dónde se encuentra, dónde se craftea y qué recetas lo usan.',
     wCity2:'Ciudad', wHot:'Adónde ir en {city}', wHotN:'Propiedades ordenadas por cuántos de tus troves faltantes dan sus estructuras (cuenta más lo que frena más recetas). Abre una para ir directo en Upland.', wAll:'Todos los barrios', wAny:'Todos mis troves faltantes', wTrove:'Trove', wHood:'Barrio', wAddr:'Dirección', wOpen:'Abrir en Upland', wCopy:'Copiar', wVia:'Estructuras aquí', wGivesList:'Da', wNoAddr:'Aún no hay direcciones de esta ciudad: solo el conteo de estructuras. Llegan con el escaneo completo.', wShown:'Mostrando {a} de {b} propiedades.', wPartial:'Esta ciudad está escaneada solo en parte ({n} propiedades leídas de {t}).',
-    xH:'Troves que aún no conocemos', xN:'Conoces {n} troves que no están en nuestra lista. Si los compartes, aprendemos dónde se encuentran.', xShare:'Compartir en GitHub', xCopy:'Copiar', xDone:'Copiado.',
+    needH:'Junta estos para completar tus recetas', needN:'{n} troves son lo único que te separa de {m} recetas sin completar. Debajo de cada nombre: cuántas recetas frena y cuántos más necesitas.', needMore:'{r} recetas · {g} más', dlClean:'Descargar archivo limpio', dlNote:'Un archivo pequeño solo con nombres y números de troves, sin token. Envíalo a un teléfono y súbelo ahí.',
+    spCity:'Ciudad donde buscar', spLoad:'Cargando propiedades…', spNone:'Ninguna en esta ciudad', spMore:'+{n} más', spHint:'Los botones abren la propiedad en Upland. Toca el nombre de un trove para ver qué estructuras lo dan.', spCraft:'Craftear en',
+    xH:'Troves que aún no conocemos', xN:'Conoces {n} troves que no están en nuestra lista. Si los compartes, aprendemos dónde se encuentran.', xAsk:'No se envía nada si no haces clic. Compartir publica solo estos nombres de troves y las estructuras que los dan en la página pública de GitHub del proyecto, con tu nombre de GitHub si tienes sesión. ¿Podemos usarlos para mejorar la herramienta?', xShare:'Sí, compartir en GitHub', xCopy:'Copiar', xDone:'Copiado.',
     wCover:'Ciudades escaneadas hasta ahora: {list}. Todo esto es “por ahora”: cambia al escanear más ciudades.', wNone:'El escaneo del mundo aún no tiene datos.', wBestH:'Mejores ciudades para lo que te falta', wBestN:'Por cada ciudad escaneada: cuántos de tus troves faltantes puede darte y cuántas recetas desbloquearía. Las ciudades parciales (un barrio) solo muestran lo de ese barrio.',
     wCity:'Ciudad', wGives:'Te da', wUnlock:'Recetas frenadas', wMissing:'No aquí', wGrindH:'Troves ligados a pocas ciudades', wGrindN:'Troves cuyas estructuras existen en solo una o dos de las ciudades escaneadas, o en ninguna aún. Son los que hay que buscar a propósito.', wOnlyMine:'Solo los troves que me faltan', wCities:'Ciudades', wNoCity:'en ninguna ciudad escaneada aún', wScanned:'{n} ciudades', wStructs:'Estructuras', wTabN:'{n} por buscar',
     eNow:'Al banco ya', eNowN:'Un paso cada uno, los más baratos primero. Ya tienes suficiente y aún guardas lo que piden las recetas.', eCraft:'A pocos crafteos', eCraftN:'Craftea las copias extra con ingredientes que te sobran y luego al banco. Los que menos crafteos piden, primero.', eNeed:'Craftear', eStep:'Paso', eNone:'Nada fácil por ahora.', eCraftVerb:'craftea {n} más', eBankVerb:'banquea {n}', eHold:'tienes {n}', eSum:'Haciendo todo esto: {c} crafteos y {b} niveles de banco, guardando la reserva y sin tocar ningún trove protegido.', ePlan:'Craftear y luego al banco', ePlanN:'Cada fila es un plan completo para un trove: cuántos craftear en total y el nivel en que termina. Los planes comparten ingredientes, así que puedes hacerlos todos juntos.', eJust:'Solo al banco (sin craftear)', eJustN:'Ya tienes suficiente.', colNow:'Ahora', colCraftTot:'Craftear en total', colEnds:'Termina en', colSteps:'Paso a paso', colUses:'Usa', cUpTo:'Hasta', cLimit:'limitado por {x}', cReach:'Llega a', cLeft:'sobran {n}', cAfter:'los niveles de banco se ven cuando tengas uno', cOnly:'solo 1 (o ninguno)', cTabN:'{n} nuevos', eTabN:'{n} pasos',
@@ -146,6 +157,8 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
+let IMG = null;
+const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
 let CITY = store.get('rut:troves:city', ''), HOOD = -1, TARGET = '', CITYDATA = {}, EXTRA = [];
@@ -306,6 +319,41 @@ const placeList = (p, all) => {
   const head = esc(shown.join(', ')) + (!all && st.length > 6 ? ` <span class="muted">+${st.length - 6}</span>` : '') + (pl.length ? ` · ${esc(t('plantsLbl'))}: ${esc(pl.join(', '))}` : '');
   return head;
 };
+function ensureCity(){
+  if(!WORLD) return;
+  const ok = WORLD.cities.some(c => c.kind === 'scan' && c.done && String(c.id) === String(CITY));
+  if(!ok) CITY = String((WORLD.cities.find(c => c.id === 32) || WORLD.cities.find(c => c.kind === 'scan' && c.done) || {id:''}).id);
+  loadCity(CITY);
+}
+// Buttons that open in Upland the properties of the chosen city that carry any of these structures, most structures first.
+const spotMemo = new Map();
+function spots(names, k){
+  ensureCity();
+  const cd = CITYDATA[CITY]; if(!cd) return cd === false ? [] : null;
+  const key = CITY + '|' + names.join('|');
+  if(!spotMemo.has(key)){
+    const want = new Set(names.map(x => norm(x).replace(/ 1$/, ''))), sn = cd.structs.map(x => norm(x).replace(/ 1$/, '')), out = [];
+    cd.props.forEach(pr => { const hit = new Set(pr[5].filter(i => want.has(sn[i]))); if(hit.size) out.push([pr, hit.size]); });
+    out.sort((a, b) => b[1] - a[1]);
+    spotMemo.set(key, out.slice(0, 10).map(x => x[0]));
+  }
+  return spotMemo.get(key).slice(0, k);
+}
+const spotBtn = pr => `<a class="btn small" target="_blank" rel="noopener" href="${UPLAND(pr[0])}">📍 ${esc(pr[1])} ↗</a>`;
+function spotBtns(names, k = 3){
+  const r = spots(names, 10);
+  if(r === null) return `<span class="muted small">${esc(t('spLoad'))}</span>`;
+  if(!r.length) return `<span class="muted small">${esc(t('spNone'))}</span>`;
+  return `<div class="spots">${r.slice(0, k).map(spotBtn).join('')}</div>${r.length > k ? `<details class="more"><summary>${esc(t('spMore', {n:r.length - k}))}</summary><div class="spots">${r.slice(k).map(spotBtn).join('')}</div></details>` : ''}`;
+}
+function cityBar(){
+  ensureCity();
+  const cs = (WORLD ? WORLD.cities : []).filter(c => c.kind === 'scan' && c.done).sort((a, b) => a.name.localeCompare(b.name));
+  if(!cs.length) return '';
+  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label></div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))}</p>`;
+}
+// a trove name that opens to the structures that give it
+const nameWith = n => { const p = PLACES.get(n); return p && p.structures.length ? `<details class="more"><summary><b>${esc(n)}</b></summary><div class="places">${esc(p.structures.join(', '))}${p.plants.length ? ` · ${esc(t('plantsLbl'))}: ${esc(p.plants.join(', '))}` : ''}</div></details>` : `<b>${esc(n)}</b>`; };
 const whereCell = n => {
   const p = PLACES.get(n); if(!p) return '<span class="muted">—</span>';
   const total = p.structures.length + p.plants.length;
@@ -327,8 +375,14 @@ function sharedBox(){
   if(!names.length) return '';
   const body = JSON.stringify(names);
   const url = 'https://github.com/Rockdrigotoca/upland-tools/issues/new?title=' + encodeURIComponent('New troves: ' + names.map(x => x.name).slice(0, 5).join(', ')) + '&body=' + encodeURIComponent('```json\n' + body + '\n```');
-  return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('xH'))}</h2><p class="small muted" style="margin:0 0 8px">${esc(t('xN', {n:names.length}))} <b>${esc(names.map(x => x.name).join(', '))}</b></p>
+  return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('xH'))}</h2><p class="small muted" style="margin:0 0 8px">${esc(t('xN', {n:names.length}))} <b>${esc(names.map(x => x.name).join(', '))}</b></p><p class="small" style="margin:0 0 8px">${esc(t('xAsk'))}</p>
     <div class="row">${url.length < 7500 ? `<a class="btn small primary" target="_blank" rel="noopener" href="${url}">${esc(t('xShare'))}</a>` : ''}<button type="button" class="btn small" id="copyNew">${esc(t('xCopy'))}</button></div></div>`;
+}
+function needCard(){
+  if(!A.blockers.length) return '';
+  const open = A.recs.filter(r => !r.ok).length;
+  return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('needH'))}</h2><p class="hint" style="margin:0">${esc(t('needN', {n:A.blockers.length, m:open}))}</p>
+    <div class="need">${A.blockers.map(b => `<div class="it">${thumb(b.n)}<div><b>${esc(b.n)}</b><div class="small muted">${esc(t('needMore', {r:b.recipes, g:b.gap}))}</div></div></div>`).join('')}</div></div>`;
 }
 function viewOverview(){
   const its = [...A.items.values()], lv = [0, 0, 0, 0];
@@ -359,12 +413,13 @@ function viewOverview(){
       <p class="small muted" style="margin:8px 0 0">${esc(t('dNewCraft', {n:newCraft}))}</p></div>
     <div class="card"><h2>${esc(t('dMoves'))}</h2>${moves.map(m => `<div class="move"><span class="ic">${m[0]}</span><span>${esc(m[1])} <a href="#" data-go="${m[2]}">→</a></span></div>`).join('')}</div>
   </div>
+  ${needCard()}
   <div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 6px">${esc(t('dCats'))}</h2>${tbl([[t('dCat')], [t('dTotal'), 'n'], [t('dBank')]], [catRows])}</div>
   <details class="card help"><summary>${esc(t('hHow'))}</summary><dl>${help.map(([a, b]) => `<div><dt>${esc(t(a))}</dt><dd>${esc(t(b))}</dd></div>`).join('')}</dl></details>`;
 }
 function viewMissing(){
-  return sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
-    A.blockers.map(b => `<tr><td><b>${esc(b.n)}</b></td><td class="n">${b.recipes}</td><td class="n">${b.alone}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${whereCell(b.n)}</td></tr>`)));
+  return cityBar() + sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
+    A.blockers.map(b => `<tr><td><div class="row" style="gap:0;flex-wrap:nowrap">${thumb(b.n)}${nameWith(b.n)}</div></td><td class="n">${b.recipes}</td><td class="n">${b.alone}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${spotBtns((PLACES.get(b.n) || {structures:[]}).structures)}</td></tr>`)));
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
@@ -373,13 +428,13 @@ function craftRow(c){
   const reach = c.reach && c.reach.lv > c.item.lvl ? `<span class="tag good">${esc(levelName(c.reach.lv))}</span> <span class="muted">${esc(t('cLeft', {n:n0(c.reach.left)}))}</span>` : (c.isNew ? `<span class="muted">${esc(t('cAfter'))}</span>` : '');
   return `<tr><td><b>${esc(c.name)}</b>${c.isNew ? ` <span class="tag good">${esc(t('newTag'))}</span>` : ''}</td>
     <td class="n"><b>${n0(c.copies)}</b><div class="muted small">${esc(t('cLimit', {x:c.limit}))}</div></td><td>${reach}</td><td>${ing}</td>
-    <td><div class="places">${esc(at.slice(0, 6).join(', '))}${at.length > 6 ? ` <span class="muted">+${at.length - 6}</span>` : ''}</div></td></tr>`;
+    <td>${spotBtns(at)}</td></tr>`;
 }
 function viewCraft(){
   const head = [[t('colTrove')], [t('cUpTo'), 'n'], [t('cReach')], [t('colIng')], [t('colCraftAt')]];
   const nw = A.craftable.filter(c => c.isNew).sort((a, b) => a.name.localeCompare(b.name));
   const old = A.craftable.filter(c => !c.isNew).sort((a, b) => a.name.localeCompare(b.name));
-  return sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) + sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow)));
+  return cityBar() + sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) + sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow)));
 }
 function viewBank(){
   const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
@@ -400,9 +455,9 @@ function viewEasy(){
   const steps = e => e.steps.map(s => `→ <span class="tag">${esc(levelName(s.to))}</span> ${s.craft ? esc(t('eCraftVerb', {n:n0(s.craft)})) + ', ' : ''}${esc(t('eBankVerb', {n:n0(s.cost)}))}`).join('<br>');
   const now = e => `${esc(levelName(e.from))} · ${esc(t('eHold', {n:n0(e.q0)}))}`;
   const h1 = [[t('colTrove')], [t('colNow')], [t('colEnds')], [t('colSteps')], [t('colToGold'), 'n']];
-  const h2 = [[t('colTrove')], [t('colNow')], [t('colCraftTot'), 'n'], [t('colEnds')], [t('colSteps')], [t('colUses')]];
-  return `<div class="card" style="margin:0 0 6px">${esc(t('eSum', {c:n0(crafts), b:n0(levels)}))}</div>`
-    + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td></tr>`)))
+  const h2 = [[t('colTrove')], [t('colNow')], [t('colCraftTot'), 'n'], [t('colEnds')], [t('colSteps')], [t('colUses')], [t('spCraft')]];
+  return cityBar() + `<div class="card" style="margin:0 0 6px">${esc(t('eSum', {c:n0(crafts), b:n0(levels)}))}</div>`
+    + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td><td>${spotBtns((PLACES.get(e.name) || {craftAt:[]}).craftAt)}</td></tr>`)))
     + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td><b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
 }
 // Which scanned cities hold a trove: cities where at least one of its structures is built, with the structures found there.
@@ -442,7 +497,7 @@ async function loadCity(cid){
   if(!cid || cid in CITYDATA) return;
   CITYDATA[cid] = null;
   try{ const r = await fetch('../data/troves/places/' + cid + '.json'); CITYDATA[cid] = r.ok ? await r.json() : false; }catch{ CITYDATA[cid] = false; }
-  if(tab === 'world') draw();
+  if(['world', 'missing', 'craft', 'easy'].includes(tab)) draw();
 }
 function hotspots(cd){
   // For each property: which of the player's missing troves its structures give, weighted by the recipes they hold up.
@@ -506,7 +561,7 @@ function srcCard(){
   const el = document.getElementById('src');
   el.innerHTML = `<div class="row"><b>${esc(t('srcTitle'))}</b>
       <div class="seg" id="srcSeg"><button type="button" data-src="rock" class="${SRC === 'rock' ? 'on' : ''}">${esc(t('srcRock'))}</button><button type="button" data-src="mine" class="${SRC === 'mine' ? 'on' : ''}" ${MINE ? '' : 'disabled'}>${esc(t('srcMine'))}</button></div>
-      ${MINE ? `<button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}</div>
+      ${MINE ? `<button type="button" class="btn small" id="forget">${esc(t('forget'))}</button> <button type="button" class="btn small primary" id="dlclean" title="${esc(t('dlNote'))}">⬇ ${esc(t('dlClean'))}</button>` : ''}</div>
     <label class="drop" id="drop" for="file">${esc(t('drop'))}<input type="file" id="file" accept=".har,.json,application/json" hidden></label>
     <div class="hint">${esc(t('private'))}</div>
     <div class="status ${STATUS_ERR ? 'err' : ''}" role="status">${esc(STATUS)}</div>`;
@@ -533,10 +588,12 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-tab]'); if(b){ tab = b.dataset.tab; store.set('rut:troves:tab', tab); draw(); return; }
   const m = e.target.closest('[data-mode]'); if(m){ mode = m.dataset.mode; store.set('rut:troves:mode', mode); use(); draw(); return; }
   const s = e.target.closest('[data-src]'); if(s && !s.disabled){ SRC = s.dataset.src; store.set('rut:troves:src', SRC); use(); draw(); return; }
+  if(e.target.closest('#dlclean') && MINE){ const text = JSON.stringify(MINE); if(TOKEN.test(text)) return; const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], {type:'application/json'})); a.download = 'trove_balance-' + (MINE.date || new Date().toISOString().slice(0, 10)) + '.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); return; }
   if(e.target.closest('#forget')){ MINE = null; try{ localStorage.removeItem(MINE_KEY); }catch{} SRC = 'rock'; store.set('rut:troves:src', SRC); STATUS = ''; use(); draw(); }
 });
 document.addEventListener('change', e => {
   if(e.target.id === 'file') takeFile(e.target.files[0]);
+  if(e.target.id === 'cityq'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); return; }
   if(e.target.id === 'city'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); }
   if(e.target.id === 'target'){ TARGET = e.target.value; draw(); }
   if(e.target.id === 'onlyMine'){ onlyMine = e.target.checked; store.set('rut:troves:onlyMine', onlyMine); draw(); }
@@ -561,6 +618,7 @@ async function boot(){
     PLACES = new Map(p.troves.map(([name, cat, structures, plants, craftAt]) => [name, {cat, structures, plants, craftAt}]));
     ROCK = checkShape(r);
   }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
+  try{ IMG = await fetch('../data/troves/images.json').then(x => x.ok ? x.json() : null); }catch{ IMG = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();
 }

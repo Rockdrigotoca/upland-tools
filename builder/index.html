@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo’s Builder</title>
+<meta name="description" content="Which service structures a neighbourhood still lacks, and which of the group’s empty properties are big enough to build each one.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.chips2{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.chips2 button{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.8125rem}
+.chips2 button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.875rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.75rem;color:var(--muted);font-weight:600;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{display:inline-block;font-size:.6875rem;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.tag.good{background:var(--accent);color:var(--accent-ink)}
+.tag.warn{background:var(--warn,#d98a1a);color:#fff}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0}
+.who .card{padding:10px 12px}
+.who .big{font-size:1.4rem;font-weight:700}
+.fit a{display:inline-block}
+.fit .more{margin-top:2px}
+.sel{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+select{max-width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <section class="card" id="ctl"></section>
+  <div id="app"></div>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc, store} = Site;
+Site.register({
+  en:{
+    title:'Rockdrigo’s Builder', subtitle:'Which structures a neighbourhood still lacks, and who has an empty property big enough for each.',
+    hood:'Neighbourhood', who:'Whose properties', loading:'Loading…', none:'No data for this neighbourhood yet.',
+    sOwn:'{n} properties here', sVacant:'{n} empty', sBig:'biggest empty: {a} UP2',
+    vH:'Does the size rule hold?', vOk:'Of {n} built structures on these players’ properties here whose size we know, {m} stand on a property at least that big. {b} do not.', vBad:'Do not fit (the rule “property UP2 ≥ structure UP2” may be wrong for these):', vNone:'No built structure with a known size on these properties yet.',
+    mH:'Structures still missing here', mN:'Sorted by sparklets per hour. A property fits when its UP2 is at least the structure’s UP2. The smallest fitting properties come first, so big lots are not wasted.',
+    tierH:'Spark train', tierAll:'All', colStruct:'Structure', colTier:'Tier', colSph:'Sparklets/h', colUp2:'Needs UP2', colFits:'Who can build it', unknown:'size unknown', fitN:'{n} fit', noFit:'none fits', moreN:'+{n} more', showAll:'Show all',
+    open:'Open in Upland', unkN:'{n} of the missing structures have no size in our list yet, so they show every empty property.', updated:'Properties read {d}.', tier:'Tier {n}'
+  },
+  es:{
+    title:'El Constructor de Rockdrigo', subtitle:'Qué estructuras le faltan a un barrio, y quién tiene una propiedad vacía del tamaño suficiente para cada una.',
+    hood:'Barrio', who:'Propiedades de', loading:'Cargando…', none:'Aún no hay datos de este barrio.',
+    sOwn:'{n} propiedades aquí', sVacant:'{n} vacías', sBig:'la vacía más grande: {a} UP2',
+    vH:'¿Se cumple la regla del tamaño?', vOk:'De {n} estructuras construidas en propiedades de estos jugadores aquí cuyo tamaño conocemos, {m} están en una propiedad al menos así de grande. {b} no.', vBad:'No caben (la regla “UP2 de la propiedad ≥ UP2 de la estructura” podría estar mal para estas):', vNone:'Todavía no hay estructuras construidas con tamaño conocido en estas propiedades.',
+    mH:'Estructuras que aún faltan aquí', mN:'Ordenadas por sparklets por hora. Una propiedad cabe si su UP2 es al menos el de la estructura. Primero van las más chicas que caben, para no gastar los terrenos grandes.',
+    tierH:'Tren de sparklets', tierAll:'Todos', colStruct:'Estructura', colTier:'Nivel', colSph:'Sparklets/h', colUp2:'Pide UP2', colFits:'Quién puede construirla', unknown:'tamaño desconocido', fitN:'{n} caben', noFit:'ninguna cabe', moreN:'+{n} más', showAll:'Ver todas',
+    open:'Abrir en Upland', unkN:'{n} de las estructuras que faltan aún no tienen tamaño en nuestra lista, así que muestran todas las propiedades vacías.', updated:'Propiedades leídas el {d}.', tier:'Nivel {n}'
+  }
+});
+
+const PLAYERS = [['rockdrigo', 'Rockdrigo'], ['mstullis', 'MsTullis'], ['talljames', 'TallJames'], ['missmarlow', 'Miss Marlow']];
+const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
+const n0 = x => Number(x).toLocaleString();
+let SIZES = new Map(), HOODS = null, HOOD = store.get('rut:builder:hood', 'nomentano'), TIER = new Set(store.get('rut:builder:tier', [])), ON = new Set(store.get('rut:builder:on', PLAYERS.map(p => p[0]))), HD = null, PD = {}, EXPAND = new Set();
+
+function mine(u){
+  // this player's properties inside the chosen neighbourhood: [id, address, city, up2, lat, lng, built, going, home]
+  const ids = new Set((HOODS.hoods[HOOD] || {ids:[]}).ids.map(String));
+  return ((PD[u] || {rows:[]}).rows).filter(r => ids.has(String(r[0])));
+}
+const vacant = r => !r[6].length && !r[7].length && !r[8];
+
+function ctl(){
+  if(!HOODS || !HOODS.have) return;
+  const hoods = Object.keys(HOODS.hoods).filter(k => HOODS.have[k]);
+  document.getElementById('ctl').innerHTML = `<div class="sel"><label class="small">${esc(t('hood'))} <select id="hood">${hoods.map(k => `<option value="${esc(k)}"${k === HOOD ? ' selected' : ''}>${esc(HOODS.hoods[k].name)}</option>`).join('')}</select></label>
+    <div><span class="small muted">${esc(t('who'))}</span><div class="chips2" id="who">${PLAYERS.map(([u, nm]) => `<button type="button" data-u="${u}" class="${ON.has(u) ? 'on' : ''}">${esc(nm)}</button>`).join('')}</div></div></div>`;
+}
+function tbl(head, rows){
+  return `<div class="tablewrap"><table><thead><tr>${head.map(([h, c]) => `<th class="${c || ''}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+function draw(){
+  ctl();
+  const app = document.getElementById('app');
+  if(!HOODS || !HOODS.have){ app.innerHTML = `<div class="card muted">${esc(t('loading'))}</div>`; return; }
+  if(!HD){ app.innerHTML = `<div class="card muted">${esc(t(HD === null ? 'loading' : 'none'))}</div>`; return; }
+  const who = PLAYERS.filter(([u]) => ON.has(u) && PD[u]);
+  const cards = who.map(([u, nm]) => {
+    const m = mine(u), v = m.filter(vacant);
+    const big = v.reduce((a, r) => Math.max(a, r[3] || 0), 0);
+    return `<div class="card"><b>${esc(nm)}</b><div class="big">${n0(m.length)}</div><div class="small muted">${esc(t('sOwn', {n:n0(m.length)}))}<br>${esc(t('sVacant', {n:n0(v.length)}))}${v.length ? ' · ' + esc(t('sBig', {a:n0(big)})) : ''}</div></div>`;
+  }).join('');
+  // does "property UP2 >= structure UP2" hold for what is already built?
+  const size = SIZES;
+  let ok = 0, bad = [];
+  who.forEach(([u, nm]) => mine(u).forEach(r => r[6].forEach(b => { const need = size.get(b.trim().toLowerCase()); if(!need) return; (r[3] >= need ? ok++ : bad.push({nm, r, b, need})); })));
+  const check = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('vH'))}</h2>${ok + bad.length
+    ? `<p style="margin:0">${esc(t('vOk', {n:n0(ok + bad.length), m:n0(ok), b:n0(bad.length)}))}</p>`
+      + (bad.length ? `<p class="hint">${esc(t('vBad'))}</p><ul class="small">${bad.slice(0, 15).map(x => `<li>${esc(x.r[1])}: ${esc(x.b)} needs ${x.need}, property ${x.r[3]} (${esc(x.nm)})</li>`).join('')}</ul>` : '')
+    : `<p class="muted" style="margin:0">${esc(t('vNone'))}</p>`}</div>`;
+  // each missing structure against the empty properties
+  const pools = who.map(([u, nm]) => [nm, mine(u).filter(vacant).sort((a, b) => (a[3] || 0) - (b[3] || 0))]);
+  const miss = (HD.missing || []).filter(s => !TIER.size || TIER.has(s.tier)).sort((a, b) => b.sph - a.sph);
+  const rows = miss.map((s, i) => {
+    const cells = pools.map(([nm, ps]) => {
+      const fit = ps.filter(r => s.up2 == null || (r[3] || 0) >= s.up2);
+      const open = EXPAND.has(i), shown = open ? fit : fit.slice(0, 2);
+      return `<div class="fit"><b>${esc(nm)}</b> <span class="muted small">${esc(fit.length ? t('fitN', {n:fit.length}) : t('noFit'))}</span>${shown.map(r => `<div class="small"><a target="_blank" rel="noopener" href="${UPLAND(r[0])}" title="${esc(t('open'))}">${esc(r[1])}</a> <span class="muted">${r[3]} UP2</span></div>`).join('')}${!open && fit.length > 2 ? `<div class="more small"><a href="#" data-more="${i}">${esc(t('moreN', {n:fit.length - 2}))}</a></div>` : ''}</div>`;
+    }).join('');
+    return `<tr><td><b>${esc(s.name)}</b></td><td>${esc(t('tier', {n:s.tier}))}</td><td class="n">${n0(s.sph)}</td><td class="n">${s.up2 == null ? `<span class="tag warn">${esc(t('unknown'))}</span>` : s.up2}</td><td>${cells}</td></tr>`;
+  });
+  const unk = miss.filter(s => s.up2 == null).length;
+  app.innerHTML = `<div class="who">${cards}</div>${check}<div class="card"><h2 style="margin:0 0 4px">${esc(t('mH'))} <span class="tag">${miss.length}</span></h2><p class="hint" style="margin:0 0 8px">${esc(t('mN'))}${unk ? ' ' + esc(t('unkN', {n:unk})) : ''}</p>
+    <div class="small muted">${esc(t('tierH'))}</div><div class="chips2" id="tiers"><button type="button" data-tier="0" class="${TIER.size ? '' : 'on'}">${esc(t('tierAll'))}</button>${[1, 3, 5].map(n => `<button type="button" data-tier="${n}" class="${TIER.has(n) ? 'on' : ''}">${esc(t('tier', {n}))}</button>`).join('')}</div>
+    ${tbl([[t('colStruct')], [t('colTier')], [t('colSph'), 'n'], [t('colUp2'), 'n'], [t('colFits')]], rows)}</div>`;
+}
+
+document.addEventListener('click', e => {
+  const u = e.target.closest('[data-u]'); if(u){ const k = u.dataset.u; ON.has(k) ? ON.delete(k) : ON.add(k); store.set('rut:builder:on', [...ON]); draw(); return; }
+  const tr = e.target.closest('[data-tier]'); if(tr){ const n = Number(tr.dataset.tier); if(!n) TIER.clear(); else TIER.has(n) ? TIER.delete(n) : TIER.add(n); store.set('rut:builder:tier', [...TIER]); draw(); return; }
+  const m = e.target.closest('[data-more]'); if(m){ e.preventDefault(); EXPAND.add(Number(m.dataset.more)); draw(); }
+});
+document.addEventListener('change', async e => {
+  if(e.target.id === 'hood'){ HOOD = e.target.value; store.set('rut:builder:hood', HOOD); EXPAND.clear(); await loadHood(); draw(); }
+});
+async function getJson(url){ try{ const r = await fetch(url); return r.ok ? await r.json() : null; }catch{ return null; } }
+async function loadHood(){
+  HD = undefined; draw();
+  HD = await getJson(`../data/structures/${HOOD}.json`) || null;
+}
+async function boot(){
+  Site.mount({onChange:draw});
+  draw();
+  const master = await getJson('../data/structures/master.json');
+  SIZES = new Map(((master || {}).structures || []).filter(s => s.up2).map(s => [s.name.trim().toLowerCase(), s.up2]));
+  HOODS = await getJson('../data/structures/hoods.json');
+  if(!HOODS){ document.getElementById('app').innerHTML = `<div class="card muted">${esc(t('none'))}</div>`; return; }
+  HOODS.have = {};
+  await Promise.all(Object.keys(HOODS.hoods).map(async k => { HOODS.have[k] = !!(await getJson(`../data/structures/${k}.json`)); }));
+  if(!HOODS.have[HOOD]) HOOD = Object.keys(HOODS.have).find(k => HOODS.have[k]) || HOOD;
+  await Promise.all(PLAYERS.map(async ([u]) => { const d = await getJson(`../data/structures/players/${u}.json`); if(d) PD[u] = d; }));
+  await loadHood(); draw();
+}
+boot();
+</script>
+</body>
+</html>
