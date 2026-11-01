@@ -301,8 +301,65 @@
     "Clam @ 1058 N 36th St, Seattle",
     "Mussel @ 1115 8th Ave W, Seattle (2nd visit)"
    ]
+  },
+  "122": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Left after the first visit, without waiting the full hour. From the special builds: Pennant, Blue Ribbon, Thumbs Up, Heart, Baseball Card.",
+   "gain": 69,
+   "types": 41,
+   "byCat": {
+    "resources": 14,
+    "utility": 2,
+    "social": 21,
+    "care": 15,
+    "valuables": 13,
+    "junk": 4
+   },
+   "top": [
+    [
+     "Shy Giggle",
+     6
+    ],
+    [
+     "Kind Word",
+     4
+    ],
+    [
+     "Trove Dust",
+     4
+    ],
+    [
+     "Knowing Nod",
+     3
+    ],
+    [
+     "Shrug",
+     3
+    ],
+    [
+     "Sunlight",
+     3
+    ],
+    [
+     "Coffee Bean",
+     2
+    ],
+    [
+     "Honey",
+     2
+    ]
+   ],
+   "new": [],
+   "found": [
+    312,
+    312
+   ],
+   "finds": [
+    "Marble @ 1535 Trafalgar St, Vancouver"
+   ]
   }
  },
  "updatedAt": "2026-11-01",
- "next": 122
+ "next": 139
 }
