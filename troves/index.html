@@ -108,7 +108,7 @@ Site.register({
     wCity:'City', wGives:'Gives you', wUnlock:'Recipes held up', wMissing:'Not here', wGrindH:'Troves tied to few cities', wGrindN:'Troves whose structures exist in only one or two of the scanned cities, or in none yet. These are the ones to grind for on purpose.', wOnlyMine:'Only troves I am missing', wCities:'Cities', wNoCity:'in no scanned city yet', wScanned:'{n} cities', wStructs:'Structures', wTabN:'{n} to grind',
     eNow:'Bank right now', eNowN:'One step each, cheapest first. You hold enough already and still keep what recipes need.', eCraft:'A few crafts away', eCraftN:'Craft the extra copies from ingredients you can spare, then bank. Fewest crafts first.', eNeed:'Craft', eStep:'Step', eNone:'Nothing easy right now.', eCraftVerb:'craft {n} more', eBankVerb:'bank {n}', eHold:'hold {n}', eSum:'Doing all of this: {c} crafts and {b} banking levels, with the reserve kept and no protected trove touched.', ePlan:'Craft, then bank', ePlanN:'Each row is a whole plan for one trove: how many to craft in total and the level it ends at. The plans share ingredients, so you can do them all together.', eJust:'Just bank (no crafting)', eJustN:'You already hold enough.', colNow:'Now', colCraftTot:'Craft in total', colEnds:'Ends at', colSteps:'Step by step', colUses:'Uses', cUpTo:'Up to', cLimit:'limited by {x}', cReach:'Reaches', cLeft:'{n} left', cAfter:'bank levels show once you hold one', cOnly:'only 1 (or none) to craft', cTabN:'{n} new', eTabN:'{n} steps',
     kFound:'Troves found', kCraft:'Recipes you can craft', kOne:'One trove short', kBlock:'Troves missing', kStamina:'Stamina', kDate:'File from',
-    ovFirst:'Find these first', ovFirstN:'The troves that hold up the most recipes. Finding one finishes the recipes where it is the only thing missing.',
+    ovFirst:'Find these first', ovFirstN:'Ordered by what finding them unlocks: troves you have never found first, then troves you cannot craft now, then alternative recipes of troves you can already craft. “Need” is how many more one craft asks for, so unlocking several recipes can take several of them.', colUnlocks:'What it unlocks', unNew:'{n} new trove', unStuck:'{n} you cannot craft now:', unAlt:'{n} alternative recipe(s) of troves you can already craft',
     colTrove:'Trove', colBlocks:'Recipes held up', colAlone:'Finished by it alone', colHave:'You have', colNeed:'Need', colWhere:'Found in', colCraftAt:'Craft at', colIng:'Ingredients',
     colLevel:'Level', colCost:'Cost', colHeld:'Held', colKeep:'Keep', colUsed:'Used in', colSites:'Found in', colCopies:'Can craft', colReach:'Reaches',
     places:'{n} places', structs:'structures', plantsLbl:'plants', more:'all {n} places',
@@ -152,7 +152,7 @@ Site.register({
     wCity:'Ciudad', wGives:'Te da', wUnlock:'Recetas frenadas', wMissing:'No aquí', wGrindH:'Troves ligados a pocas ciudades', wGrindN:'Troves cuyas estructuras existen en solo una o dos de las ciudades escaneadas, o en ninguna aún. Son los que hay que buscar a propósito.', wOnlyMine:'Solo los troves que me faltan', wCities:'Ciudades', wNoCity:'en ninguna ciudad escaneada aún', wScanned:'{n} ciudades', wStructs:'Estructuras', wTabN:'{n} por buscar',
     eNow:'Al banco ya', eNowN:'Un paso cada uno, los más baratos primero. Ya tienes suficiente y aún guardas lo que piden las recetas.', eCraft:'A pocos crafteos', eCraftN:'Craftea las copias extra con ingredientes que te sobran y luego al banco. Los que menos crafteos piden, primero.', eNeed:'Craftear', eStep:'Paso', eNone:'Nada fácil por ahora.', eCraftVerb:'craftea {n} más', eBankVerb:'banquea {n}', eHold:'tienes {n}', eSum:'Haciendo todo esto: {c} crafteos y {b} niveles de banco, guardando la reserva y sin tocar ningún trove protegido.', ePlan:'Craftear y luego al banco', ePlanN:'Cada fila es un plan completo para un trove: cuántos craftear en total y el nivel en que termina. Los planes comparten ingredientes, así que puedes hacerlos todos juntos.', eJust:'Solo al banco (sin craftear)', eJustN:'Ya tienes suficiente.', colNow:'Ahora', colCraftTot:'Craftear en total', colEnds:'Termina en', colSteps:'Paso a paso', colUses:'Usa', cUpTo:'Hasta', cLimit:'limitado por {x}', cReach:'Llega a', cLeft:'sobran {n}', cAfter:'los niveles de banco se ven cuando tengas uno', cOnly:'solo 1 (o ninguno)', cTabN:'{n} nuevos', eTabN:'{n} pasos',
     kFound:'Troves encontrados', kCraft:'Recetas que puedes craftear', kOne:'A un trove de lograrlo', kBlock:'Troves que faltan', kStamina:'Stamina', kDate:'Archivo del',
-    ovFirst:'Busca estos primero', ovFirstN:'Los troves que frenan más recetas. Encontrar uno completa las recetas donde es lo único que falta.',
+    ovFirst:'Busca estos primero', ovFirstN:'Ordenados por lo que desbloquean: primero troves que nunca has encontrado, luego troves que no puedes craftear ahora, luego recetas alternativas de troves que ya puedes craftear. “Falta” es cuántos más pide un crafteo, así que desbloquear varias recetas puede requerir varios.', colUnlocks:'Qué desbloquea', unNew:'{n} trove nuevo', unStuck:'{n} que no puedes craftear ahora:', unAlt:'{n} receta(s) alternativa(s) de troves que ya puedes craftear',
     colTrove:'Trove', colBlocks:'Recetas frenadas', colAlone:'Completa solo él', colHave:'Tienes', colNeed:'Necesitas', colWhere:'Se encuentra en', colCraftAt:'Se craftea en', colIng:'Ingredientes',
     colLevel:'Nivel', colCost:'Costo', colHeld:'Tienes', colKeep:'Reserva', colUsed:'Usado en', colSites:'Se encuentra en', colCopies:'Puedes hacer', colReach:'Llega a',
     places:'{n} lugares', structs:'estructuras', plantsLbl:'plantas', more:'los {n} lugares',
@@ -262,11 +262,15 @@ function analyse(d){
   });
   const need = new Map();   // trove -> {max needed in one recipe, recipes that use it}
   recs.forEach(r => r.ings.forEach(g => { const e = need.get(g.n) || {max:0, uses:0}; e.max = Math.max(e.max, g.req); e.uses++; need.set(g.n, e); }));
+  const okName = new Set(recs.filter(r => r.ok).map(r => r.name));
   const block = new Map();
   recs.filter(r => !r.ok).forEach(r => r.short.forEach(s => {
-    const e = block.get(s.n) || {n:s.n, recipes:0, alone:0, gap:0}; e.recipes++; if(r.short.length === 1) e.alone++; e.gap = Math.max(e.gap, s.req - s.have); block.set(s.n, e);
+    const e = block.get(s.n) || {n:s.n, recipes:0, alone:0, gap:0, newT:new Set(), stuck:new Set(), alt:0}; e.recipes++; if(r.short.length === 1) e.alone++; e.gap = Math.max(e.gap, s.req - s.have);
+    // what it really unlocks: a trove never found, a trove found but not craftable now, or only an alternative recipe of one you can already craft
+    if(okName.has(r.name)) e.alt++; else if(!items.has(r.name)) e.newT.add(r.name); else e.stuck.add(r.name);
+    block.set(s.n, e);
   }));
-  const blockers = [...block.values()].sort((a, b) => b.recipes - a.recipes || b.alone - a.alone);
+  const blockers = [...block.values()].map(e => ({...e, newT:[...e.newT], stuck:[...e.stuck]})).sort((a, b) => b.newT.length - a.newT.length || b.stuck.length - a.stuck.length || b.recipes - a.recipes || b.alone - a.alone);
   const sites = n => { const p = PLACES.get(n); return p ? p.structures.length + p.plants.length : null; };
   const [mS, mR] = mode === 'careful' ? [5, 2] : [3, 1];
   const prot = new Set();
@@ -588,9 +592,16 @@ function viewSpecial(){
       <div class="small" style="margin:4px 0">${x.troves.length ? `<span class="muted">${esc(t('spGives'))}:</span> ${x.troves.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}${need.has(n) ? ` <span class="tag good">${esc(t('spNeed'))}</span>` : ''}</span>`).join(', ')}` : `<span class="muted">${esc(t('spNoTroves'))}</span>`}</div>
       <div class="muted small">${esc(t('spVisit'))}</div><div class="spots">${x.spots.map(p => `<a class="btn small" target="_blank" rel="noopener" data-pid="${p[0]}" href="${UPLAND(p[0])}">📍 ${esc(p[1])} · ${esc(p[2])}${feeTxt(p[0])} ↗</a>`).join('')}</div></div>`).join('')}</div>`).join('');
 }
+function unlockTxt(b){
+  const parts = [];
+  if(b.newT.length) parts.push(`<span class="tag good">${esc(t('unNew', {n:b.newT.length}))}</span> ${esc(b.newT.join(', '))}`);
+  if(b.stuck.length) parts.push(`<b>${esc(t('unStuck', {n:b.stuck.length}))}</b> ${esc(b.stuck.join(', '))}`);
+  if(b.alt) parts.push(`<span class="muted">${esc(t('unAlt', {n:b.alt}))}</span>`);
+  return parts.join('<br>');
+}
 function viewMissing(){
-  return cityBar() + sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colBlocks'), 'n'], [t('colAlone'), 'n'], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
-    A.blockers.map(b => `<tr><td><div class="row" style="gap:0;flex-wrap:nowrap">${thumb(b.n)}${nameWith(b.n)}</div></td><td class="n">${b.recipes}</td><td class="n">${b.alone}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${spotBtns((PLACES.get(b.n) || {structures:[]}).structures)}</td></tr>`)));
+  return cityBar() + sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colUnlocks')], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
+    A.blockers.map(b => `<tr><td><div class="row" style="gap:0;flex-wrap:nowrap">${thumb(b.n)}${nameWith(b.n)}</div></td><td class="small" data-v="${b.newT.length * 1000 + b.stuck.length * 10 + b.alt}">${unlockTxt(b)}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${spotBtns((PLACES.get(b.n) || {structures:[]}).structures)}</td></tr>`)));
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
