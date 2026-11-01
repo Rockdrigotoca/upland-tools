@@ -28,7 +28,7 @@ def norm(s):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--cities', default='32,91', help='city ids whose hotspots are read (32 is Los Angeles)')
+    ap.add_argument('--cities', default='32,91', help='city ids whose hotspots are read (32 is Los Angeles), or "all" for every scanned city')
     ap.add_argument('--all', action='store_true', help='read every property of --cities that carries a service structure, not only trove hotspots')
     ap.add_argument('--rate', type=float, default=5.0)
     ap.add_argument('--max-minutes', type=float, default=30)
@@ -40,13 +40,19 @@ def main():
     places = {t[0]: t for t in json.load(open(os.path.join(ROOT, 'data/troves/places.json')))['troves']}
     wanted = {norm(s) for n in missing for s in places.get(n, [0, 0, []])[2]}
     ids = []
-    for cid in args.cities.split(','):
+    cities = args.cities.split(',')
+    if args.cities == 'all':   # cities with a special build first, then the biggest
+        special = {str(x['city']) for x in json.load(open(os.path.join(ROOT, 'data/troves/city-specific.json')))['structures']}
+        files = [f[:-5] for f in os.listdir(os.path.join(ROOT, 'data/troves/places')) if f.endswith('.json')]
+        size = {c: len(json.load(open(os.path.join(ROOT, f'data/troves/places/{c}.json')))['props']) for c in files}
+        cities = sorted(files, key=lambda c: (c not in special, -size[c]))
+    for cid in cities:
         cd = json.load(open(os.path.join(ROOT, f'data/troves/places/{cid}.json')))
         sn = [norm(x) for x in cd['structs']]
         ids += [p[0] for p in cd['props'] if args.all or any(sn[i] in wanted for i in p[5])]
     for s in json.load(open(os.path.join(ROOT, 'data/troves/city-specific.json')))['structures']:
         ids += [p[0] for p in s['spots']]
-    for cid in os.listdir(os.path.join(ROOT, 'data/troves/places')):
+    for cid in ([] if args.cities == 'all' else os.listdir(os.path.join(ROOT, 'data/troves/places'))):
         cd = json.load(open(os.path.join(ROOT, 'data/troves/places', cid)))
         if cd['name'] == 'Bermuda':
             sn = [norm(x) for x in cd['structs']]
