@@ -35,6 +35,7 @@ select{max-width:100%}
   <footer id="site-footer"></footer>
 </div>
 <script src="../shared/site.js"></script>
+<script src="../shared/sort.js"></script>
 <script>
 "use strict";
 const {t, esc, store} = Site;
@@ -45,7 +46,8 @@ Site.register({
     sOwn:'{n} properties here', sVacant:'{n} empty', sBig:'biggest empty: {a} UP2',
     vH:'Does the size rule hold?', vOk:'Of {n} built structures on these players’ properties here whose size we know, {m} stand on a property at least that big. {b} do not.', vBad:'Do not fit (the rule “property UP2 ≥ structure UP2” may be wrong for these):', vNone:'No built structure with a known size on these properties yet.',
     mH:'Structures still missing here', mN:'Sorted by sparklets per hour. A property fits when its UP2 is at least the structure’s UP2. The smallest fitting properties come first, so big lots are not wasted.',
-    tierH:'Spark train', tierAll:'All', colStruct:'Structure', colTier:'Tier', colSph:'Sparklets/h', colUp2:'Needs UP2', colFits:'Who can build it', unknown:'size unknown', fitN:'{n} fit', noFit:'none fits', moreN:'+{n} more', showAll:'Show all',
+    tierH:'Spark train', pAddr:'Where', pH:'The plan', pN:'Pick who builds each structure and where. It is saved in this browser, and the link carries the whole plan so you can send it to the others.', pNone:'Nothing planned yet. Use the Plan column below.', pCol:'Plan', pWho:'Who?', pLink:'Copy link to this plan', pCopied:'Link copied.', pClear:'Clear the plan', pBy:'builds', pOpen:'Open', pFree:'free',
+    tierAll:'All', sgTag:'suggested', sgTip:'Smallest property this structure was seen on, out of {n} read. Not confirmed: the real minimum can be lower.', colStruct:'Structure', colTier:'Tier', colSph:'Sparklets/h', colUp2:'Needs UP2', colFits:'Who can build it', unknown:'size unknown', fitN:'{n} fit', noFit:'none fits', moreN:'+{n} more', showAll:'Show all',
     open:'Open in Upland', unkN:'{n} of the missing structures have no size in our list yet, so they show every empty property.', updated:'Properties read {d}.', tier:'Tier {n}'
   },
   es:{
@@ -54,7 +56,8 @@ Site.register({
     sOwn:'{n} propiedades aquí', sVacant:'{n} vacías', sBig:'la vacía más grande: {a} UP2',
     vH:'¿Se cumple la regla del tamaño?', vOk:'De {n} estructuras construidas en propiedades de estos jugadores aquí cuyo tamaño conocemos, {m} están en una propiedad al menos así de grande. {b} no.', vBad:'No caben (la regla “UP2 de la propiedad ≥ UP2 de la estructura” podría estar mal para estas):', vNone:'Todavía no hay estructuras construidas con tamaño conocido en estas propiedades.',
     mH:'Estructuras que aún faltan aquí', mN:'Ordenadas por sparklets por hora. Una propiedad cabe si su UP2 es al menos el de la estructura. Primero van las más chicas que caben, para no gastar los terrenos grandes.',
-    tierH:'Tren de sparklets', tierAll:'Todos', colStruct:'Estructura', colTier:'Nivel', colSph:'Sparklets/h', colUp2:'Pide UP2', colFits:'Quién puede construirla', unknown:'tamaño desconocido', fitN:'{n} caben', noFit:'ninguna cabe', moreN:'+{n} más', showAll:'Ver todas',
+    tierH:'Tren de sparklets', pAddr:'Dónde', pH:'El plan', pN:'Elige quién construye cada estructura y dónde. Se guarda en este navegador, y el enlace lleva todo el plan para mandárselo a los demás.', pNone:'Aún no hay nada planeado. Usa la columna Plan de abajo.', pCol:'Plan', pWho:'¿Quién?', pLink:'Copiar enlace de este plan', pCopied:'Enlace copiado.', pClear:'Borrar el plan', pBy:'construye', pOpen:'Abrir', pFree:'libre',
+    tierAll:'Todos', sgTag:'sugerido', sgTip:'La propiedad más chica donde se vio esta estructura, de {n} leídas. No confirmado: el mínimo real puede ser menor.', colStruct:'Estructura', colTier:'Nivel', colSph:'Sparklets/h', colUp2:'Pide UP2', colFits:'Quién puede construirla', unknown:'tamaño desconocido', fitN:'{n} caben', noFit:'ninguna cabe', moreN:'+{n} más', showAll:'Ver todas',
     open:'Abrir en Upland', unkN:'{n} de las estructuras que faltan aún no tienen tamaño en nuestra lista, así que muestran todas las propiedades vacías.', updated:'Propiedades leídas el {d}.', tier:'Nivel {n}'
   }
 });
@@ -62,7 +65,7 @@ Site.register({
 const PLAYERS = [['rockdrigo', 'Rockdrigo'], ['mstullis', 'MsTullis'], ['talljames', 'TallJames'], ['missmarlow', 'Miss Marlow']];
 const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
 const n0 = x => Number(x).toLocaleString();
-let SIZES = new Map(), HOODS = null, HOOD = store.get('rut:builder:hood', 'nomentano'), TIER = new Set(store.get('rut:builder:tier', [])), ON = new Set(store.get('rut:builder:on', PLAYERS.map(p => p[0]))), HD = null, PD = {}, EXPAND = new Set();
+let SHARED = false, PLAN = {}, SUGG = new Map(), SIZES = new Map(), HOODS = null, HOOD = store.get('rut:builder:hood', 'nomentano'), TIER = new Set(store.get('rut:builder:tier', [])), ON = new Set(store.get('rut:builder:on', PLAYERS.map(p => p[0]))), HD = null, PD = {}, EXPAND = new Set();
 
 function mine(u){
   // this player's properties inside the chosen neighbourhood: [id, address, city, up2, lat, lng, built, going, home]
@@ -79,6 +82,25 @@ function ctl(){
 }
 function tbl(head, rows){
   return `<div class="tablewrap"><table><thead><tr>${head.map(([h, c]) => `<th class="${c || ''}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+const used = except => new Set(Object.entries(PLAN).filter(([n]) => n !== except).map(([, v]) => v[1]));
+const saveKey = () => 'rut:builder:plan:' + HOOD;
+function savePlan(){ store.set(saveKey(), PLAN); }
+const b64 = o => btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64 = x => JSON.parse(decodeURIComponent(escape(atob(x.replace(/-/g, '+').replace(/_/g, '/')))));
+function fits(u, need, except){
+  const taken = used(except);
+  return mine(u).filter(vacant).filter(r => !taken.has(String(r[0])) && (need == null || (r[3] || 0) >= need)).sort((a, b) => (a[3] || 0) - (b[3] || 0));
+}
+const needOf = s => s.up2 != null ? s.up2 : ((SUGG.get(s.name.trim().toLowerCase()) || {}).min ?? null);
+function planCard(miss){
+  const items = Object.entries(PLAN).map(([name, [u, pid]]) => {
+    const r = mine(u).find(x => String(x[0]) === String(pid)), who = (PLAYERS.find(p => p[0] === u) || [u, u])[1];
+    return r ? `<tr><td><b>${esc(name)}</b></td><td>${esc(who)}</td><td>${esc(r[1])} <span class="muted small">${r[3]} UP2</span></td><td><a class="btn small primary" target="_blank" rel="noopener" href="${UPLAND(r[0])}">${esc(t('pOpen'))} ↗</a></td></tr>` : '';
+  }).filter(Boolean);
+  return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('pH'))} <span class="tag">${items.length}</span></h2><p class="hint" style="margin:0 0 8px">${esc(t('pN'))}</p>
+    ${items.length ? tbl([[t('colStruct')], [t('pWho')], [t('pAddr')], ['']], items) : `<p class="muted small" style="margin:0">${esc(t('pNone'))}</p>`}
+    <div class="row" style="margin-top:8px"><button type="button" class="btn small primary" id="copyPlan">${esc(t('pLink'))}</button><button type="button" class="btn small" id="clearPlan">${esc(t('pClear'))}</button></div></div>`;
 }
 function draw(){
   ctl();
@@ -103,37 +125,55 @@ function draw(){
   const pools = who.map(([u, nm]) => [nm, mine(u).filter(vacant).sort((a, b) => (a[3] || 0) - (b[3] || 0))]);
   const miss = (HD.missing || []).filter(s => !TIER.size || TIER.has(s.tier)).sort((a, b) => b.sph - a.sph);
   const rows = miss.map((s, i) => {
+    const sg = s.up2 == null ? SUGG.get(s.name.trim().toLowerCase()) : null, need = s.up2 != null ? s.up2 : (sg ? sg.min : null);
     const cells = pools.map(([nm, ps]) => {
-      const fit = ps.filter(r => s.up2 == null || (r[3] || 0) >= s.up2);
+      const fit = ps.filter(r => need == null || (r[3] || 0) >= need);
       const open = EXPAND.has(i), shown = open ? fit : fit.slice(0, 2);
       return `<div class="fit"><b>${esc(nm)}</b> <span class="muted small">${esc(fit.length ? t('fitN', {n:fit.length}) : t('noFit'))}</span>${shown.map(r => `<div class="small"><a target="_blank" rel="noopener" href="${UPLAND(r[0])}" title="${esc(t('open'))}">${esc(r[1])}</a> <span class="muted">${r[3]} UP2</span></div>`).join('')}${!open && fit.length > 2 ? `<div class="more small"><a href="#" data-more="${i}">${esc(t('moreN', {n:fit.length - 2}))}</a></div>` : ''}</div>`;
     }).join('');
-    return `<tr><td><b>${esc(s.name)}</b></td><td>${esc(t('tier', {n:s.tier}))}</td><td class="n">${n0(s.sph)}</td><td class="n">${s.up2 == null ? `<span class="tag warn">${esc(t('unknown'))}</span>` : s.up2}</td><td>${cells}</td></tr>`;
+    const pl = PLAN[s.name], who = pl ? pl[0] : '', opts = pl ? fits(who, need, s.name).concat(mine(who).filter(r => String(r[0]) === String(pl[1]))).filter((r, k, a) => a.findIndex(x => x[0] === r[0]) === k) : [];
+    const planCell = `<select data-assign="${esc(s.name)}"><option value="">—</option>${PLAYERS.filter(([u]) => ON.has(u)).map(([u, nm]) => `<option value="${u}"${u === who ? ' selected' : ''}>${esc(nm)}</option>`).join('')}</select>${pl ? `<br><select data-prop="${esc(s.name)}" style="margin-top:4px">${opts.map(r => `<option value="${esc(r[0])}"${String(r[0]) === String(pl[1]) ? ' selected' : ''}>${esc(r[1])} · ${r[3]} UP2</option>`).join('')}</select>` : ''}`;
+    return `<tr><td><b>${esc(s.name)}</b></td><td>${esc(t('tier', {n:s.tier}))}</td><td class="n">${n0(s.sph)}</td><td class="n">${s.up2 != null ? s.up2 : (sg ? `≤ ${sg.min} <span class="tag warn" title="${esc(t('sgTip', {n:sg.samples}))}">${esc(t('sgTag'))}</span>` : `<span class="tag warn">${esc(t('unknown'))}</span>`)}</td><td>${cells}</td><td style="min-width:170px">${planCell}</td></tr>`;
   });
-  const unk = miss.filter(s => s.up2 == null).length;
-  app.innerHTML = `<div class="who">${cards}</div>${check}<div class="card"><h2 style="margin:0 0 4px">${esc(t('mH'))} <span class="tag">${miss.length}</span></h2><p class="hint" style="margin:0 0 8px">${esc(t('mN'))}${unk ? ' ' + esc(t('unkN', {n:unk})) : ''}</p>
+  const unk = miss.filter(s => s.up2 == null && !SUGG.has(s.name.trim().toLowerCase())).length;
+  app.innerHTML = `<div class="who">${cards}</div>${planCard(miss)}${check}<div class="card"><h2 style="margin:0 0 4px">${esc(t('mH'))} <span class="tag">${miss.length}</span></h2><p class="hint" style="margin:0 0 8px">${esc(t('mN'))}${unk ? ' ' + esc(t('unkN', {n:unk})) : ''}</p>
     <div class="small muted">${esc(t('tierH'))}</div><div class="chips2" id="tiers"><button type="button" data-tier="0" class="${TIER.size ? '' : 'on'}">${esc(t('tierAll'))}</button>${[1, 3, 5].map(n => `<button type="button" data-tier="${n}" class="${TIER.has(n) ? 'on' : ''}">${esc(t('tier', {n}))}</button>`).join('')}</div>
-    ${tbl([[t('colStruct')], [t('colTier')], [t('colSph'), 'n'], [t('colUp2'), 'n'], [t('colFits')]], rows)}</div>`;
+    ${tbl([[t('colStruct')], [t('colTier')], [t('colSph'), 'n'], [t('colUp2'), 'n'], [t('colFits')], [t('pCol')]], rows)}</div>`;
 }
 
 document.addEventListener('click', e => {
   const u = e.target.closest('[data-u]'); if(u){ const k = u.dataset.u; ON.has(k) ? ON.delete(k) : ON.add(k); store.set('rut:builder:on', [...ON]); draw(); return; }
   const tr = e.target.closest('[data-tier]'); if(tr){ const n = Number(tr.dataset.tier); if(!n) TIER.clear(); else TIER.has(n) ? TIER.delete(n) : TIER.add(n); store.set('rut:builder:tier', [...TIER]); draw(); return; }
+  if(e.target.closest('#copyPlan')){ const url = location.origin + location.pathname + '#p=' + b64({h:HOOD, a:PLAN}); try{ navigator.clipboard.writeText(url); e.target.textContent = t('pCopied'); }catch{ prompt('', url); } return; }
+  if(e.target.closest('#clearPlan')){ PLAN = {}; savePlan(); draw(); return; }
   const m = e.target.closest('[data-more]'); if(m){ e.preventDefault(); EXPAND.add(Number(m.dataset.more)); draw(); }
 });
 document.addEventListener('change', async e => {
+  const as = e.target.dataset && e.target.dataset.assign;
+  if(as !== undefined){
+    const u = e.target.value;
+    if(!u) delete PLAN[as];
+    else { const s = (HD.missing || []).find(x => x.name === as), f = fits(u, s ? needOf(s) : null, as); if(f.length) PLAN[as] = [u, String(f[0][0])]; else { delete PLAN[as]; } }
+    savePlan(); draw(); return;
+  }
+  const pr = e.target.dataset && e.target.dataset.prop;
+  if(pr !== undefined){ PLAN[pr] = [PLAN[pr][0], e.target.value]; savePlan(); draw(); return; }
   if(e.target.id === 'hood'){ HOOD = e.target.value; store.set('rut:builder:hood', HOOD); EXPAND.clear(); await loadHood(); draw(); }
 });
 async function getJson(url){ try{ const r = await fetch(url); return r.ok ? await r.json() : null; }catch{ return null; } }
 async function loadHood(){
   HD = undefined; draw();
   HD = await getJson(`../data/structures/${HOOD}.json`) || null;
+  if(!SHARED) PLAN = store.get(saveKey(), {}); else { SHARED = false; }
 }
 async function boot(){
   Site.mount({onChange:draw});
   draw();
   const master = await getJson('../data/structures/master.json');
   SIZES = new Map(((master || {}).structures || []).filter(s => s.up2).map(s => [s.name.trim().toLowerCase(), s.up2]));
+  try{ const m = /^#p=(.+)$/.exec(location.hash); if(m){ const o = unb64(m[1]); HOOD = o.h || HOOD; PLAN = o.a || {}; SHARED = true; savePlan(); } }catch{}
+  const sg = await getJson('../data/structures/up2-suggestions.json');
+  SUGG = new Map(Object.values((sg || {}).structures || {}).map(x => [x.name.trim().toLowerCase(), x]));
   HOODS = await getJson('../data/structures/hoods.json');
   if(!HOODS){ document.getElementById('app').innerHTML = `<div class="card muted">${esc(t('none'))}</div>`; return; }
   HOODS.have = {};

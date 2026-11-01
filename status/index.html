@@ -42,6 +42,8 @@ Site.register({
     title:'Rockdrigo’s Backstage', subtitle:'Which data jobs are running, when each last ran, and how far the long ones have got.',
     jPrices:'Ornament prices', jBuy:'Properties for sale', jCollections:'Group collections', jLedger:'Sales ledger', jStruct:'Neighbourhood structures', jWorld:'World structure scan',
     dStruct:'Which service structures each neighbourhood has and lacks.', dWorld:'Service structures of every Upland city. Feeds the Troves grind map.', cWorld:'{n} cities scanned.', cStruct:'{n} structure types listed.',
+    jHoro:'Property Horoscope · Philomena at work', dHoro:'The stars, but for land. Entirely run by Philomena, who is very sure.',
+    horo:['Reading star charts: 3 of 12 (two were upside down)','Asking Mercury about your corner lot: “it’s complicated”','Converting Mars retrograde into UPX: rate unknown, mood excellent','Checking whether Taurus owns property (Taurus declined to comment)','Drafting your reading: it begins “Beware of a tall building”'], horoPct:'{n}% done, give or take a planet', horoEta:'Expected: when the stars align. They have been told.',
     liveRun:'Running now', liveIdle:'All quiet, next run in {n}', liveSince:'since {t}', liveAuto:'This page refreshes by itself every minute.',
     dPrices:'Ornament sales and listings. Feeds Cheapskate and the Optimizer.', dBuy:'Cheapest properties for sale per collection. Feeds the Hoarder’s Buy tab.',
     dCollections:'Every group player’s properties and collections. Feeds the Hoarder.', dLedger:'Sales from the chain history. Feeds Receipts.',
@@ -54,6 +56,8 @@ Site.register({
     title:'Backstage de Rockdrigo', subtitle:'Qué trabajos de datos están corriendo, cuándo corrió cada uno y cuánto llevan los largos.',
     jPrices:'Precios de ornamentos', jBuy:'Propiedades en venta', jCollections:'Colecciones del grupo', jLedger:'Libro de ventas', jStruct:'Estructuras por barrio', jWorld:'Escaneo mundial de estructuras',
     dStruct:'Qué estructuras de servicio tiene y le faltan a cada barrio.', dWorld:'Estructuras de servicio de cada ciudad de Upland. Alimenta el mapa de grind de Troves.', cWorld:'{n} ciudades escaneadas.', cStruct:'{n} tipos de estructura listados.',
+    jHoro:'Horóscopo de Propiedades · Philomena trabajando', dHoro:'Las estrellas, pero para terrenos. La lleva toda Philomena, que está muy segura.',
+    horo:['Leyendo cartas astrales: 3 de 12 (dos estaban de cabeza)','Preguntándole a Mercurio por tu esquina: “es complicado”','Convirtiendo Marte retrógrado a UPX: tasa desconocida, ánimo excelente','Revisando si Tauro tiene propiedades (Tauro prefirió no opinar)','Redactando tu lectura: empieza con “Cuidado con un edificio alto”'], horoPct:'{n}% listo, más o menos un planeta', horoEta:'Se espera: cuando se alineen los astros. Ya se les avisó.',
     liveRun:'Corriendo ahora', liveIdle:'Todo en calma, próxima corrida en {n}', liveSince:'desde {t}', liveAuto:'Esta página se actualiza sola cada minuto.',
     dPrices:'Ventas y listados de ornamentos. Alimenta a Cheapskate y al Optimizador.', dBuy:'Las propiedades más baratas en venta por colección. Alimenta la pestaña Comprar del Acaparador.',
     dCollections:'Propiedades y colecciones de cada jugador del grupo. Alimenta al Acaparador.', dLedger:'Ventas del historial de la cadena. Alimenta a Recibos.',
@@ -113,6 +117,12 @@ function render(){
     job(t('jWorld'), t('dWorld'), wd && wd.updatedAt, wd ? t('cWorld', {n: (wd.cities || []).filter(c => c.done).length}) : '')
   ].join('');
   hero();
+  // Philomena's progress: it moves a little every minute, never gets anywhere, and is never wrong.
+  const m = Math.floor(Date.now() / 6e4), pct = 3 + ((m * 7) % 11) / 10 + (Math.floor(m / 11) % 3);
+  const lines = t('horo');
+  $('#jobs').insertAdjacentHTML('beforeend', `<section class="card job"><h2>${esc(t('jHoro'))}</h2><div class="small muted">${esc(t('dHoro'))}</div>
+    <div class="when"><span class="dot run pulse"></span>${esc(Array.isArray(lines) ? lines[m % lines.length] : '')}</div>
+    <div class="small">${esc(t('horoPct', {n:pct.toFixed(1)}))}</div><div class="bar"><i style="width:${pct.toFixed(1)}%"></i></div><div class="small muted">${esc(t('horoEta'))}</div></section>`);
   $('#note').textContent = t('note') + ' ' + t('liveAuto');
   if(!RUN) $('#run').textContent = t('runNone');
   else if(RUN.status !== 'completed') $('#run').textContent = t('runNow', {t: fmt(RUN.run_started_at)});

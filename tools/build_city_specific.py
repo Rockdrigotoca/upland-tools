@@ -14,6 +14,8 @@ import unicodedata
 
 DATA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data', 'troves')
 SPOTS = 6
+# Confirmed by the player: factories give no troves, so they are not worth a visit.
+SKIP = re.compile(r'factory', re.I)
 
 
 def norm(s):
@@ -74,7 +76,7 @@ def main():
             holds.setdefault(nn(s), []).append(t[0])
     out, coords, files = [], {}, {}
     for e in world['structures'].values():
-        if e.get('living') or len(e['c']) != 1:
+        if e.get('living') or len(e['c']) != 1 or SKIP.search(e['name']):
             continue
         cid = int(next(iter(e['c'])))
         if cid not in files:
@@ -95,7 +97,17 @@ def main():
         out.append({'name': e['name'], 'city': cid, 'n': next(iter(e['c'].values())), 'troves': sorted(set(holds.get(nn(e['name']), []))), 'spots': spots})
     out.sort(key=lambda x: (cities[x['city']]['name'], -x['n']))
     used = {x['city'] for x in out if x['city'] in coords}
-    start = next((cid for cid in used if cities[cid]['name'] == args.start), min(used))
+    # the starting city is part of the route even without a special build (it is where the player goes for other troves)
+    start = next((cid for cid, c in cities.items() if c['name'] == args.start), None)
+    if start is not None and start not in coords:
+        f = os.path.join(DATA, 'places', f'{start}.json')
+        if os.path.exists(f):
+            cd = json.load(open(f))
+            coords[start] = [round(sum(p[2] for p in cd['props']) / len(cd['props']), 4), round(sum(p[3] for p in cd['props']) / len(cd['props']), 4)]
+    if start in coords:
+        used.add(start)
+    else:
+        start = min(used)
     order, total = route({c: coords[c] for c in used}, start)
     res = {'updatedAt': world.get('updatedAt'), 'cities': {str(c): {'name': cities[c]['name'], 'pos': coords[c]} for c in used},
            'route': order, 'routeKm': round(total), 'structures': out}
