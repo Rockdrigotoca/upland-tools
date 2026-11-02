@@ -623,7 +623,7 @@ function buildNextCard(left){
     const byCity = new Map(); fit.forEach(r => byCity.set(r[2], [...(byCity.get(r[2]) || []), r]));
     const cs = [...byCity.entries()].sort((a, b) => b[1].length - a[1].length), extra = cs.length > 5 ? `<div class="small muted">${esc(t('spMore', {n:cs.length - 5}))}</div>` : '';
     const where = byCity.size ? cs.slice(0, 5).map(([c, rs]) => `<div class="small"><b>${esc(c)}</b> <span class="muted">(${rs.length})</span> ${rs.slice(0, 2).map(r => { shownAt.add(r[0]); return `<a class="btn small" target="_blank" rel="noopener" data-pid="${r[0]}" href="${go(r[0])}">📍 ${esc(r[1])} · ${r[3]} UP2 ↗</a>`; }).join(' ')}</div>`).join('') + extra : `<span class="muted small">${esc(allFit.length ? t('bnxTaken') : t('bnxNoFit'))}</span>`;
-    return `<tr><td class="n">${i + 1}</td><td><b>${esc(pk.e.name)}</b></td><td class="n" data-v="${pk.got.length}"><b>${pk.got.length}</b></td><td class="small">${pk.got.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}</span>`).join(', ')}</td><td class="small">${esc(size)}</td><td>${where}</td></tr>`;
+    return `<tr><td class="n">${i + 1}</td><td>${sthumb(pk.e.name)} <b>${esc(pk.e.name)}</b></td><td class="n" data-v="${pk.got.length}"><b>${pk.got.length}</b></td><td class="small">${pk.got.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}</span>`).join(', ')}</td><td class="small">${esc(size)}</td><td>${where}</td></tr>`;
   });
   return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('bnxH'))} <span class="tag">${picks.length}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('bnxN', {n:left.length}))}</p>
     ${tbl([['#', 'n'], [t('colStruct') === 'colStruct' ? 'Structure' : t('colStruct')], [t('bnxUnlocks'), 'n'], [t('owCrafts')], [t('bnxSize')], [t('bnxIn')]], rows)}</div>`;
@@ -719,7 +719,7 @@ function ownCraftCard(){
   stops.sort((a, b) => String(a.r[2]).localeCompare(String(b.r[2])) || a.r[1].localeCompare(b.r[1]));
   const covered = wanted.length - left.size;
   const rows = stops.map((s, i) => `<tr><td class="n">${i + 1}</td><td>${esc(s.r[2])}</td><td><a class="btn small" target="_blank" rel="noopener" data-pid="${s.r[0]}" href="${go(s.r[0])}">📍 ${esc(s.r[1])} ↗</a></td>
-    <td>${[...s.byStruct.entries()].map(([st, ns]) => `<div class="small"><b>${esc(st)}</b>: ${newFirst(ns).map(qchip).join(', ')}</div>`).join('')}</td><td class="n">${[...s.byStruct.values()].reduce((a, b) => a + b.length, 0)}</td></tr>`);
+    <td>${[...s.byStruct.entries()].map(([st, ns]) => `<div class="small" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${sthumb(st)}<span><b>${esc(st)}</b>: ${newFirst(ns).map(qchip).join(', ')}</span></div>`).join('')}</td><td class="n">${[...s.byStruct.values()].reduce((a, b) => a + b.length, 0)}</td></tr>`);
   const own = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('owN', {n:covered, m:wanted.length}))}</p>${qsum(wanted)}
     ${rows.length ? tbl([[t('owStop'), 'n'], [t('owCity')], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) : `<p class="muted small" style="margin:0">${esc(t('owNone'))}</p>`}</div>`;
   if(!left.size) return own;
