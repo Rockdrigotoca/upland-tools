@@ -20,7 +20,8 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cl-stop{border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface)}
 .cl-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
 .cl-i{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.85rem}
-.cl-struct h4{margin:8px 0 2px;font-size:1.05rem}
+.cl-struct h4{margin:8px 0 2px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.sthumb{width:40px;height:40px;object-fit:contain;border-radius:8px;background:var(--surface-2)}
 .cl-list{list-style:none;margin:0;padding:0}
 .cl-list li{padding:6px 0;border-top:1px solid var(--border);line-height:1.45}
 .cl-list li:first-child{border-top:0}
@@ -230,7 +231,8 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let NEIGH = store.get('rut:troves:neigh', true), REACH = null, REACHM = store.get('rut:troves:reachm', 80), HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
+let STIMG = null, NEIGH = store.get('rut:troves:neigh', true), REACH = null, REACHM = store.get('rut:troves:reachm', 80), HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
+const sthumb = n => STIMG && STIMG.files[n] ? `<img class="sthumb" loading="lazy" alt="" src="../data/structures/images/${STIMG.files[n]}" onerror="this.remove()">` : '';
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
@@ -645,8 +647,8 @@ function craftLine(n){
   const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
   const rec = vs => vs.length ? `<div class="cl-rec">${vs.map(v => esc(v.k + '× ' + verText(v))).join(' · ')}</div>` : '';
   if(isNew) return `<li class="cl-new"><span class="cl-n">${thumb(n)}<b>${esc(n)}</b></span> <span class="cl-q">×1</span> <span class="tag good">${esc(t('cqNew'))}</span>${rec(q.vers.slice(0, 1))}</li>`;
-  if(!nx || !(nx.doNow > 0)) return '';
-  const full = nx.doNow >= nx.need;
+  if(!nx || !(nx.need > 0 && nx.doNow >= nx.need)) return '';
+  const full = true;
   return `<li><span class="cl-n">${thumb(n)}<b>${esc(n)}</b></span> <span class="cl-q">×${nx.doNow}</span> <span class="cl-go">→ ${medal(nx.lvl + 1)} ${esc(t('cqLevel', {n:nx.lvl + 1}))}</span> <span class="muted">${esc(t('cqHold', {q:nx.q, m:nx.thr}))}</span>${full ? '' : ` <span class="tag warn">${esc(t('cqShort', {a:nx.doNow, b:nx.need}))}</span>`}${rec(nx.vers)}</li>`;
 }
 function cityCraftCard(){
@@ -655,7 +657,7 @@ function cityCraftCard(){
   const wrap = body => `<div class="card cw" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('cwH', {city:cname}))}</h2>${body}</div>`;
   if(!cd) return cd === false ? '' : wrap(`<p class="muted small" style="margin:0">${esc(t('cwLoad'))}</p>`);
   // only what is worth crafting now: a new trove, or the copies that reach the next banking level
-  const wanted = wantedCrafts().filter(n => { const q = A.craftQty.get(n), nx = A.nextQty.get(n); return (q && q.nw) || (nx && nx.doNow > 0); });
+  const wanted = wantedCrafts().filter(n => { const q = A.craftQty.get(n), nx = A.nextQty.get(n); return (q && q.nw) || (nx && nx.need > 0 && nx.doNow >= nx.need); });   // only what reaches its next level in full
   if(!wanted.length) return '';
   const fix = x => norm(x).replace(/ 1$/, ''), sn = cd.structs.map(fix);
   const need = new Map(wanted.map(n => [n, new Set(PLACES.get(n).craftAt.map(fix))]));
@@ -687,7 +689,7 @@ function cityCraftCard(){
     s.got.forEach(n => need.get(n).forEach(k => { if(names.has(k)) count.set(k, (count.get(k) || 0) + 1); }));
     const groups = new Map();
     s.got.forEach(n => { const k = [...need.get(n)].filter(x => names.has(x)).sort((a, b) => count.get(b) - count.get(a))[0]; groups.set(k, [...(groups.get(k) || []), n]); });
-    const lists = [...groups.entries()].sort((a, b) => hasNew(b[1]) - hasNew(a[1]) || b[1].length - a[1].length).map(([k, ns]) => `<div class="cl-struct"><h4>${esc(names.get(k))}</h4><ul class="cl-list">${craftOrder(ns).map(craftLine).join('')}</ul></div>`).join('');
+    const lists = [...groups.entries()].sort((a, b) => hasNew(b[1]) - hasNew(a[1]) || b[1].length - a[1].length).map(([k, ns]) => `<div class="cl-struct"><h4>${sthumb(names.get(k))}${esc(names.get(k))}</h4><ul class="cl-list">${craftOrder(ns).map(craftLine).join('')}</ul></div>`).join('');
     return `<div class="cl-stop"><div class="cl-head"><span class="cl-i">${i + 1}</span>${spotBtn(s.c.pr)}<span class="muted">${esc(t('cqCrafts', {n:s.got.length}))}</span></div>${lists}</div>`;
   };
   const part = (title, stops, lim, isOwn) => {
@@ -1202,6 +1204,7 @@ async function boot(){
   try{ const f = await fetch('../data/troves/fees.json').then(x => x.ok ? x.json() : null); FEES = f ? f.fees : null; }catch{ FEES = null; }
   try{ SPECIAL = await fetch('../data/troves/city-specific.json').then(x => x.ok ? x.json() : null); }catch{ SPECIAL = null; }
   try{ RESULTS = await fetch('../data/troves/special-results.json').then(x => x.ok ? x.json() : null); }catch{ RESULTS = null; }
+  try{ STIMG = await fetch('../data/structures/images.json').then(x => x.ok ? x.json() : null); }catch{ STIMG = null; }
   try{ REACH = await fetch('../data/troves/reach-best.json').then(x => x.ok ? x.json() : null); }catch{ REACH = null; }
   try{ HUNTS = await fetch('../data/troves/rockdrigo/hunts.json').then(x => x.ok ? x.json() : null); }catch{ HUNTS = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
