@@ -70,7 +70,7 @@ Site.register({
     mGoldN:'Every trove up to gold level. Rockdrigo’s rule: every visit gives one trove at random, so the more structures you visit, the faster you get there.',
     mRecN:'Only the troves you do not have yet, or that your recipes are missing.',
     dash:'How you are doing', dFound:'troves found', dGold:'at gold', dLeft:'to go', dLevels:'of the levels', dLoad:'Load my troves file', dLoadN:'Load your troves file to see how you are doing, which troves are new for you and which recipes you are close to.', dRock:'Showing Rockdrigo’s numbers until you load your file.',
-    load:'Load my troves file', forget:'Forget my file', loaded:'Loaded your file ({n} troves).', bad:'That file could not be read. It must be the troves file from the script.',
+    load:'Load my troves file', fileHelp:'You can drop the HAR you saved from Upland, or the small cleaned file. A HAR is read in your browser, only your troves are kept, and nothing is uploaded.', howto:'How to get the file', cleaner:'Python cleaner (download)', forget:'Forget my file', loaded:'Loaded your file ({n} troves).', bad:'That file could not be read. It must be the HAR from your Troves page or the cleaned troves file.',
     t1:'Your own properties', t1N:'Structures you own here that give what you need.', t2:'James’s properties', t3:'Marlow’s properties', t4:'Other places', t4N:'Structures anywhere in the city. The first ones also have more of what you need nearby.',
     none:'Nothing here for this city yet.', runOf:'{d} of {n} visited', runAll:'All visited',  seen:'Rockdrigo found it at: {x}', legend:'The medal on each trove is the level you are collecting for. NEW means you have never found it. ★ means few places give it.', go:'Go collect', cooling:'Back in', newT:'NEW', helps:'helps craft {x}', mine:'Your own properties', mineN:'Structures that are yours (or James’s and Marlow’s) in this city. No walking needed.', noOwn:'None of your own, James’s or Marlow’s properties in {city} has a structure that gives what you need.', next:'Your next stop', special:'Special finds', specialN:'Only a few kinds of structure give these, or Rockdrigo has hardly ever found them. They are worth the trip.', onlyAt:'at: {x}', notHere:'not in this city', recH:'One find from a recipe', recN:'Find just this one trove and the recipe is ready.', missing:'missing {x}', moreTypes:'{n} more kinds of structure', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
     elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
@@ -86,7 +86,7 @@ Site.register({
     mGoldN:'Todos los troves hasta el nivel oro. La regla de Rockdrigo: cada visita da un trove al azar, así que mientras más estructuras visites, más rápido llegas.',
     mRecN:'Solo los troves que aún no tienes o que les faltan a tus recetas.',
     dash:'Cómo vas', dFound:'troves hallados', dGold:'en oro', dLeft:'por hacer', dLevels:'de los niveles', dLoad:'Cargar mi archivo de troves', dLoadN:'Carga tu archivo de troves para ver cómo vas, qué troves son nuevos para ti y qué recetas tienes cerca.', dRock:'Se muestran los números de Rockdrigo hasta que cargues tu archivo.',
-    load:'Cargar mi archivo de troves', forget:'Olvidar mi archivo', loaded:'Cargué tu archivo ({n} troves).', bad:'No pude leer ese archivo. Debe ser el archivo de troves del script.',
+    load:'Cargar mi archivo de troves', fileHelp:'Puedes soltar el HAR que guardaste de Upland o el archivo pequeño ya limpio. El HAR se lee en tu navegador, solo se guardan tus troves y no se sube nada.', howto:'Cómo obtener el archivo', cleaner:'Limpiador en Python (descargar)', forget:'Olvidar mi archivo', loaded:'Cargué tu archivo ({n} troves).', bad:'No pude leer ese archivo. Debe ser el archivo de troves del script.',
     t1:'Tus propiedades', t1N:'Estructuras tuyas aquí que dan lo que necesitas.', t2:'Propiedades de James', t3:'Propiedades de Marlow', t4:'Otros lugares', t4N:'Estructuras en toda la ciudad. Las primeras también tienen más de lo que necesitas cerca.',
     none:'Aquí no hay nada para esta ciudad todavía.', runOf:'{d} de {n} visitados', runAll:'Todos visitados',  seen:'Rockdrigo lo halló en: {x}', legend:'La medalla de cada trove es el nivel que estás buscando. NUEVO es que nunca lo has hallado. ★ es que pocos lugares lo dan.', go:'Ir a recolectar', cooling:'Vuelve en', newT:'NUEVO', helps:'sirve para {x}', mine:'Tus propiedades', mineN:'Estructuras tuyas (o de James y Marlow) en esta ciudad. Sin caminar.', noOwn:'Ninguna propiedad tuya, de James o de Marlow en {city} tiene una estructura que dé lo que necesitas.', next:'Tu siguiente parada', special:'Hallazgos especiales', specialN:'Solo unas pocas estructuras los dan. Vale la pena el viaje.', onlyAt:'en: {x}', notHere:'no está en esta ciudad', recH:'Un hallazgo para una receta', recN:'Encuentra solo este trove y la receta queda lista.', missing:'falta {x}', moreTypes:'{n} tipos de estructura más', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
     elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
@@ -246,13 +246,13 @@ function typeCard(k, P, name, stops, opts = {}){
 }
 function dash(){
   const b = balance(); if(!b) return '';
-  if(!b.mine) return `<div class="card" style="margin-bottom:12px"><p class="small" style="margin:0 0 8px">${esc(t('dLoadN'))}</p><label class="btn" style="display:inline-flex"><input type="file" id="file" accept=".json,application/json" hidden>${esc(t('load'))}</label>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
+  if(!b.mine) return `<div class="card" style="margin-bottom:12px"><p class="small" style="margin:0 0 8px">${esc(t('dLoadN'))}</p><label class="btn" style="display:inline-flex"><input type="file" id="file" accept=".json,.har,application/json" hidden>${esc(t('load'))}</label><span class="small muted" style="display:block;margin-top:8px">${esc(t('fileHelp'))} <a href="../troves/howto/">${esc(t('howto'))}</a> · <a href="https://github.com/Rockdrigotoca/upland-tools/blob/main/tools/clean_har.py" target="_blank" rel="noopener">${esc(t('cleaner'))}</a></span>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
   let gold = 0, goal = 0, lv = 0, lvMax = 0;
   b.items.forEach(it => { if(it.th.length){ goal++; lv += Math.min(it.lvl, it.th.length); lvMax += it.th.length; if(it.lvl >= it.th.length) gold++; } });
   const pc = lvMax ? Math.round(lv / lvMax * 100) : 0;
   return `<div class="card" style="margin-bottom:12px"><div class="mini"><span><b>${n0(b.found)}${b.max ? ' / ' + n0(b.max) : ''}</b> ${esc(t('dFound'))}</span><span><b>${n0(gold)}</b> 🥇</span><span><b>${pc}%</b> ${esc(t('dLevels'))}</span></div>
     <div class="prog" title="${pc}%"><i style="width:${pc}%"></i></div>
-    <p class="small muted" style="margin:8px 0 0"><label class="btn small" style="display:inline-flex;margin-top:4px"><input type="file" id="file" accept=".json,application/json" hidden>${esc(b.mine ? t('load') : t('dLoad'))}</label>${b.mine ? ` <button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}</p>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
+    <p class="small muted" style="margin:8px 0 0"><label class="btn small" style="display:inline-flex;margin-top:4px"><input type="file" id="file" accept=".json,.har,application/json" hidden>${esc(b.mine ? t('load') : t('dLoad'))}</label>${b.mine ? ` <button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}<span class="small muted" style="display:block;margin-top:8px">${esc(t('fileHelp'))} <a href="../troves/howto/">${esc(t('howto'))}</a> · <a href="https://github.com/Rockdrigotoca/upland-tools/blob/main/tools/clean_har.py" target="_blank" rel="noopener">${esc(t('cleaner'))}</a></span></p>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
 }
 async function draw(){
   const app = document.getElementById('app');
@@ -331,14 +331,24 @@ document.addEventListener('change', async e => {
   if(e.target.id === 'file'){
     const f = e.target.files[0]; if(!f) return;
     const text = await f.text(); let d = null;
+    const fromBal = x => ({items:x.categories.flatMap(c => c.items.map(i => [i.name, c.name, i.quantity, i.bankedLevel || 0, (i.bankingLevels || []).map(l => l.requiredTrovesCount)])), recipes:x.discoveredRecipes.map(r => [r.name, r.ingredients.filter(g => (g.assetType || 'trove') === 'trove').map(g => [g.name, g.required])]), troves:{found:x.totalCount, max:x.maxCount}});
     try{
-      if(text.length < 5e6 && !TOKEN.test(text)){
+      const har = /^\s*\{\s*"log"\s*:/.test(text.slice(0, 300));
+      // a HAR holds her login: it is read here, only the troves are taken out, and the rest is dropped (never stored or sent anywhere)
+      if(har){
+        const x = JSON.parse(text);
+        for(const en of ((x.log && x.log.entries) || [])){
+          const c = en && en.response && en.response.content; if(!c || !c.text) continue;
+          let body; try{ body = JSON.parse(c.encoding === 'base64' ? atob(c.text) : c.text); }catch{ continue; }
+          if(body && body.discoveredRecipes && body.categories){ d = fromBal(body); break; }
+        }
+      } else if(text.length < 5e6 && !TOKEN.test(text)){
         const x = JSON.parse(text);
         if(x && x.format === 'upland-troves-v1' && Array.isArray(x.items) && Array.isArray(x.recipes)) d = {items:x.items.filter(i => Array.isArray(i) && typeof i[0] === 'string').map(i => [String(i[0]).slice(0, 80), String(i[1] || ''), Number(i[2]) || 0, Number(i[3]) || 0, (i[4] || []).map(Number)]), recipes:x.recipes.filter(r => Array.isArray(r)).map(r => [String(r[0]), (r[1] || []).map(g => [String(g[0]), Number(g[1]) || 0])]), troves:x.troves};
-        else if(x && x.categories && x.discoveredRecipes) d = {items:x.categories.flatMap(c => c.items.map(i => [i.name, c.name, i.quantity, i.bankedLevel || 0, (i.bankingLevels || []).map(l => l.requiredTrovesCount)])), recipes:x.discoveredRecipes.map(r => [r.name, r.ingredients.filter(g => (g.assetType || 'trove') === 'trove').map(g => [g.name, g.required])]), troves:{found:x.totalCount, max:x.maxCount}};
+        else if(x && x.categories && x.discoveredRecipes) d = fromBal(x);
       }
     }catch{ d = null; }
-    if(d && d.items.length){ MINE = d; store.set(MINE_KEY, MINE); MSG = t('loaded', {n:d.items.length}); } else MSG = t('bad');
+    if(d && d.items.length){ d.items = d.items.slice(0, 1500); d.recipes = d.recipes.slice(0, 3000); MINE = d; store.set(MINE_KEY, MINE); MSG = t('loaded', {n:d.items.length}); } else MSG = t('bad');
     draw();
   }
 });
