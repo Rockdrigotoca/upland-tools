@@ -4,7 +4,7 @@
 For each structure property whose teleport price is at least the scanner's --min-fee, look at every property priced within 80 m and within
 100 m (the neighbours read by the scanner, and the other structure properties) and keep the cheapest one that costs less, the closer one on
 a tie. Writes data/troves/reach-best.json:
-  {"updatedAt", "minFee", "best80": {property id: [cheaper property id, its price, metres]}, "best100": {...}}
+  {"updatedAt", "minFee", "best80": {property id: [cheaper property id, its price, metres, its latitude, its longitude]}, "best100": {...}}
 Only costly properties with a cheaper neighbour appear. Safe to run while the scanner is half way: it uses what is there.
 """
 import json
@@ -51,7 +51,7 @@ def main():
                                 continue
                             m = math.hypot((la - lat) * M_LAT, (lo - lng) * M_LAT * c)
                             if m <= reach and (pick is None or (f, m) < (pick[1], pick[2])):
-                                pick = [q, f, round(m)]
+                                pick = [q, f, round(m), round(la, 6), round(lo, 6)]
                 if pick:
                     best[reach][pid] = pick
     save('troves/reach-best.json', {'updatedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), 'minFee': min_fee, 'best80': best[80], 'best100': best[100]})

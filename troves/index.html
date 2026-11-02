@@ -123,7 +123,7 @@ Site.register({
     bMode:'Reserve', bCareful:'Careful', bRelaxed:'Relaxed', bModeN:'Careful keeps 5× what a recipe needs of scarce troves and 2× of the rest. Relaxed keeps 3× and 1×.',
     colToGold:'Total to Gold', bronze:'Bronze', silver:'Silver', gold:'Gold',
     fHint:'Type a trove name', fHeld:'You hold {n}', fNotOwned:'Not in your inventory', fFound:'Found in', fCraftedAt:'Crafted at', fUsedIn:'Used in', fNothing:'No troves match.',
-    tHunt:'Hunting dashboard', rcLabel:'Stand at a cheaper property within', rcOff:'Off', rcWas:'was {n}, {m} m away',
+    tHunt:'Hunting dashboard', neighLbl:'Grey out the properties within 80 m of the one I open', rcLabel:'Stand at a cheaper property within', rcOff:'Off', rcWas:'was {n}, {m} m away',
     tGold:'Gold road', gGold:'Gold on every trove', mGold:'For the gold road, the biggest city is {city}: {n} structures, and {p}% of what they give is still useful (Gold road).',
     hGold:'Gold road', hGoldD:'The long goal: bronze, silver and gold on every trove. It counts what you still need to bank, which troves are the bottleneck, the cities that fit best, and what you can craft from stock you do not need for gold.',
     grH:'Gold on every trove', grN:'Banking uses the troves up, so a trove that is not at gold yet is not spare. Spare is only what you hold above what its gold still costs.',
@@ -187,7 +187,7 @@ Site.register({
     bMode:'Reserva', bCareful:'Cuidadosa', bRelaxed:'Relajada', bModeN:'Cuidadosa guarda 5× lo que pide una receta de los troves escasos y 2× del resto. Relajada guarda 3× y 1×.',
     colToGold:'Total hasta Oro', bronze:'Bronce', silver:'Plata', gold:'Oro',
     fHint:'Escribe el nombre de un trove', fHeld:'Tienes {n}', fNotOwned:'No está en tu inventario', fFound:'Se encuentra en', fCraftedAt:'Se craftea en', fUsedIn:'Usado en', fNothing:'Ningún trove coincide.',
-    tHunt:'Panel de caza', rcLabel:'Pararse en una propiedad más barata a menos de', rcOff:'Apagado', rcWas:'era {n}, a {m} m',
+    tHunt:'Panel de caza', neighLbl:'Apagar las propiedades a menos de 80 m de la que abro', rcLabel:'Pararse en una propiedad más barata a menos de', rcOff:'Apagado', rcWas:'era {n}, a {m} m',
     tGold:'Camino al oro', gGold:'Oro en cada trove', mGold:'Para el camino al oro, la ciudad más grande es {city}: {n} estructuras, y el {p}% de lo que dan aún sirve (Camino al oro).',
     hGold:'Camino al oro', hGoldD:'La meta larga: bronce, plata y oro en cada trove. Cuenta lo que aún te falta bancar, qué troves son el cuello de botella, las ciudades que mejor encajan y lo que puedes craftear con lo que no necesitas para el oro.',
     grH:'Oro en cada trove', grN:'Bancar gasta los troves, así que uno que aún no está en oro no es sobrante. Sobrante es solo lo que tienes por encima de lo que aún cuesta su oro.',
@@ -217,7 +217,7 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let REACH = null, REACHM = store.get('rut:troves:reachm', 80), HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
+let NEIGH = store.get('rut:troves:neigh', true), REACH = null, REACHM = store.get('rut:troves:reachm', 80), HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
@@ -490,12 +490,13 @@ function spotBtns(names, k = 3){
   if(!r.length) return `<span class="muted small">${esc(t('spNone'))}</span>`;
   return `<div class="spots">${r.slice(0, k).map(spotBtn).join('')}</div>${r.length > k ? `<details class="more"><summary>${esc(t('spMore', {n:r.length - k}))}</summary><div class="spots">${r.slice(k).map(spotBtn).join('')}</div></details>` : ''}`;
 }
+const neighSel = () => `<label class="small row" style="gap:6px"><input type="checkbox" id="neigh" ${NEIGH ? 'checked' : ''}> ${esc(t('neighLbl'))}</label>`;
 const reachSel = () => REACH ? `<label class="small row" style="gap:6px">${esc(t('rcLabel'))} <select id="reachm"><option value="0"${REACHM ? '' : ' selected'}>${esc(t('rcOff'))}</option><option value="80"${REACHM === 80 ? ' selected' : ''}>80 m</option><option value="100"${REACHM === 100 ? ' selected' : ''}>100 m</option></select></label>` : '';
 function cityBar(){
   ensureCity();
   const cs = (WORLD ? WORLD.cities : []).filter(c => c.kind === 'scan' && c.done).sort((a, b) => a.name.localeCompare(b.name));
   if(!cs.length) return '';
-  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>${reachSel()}</div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))} ${esc(t('coolHint'))} <button type="button" class="btn small" id="clearCool">${esc(t('coolClear'))}</button></p>`;
+  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>${reachSel()}${neighSel()}</div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))} ${esc(t('coolHint'))} <button type="button" class="btn small" id="clearCool">${esc(t('coolClear'))}</button></p>`;
 }
 // a trove name that opens to the structures that give it
 const nameWith = n => { const p = PLACES.get(n); return p && p.structures.length ? `<details class="more"><summary><b>${esc(n)}</b></summary><div class="places">${esc(p.structures.join(', '))}${p.plants.length ? ` · ${esc(t('plantsLbl'))}: ${esc(p.plants.join(', '))}` : ''}</div></details>` : `<b>${esc(n)}</b>`; };
@@ -958,7 +959,7 @@ function viewWorldTables(){
 
 const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
 // A costly structure property often has a cheaper property within reach: stand there instead, and trove the structure from there.
-const hop = pid => { const b = REACH && REACHM ? REACH['best' + REACHM][pid] : null; return b ? {pid:b[0], fee:b[1], m:b[2], was:FEES ? FEES[pid] : null} : null; };
+const hop = pid => { const b = REACH && REACHM ? REACH['best' + REACHM][pid] : null; return b ? {pid:b[0], fee:b[1], m:b[2], lat:b[3], lng:b[4], was:FEES ? FEES[pid] : null} : null; };
 const go = pid => UPLAND((hop(pid) || {pid}).pid);
 async function loadCity(cid){
   if(!cid || cid in CITYDATA) return;
@@ -1073,6 +1074,15 @@ function draw(){
 }
 
 // Opening a property starts a 60-minute timer on its button: troves can be searched there again an hour later.
+// Opening a property also covers the structures within reach of where you stand, so the properties within 80 m of it count as done too.
+function coolAround(pid){
+  const cd = CITYDATA[CITY]; if(!NEIGH || !cd) return;
+  const me = cd.props.find(p => String(p[0]) === String(pid)); if(!me) return;
+  const h = hop(pid), lat = h && h.lat != null ? h.lat : me[2], lng = h && h.lng != null ? h.lng : me[3], now = Date.now(), c = Math.cos(lat * Math.PI / 180);
+  cd.props.forEach(p => {
+    if(Math.hypot((p[2] - lat) * 111320, (p[3] - lng) * 111320 * c) <= 80 && !(COOL[p[0]] && COOL[p[0]] + 36e5 > now)) COOL[p[0]] = now;
+  });
+}
 function paintCool(){
   const now = Date.now();
   document.querySelectorAll('a[data-pid]').forEach(a => {
@@ -1085,7 +1095,7 @@ function paintCool(){
 }
 setInterval(paintCool, 30000);
 document.addEventListener('click', e => {
-  const op = e.target.closest('a[data-pid]'); if(op){ COOL[op.dataset.pid] = Date.now(); LAST = op.dataset.pid; store.set('rut:troves:cool', COOL); store.set('rut:troves:last', LAST); setTimeout(paintCool, 50); }
+  const op = e.target.closest('a[data-pid]'); if(op){ coolAround(op.dataset.pid); COOL[op.dataset.pid] = Date.now(); LAST = op.dataset.pid; store.set('rut:troves:cool', COOL); store.set('rut:troves:last', LAST); setTimeout(paintCool, 50); }
   if(e.target.closest('#clearCool')){ COOL = {}; store.set('rut:troves:cool', COOL); paintCool(); return; }
   const go = e.target.closest('[data-go]'); if(go){ e.preventDefault(); tab = go.dataset.go; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   const gc = e.target.closest('[data-gocity]'); if(gc){ CITY = gc.dataset.gocity; store.set('rut:troves:city', CITY); HOOD = -1; tab = 'gold'; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
@@ -1103,6 +1113,7 @@ document.addEventListener('change', e => {
   if(e.target.id === 'file') takeFile(e.target.files[0]);
   const gk = {'g-bank':'bank', 'g-bonus':'bonus', 'g-discover':'discover', 'g-gold':'gold'}[e.target.id]; if(gk){ GOAL[gk] = e.target.checked; store.set('rut:troves:goal', GOAL); draw(); return; }
   if(e.target.id === 'bonusT'){ BONUS_T = Math.max(1, Math.min(500, Math.round(Number(e.target.value)) || 20)); store.set('rut:troves:bonusT', BONUS_T); draw(); return; }
+  if(e.target.id === 'neigh'){ NEIGH = e.target.checked; store.set('rut:troves:neigh', NEIGH); return; }
   if(e.target.id === 'reachm'){ REACHM = Number(e.target.value); store.set('rut:troves:reachm', REACHM); spotMemo.clear(); draw(); return; }
   if(e.target.id === 'cityq'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); return; }
   if(e.target.id === 'city'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); }

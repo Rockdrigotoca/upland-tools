@@ -103,7 +103,7 @@ const n0 = x => Number(x).toLocaleString(Site.locale());
 
 let RUN = new Map(), BEST = null, FEES = null;
 // a costly property often has a cheaper one within 80 m: stand there instead
-const hopOf = pid => { const b = BEST && BEST.best80 ? BEST.best80[pid] : null; return b ? {pid:b[0], fee:b[1]} : null; };
+const hopOf = pid => { const b = BEST && BEST.best80 ? BEST.best80[pid] : null; return b ? {pid:b[0], fee:b[1], lat:b[3], lng:b[4]} : null; };
 // what she pays to stand for this stop: the cheaper neighbour when there is one
 const standFee = pid => { const h = hopOf(pid); return h ? h.fee : FEES && FEES.fees[pid] != null ? FEES.fees[pid] : null; };
 let PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
@@ -322,7 +322,13 @@ document.addEventListener('click', e => {
     const pid = a.dataset.pid, at = Date.now();
     if(!pid){ e.preventDefault(); return; }
     COOL[pid] = at; store.set(COOL_KEY, COOL);
-    if(a.classList.contains('run')){ setTimeout(refreshRuns, 80); return; }
+    if(a.classList.contains('run')){
+      // the properties within 80 m of where she stands are covered by this visit too, so they count as done
+      let me = null; (RUN.get(a.dataset.run) || []).forEach(c => { if(String(c.pid) === pid) me = c; });
+      const hp = hopOf(pid), lat = hp && hp.lat != null ? hp.lat : me && me.lat, lng = hp && hp.lng != null ? hp.lng : me && me.lng;
+      if(lat != null){ const cs = Math.cos(lat * Math.PI / 180); RUN.forEach(l => l.forEach(c => { if(c.lat != null && !cooling(c.pid) && Math.hypot((c.lat - lat) * 111320, (c.lng - lng) * 111320 * cs) <= 80) COOL[c.pid] = at; })); store.set(COOL_KEY, COOL); }
+      setTimeout(refreshRuns, 80); return;
+    }
     document.querySelectorAll('a.go[data-pid="' + pid + '"]').forEach(x => { x.classList.add('cool'); const sp = x.querySelector('span'); sp.firstChild.textContent = '⏳ ' + t('cooling'); if(!x.querySelector('.clock')) x.insertAdjacentHTML('beforeend', `<span class="clock" data-until="${at + 36e5}">${clock(36e5)}</span>`); });
     tick(); return;
   }
