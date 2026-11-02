@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo’s Trove Helper</title>
+<meta name="description" content="Tap a button, Upland opens on the right property, collect the troves you still need. Made for MsTullis, open to everyone.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.big{width:100%;font-size:1.15rem;padding:14px 12px;border-radius:12px}
+.stops{display:grid;gap:8px;margin:8px 0}
+.stop{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;padding:10px 14px;border:1px solid var(--border);border-radius:14px;background:var(--surface);color:var(--text);text-decoration:none;font-size:1.05rem;font-weight:600;box-shadow:var(--shadow)}
+.stop small{font-weight:400;color:var(--muted);display:block;font-size:.8rem}
+.stop .go{flex:none;font-size:1.3rem}
+.stop.cool{opacity:.55;background:var(--surface-2)}
+.stop .clock{flex:none;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--muted);font-weight:700}
+.who{display:inline-block;font-size:.7rem;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--surface-2);color:var(--muted);margin-left:6px}
+.mini{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem}
+.mini span{background:var(--surface-2);border-radius:999px;padding:3px 10px}
+.mini b{font-variant-numeric:tabular-nums}
+.step{display:flex;gap:10px;margin:8px 0;font-size:1rem}
+.step i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);text-align:center;line-height:26px;font-style:normal;font-weight:700}
+.cityq{width:100%;font-size:1.25rem;padding:14px;border-radius:12px;font-weight:700}
+.thumb{width:22px;height:22px;vertical-align:-6px;margin-right:4px;border-radius:4px}
+details.more>summary{cursor:pointer;color:var(--muted);padding:6px 0}
+.tabs2{display:flex;gap:6px;margin:6px 0 10px}
+.tabs2 button{flex:1;border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:10px 6px;font-size:.95rem;font-weight:600;cursor:pointer}
+.tabs2 button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+h2.t{font-size:1.15rem;margin:18px 0 4px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <div id="app"></div>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc, store} = Site;
+Site.register({
+  en:{
+    title:'Rockdrigo’s Trove Helper', subtitle:'Tap, collect, repeat. For MsTullis.',
+    hi:'Hello MsTullis!', hiN:'Pick a city, then tap the buttons from the top down. Each one opens Upland on a property where you can collect something you still need.',
+    stepsH:'How it works',
+    s1:'Open the Upland app first and stay logged in.', s2:'Check the city below (it starts on Los Angeles).', s3:'Tap a button. Upland opens on that property. Collect the troves there.', s4:'The button shows a clock for one hour. Come back to it after that, or go to the next one.', s5:'Start from the top: your own properties first, then James’s, then Marlow’s, then the rest.',
+    family:'James is your son and Marlow is your daughter, and Rockdrigo has been helping you all with the game.',
+    city:'City', mode:'What are you collecting for?', mGold:'Gold on every trove', mRec:'Recipes and collections',
+    mGoldN:'Every trove up to gold level. Rockdrigo’s rule: every visit gives one trove at random, so the more structures you visit, the faster you get there.',
+    mRecN:'Only the troves you do not have yet, or that your recipes are missing.',
+    dash:'How you are doing', dFound:'troves found', dGold:'at gold', dLeft:'to go', dLoad:'Load my troves file to see your own numbers', dRock:'Showing Rockdrigo’s numbers until you load your file.',
+    load:'Load my troves file', forget:'Forget my file', loaded:'Loaded your file ({n} troves).', bad:'That file could not be read. It must be the troves file from the script.',
+    t1:'Your own properties', t1N:'Structures you own here that give what you need.', t2:'James’s properties', t3:'Marlow’s properties', t4:'Other places', t4N:'Structures anywhere in the city. The first ones also have more of what you need nearby.',
+    none:'Nothing here for this city yet.', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
+    elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
+    wait:'Loading…', fail:'Could not load the data.', reset:'Clear all clocks',
+    alt:'The other option', altN:'Switch the list above to “Recipes and collections” if you only want to fill recipes and collections.',
+  },
+  es:{
+    title:'El Ayudante de Troves de Rockdrigo', subtitle:'Toca, recolecta, repite. Para MsTullis.',
+    hi:'¡Hola MsTullis!', hiN:'Elige una ciudad y toca los botones de arriba hacia abajo. Cada uno abre Upland en una propiedad donde puedes recolectar algo que aún necesitas.',
+    stepsH:'Cómo funciona',
+    s1:'Abre primero la app de Upland y no cierres sesión.', s2:'Revisa la ciudad de abajo (empieza en Los Ángeles).', s3:'Toca un botón. Upland abre esa propiedad. Recolecta los troves de ahí.', s4:'El botón muestra un reloj de una hora. Vuelve a él después, o pasa al siguiente.', s5:'Empieza por arriba: primero tus propiedades, luego las de James, luego las de Marlow y luego el resto.',
+    family:'James es tu hijo y Marlow es tu hija, y Rockdrigo los ha estado ayudando con el juego.',
+    city:'Ciudad', mode:'¿Para qué estás recolectando?', mGold:'Oro en cada trove', mRec:'Recetas y colecciones',
+    mGoldN:'Todos los troves hasta el nivel oro. La regla de Rockdrigo: cada visita da un trove al azar, así que mientras más estructuras visites, más rápido llegas.',
+    mRecN:'Solo los troves que aún no tienes o que les faltan a tus recetas.',
+    dash:'Cómo vas', dFound:'troves hallados', dGold:'en oro', dLeft:'por hacer', dLoad:'Carga mi archivo de troves para ver tus números', dRock:'Se muestran los números de Rockdrigo hasta que cargues tu archivo.',
+    load:'Cargar mi archivo de troves', forget:'Olvidar mi archivo', loaded:'Cargué tu archivo ({n} troves).', bad:'No pude leer ese archivo. Debe ser el archivo de troves del script.',
+    t1:'Tus propiedades', t1N:'Estructuras tuyas aquí que dan lo que necesitas.', t2:'Propiedades de James', t3:'Propiedades de Marlow', t4:'Otros lugares', t4N:'Estructuras en toda la ciudad. Las primeras también tienen más de lo que necesitas cerca.',
+    none:'Aquí no hay nada para esta ciudad todavía.', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
+    elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
+    wait:'Cargando…', fail:'No pude cargar los datos.', reset:'Borrar todos los relojes',
+    alt:'La otra opción', altN:'Cambia la lista de arriba a “Recetas y colecciones” si solo quieres completar recetas y colecciones.',
+  },
+});
+const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().replace(/ 1$/, '');
+const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
+const MINE_KEY = 'rut:helper:mine', COOL_KEY = 'rut:helper:cool';
+const TOKEN = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}|[Bb]earer\s+[A-Za-z0-9._~+\/=-]{20,}|"(?:access_?token|refresh_?token|id_?token|authorization|cookie|set-cookie|secret|password)"\s*:\s*"[^"]{12,}"/i;
+const PEOPLE = [['mstullis', 't1'], ['talljames', 't2'], ['missmarlow', 't3']];
+const n0 = x => Number(x).toLocaleString(Site.locale());
+
+let PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
+let CITY = store.get('rut:helper:city', '32'), MODE = store.get('rut:helper:mode', 'gold'), MSG = '';
+
+async function j(u){ try{ const r = await fetch(u, {cache:'no-cache'}); return r.ok ? await r.json() : null; }catch{ return null; } }
+async function city(id){ if(!(id in CD)) CD[id] = await j('../data/troves/places/' + id + '.json') || false; return CD[id]; }
+
+// ---------- who needs what ----------
+function balance(){
+  const src = MINE || ROCK; if(!src) return null;
+  const items = new Map(src.items.map(i => [i[0], {q:i[2], lvl:i[3], th:i[4]}]));
+  return {items, mine:!!MINE, found:src.troves ? src.troves.found : items.size, max:src.troves ? src.troves.max : null, recipes:src.recipes || []};
+}
+function neededSet(){
+  const b = balance(), need = new Set(); if(!b || !PL) return need;
+  const rec = new Map();   // trove -> short for some recipe
+  b.recipes.forEach(([n, ing]) => ing.forEach(([g, req]) => { const it = b.items.get(g); if(!it || it.q < req) rec.set(g, true); }));
+  PL.forEach((p, name) => {
+    const it = b.items.get(name);
+    if(MODE === 'gold'){ if(!it || (it.th.length ? it.lvl < it.th.length : false)) need.add(name); }
+    else if(!it || it.q === 0 || rec.has(name)) need.add(name);
+  });
+  return need;
+}
+// structure type -> the troves it gives that are still needed
+function typeNeeds(need){
+  const by = new Map();
+  PL.forEach((p, name) => { if(!need.has(name)) return; p.structures.forEach(s => { const k = norm(s); const e = by.get(k) || {name:s, all:new Set()}; e.all.add(name); by.set(k, e); }); });
+  return by;
+}
+function plan(cd){
+  const need = neededSet(), by = typeNeeds(need), sn = cd.structs.map(norm);
+  const total = new Map();   // how many troves each structure type gives in all
+  PL.forEach(p => p.structures.forEach(s => { const k = norm(s); total.set(k, (total.get(k) || 0) + 1); }));
+  const worth = k => { const e = by.get(k); return e ? e.all.size / (total.get(k) || 1) * Math.log2(1 + e.all.size) : 0; };
+  const owned = new Set(), tiers = [];
+  PEOPLE.forEach(([u, key]) => {
+    const rows = (OWNERS[u] || []).filter(r => r[2] === cd.name);
+    const stops = [];
+    rows.forEach(r => { r[6].forEach(b => { const k = norm(b); if(by.has(k)) stops.push({pid:r[0], label:b, w:worth(k), lat:r[4], lng:r[5], who:u}); }); owned.add(String(r[0])); });
+    stops.sort((a, b) => b.w - a.w);
+    tiers.push({key, stops, who:u});
+  });
+  // everything else in the city, with how many useful structures sit within 80 m
+  const cand = [];
+  cd.props.forEach(pr => { if(owned.has(String(pr[0]))) return; const ks = pr[5].map(i => sn[i]).filter(k => by.has(k)); if(ks.length) cand.push({pid:pr[0], lat:pr[2], lng:pr[3], ks, w:Math.max(...ks.map(worth))}); });
+  const R = 80 / 111320, grid = new Map(), cell = p => Math.floor(p.lat / R) + ',' + Math.floor(p.lng / (R / Math.max(Math.cos(p.lat * Math.PI / 180), .2)));
+  cand.forEach(c => { const k = cell(c); (grid.get(k) || grid.set(k, []).get(k)).push(c); });
+  cand.forEach(c => {
+    const cy = Math.floor(c.lat / R), cx = Math.floor(c.lng / (R / Math.max(Math.cos(c.lat * Math.PI / 180), .2))); let n = 0;
+    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((cy + a) + ',' + (cx + b)) || []).forEach(o => { if(o !== c && Math.hypot((o.lat - c.lat) * 111320, (o.lng - c.lng) * 111320 * Math.cos(c.lat * Math.PI / 180)) <= 80) n++; });
+    c.near = n;
+  });
+  const types = new Map();
+  cand.forEach(c => { const k = c.ks.sort((a, b) => worth(b) - worth(a))[0]; (types.get(k) || types.set(k, []).get(k)).push(c); });
+  const share = k => by.get(k).all.size / (total.get(k) || 1);
+  const groups = [...types.entries()].map(([k, list]) => ({k, name:by.get(k).name, w:worth(k), n:by.get(k).all.size, list:list.sort((a, b) => b.near - a.near || b.w - a.w)})).sort((a, b) => Math.round(share(b.k) * 10) - Math.round(share(a.k) * 10) || b.list.length - a.list.length);
+  return {need, by, tiers, groups, sn};
+}
+// troves still needed that nothing in this city gives
+function elsewhere(cd, P){
+  const here = new Set(P.sn);
+  const rows = [];
+  P.need.forEach(name => {
+    const p = PL.get(name); if(!p) return;
+    if(p.structures.some(s => here.has(norm(s)))) return;
+    if(!p.structures.length && !p.plants.length) return;
+    let found = [];
+    if(HUNTS){
+      const ti = HUNTS.troves.indexOf(name);
+      if(ti >= 0){ const seen = new Map(); HUNTS.finds.forEach(f => { if(f[3] !== ti) return; const [src, kind] = HUNTS.src[f[2]]; if(kind === 'balloon') return; const c = HUNTS.cities[HUNTS.props[f[5]][2]]; const k = c + ' · ' + src; seen.set(k, (seen.get(k) || 0) + 1); }); found = [...seen.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(x => x[0]); }
+    }
+    rows.push({name, found, list:p.structures.slice(0, 4)});
+  });
+  return rows.sort((a, b) => (b.found.length > 0) - (a.found.length > 0) || a.name.localeCompare(b.name));
+}
+
+// ---------- drawing ----------
+const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
+const clock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const stopBtn = (s, sub) => {
+  const at = COOL[s.pid], left = at ? at + 36e5 - Date.now() : 0, cool = left > 0;
+  return `<a class="stop ${cool ? 'cool' : ''}" data-pid="${s.pid}" target="_blank" rel="noopener" href="${UPLAND(s.pid)}"><span>${esc(s.label)}${s.whoName ? `<span class="who">${esc(s.whoName)}</span>` : ''}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${cool ? `<span class="clock" data-until="${at + 36e5}">${clock(left)}</span>` : '<span class="go" aria-hidden="true">📍</span>'}</a>`;
+};
+const NAMES = {mstullis:'', talljames:'James', missmarlow:'Marlow'};
+function dash(){
+  const b = balance(); if(!b) return '';
+  let gold = 0, goal = 0;
+  b.items.forEach(it => { if(it.th.length){ goal++; if(it.lvl >= it.th.length) gold++; } });
+  return `<div class="card" style="margin-bottom:12px"><div class="small muted" style="margin-bottom:6px">${esc(t('dash'))}</div><div class="mini"><span><b>${n0(b.found)}${b.max ? ' / ' + n0(b.max) : ''}</b> ${esc(t('dFound'))}</span><span><b>${n0(gold)}</b> ${esc(t('dGold'))}</span><span><b>${n0(Math.max(0, goal - gold))}</b> ${esc(t('dLeft'))}</span></div>
+    <p class="small muted" style="margin:8px 0 0">${b.mine ? '' : esc(t('dRock')) + ' '}<label class="btn small" style="display:inline-flex;margin-top:4px"><input type="file" id="file" accept=".json,application/json" hidden>${esc(b.mine ? t('load') : t('dLoad'))}</label>${b.mine ? ` <button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}</p>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
+}
+async function draw(){
+  const app = document.getElementById('app');
+  if(!PL || !WORLD){ app.innerHTML = `<div class="card">${esc(t('wait'))}</div>`; return; }
+  const cs = WORLD.cities.filter(c => c.kind === 'scan' && c.done).sort((a, b) => a.name.localeCompare(b.name));
+  if(!cs.some(c => String(c.id) === String(CITY))) CITY = '32';
+  const cd = await city(CITY);
+  const steps = ['s1', 's2', 's3', 's4', 's5'].map((k, i) => `<div class="step"><i>${i + 1}</i><span>${esc(t(k))}</span></div>`).join('');
+  let body = '';
+  if(!cd) body = `<div class="card">${esc(t('fail'))}</div>`;
+  else {
+    const P = plan(cd), cname = cd.name;
+    const named = tier => tier.stops.map(s => ({...s, whoName:NAMES[s.who]}));
+    const tierHtml = P.tiers.map(tr => `<h2 class="t">${esc(t(tr.key))}</h2>${tr.key === 't1' ? `<p class="sub">${esc(t('t1N'))}</p>` : ''}<div class="stops">${tr.stops.length ? named(tr).slice(0, 12).map(s => stopBtn(s)).join('') : `<div class="small muted">${esc(t('none'))}</div>`}</div>`).join('');
+    const groupHtml = P.groups.map(g => `<h3 style="margin:14px 0 4px;font-size:1.05rem">${esc(g.name)} <span class="muted small" style="font-weight:400">${esc(t('gives', {n:g.n}))}</span></h3><div class="stops">${g.list.slice(0, 4).map(c => stopBtn({pid:c.pid, label:t('open')}, c.near ? t('near', {n:c.near}) : '')).join('')}</div>${g.list.length > 4 ? `<details class="more"><summary>${esc(t('more', {n:g.list.length - 4}))}</summary><div class="stops">${g.list.slice(4, 20).map(c => stopBtn({pid:c.pid, label:t('open')}, c.near ? t('near', {n:c.near}) : '')).join('')}</div></details>` : ''}`).join('');
+    const el = elsewhere(cd, P);
+    const elHtml = el.length ? `<h2 class="t">${esc(t('elseH', {city:cname}))}</h2><p class="sub">${esc(t('elseN', {city:cname}))}</p><div class="card" style="padding:10px 14px">${el.slice(0, 60).map(r => `<div class="small" style="padding:4px 0;border-bottom:1px solid var(--border)">${thumb(r.name)}<b>${esc(r.name)}</b> <span class="muted">${r.found.length ? esc(t('elseWhere', {x:r.found.join('; ')})) : r.list.length ? esc(t('elseList', {x:r.list.join(', ')})) : esc(t('elseNone'))}</span></div>`).join('')}</div>` : '';
+    body = `${tierHtml}<h2 class="t">${esc(t('t4'))}</h2><p class="sub">${esc(t('t4N'))}</p>${groupHtml || `<div class="small muted">${esc(t('none'))}</div>`}${elHtml}`;
+  }
+  const first = Date.now(), waits = Object.values(COOL).map(a => a + 36e5 - first).filter(x => x > 0);
+  app.innerHTML = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('hi'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('hiN'))}</p>
+    <label class="small muted" for="cityq">${esc(t('city'))}</label><select id="cityq" class="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
+    <div class="small muted" style="margin:10px 0 4px">${esc(t('mode'))}</div><div class="tabs2"><button type="button" data-mode="gold" class="${MODE === 'gold' ? 'on' : ''}">🥇 ${esc(t('mGold'))}</button><button type="button" data-mode="rec" class="${MODE === 'rec' ? 'on' : ''}">📖 ${esc(t('mRec'))}</button></div>
+    <p class="small muted" style="margin:0">${esc(t(MODE === 'gold' ? 'mGoldN' : 'mRecN'))}</p></div>
+    ${dash()}
+    <div class="card" style="margin-bottom:12px"><details open><summary><b>${esc(t('stepsH'))}</b></summary>${steps}<p class="small muted" style="margin:6px 0 0">${esc(t('family'))}</p></details></div>
+    <div id="next" class="small muted" style="margin:0 0 4px"></div>
+    ${body}
+    <p class="small" style="margin:18px 0 0"><button type="button" class="btn small" id="resetCool">${esc(t('reset'))}</button></p>`;
+  tick();
+}
+function tick(){
+  const now = Date.now(); let soon = Infinity;
+  document.querySelectorAll('.clock').forEach(c => { const left = Number(c.dataset.until) - now; if(left <= 0){ c.closest('.stop').classList.remove('cool'); c.outerHTML = '<span class="go" aria-hidden="true">📍</span>'; } else { c.textContent = clock(left); soon = Math.min(soon, left); } });
+  const el = document.getElementById('next'); if(el) el.textContent = soon < Infinity ? t('ready') + ' ' + clock(soon) : Object.keys(COOL).length ? t('allReady') : '';
+}
+setInterval(tick, 1000);
+
+// ---------- events ----------
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.stop[data-pid]');
+  if(a){ COOL[a.dataset.pid] = Date.now(); store.set(COOL_KEY, COOL); a.classList.add('cool'); const g = a.querySelector('.go'); if(g) g.outerHTML = `<span class="clock" data-until="${COOL[a.dataset.pid] + 36e5}">${clock(36e5)}</span>`; tick(); return; }
+  const m = e.target.closest('[data-mode]'); if(m){ MODE = m.dataset.mode; store.set('rut:helper:mode', MODE); draw(); return; }
+  if(e.target.closest('#resetCool')){ COOL = {}; store.set(COOL_KEY, COOL); draw(); return; }
+  if(e.target.closest('#forget')){ MINE = null; store.set(MINE_KEY, null); MSG = ''; draw(); }
+});
+document.addEventListener('change', async e => {
+  if(e.target.id === 'cityq'){ CITY = e.target.value; store.set('rut:helper:city', CITY); draw(); return; }
+  if(e.target.id === 'file'){
+    const f = e.target.files[0]; if(!f) return;
+    const text = await f.text(); let d = null;
+    try{
+      if(text.length < 5e6 && !TOKEN.test(text)){
+        const x = JSON.parse(text);
+        if(x && x.format === 'upland-troves-v1' && Array.isArray(x.items) && Array.isArray(x.recipes)) d = {items:x.items.filter(i => Array.isArray(i) && typeof i[0] === 'string').map(i => [String(i[0]).slice(0, 80), String(i[1] || ''), Number(i[2]) || 0, Number(i[3]) || 0, (i[4] || []).map(Number)]), recipes:x.recipes.filter(r => Array.isArray(r)).map(r => [String(r[0]), (r[1] || []).map(g => [String(g[0]), Number(g[1]) || 0])]), troves:x.troves};
+        else if(x && x.categories && x.discoveredRecipes) d = {items:x.categories.flatMap(c => c.items.map(i => [i.name, c.name, i.quantity, i.bankedLevel || 0, (i.bankingLevels || []).map(l => l.requiredTrovesCount)])), recipes:x.discoveredRecipes.map(r => [r.name, r.ingredients.filter(g => (g.assetType || 'trove') === 'trove').map(g => [g.name, g.required])]), troves:{found:x.totalCount, max:x.maxCount}};
+      }
+    }catch{ d = null; }
+    if(d && d.items.length){ MINE = d; store.set(MINE_KEY, MINE); MSG = t('loaded', {n:d.items.length}); } else MSG = t('bad');
+    draw();
+  }
+});
+
+async function boot(){
+  Site.mount({onChange:draw});
+  draw();
+  const [p, w, r, h, im] = await Promise.all([j('../data/troves/places.json'), j('../data/troves/world.json'), j('../data/troves/rockdrigo/latest.json'), j('../data/troves/rockdrigo/hunts.json'), j('../data/troves/images.json')]);
+  PL = p ? new Map(p.troves.map(([name, cat, structures, plants]) => [name, {cat, structures, plants}])) : null;
+  WORLD = w; ROCK = r; HUNTS = h; IMG = im;
+  await Promise.all(PEOPLE.map(async ([u]) => { const o = await j('../data/structures/players/' + u + '.json'); OWNERS[u] = o ? o.rows : []; }));
+  draw();
+}
+boot();
+</script>
+</body>
+</html>
