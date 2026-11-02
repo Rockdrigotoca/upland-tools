@@ -623,13 +623,24 @@ function cityCraftCard(){
     }
     return stops;
   };
+  // the structures of a property by name, so the card can say which one crafts what
+  const ownRaw = new Map((OWN || []).filter(r => r[6].length).map(r => [String(r[0]), new Map(r[6].map(b => [fix(b), b]))]));
+  const namesOf = pr => ownRaw.get(String(pr[0])) || new Map(pr[5].map(i => [sn[i], cd.structs[i]]));
   const mine = run(here.map(pr => ({pr, can:own.get(String(pr[0]))})));
   const inHood = hood >= 0 ? run(cd.props.filter(pr => pr[4] === hood && !own.has(String(pr[0]))).map(pr => ({pr, can:new Set(pr[5].map(i => sn[i]))}))) : [];
   const rest = run(cd.props.filter(pr => pr[4] !== hood && !own.has(String(pr[0]))).map(pr => ({pr, can:new Set(pr[5].map(i => sn[i]))})));
   const chips = ns => newFirst(ns).map(qchip).join(', ');
+  // one line per structure of the property: what to craft in it (a property with several structures lists each one)
+  const byStructure = s => {
+    const names = namesOf(s.c.pr), count = new Map();
+    s.got.forEach(n => need.get(n).forEach(k => { if(names.has(k)) count.set(k, (count.get(k) || 0) + 1); }));
+    const groups = new Map();
+    s.got.forEach(n => { const k = [...need.get(n)].filter(x => names.has(x)).sort((a, b) => count.get(b) - count.get(a))[0]; groups.set(k, [...(groups.get(k) || []), n]); });
+    return [...groups.entries()].sort((a, b) => hasNew(b[1]) - hasNew(a[1]) || b[1].length - a[1].length).map(([k, ns]) => `<div><b>${esc(names.get(k))}</b>: ${chips(ns)}</div>`).join('');
+  };
   const part = (title, stops, lim) => {
     stops = stops.slice().sort((x, y) => hasNew(y.got) - hasNew(x.got));
-    const rows = stops.slice(0, lim).map((s, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(s.c.pr)}</td><td class="small">${chips(s.got)}</td><td class="n">${s.got.length}</td></tr>`);
+    const rows = stops.slice(0, lim).map((s, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(s.c.pr)}</td><td class="small">${byStructure(s)}</td><td class="n">${s.got.length}</td></tr>`);
     const more = stops.length > lim ? `<div class="small muted">${esc(t('spMore', {n:stops.length - lim}))}</div>` : '';
     return `<h3 style="margin:10px 0 4px;font-size:1em">${esc(title)} <span class="tag">${stops.reduce((a, s) => a + s.got.length, 0)}</span></h3>${stops.length ? tbl([[t('owStop'), 'n'], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) + more : `<p class="muted small" style="margin:0">${esc(here.length || title !== t('cwOwn') ? t('cwNone') : t('cwNo'))}</p>`}`;
   };
