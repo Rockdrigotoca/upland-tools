@@ -16,6 +16,19 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tag.good{background:var(--accent);color:var(--accent-ink)}
 .tag.warn{background:var(--warn);color:#fff}
 .tag.bad{background:var(--bad);color:#fff}
+.cw{font-size:1.02rem}
+.cl-stop{border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:var(--surface)}
+.cl-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.cl-i{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:.85rem}
+.cl-struct h4{margin:8px 0 2px;font-size:1.05rem}
+.cl-list{list-style:none;margin:0;padding:0}
+.cl-list li{padding:6px 0;border-top:1px solid var(--border);line-height:1.45}
+.cl-list li:first-child{border-top:0}
+.cl-n{display:inline-flex;align-items:center;gap:6px}
+.cl-q{font-weight:800;font-size:1.15rem;margin:0 4px}
+.cl-go{font-weight:600}
+.cl-rec{color:var(--muted);font-size:.9rem;margin-top:2px}
+.cl-sum{margin:0 0 6px;font-size:1.05rem}
 .boxtabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:8px;margin:0 0 14px}
 .boxtab{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;min-width:0}
 .boxtab:hover{border-color:var(--muted)}
@@ -98,7 +111,7 @@ Site.register({
     needH:'Collect these to fill your recipes', needN:'{n} troves are all that stand between you and {m} unfinished recipes. Under each name: how many recipes it holds up, and how many more you need.', needMore:'{r} recipes · {g} more', dlClean:'Download cleaned file', dlNote:'A small file with only trove names and numbers, no token. Send it to a phone and upload it there.',
     coolLeft:'{n} min', coolClear:'Clear the timers', coolHint:'A property you open turns grey with a 60-minute timer: that is when you can search it again.', rad:'Count structures within 80 m of the property (your avatar’s reach: not confirmed)', wFee:'Fee (UPX)', wDist:'km from the last one', bnxH:'Structures to build next', bnxN:'To craft the rest in your own structures, build these. Priority is how many of the {n} crafts each one unlocks, after the ones above it. Where: your empty properties that are big enough, by city.', bnxSize:'Needs', bnxUp2:'{n} UP2', bnxSug:'≤ {n} UP2 (suggested)', bnxUnk:'size unknown', bnxIn:'Build in', bnxNoFit:'None of your empty properties is big enough', bnxTaken:'The properties that fit are already suggested for a structure above', bnxUnlocks:'Unlocks',
     owKm:'km', owCheapH:'Cheaper places to craft', owCheapN:'Same crafts, a lower teleport price than the closest place. Each address is listed once, with the crafts it covers and the most it saves against the closest one.', owSaves:'Saves up to',
-    cqUpTo:'you can craft up to {n}', cqNew:'new', cqBank:'bank', cqBoth:'1 new + {b} to bank', cqSum:'In all: {n} new troves to craft first (one of each, that is what discovers them), then {m} copies to bank. Do them in that order.',
+    cqLevel:'level {n}', cqHold:'(you hold {q}, it takes {m})', cqShort:'only {a} of {b}: short of ingredients', cqCrafts:'{n} to craft', cqSum2:'Craft {n} new troves first (one of each, that is what discovers them). Then, for each trove below, craft the number shown in one visit to reach its next banking level: {m} copies in all.', cqUpTo:'you can craft up to {n}', cqNew:'new', cqBank:'bank', cqBoth:'1 new + {b} to bank', cqSum:'In all: {n} new troves to craft first (one of each, that is what discovers them), then {m} copies to bank. Do them in that order.',
     cwH:'Where to craft in {city}', cwN:'Craft as much as you can in your own structures here, then in the neighbourhood you own the most in ({hood}), then in the rest of the city. Each stop is chosen to cover the most crafts left.', cwOwn:'1 · Your own structures', cwHood:'2 · {hood}', cwCity:'3 · Rest of {city}', cwNone:'Nothing left for this step.', cwDone:'{n} of {m} wanted crafts covered here.', cwLoad:'Loading the city…', cwNo:'You have no structures in this city.',
     owH:'Craft in your own structures', owN:'Crafting at a structure you own means no visit to someone else’s. These stops cover {n} of {m} crafts, fewest stops first, grouped by city.', owStop:'Stop', owCity:'City', owWhere:'Where', owCrafts:'Craft here', owNone:'Nothing you want to craft can be done in your own structures.',
     owTravelH:'Crafts that need another structure', owTravelN:'None of your structures can craft these. For each: the closest option in {city} (from the last property you opened, or the city centre) and the cheapest one we know the teleport price of.', owNear:'Closest', owCheap:'Cheapest', owSave:'saves {u} UPX, {k} km further', owSame:'it is also the closest', owUnk:'price unknown', owFeeNote:'The price shown is the teleport price, which is also the visitor fee.', owPlain:'{km} km · {fee}',
@@ -162,7 +175,7 @@ Site.register({
     needH:'Junta estos para completar tus recetas', needN:'{n} troves son lo único que te separa de {m} recetas sin completar. Debajo de cada nombre: cuántas recetas frena y cuántos más necesitas.', needMore:'{r} recetas · {g} más', dlClean:'Descargar archivo limpio', dlNote:'Un archivo pequeño solo con nombres y números de troves, sin token. Envíalo a un teléfono y súbelo ahí.',
     coolLeft:'{n} min', coolClear:'Borrar los temporizadores', coolHint:'Una propiedad que abres se pone gris con un temporizador de 60 minutos: ahí puedes buscar de nuevo.', rad:'Contar estructuras a menos de 80 m de la propiedad (alcance de tu avatar: sin confirmar)', wFee:'Costo (UPX)', wDist:'km desde la última', bnxH:'Estructuras por construir', bnxN:'Para craftear el resto en tus propias estructuras, construye estas. La prioridad es cuántos de los {n} crafteos desbloquea cada una, después de las de arriba. Dónde: tus propiedades vacías que son lo bastante grandes, por ciudad.', bnxSize:'Pide', bnxUp2:'{n} UP2', bnxSug:'≤ {n} UP2 (sugerido)', bnxUnk:'tamaño desconocido', bnxIn:'Construir en', bnxNoFit:'Ninguna de tus propiedades vacías es lo bastante grande', bnxTaken:'Las propiedades que caben ya se sugirieron para una estructura de arriba', bnxUnlocks:'Desbloquea',
     owKm:'km', owCheapH:'Lugares más baratos para craftear', owCheapN:'Los mismos crafteos, con un precio de teletransporte menor que el lugar más cercano. Cada dirección aparece una sola vez, con los crafteos que cubre y lo máximo que ahorra frente al más cercano.', owSaves:'Ahorra hasta',
-    cqUpTo:'puedes craftear hasta {n}', cqNew:'nuevo', cqBank:'banco', cqBoth:'1 nuevo + {b} al banco', cqSum:'En total: {n} troves nuevos para craftear primero (uno de cada uno, eso los descubre), y luego {m} copias para el banco. Hazlos en ese orden.',
+    cqLevel:'nivel {n}', cqHold:'(tienes {q}, pide {m})', cqShort:'solo {a} de {b}: faltan ingredientes', cqCrafts:'{n} por craftear', cqSum2:'Craftea primero {n} troves nuevos (uno de cada uno, eso los descubre). Luego, de cada trove de abajo, craftea de una vez la cantidad indicada para llegar a su siguiente nivel de banco: {m} copias en total.', cqUpTo:'puedes craftear hasta {n}', cqNew:'nuevo', cqBank:'banco', cqBoth:'1 nuevo + {b} al banco', cqSum:'En total: {n} troves nuevos para craftear primero (uno de cada uno, eso los descubre), y luego {m} copias para el banco. Hazlos en ese orden.',
     cwH:'Dónde craftear en {city}', cwN:'Craftea lo más que puedas en tus propias estructuras de aquí, luego en el barrio donde tienes más ({hood}) y al final en el resto de la ciudad. Cada parada se elige para cubrir los crafteos que más falten.', cwOwn:'1 · Tus estructuras', cwHood:'2 · {hood}', cwCity:'3 · Resto de {city}', cwNone:'Nada pendiente en este paso.', cwDone:'{n} de {m} crafteos cubiertos aquí.', cwLoad:'Cargando la ciudad…', cwNo:'No tienes estructuras en esta ciudad.',
     owH:'Craftea en tus propias estructuras', owN:'Craftear en una estructura tuya evita visitar la de otro. Estas paradas cubren {n} de {m} crafteos, las menos paradas posibles, agrupadas por ciudad.', owStop:'Parada', owCity:'Ciudad', owWhere:'Dónde', owCrafts:'Craftea aquí', owNone:'Nada de lo que quieres craftear se puede hacer en tus estructuras.',
     owTravelH:'Crafteos que necesitan otra estructura', owTravelN:'Ninguna de tus estructuras puede craftear esto. Para cada uno: la opción más cercana en {city} (desde la última propiedad que abriste, o el centro de la ciudad) y la más barata de la que sabemos el precio de teletransporte.', owNear:'Más cercana', owCheap:'Más barata', owSave:'ahorra {u} UPX, {k} km más lejos', owSame:'también es la más cercana', owUnk:'precio desconocido', owFeeNote:'El precio mostrado es el de teletransporte, que también es la cuota de visita.', owPlain:'{km} km · {fee}',
@@ -445,6 +458,18 @@ function analyse(d){
     if(!v) return;
     v.ings.forEach(g => take(g.n, g.req)); const en = entry(c.name); en.nw = 1; addVer(en, v.ings, 1);
   });
+  // What to craft to reach the NEXT banking level of each trove, in one visit: the copies still missing, version by version, out of the
+  // stock left after the new crafts (smallest gaps first, so as many levels as possible are reached).
+  const nrest = new Map(qrest), nextQty = new Map(), nleft = n => nrest.has(n) ? nrest.get(n) : have(n);
+  [...items.values()].filter(i => i.th.length && i.lvl < i.th.length && byRecipe.has(i.name)).map(i => ({i, gap:i.th[i.lvl] - i.q})).sort((a, b) => a.gap - b.gap || a.i.name.localeCompare(b.i.name)).forEach(({i, gap}) => {
+    if(gap <= 0){ nextQty.set(i.name, {need:0, doNow:0, q:i.q, lvl:i.lvl, thr:i.th[i.lvl], vers:[]}); return; }
+    let todo = gap; const vers = [];
+    byRecipe.get(i.name).map(v => ({v, can:Math.min(...v.ings.map(g => Math.floor(nleft(g.n) / g.req)))})).sort((a, b) => b.can - a.can).forEach(({v}) => {
+      const k = Math.min(todo, ...v.ings.map(g => Math.floor(nleft(g.n) / g.req)));
+      if(k > 0){ v.ings.forEach(g => nrest.set(g.n, nleft(g.n) - g.req * k)); vers.push({ings:v.ings, k}); todo -= k; }
+    });
+    nextQty.set(i.name, {need:gap, doNow:gap - todo, q:i.q, lvl:i.lvl, thr:i.th[i.lvl], vers});
+  });
   // banking copies: the easy plan, version by version, as far as the stock left after the new crafts allows
   easy.filter(e => e.crafts > 0 && e.vers).forEach(e => {
     let todo = e.crafts;
@@ -459,7 +484,7 @@ function analyse(d){
     if(k > 0){ gc.ings.forEach(g => take(g.n, g.req * k)); const en = entry(gc.name); en.bank += k; addVer(en, gc.ings, k); }
   });
   const craftMax = new Map(craftable.map(c => [c.name, c.copies]));
-  return {items, recs, blockers, rows, craftable, bulk, easy, bonusFor, gold, goldCraft, clash, craftQty, craftMax, craftN:recs.filter(r => r.ok).length, oneShort, prot};
+  return {items, recs, blockers, rows, craftable, bulk, easy, bonusFor, gold, goldCraft, clash, craftQty, craftMax, nextQty, craftN:recs.filter(r => r.ok).length, oneShort, prot};
 }
 
 // ---------- drawing ----------
@@ -611,15 +636,32 @@ const qchip = n => { const q = A && A.craftQty ? A.craftQty.get(n) : null, tot =
 const newFirst = ns => [...ns].sort((a, b) => ((A.craftQty.get(b) || {nw:0}).nw) - ((A.craftQty.get(a) || {nw:0}).nw));
 const hasNew = ns => ns.some(n => (A.craftQty.get(n) || {nw:0}).nw);
 const qsum = names => { let nw = 0, bk = 0; names.forEach(n => { const q = A.craftQty.get(n); if(q){ nw += q.nw; bk += q.bank; } }); return nw || bk ? `<p class="small" style="margin:0 0 6px"><b>${esc(t('cqSum', {n:nw, m:bk}))}</b></p>` : ''; };
+// one craft as a line: what to make now to reach the next banking level (or the new trove to discover first), and with which recipe
+// new troves first, then the ones that reach their next level completely, then the ones that only get part of the way
+const craftRank = n => { const q = A.craftQty.get(n), nx = A.nextQty.get(n); return q && q.nw ? [0, 0] : nx && nx.doNow >= nx.need ? [1, nx.need] : [2, nx ? nx.need - nx.doNow : 0]; };
+const craftOrder = ns => [...ns].sort((a, b) => { const x = craftRank(a), y = craftRank(b); return x[0] - y[0] || x[1] - y[1] || a.localeCompare(b); });
+function craftLine(n){
+  const q = A.craftQty.get(n), nx = A.nextQty.get(n), isNew = q && q.nw;
+  const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
+  const rec = vs => vs.length ? `<div class="cl-rec">${vs.map(v => esc(v.k + '× ' + verText(v))).join(' · ')}</div>` : '';
+  if(isNew) return `<li class="cl-new"><span class="cl-n">${thumb(n)}<b>${esc(n)}</b></span> <span class="cl-q">×1</span> <span class="tag good">${esc(t('cqNew'))}</span>${rec(q.vers.slice(0, 1))}</li>`;
+  if(!nx || !(nx.doNow > 0)) return '';
+  const full = nx.doNow >= nx.need;
+  return `<li><span class="cl-n">${thumb(n)}<b>${esc(n)}</b></span> <span class="cl-q">×${nx.doNow}</span> <span class="cl-go">→ ${medal(nx.lvl + 1)} ${esc(t('cqLevel', {n:nx.lvl + 1}))}</span> <span class="muted">${esc(t('cqHold', {q:nx.q, m:nx.thr}))}</span>${full ? '' : ` <span class="tag warn">${esc(t('cqShort', {a:nx.doNow, b:nx.need}))}</span>`}${rec(nx.vers)}</li>`;
+}
 function cityCraftCard(){
   ensureCity();
   const cd = CITYDATA[CITY], cname = (WORLD && (WORLD.cities.find(c => String(c.id) === String(CITY)) || {}).name) || '';
-  const wrap = body => `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('cwH', {city:cname}))}</h2>${body}</div>`;
+  const wrap = body => `<div class="card cw" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('cwH', {city:cname}))}</h2>${body}</div>`;
   if(!cd) return cd === false ? '' : wrap(`<p class="muted small" style="margin:0">${esc(t('cwLoad'))}</p>`);
-  const wanted = wantedCrafts(); if(!wanted.length) return '';
+  // only what is worth crafting now: a new trove, or the copies that reach the next banking level
+  const wanted = wantedCrafts().filter(n => { const q = A.craftQty.get(n), nx = A.nextQty.get(n); return (q && q.nw) || (nx && nx.doNow > 0); });
+  if(!wanted.length) return '';
   const fix = x => norm(x).replace(/ 1$/, ''), sn = cd.structs.map(fix);
   const need = new Map(wanted.map(n => [n, new Set(PLACES.get(n).craftAt.map(fix))]));
   const own = new Map((OWN || []).filter(r => r[6].length).map(r => [String(r[0]), new Set(r[6].map(fix))]));
+  const ownRaw = new Map((OWN || []).filter(r => r[6].length).map(r => [String(r[0]), new Map(r[6].map(b => [fix(b), b]))]));
+  const namesOf = pr => ownRaw.get(String(pr[0])) || new Map(pr[5].map(i => [sn[i], cd.structs[i]]));
   const here = cd.props.filter(pr => own.has(String(pr[0])));
   const cnt = new Map(); here.forEach(pr => cnt.set(pr[4], (cnt.get(pr[4]) || 0) + 1));
   const home = [...cnt.entries()].sort((a, b) => b[1] - a[1])[0];
@@ -636,57 +678,27 @@ function cityCraftCard(){
     }
     return stops;
   };
-  // the structures of a property by name, so the card can say which one crafts what
-  const ownRaw = new Map((OWN || []).filter(r => r[6].length).map(r => [String(r[0]), new Map(r[6].map(b => [fix(b), b]))]));
-  const namesOf = pr => ownRaw.get(String(pr[0])) || new Map(pr[5].map(i => [sn[i], cd.structs[i]]));
-  // Own structures: a craft is spread over every structure of yours that can do it, instead of piling it all on one.
-  const inst = []; here.forEach(pr => ownRaw.get(String(pr[0])).forEach((raw, key) => inst.push({pr, key, raw, items:[]})));
-  const ownCovered = new Set();
-  [...left].forEach(n => {
-    const cands = inst.filter(x => need.get(n).has(x.key)); if(!cands.length) return;
-    cands.sort((a, b) => b.items.length - a.items.length);   // structures already busy with other crafts first, so fewer stops
-    const q = A.craftQty.get(n), total = q ? q.nw + q.bank : 0;
-    if(!total){ cands[0].items.push({n, cap:A.craftMax.get(n) || 0}); ownCovered.add(n); return; }
-    const k = Math.min(cands.length, total), base = Math.floor(total / k), rem = total % k;
-    const vers = q.vers.map(v => ({...v, left:v.k}));
-    cands.slice(0, k).forEach((c, i) => {
-      const cnt = base + (i < rem ? 1 : 0), parts = []; let need2 = cnt;
-      vers.forEach(v => { const take2 = Math.min(v.left, need2); if(take2 > 0){ parts.push({ings:v.ings, k:take2}); v.left -= take2; need2 -= take2; } });
-      c.items.push({n, cnt, nw:i === 0 && q.nw ? 1 : 0, parts});
-    });
-    ownCovered.add(n);
-  });
-  ownCovered.forEach(n => left.delete(n));
-  const mineProps = new Map(); inst.filter(x => x.items.length).forEach(x => { const e = mineProps.get(x.pr[0]) || {pr:x.pr, structs:[]}; e.structs.push(x); mineProps.set(x.pr[0], e); });
-  const mineStops = [...mineProps.values()].sort((a, b) => b.structs.reduce((t0, x) => t0 + x.items.length, 0) - a.structs.reduce((t0, x) => t0 + x.items.length, 0));
-  const shareChip = it => { const base = qchip(it.n);
-    if(it.cap != null) return it.cap ? `<span style="white-space:nowrap">${thumb(it.n)}${esc(it.n)} <span class="muted">(${esc(t('cqUpTo', {n:it.cap}))})</span></span>` : base;
-    return `<span style="white-space:nowrap">${thumb(it.n)}${esc(it.n)} <b>×${it.cnt}</b> <span class="muted">(${esc(it.nw ? t('cqNew') : t('cqBank'))})</span></span> <span class="muted" style="white-space:normal">[${it.parts.map(v => esc(v.k + '× ' + verText(v))).join(' · ')}]</span>`; };
-  const mine = mineStops;
+  const mine = run(here.map(pr => ({pr, can:own.get(String(pr[0]))})));
   const inHood = hood >= 0 ? run(cd.props.filter(pr => pr[4] === hood && !own.has(String(pr[0]))).map(pr => ({pr, can:new Set(pr[5].map(i => sn[i]))}))) : [];
   const rest = run(cd.props.filter(pr => pr[4] !== hood && !own.has(String(pr[0]))).map(pr => ({pr, can:new Set(pr[5].map(i => sn[i]))})));
-  const chips = ns => newFirst(ns).map(qchip).join(', ');
-  // one line per structure of the property: what to craft in it (a property with several structures lists each one)
-  const byStructure = s => {
+  // a stop is a property; inside it, one list per structure with what to craft there
+  const stopHtml = (s, i) => {
     const names = namesOf(s.c.pr), count = new Map();
     s.got.forEach(n => need.get(n).forEach(k => { if(names.has(k)) count.set(k, (count.get(k) || 0) + 1); }));
     const groups = new Map();
     s.got.forEach(n => { const k = [...need.get(n)].filter(x => names.has(x)).sort((a, b) => count.get(b) - count.get(a))[0]; groups.set(k, [...(groups.get(k) || []), n]); });
-    return [...groups.entries()].sort((a, b) => hasNew(b[1]) - hasNew(a[1]) || b[1].length - a[1].length).map(([k, ns]) => `<div><b>${esc(names.get(k))}</b>: ${chips(ns)}</div>`).join('');
+    const lists = [...groups.entries()].sort((a, b) => hasNew(b[1]) - hasNew(a[1]) || b[1].length - a[1].length).map(([k, ns]) => `<div class="cl-struct"><h4>${esc(names.get(k))}</h4><ul class="cl-list">${craftOrder(ns).map(craftLine).join('')}</ul></div>`).join('');
+    return `<div class="cl-stop"><div class="cl-head"><span class="cl-i">${i + 1}</span>${spotBtn(s.c.pr)}<span class="muted">${esc(t('cqCrafts', {n:s.got.length}))}</span></div>${lists}</div>`;
   };
-  const part = (title, stops, lim) => {
+  const part = (title, stops, lim, isOwn) => {
     stops = stops.slice().sort((x, y) => hasNew(y.got) - hasNew(x.got));
-    const rows = stops.slice(0, lim).map((s, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(s.c.pr)}</td><td class="small">${byStructure(s)}</td><td class="n">${s.got.length}</td></tr>`);
     const more = stops.length > lim ? `<div class="small muted">${esc(t('spMore', {n:stops.length - lim}))}</div>` : '';
-    return `<h3 style="margin:10px 0 4px;font-size:1em">${esc(title)} <span class="tag">${stops.reduce((a, s) => a + s.got.length, 0)}</span></h3>${stops.length ? tbl([[t('owStop'), 'n'], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) + more : `<p class="muted small" style="margin:0">${esc(here.length || title !== t('cwOwn') ? t('cwNone') : t('cwNo'))}</p>`}`;
-  };
-  const ownPart = () => {
-    const rows = mine.slice(0, 14).map((e, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(e.pr)}</td><td class="small">${e.structs.map(x => `<div><b>${esc(x.raw)}</b>: ${newFirst(x.items.map(it => it.n)).map(n => shareChip(x.items.find(it => it.n === n))).join(', ')}</div>`).join('')}</td><td class="n">${e.structs.reduce((t0, x) => t0 + x.items.length, 0)}</td></tr>`);
-    return `<h3 style="margin:10px 0 4px;font-size:1em">${esc(t('cwOwn'))} <span class="tag">${ownCovered.size}</span></h3>${mine.length ? tbl([[t('owStop'), 'n'], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) : `<p class="muted small" style="margin:0">${esc(here.length ? t('cwNone') : t('cwNo'))}</p>`}`;
+    return `<h3 style="margin:14px 0 6px;font-size:1.1em">${esc(title)} <span class="tag">${stops.reduce((a, s) => a + s.got.length, 0)}</span></h3>${stops.length ? stops.slice(0, lim).map(stopHtml).join('') + more : `<p class="muted small" style="margin:0">${esc(isOwn && !here.length ? t('cwNo') : t('cwNone'))}</p>`}`;
   };
   const covered = wanted.length - left.size;
-  return wrap(`<p class="hint" style="margin:0 0 4px">${esc(t('cwN', {hood:hname || '—'}))} ${esc(t('cwDone', {n:covered, m:wanted.length}))}</p>${qsum(wanted)}`
-    + ownPart() + (hname ? part(t('cwHood', {hood:hname}), inHood, 12) : '') + part(t('cwCity', {city:cname}), rest, 12));
+  let nw = 0, cp = 0; wanted.forEach(n => { const q = A.craftQty.get(n), nx = A.nextQty.get(n); if(q && q.nw) nw++; else if(nx) cp += nx.doNow; });
+  return wrap(`<p class="hint" style="margin:0 0 4px">${esc(t('cwN', {hood:hname || '—'}))} ${esc(t('cwDone', {n:covered, m:wanted.length}))}</p><p class="cl-sum"><b>${esc(t('cqSum2', {n:nw, m:cp}))}</b></p>`
+    + part(t('cwOwn'), mine, 12, true) + (hname ? part(t('cwHood', {hood:hname}), inHood, 12) : '') + part(t('cwCity', {city:cname}), rest, 12));
 }
 function ownCraftCard(){
   if(!OWN || SRC !== 'rock') return '';
