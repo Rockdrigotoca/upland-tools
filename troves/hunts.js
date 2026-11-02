@@ -22,6 +22,7 @@ window.Hunt = (() => {
       sBal:'The balloon event', sBalN:'Balloons were an event and ended on Saturday 31 October. Here is how it went.', bF:'balloon finds', bB:'different balloons', bD:'days', bDust:'Trove Dust', bRep:'second visits',
       sBalDay:'Balloon finds per day, by balloon', sBalTop:'What balloons gave', sBalTable:'Day by day', cDay:'Day', cBal:'Balloons', cRep:'Revisits', cDustN:'Dust', cQty:'Troves',
       sBalVs:'A balloon against a structure', bVs:'Different troves per 100 finds: balloons {a}, structures {b}, plants {c}. Trove Dust: balloons {d}%, structures {e}%, plants {f}%.',
+      sRare:'The troves you found the least', sRareN:'Found only a few times in your hunts. Future recipes may ask for these, so these are the ones to watch.', sNever:'Not found yet', sNeverN:'{n} troves with no find in the log and none held. Where each one comes from is next to it.', sRareSrc:'Where the rare finds came from', sRareSrcN:'The places that gave the {n} troves found three times or less.',
       none:'Nothing yet.', loading:'Loading the hunting log…', model:{traditional:'Classic', turkey:'Turkey', eye:'Eye', cat:'Cat', pumpkin:'Pumpkin'},
     },
     es: {
@@ -44,6 +45,7 @@ window.Hunt = (() => {
       sBal:'El evento de globos', sBalN:'Los globos fueron un evento y terminó el sábado 31 de octubre. Así te fue.', bF:'hallazgos de globos', bB:'globos distintos', bD:'días', bDust:'Trove Dust', bRep:'segundas visitas',
       sBalDay:'Hallazgos de globos por día, por globo', sBalTop:'Lo que dieron los globos', sBalTable:'Día por día', cDay:'Día', cBal:'Globos', cRep:'Revisitas', cDustN:'Dust', cQty:'Troves',
       sBalVs:'Un globo contra una estructura', bVs:'Troves distintos por cada 100 hallazgos: globos {a}, estructuras {b}, plantas {c}. Trove Dust: globos {d}%, estructuras {e}%, plantas {f}%.',
+      sRare:'Los troves que menos encontraste', sRareN:'Hallados pocas veces en tus cacerías. Las recetas futuras podrían pedirlos, así que estos son los que hay que vigilar.', sNever:'Aún sin hallar', sNeverN:'{n} troves sin ningún hallazgo en el registro y ninguno en tu inventario. Junto a cada uno está de dónde sale.', sRareSrc:'De dónde vinieron los hallazgos raros', sRareSrcN:'Los lugares que dieron los {n} troves hallados tres veces o menos.',
       none:'Todavía nada.', loading:'Cargando el registro de caza…', model:{traditional:'Clásico', turkey:'Pavo', eye:'Ojo', cat:'Gato', pumpkin:'Calabaza'},
     },
   };
@@ -169,21 +171,22 @@ window.Hunt = (() => {
       const [name, skind] = D.src[f[2]], ms = f[0] * 1000;
       return {ms, day:dayKey(ms), hour:new Date(ms).getHours(), kind:skind === 'balloon' ? 'balloon' : (f[1] ? 'plant' : 'structure'), src:name, trove:D.troves[f[3]], q:f[4], pi:f[5], city:D.cities[D.props[f[5]][2]], inst:f[6]};
     });
-    const days = [...new Set(rows.map(r => r.day))].sort();
+    const main = rows.filter(r => r.kind !== 'balloon');   // balloons are shown in their own section only
+    const days = [...new Set(main.map(r => r.day))].sort();
     // sessions: a break of 20 minutes starts a new one
     const sessions = []; let cur = null;
-    rows.forEach(r => { if(!cur || r.ms - cur.end > 20 * 6e4){ cur = {start:r.ms, end:r.ms, rows:[]}; sessions.push(cur); } cur.end = r.ms; cur.rows.push(r); });
+    main.forEach(r => { if(!cur || r.ms - cur.end > 20 * 6e4){ cur = {start:r.ms, end:r.ms, rows:[]}; sessions.push(cur); } cur.end = r.ms; cur.rows.push(r); });
     sessions.forEach(s => { s.min = Math.max((s.end - s.start) / 6e4, 1); s.props = new Set(s.rows.map(r => r.pi)).size; s.plants = s.rows.filter(r => r.kind === 'plant').length / s.rows.length; s.day = dayKey(s.start); });
     // gap since the last find at the same source
     const last = new Map(); rows.forEach(r => { const k = r.kind + ':' + r.inst; r.gap = last.has(k) ? (r.ms - last.get(k)) / 6e4 : null; last.set(k, r.ms); });
-    memo = {D, bal:ctx.bal, rows, days, sessions};
+    memo = {D, bal:ctx.bal, rows, main, days, sessions};
     return memo;
   }
 
   function html(D, ctx){
     if(!D) return card(T('h'), '', `<p class="muted small" style="margin:0">${esc(T('loading'))}</p>`);
-    const P = prep(D, ctx), rows = P.rows, days = P.days, cat = ctx.cat;
-    const kinds = ['structure', 'plant', 'balloon'], kindName = {structure:T('kindStruct'), plant:T('kindPlant'), balloon:T('kindBalloon')};
+    const P = prep(D, ctx), all = P.rows, rows = P.main, days = P.days, cat = ctx.cat;
+    const kinds = ['structure', 'plant'], kindName = {structure:T('kindStruct'), plant:T('kindPlant'), balloon:T('kindBalloon')};
     const qtotal = rows.reduce((a, r) => a + r.q, 0), minutes = P.sessions.reduce((a, s) => a + s.min, 0);
     const out = [];
     out.push(card(T('h'), T('n', {from:dayLabel(days[0]), to:dayLabel(days[days.length - 1])}),
@@ -214,9 +217,7 @@ window.Hunt = (() => {
     const rank = [...cnt.values()].sort((a, b) => b - a), tq = rank.reduce((a, b) => a + b, 0); let acc = 0;
     const par = [{x:0, y:0}].concat(rank.map((v, i) => { acc += v; return {x:i + 1, y:acc / tq * 100}; }));
     const dayMarks = []; days.forEach(d => { const i = rows.findIndex(r => r.day === d); if(i > 0) dayMarks.push({x:i, label:dayLabel(d)}); });
-    out.push(card(T('sDisc'), T('sDiscN'), grid([
-      `<div>${line(curve, {xlab:T('axN'), ylab:T('axT'), marks:dayMarks, label:T('sDisc'), h:210})}</div>`,
-      `<div><div class="small muted" style="margin:0 0 2px">${esc(T('sPar'))} · ${esc(T('sParN'))}</div>${line(par, {xlab:T('axRank'), ylab:T('axShare') + ' %', ymax:100, xfmt:x => Math.round(x), c:'#fc7d0b', label:T('sPar'), h:210})}</div>`])));
+    out.push(card(T('sDisc'), T('sDiscN'), line(curve, {xlab:T('axN'), ylab:T('axT'), marks:dayMarks, label:T('sDisc'), h:210})));
 
     // cities
     const byCity = new Map(); rows.forEach(r => { if(!byCity.has(r.city)) byCity.set(r.city, []); byCity.get(r.city).push(r); });
@@ -230,7 +231,12 @@ window.Hunt = (() => {
     const tm = []; cnt.forEach((v, n) => tm.push({label:n, v, c:CAT[catOf(n)] || '#8a8a8a'}));
     const cityMix = cityRows.slice(0, 8).map(x => ({label:x.c, parts:cats.map(c => byCity.get(x.c).filter(r => catOf(r.trove) === c).reduce((a, r) => a + r.q, 0))}));
     const cityMixPct = cityMix.map(m => { const s = m.parts.reduce((a, b) => a + b, 0) || 1; return {label:m.label, parts:m.parts.map(v => v / s * 100)}; });
-    out.push(card(T('sCat'), T('sCatN'), treemap(tm.slice(0, 80)) + legend(cats.map(c => ({c:CAT[c], l:c + ' ' + n0(catQ[c] || 0)})))
+    const rare = [...cnt.entries()].sort((a, b) => a[1] - b[1] || a[0].localeCompare(b[0]));
+    out.push(card(T('sRare'), T('sRareN'), hbars(rare.slice(0, 28).map(([n, v]) => ({label:n, v, c:CAT[catOf(n)] || '#a3acb9'})), {l:130, label:T('sRare')}) + legend(cats.map(c => ({c:CAT[c], l:c})))));
+    const held = new Map((ctx.bal || []).map(i => [i[0], i])), found = new Set(cnt.keys());
+    const never = (ctx.all || []).filter(n => !found.has(n) && !(held.get(n) && (held.get(n)[2] > 0 || held.get(n)[3] > 0))).sort();
+    if(never.length) out.push(card(T('sNever'), T('sNeverN', {n:never.length}), `<div style="display:flex;flex-wrap:wrap;gap:6px">${never.slice(0, 80).map(n => `<span class="small" style="background:var(--surface-2);border-radius:10px;padding:4px 9px"><b>${esc(n)}</b> <span class="muted">${esc(ctx.where ? ctx.where(n) : '')}</span></span>`).join('')}</div>`));
+    out.push(card(T('sCat'), '', legend(cats.map(c => ({c:CAT[c], l:c + ' ' + n0(catQ[c] || 0)})))
       + `<h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sCatCity'))}</h3>` + columns(cityMixPct, cats.map(c => CAT[c]), {names:cats, total:false, label:T('sCatCity')})));
 
     // levels
@@ -241,11 +247,11 @@ window.Hunt = (() => {
         + `<h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sLvlBar'))}</h3>` + hbars(lvc.map((v, i) => ({label:i ? T('lv', {n:i}) : T('lvNone'), v, c:LV[i]})), {l:80, label:T('sLvlBar')})));
     }
 
-    // sources
-    const bySrc = new Map(); rows.forEach(r => { const e = bySrc.get(r.src) || {n:0, t:new Set(), kind:r.kind}; e.n++; e.t.add(r.trove); bySrc.set(r.src, e); });
-    const srcRows = [...bySrc.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 18);
-    out.push(card(T('sSrc'), T('sSrcN'), hbars(srcRows.map(([s, e]) => ({label:s, v:e.n, c:KIND[e.kind]})), {l:190, label:T('sSrc')}) + legend(kinds.map(k => ({c:KIND[k], l:kindName[k]})))
-      + `<div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>${esc(T('cSrc'))}</th><th class="n">${esc(T('cDiff'))}</th></tr></thead><tbody>${srcRows.map(([s, e]) => `<tr><td>${esc(s)}</td><td class="n">${e.t.size}</td></tr>`).join('')}</tbody></table></div>`));
+    // sources of the rarely found troves
+    const rareSet = new Set(rare.filter(x => x[1] <= 3).map(x => x[0])), rs = new Map();
+    rows.forEach(r => { if(rareSet.has(r.trove)){ const e = rs.get(r.src) || {n:0, kind:r.kind}; e.n++; rs.set(r.src, e); } });
+    const rsRows = [...rs.entries()].sort((a, b) => b[1].n - a[1].n).slice(0, 18);
+    out.push(card(T('sRareSrc'), T('sRareSrcN', {n:rareSet.size}), hbars(rsRows.map(([n, e]) => ({label:n, v:e.n, c:KIND[e.kind]})), {l:190, label:T('sRareSrc')}) + legend(kinds.map(k => ({c:KIND[k], l:kindName[k]})))));
 
     // cooldown & dust (not balloons)
     const rep = rows.filter(r => r.gap != null && r.kind !== 'balloon'), bins = new Array(37).fill(0), dust = new Array(37).fill(0).map(() => [0, 0]);
@@ -256,7 +262,7 @@ window.Hunt = (() => {
     out.push(card(T('sDust'), T('sDustN'), line(dp, {xlab:T('axGap'), ylab:T('axDust') + ' %', ymax:100, c:'#c85200', xfmt:x => Math.round(x), label:T('sDust'), h:200})));
 
     // balloons
-    const B = rows.filter(r => r.kind === 'balloon');
+    const B = all.filter(r => r.kind === 'balloon');
     if(B.length){
       const models = [...new Set(B.map(r => (r.src.match(/\((\w+)\)/) || [])[1]))].filter(Boolean), mname = m => T('model')[m] || m;
       const bd = [...new Set(B.map(r => r.day))].sort(), balloons = new Set(B.map(r => r.inst)), dustN = B.filter(r => r.trove === 'Trove Dust').length;
@@ -265,7 +271,7 @@ window.Hunt = (() => {
         + `<h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sBalDay'))}</h3>` + columns(bd.map(d => ({label:dayLabel(d), parts:models.map(m => B.filter(r => r.day === d && r.src.includes('(' + m + ')')).length)})), MODEL, {names:models.map(mname), label:T('sBalDay')}) + legend(models.map((m, i) => ({c:MODEL[i], l:mname(m)})))
         + grid([`<div><h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sBalTop'))}</h3>${hbars(Object.entries(B.reduce((a, r) => (a[r.trove] = (a[r.trove] || 0) + r.q, a), {})).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([n, v]) => ({label:n, v, c:CAT[catOf(n)] || '#8a8a8a'})), {l:110, label:T('sBalTop')})}</div>`,
           `<div><h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sBalTable'))}</h3><div class="tablewrap"><table><thead><tr><th>${esc(T('cDay'))}</th><th class="n">${esc(T('cFinds'))}</th><th class="n">${esc(T('cBal'))}</th><th class="n">${esc(T('cRep'))}</th><th class="n">${esc(T('cDustN'))}</th><th class="n">${esc(T('cQty'))}</th></tr></thead><tbody>${bd.map(d => { const x = B.filter(r => r.day === d); return `<tr><td>${esc(dayLabel(d))}</td><td class="n">${x.length}</td><td class="n">${new Set(x.map(r => r.inst)).size}</td><td class="n">${x.filter(r => r.gap != null).length}</td><td class="n">${x.filter(r => r.trove === 'Trove Dust').length}</td><td class="n">${n0(x.reduce((a, r) => a + r.q, 0))}</td></tr>`; }).join('')}</tbody></table></div></div>`])
-        + (() => { const div = k => { const x = rows.filter(r => r.kind === k); return x.length ? [new Set(x.map(r => r.trove)).size / x.length * 100, x.filter(r => r.trove === 'Trove Dust').length / x.length * 100] : [0, 0]; }; const a = div('balloon'), b2 = div('structure'), c = div('plant'); return `<p class="small" style="margin:10px 0 0">${esc(T('bVs', {a:f1(a[0]), b:f1(b2[0]), c:f1(c[0]), d:f1(a[1]), e:f1(b2[1]), f:f1(c[1])}))}</p>`; })()));
+        + (() => { const div = k => { const x = all.filter(r => r.kind === k); return x.length ? [new Set(x.map(r => r.trove)).size / x.length * 100, x.filter(r => r.trove === 'Trove Dust').length / x.length * 100] : [0, 0]; }; const a = div('balloon'), b2 = div('structure'), c = div('plant'); return `<p class="small" style="margin:10px 0 0">${esc(T('bVs', {a:f1(a[0]), b:f1(b2[0]), c:f1(c[0]), d:f1(a[1]), e:f1(b2[1]), f:f1(c[1])}))}</p>`; })()));
     }
     return out.join('');
   }

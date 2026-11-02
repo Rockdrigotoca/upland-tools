@@ -652,7 +652,7 @@ function clashCard(){
   if(!A.clash.length) return '';
   return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('clH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('clN'))}</p><ul class="small" style="margin:0;padding-left:18px">${A.clash.map(e => `<li><b>${esc(t('clRow', {name:e.n, need:e.need, have:e.have}))}</b> <span class="muted">${esc(t('clFor', {list:e.by.join(', ')}))}</span></li>`).join('')}</ul></div>`;
 }
-function viewHunt(){ return Hunt.html(HUNTS, {cat:n => (PLACES.get(n) || {}).cat, bal:DATA ? DATA.items : null}); }
+function viewHunt(){ return Hunt.html(HUNTS, {cat:n => (PLACES.get(n) || {}).cat, bal:DATA ? DATA.items : null, all:[...PLACES.keys()], where:n => { const p = PLACES.get(n); return p && (p.structures.length || p.plants.length) ? '(' + p.structures.concat(p.plants).slice(0, 2).join(', ') + ')' : ''; }}); }
 function viewOverview(){
   const its = [...A.items.values()], lv = [0, 0, 0, 0];
   its.forEach(i => lv[Math.min(i.lvl, 3)]++);
