@@ -151,7 +151,7 @@ function plan(cd){
   cand.forEach(c => { const k = c.ks.sort((a, b) => worth(b) - worth(a))[0]; (types.get(k) || types.set(k, []).get(k)).push(c); });
   const share = k => by.get(k).all.size / (total.get(k) || 1);
   const groups = [...types.entries()].map(([k, list]) => ({k, name:by.get(k).name, w:worth(k), n:by.get(k).all.size, list:list.sort((a, b) => b.near - a.near || b.w - a.w)})).sort((a, b) => Math.round(share(b.k) * 10) - Math.round(share(a.k) * 10) || b.list.length - a.list.length);
-  return {need, by, tiers, groups, sn};
+  return {need, by, tiers, groups, sn, cand};
 }
 // troves still needed that nothing in this city gives
 function elsewhere(cd, P){
@@ -172,6 +172,13 @@ function elsewhere(cd, P){
 }
 
 // ---------- drawing ----------
+// the best properties in this city that give a trove: most useful neighbours first, ones not cooling first
+function bestFor(P, trove, k = 1){
+  const p = PL.get(trove); if(!p) return [];
+  const keys = new Set(p.structures.map(norm)), now = Date.now();
+  return P.cand.filter(c => c.ks.some(x => keys.has(x))).sort((a, b) => ((COOL[a.pid] || 0) + 36e5 > now) - ((COOL[b.pid] || 0) + 36e5 > now) || b.near - a.near).slice(0, k);
+}
+const tileGo = (P, trove) => { const c = bestFor(P, trove)[0]; return c ? `<div class="gos" style="margin-top:6px;width:100%">${goBtn(c.pid, c.near ? t('near', {n:c.near}) : '')}</div>` : ''; };
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '<span class="thumb ph"></span>';
 const clock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const NAMES = {mstullis:'', talljames:'James', missmarlow:'Marlow'};
@@ -228,11 +235,11 @@ async function draw(){
       : g0 ? typeCard(g0.k, P, g0.name, g0.list.filter(c => free(c.pid)).slice(0, 2).map(c => ({pid:c.pid, sub:c.near ? t('near', {n:c.near}) : ''})), {hero:true}) : '';
     // special finds: needed troves that only a few kinds of structure give
     const special = [...P.need].map(n => ({n, p:PL.get(n)})).filter(x => x.p && x.p.structures.length && x.p.structures.length <= 4).map(x => ({...x, inCity:x.p.structures.some(s => P.sn.includes(norm(s)))})).sort((a, b) => b.inCity - a.inCity || a.p.structures.length - b.p.structures.length).slice(0, 12);
-    const specialHtml = special.length ? `<h2 class="t">⭐ ${esc(t('special'))}</h2><p class="sub">${esc(t('specialN'))}</p><div class="shelf">${special.map(x => { const i = info(x.n); return `<div class="tile">${thumb(x.n)}<b>${esc(x.n)}</b>${i.isNew ? `<em class="bd new">${esc(t('newT'))}</em>` : ''}<small>${x.inCity ? esc(t('onlyAt', {x:x.p.structures.filter(s => P.sn.includes(norm(s))).join(', ')})) : esc(t('notHere'))}</small></div>`; }).join('')}</div>` : '';
+    const specialHtml = special.length ? `<h2 class="t">⭐ ${esc(t('special'))}</h2><p class="sub">${esc(t('specialN'))}</p><div class="shelf">${special.map(x => { const i = info(x.n); return `<div class="tile">${thumb(x.n)}<b>${esc(x.n)}</b>${i.isNew ? `<em class="bd new">${esc(t('newT'))}</em>` : ''}<small>${x.inCity ? esc(t('onlyAt', {x:x.p.structures.filter(s => P.sn.includes(norm(s))).join(', ')})) : esc(t('notHere'))}</small>${x.inCity ? tileGo(P, x.n) : ''}</div>`; }).join('')}</div>` : '';
     // recipes she is closest to
     const b = balance(), rec = [];
     if(b) b.recipes.forEach(([rn, ing]) => { const miss = ing.filter(([g, q]) => { const it = b.items.get(g); return !it || it.q < q; }); if(miss.length === 1 && P.need.has(miss[0][0])) rec.push({rn, g:miss[0][0], q:miss[0][1]}); });
-    const seenR = new Set(), recHtml = rec.length ? `<h2 class="t">📖 ${esc(t('recH'))}</h2><p class="sub">${esc(t('recN'))}</p><div class="shelf">${rec.filter(r => !seenR.has(r.rn) && seenR.add(r.rn)).slice(0, 8).map(r => `<div class="tile">${thumb(r.rn)}<b>${esc(r.rn)}</b><small>${esc(t('missing', {x:r.g}))}</small></div>`).join('')}</div>` : '';
+    const seenR = new Set(), recHtml = rec.length ? `<h2 class="t">📖 ${esc(t('recH'))}</h2><p class="sub">${esc(t('recN'))}</p><div class="shelf">${rec.filter(r => !seenR.has(r.rn) && seenR.add(r.rn)).slice(0, 8).map(r => `<div class="tile">${thumb(r.rn)}<b>${esc(r.rn)}</b><small>${esc(t('missing', {x:r.g}))}</small>${tileGo(P, r.g)}</div>`).join('')}</div>` : '';
     // the rest of the city, best kinds of structure first; only the first few are open
     const shown = P.groups.slice(0, 6), rest = P.groups.slice(6);
     const gcard = g => typeCard(g.k, P, g.name, g.list.slice(0, 3).map(c => ({pid:c.pid, sub:c.near ? t('near', {n:c.near}) : ''})));
@@ -259,11 +266,17 @@ function tick(){
   const el = document.getElementById('next'); if(el) el.textContent = soon < Infinity ? t('ready') + ' ' + clock(soon) : Object.keys(COOL).length ? t('allReady') : '';
 }
 setInterval(tick, 1000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) draw(); });
+window.addEventListener('pageshow', e => { if(e.persisted) draw(); });
 
 // ---------- events ----------
 document.addEventListener('click', e => {
   const a = e.target.closest('a.go[data-pid]');
-  if(a){ COOL[a.dataset.pid] = Date.now(); store.set(COOL_KEY, COOL); setTimeout(draw, 400); return; }
+  if(a){
+    const pid = a.dataset.pid, at = Date.now(); COOL[pid] = at; store.set(COOL_KEY, COOL);
+    document.querySelectorAll('a.go[data-pid="' + pid + '"]').forEach(x => { x.classList.add('cool'); const sp = x.querySelector('span'); sp.firstChild.textContent = '⏳ ' + t('cooling'); if(!x.querySelector('.clock')) x.insertAdjacentHTML('beforeend', `<span class="clock" data-until="${at + 36e5}">${clock(36e5)}</span>`); });
+    tick(); return;
+  }
   const m = e.target.closest('[data-mode]'); if(m){ MODE = m.dataset.mode; store.set('rut:helper:mode', MODE); draw(); return; }
   if(e.target.closest('#resetCool')){ COOL = {}; store.set(COOL_KEY, COOL); draw(); return; }
   if(e.target.closest('#forget')){ MINE = null; store.set(MINE_KEY, null); MSG = ''; draw(); }

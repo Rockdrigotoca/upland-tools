@@ -52,10 +52,11 @@ window.Hunt = (() => {
   const n0 = x => Number(x).toLocaleString(Site.locale());
   const f1 = x => (Math.round(x * 10) / 10).toLocaleString(Site.locale());
   const pct = x => Math.round(x * 100) + '%';
-  const CAT = {resources:'#6aa84f', utility:'#c9893a', social:'#5b8def', care:'#d9627d', valuables:'#9b6bd6', junk:'#8a8a8a'};
-  const KIND = {structure:'#5b8def', plant:'#6aa84f', balloon:'#e5a54a'};
-  const LV = ['#8a8a8a', '#b87333', '#9aa3ad', '#d4a017'];
-  const MODEL = ['#e5a54a', '#d9627d', '#5b8def', '#6aa84f', '#9b6bd6'];
+  // Tableau's colour-blind-safe palette
+  const CAT = {resources:'#1170aa', utility:'#fc7d0b', social:'#5fa2ce', care:'#c85200', valuables:'#57606c', junk:'#a3acb9'};
+  const KIND = {structure:'#1170aa', plant:'#fc7d0b', balloon:'#a3acb9'};
+  const LV = ['#7b848f', '#c85200', '#a3cce9', '#ffbc79'];
+  const MODEL = ['#1170aa', '#fc7d0b', '#5fa2ce', '#c85200', '#a3acb9'];
   const AX = 'var(--muted)', GRID = 'var(--border)';
 
   // ---------- numbers ----------
@@ -68,7 +69,7 @@ window.Hunt = (() => {
   };
   const dayKey = ms => { const d = new Date(ms); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   const dayLabel = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(Site.locale(), {month:'short', day:'numeric'}); };
-  const niceMax = v => { if(v <= 0) return 1; const p = 10 ** Math.floor(Math.log10(v)), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; };
+  const niceMax = v => { if(v <= 0) return 1; const p = 10 ** Math.floor(Math.log10(v)), m = v / p; return (m <= 1.0001 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; };
 
   // ---------- svg pieces ----------
   const W = 640;
@@ -103,7 +104,7 @@ window.Hunt = (() => {
     let s = '';
     rows.forEach((x, i) => {
       const y = 4 + i * rh, w = x.v / mx * (W - l - r);
-      s += `<text x="${l - 6}" y="${y + 14}" text-anchor="end" fill="var(--text)">${esc(x.label.length > 26 ? x.label.slice(0, 25) + '…' : x.label)}</text><rect x="${l}" y="${y + 3}" width="${Math.max(w, 1)}" height="${rh - 7}" rx="3" fill="${x.c || 'var(--accent)'}"><title>${esc(x.label)}: ${n0(x.v)}</title></rect><text x="${l + w + 5}" y="${y + 14}" fill="${AX}">${opts.fmt ? opts.fmt(x.v) : n0(x.v)}</text>`;
+      s += `<text x="${l - 6}" y="${y + 14}" text-anchor="end" fill="var(--text)">${esc(x.label.length > 26 ? x.label.slice(0, 25) + '…' : x.label)}</text><rect x="${l}" y="${y + 3}" width="${Math.max(w, 1)}" height="${rh - 7}" rx="3" fill="${x.c || '#1170aa'}"><title>${esc(x.label)}: ${n0(x.v)}</title></rect><text x="${l + w + 5}" y="${y + 14}" fill="${AX}">${opts.fmt ? opts.fmt(x.v) : n0(x.v)}</text>`;
     });
     return svg(h, s, opts.label);
   };
@@ -114,7 +115,7 @@ window.Hunt = (() => {
     let s = frame(h, l, r, tp, b, ymax, opts.ylab, opts.xlab);
     for(let i = 0; i <= 4; i++) s += `<text x="${X(xmax * i / 4)}" y="${h - 12}" text-anchor="middle" fill="${AX}">${opts.xfmt ? opts.xfmt(xmax * i / 4) : n0(Math.round(xmax * i / 4))}</text>`;
     const d = pts.map((p, i) => (i ? 'L' : 'M') + X(p.x).toFixed(1) + ' ' + Y(p.y).toFixed(1)).join('');
-    s += `<path d="${d}L${X(pts[pts.length - 1].x).toFixed(1)} ${Y(0)}L${X(pts[0].x).toFixed(1)} ${Y(0)}Z" fill="${opts.c || 'var(--accent)'}" opacity=".16"/><path d="${d}" fill="none" stroke="${opts.c || 'var(--accent)'}" stroke-width="2"/>`;
+    s += `<path d="${d}L${X(pts[pts.length - 1].x).toFixed(1)} ${Y(0)}L${X(pts[0].x).toFixed(1)} ${Y(0)}Z" fill="${opts.c || '#1170aa'}" opacity=".16"/><path d="${d}" fill="none" stroke="${opts.c || '#1170aa'}" stroke-width="2"/>`;
     (opts.marks || []).forEach(m => { s += `<line x1="${X(m.x)}" x2="${X(m.x)}" y1="${tp}" y2="${h - b}" stroke="${AX}" stroke-dasharray="3 3"/><text x="${X(m.x) + 3}" y="${tp + 9}" fill="${AX}">${esc(m.label)}</text>`; });
     return svg(h, s, opts.label);
   };
@@ -125,7 +126,7 @@ window.Hunt = (() => {
     let s = frame(h, l, r, tp, b, ymax, opts.ylab, opts.xlab);
     for(let i = 0; i <= 4; i++) s += `<text x="${X(xmax * i / 4)}" y="${h - 14}" text-anchor="middle" fill="${AX}">${n0(Math.round(xmax * i / 4))}</text>`;
     if(opts.diag) s += `<line x1="${X(0)}" y1="${Y(0)}" x2="${X(Math.min(xmax, ymax))}" y2="${Y(Math.min(xmax, ymax))}" stroke="${AX}" stroke-dasharray="4 4"/>`;
-    pts.forEach(p => { s += `<circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="${p.r || 4}" fill="${p.c || 'var(--accent)'}" fill-opacity=".62" stroke="${p.c || 'var(--accent)'}"><title>${esc(p.title || '')}</title></circle>`; });
+    pts.forEach(p => { s += `<circle cx="${X(p.x).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="${p.r || 4}" fill="${p.c || '#1170aa'}" fill-opacity=".62" stroke="${p.c || '#1170aa'}"><title>${esc(p.title || '')}</title></circle>`; });
     return svg(h, s, opts.label);
   };
   const heat = (days, grid) => {
@@ -134,7 +135,7 @@ window.Hunt = (() => {
     for(let hr = 0; hr < 24; hr += 3) s += `<text x="${l + cw * hr + cw / 2}" y="${tp - 5}" text-anchor="middle" fill="${AX}">${hr}h</text>`;
     days.forEach((d, i) => {
       s += `<text x="${l - 6}" y="${tp + i * ch + 15}" text-anchor="end" fill="var(--text)">${esc(dayLabel(d))}</text>`;
-      grid[i].forEach((v, hr) => { s += `<rect x="${l + cw * hr + 1}" y="${tp + i * ch + 1}" width="${cw - 2}" height="${ch - 2}" rx="3" fill="${v ? 'var(--accent)' : 'var(--surface-2)'}" fill-opacity="${v ? (0.14 + 0.86 * Math.sqrt(v / mx)).toFixed(2) : 1}"><title>${esc(dayLabel(d))} ${hr}h: ${v}</title></rect>`; });
+      grid[i].forEach((v, hr) => { s += `<rect x="${l + cw * hr + 1}" y="${tp + i * ch + 1}" width="${cw - 2}" height="${ch - 2}" rx="3" fill="${v ? '#1170aa' : 'var(--surface-2)'}" fill-opacity="${v ? (0.14 + 0.86 * Math.sqrt(v / mx)).toFixed(2) : 1}"><title>${esc(dayLabel(d))} ${hr}h: ${v}</title></rect>`; });
     });
     return svg(h, s, '');
   };
@@ -151,7 +152,7 @@ window.Hunt = (() => {
       if(vert){ lay(a, x, y, w * fa, hh, !vert); lay(bb, x + w * fa, y, w * (1 - fa), hh, !vert); }
       else { lay(a, x, y, w, hh * fa, !vert); lay(bb, x, y + hh * fa, w, hh * (1 - fa), !vert); }
     };
-    const cell = (it, x, y, w, hh) => `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(w - 2, 0).toFixed(1)}" height="${Math.max(hh - 2, 0).toFixed(1)}" rx="3" fill="${it.c}" fill-opacity="${it.o || 0.85}"><title>${esc(it.label)}: ${n0(it.v)}</title></rect>`
+    const cell = (it, x, y, w, hh) => `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(w - 2, 0).toFixed(1)}" height="${Math.max(hh - 2, 0).toFixed(1)}" rx="3" fill="${it.c}" fill-opacity="${it.o || 0.9}"><title>${esc(it.label)}: ${n0(it.v)}</title></rect>`
       + (w > 52 && hh > 16 ? `<text x="${(x + 5).toFixed(1)}" y="${(y + 13).toFixed(1)}" fill="#fff" style="font-size:${w > 90 ? 11 : 9}px;paint-order:stroke;stroke:rgba(0,0,0,.35);stroke-width:2px">${esc(it.label.length > Math.floor(w / 6.2) ? it.label.slice(0, Math.max(Math.floor(w / 6.2) - 1, 2)) + '…' : it.label)}</text>` : '');
     lay(items.slice().sort((a, b) => b.v - a.v), 0, 0, W, h, true);
     return svg(h, s, '');
@@ -193,8 +194,8 @@ window.Hunt = (() => {
     const kc = kinds.map(k => KIND[k]);
     out.push(card(T('sDay'), T('sDayN'),
       columns(perDay.map(x => ({label:dayLabel(x.d), parts:kinds.map(k => x.rows.filter(r => r.kind === k).length)})), kc, {names:kinds.map(k => kindName[k]), label:T('sDay')}) + legend(kinds.map(k => ({c:KIND[k], l:kindName[k]})))
-      + grid([`<div><div class="small muted" style="margin:10px 0 2px">${esc(T('sMin'))}</div>${columns(perDay.map(x => ({label:dayLabel(x.d), parts:[Math.round(x.min)]})), ['#9b6bd6'], {h:150, label:T('sMin')})}</div>`,
-        `<div><div class="small muted" style="margin:10px 0 2px">${esc(T('sRate'))}</div>${columns(perDay.map(x => ({label:dayLabel(x.d), parts:[x.min ? Math.round(x.rows.length / x.min * 10) / 10 : 0]})), ['#d9627d'], {h:150, label:T('sRate')})}</div>`])));
+      + grid([`<div><div class="small muted" style="margin:10px 0 2px">${esc(T('sMin'))}</div>${columns(perDay.map(x => ({label:dayLabel(x.d), parts:[Math.round(x.min)]})), ['#5fa2ce'], {h:150, label:T('sMin')})}</div>`,
+        `<div><div class="small muted" style="margin:10px 0 2px">${esc(T('sRate'))}</div>${columns(perDay.map(x => ({label:dayLabel(x.d), parts:[x.min ? Math.round(x.rows.length / x.min * 10) / 10 : 0]})), ['#fc7d0b'], {h:150, label:T('sRate')})}</div>`])));
 
     // heat
     const g = days.map(d => { const a = new Array(24).fill(0); rows.forEach(r => { if(r.day === d) a[r.hour]++; }); return a; });
@@ -215,7 +216,7 @@ window.Hunt = (() => {
     const dayMarks = []; days.forEach(d => { const i = rows.findIndex(r => r.day === d); if(i > 0) dayMarks.push({x:i, label:dayLabel(d)}); });
     out.push(card(T('sDisc'), T('sDiscN'), grid([
       `<div>${line(curve, {xlab:T('axN'), ylab:T('axT'), marks:dayMarks, label:T('sDisc'), h:210})}</div>`,
-      `<div><div class="small muted" style="margin:0 0 2px">${esc(T('sPar'))} · ${esc(T('sParN'))}</div>${line(par, {xlab:T('axRank'), ylab:T('axShare') + ' %', ymax:100, xfmt:x => Math.round(x), c:'#d9627d', label:T('sPar'), h:210})}</div>`])));
+      `<div><div class="small muted" style="margin:0 0 2px">${esc(T('sPar'))} · ${esc(T('sParN'))}</div>${line(par, {xlab:T('axRank'), ylab:T('axShare') + ' %', ymax:100, xfmt:x => Math.round(x), c:'#fc7d0b', label:T('sPar'), h:210})}</div>`])));
 
     // cities
     const byCity = new Map(); rows.forEach(r => { if(!byCity.has(r.city)) byCity.set(r.city, []); byCity.get(r.city).push(r); });
@@ -230,7 +231,7 @@ window.Hunt = (() => {
     const cityMix = cityRows.slice(0, 8).map(x => ({label:x.c, parts:cats.map(c => byCity.get(x.c).filter(r => catOf(r.trove) === c).reduce((a, r) => a + r.q, 0))}));
     const cityMixPct = cityMix.map(m => { const s = m.parts.reduce((a, b) => a + b, 0) || 1; return {label:m.label, parts:m.parts.map(v => v / s * 100)}; });
     out.push(card(T('sCat'), T('sCatN'), treemap(tm.slice(0, 80)) + legend(cats.map(c => ({c:CAT[c], l:c + ' ' + n0(catQ[c] || 0)})))
-      + `<h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sCatCity'))}</h3>` + columns(cityMixPct, cats.map(c => CAT[c]), {names:cats, total:false, label:T('sCatCity')}).replace(/>(\d+(?:\.\d)?)<\/text>/g, '>$1<')));
+      + `<h3 style="margin:12px 0 4px;font-size:1em">${esc(T('sCatCity'))}</h3>` + columns(cityMixPct, cats.map(c => CAT[c]), {names:cats, total:false, label:T('sCatCity')})));
 
     // levels
     if(ctx.bal){
@@ -250,9 +251,9 @@ window.Hunt = (() => {
     const rep = rows.filter(r => r.gap != null && r.kind !== 'balloon'), bins = new Array(37).fill(0), dust = new Array(37).fill(0).map(() => [0, 0]);
     rep.forEach(r => { const b = Math.min(Math.floor(r.gap / 5), 36); bins[b]++; dust[b][0] += r.trove === 'Trove Dust' ? 1 : 0; dust[b][1]++; });
     const hist = bins.map((v, i) => ({label:i * 5 + (i === 36 ? '+' : ''), parts:[v]}));
-    out.push(card(T('sGap'), T('sGapN'), columns(hist, ['#5b8def'], {h:200, total:false, label:T('sGap')}) + `<p class="small muted" style="margin:2px 0 0">${esc(T('axGap'))} →</p>`));
+    out.push(card(T('sGap'), T('sGapN'), columns(hist, ['#1170aa'], {h:200, total:false, label:T('sGap')}) + `<p class="small muted" style="margin:2px 0 0">${esc(T('axGap'))} →</p>`));
     const dp = dust.map(([d, n], i) => ({x:i * 5, y:n >= 5 ? d / n * 100 : 0}));
-    out.push(card(T('sDust'), T('sDustN'), line(dp, {xlab:T('axGap'), ylab:T('axDust') + ' %', ymax:100, c:'#d9627d', xfmt:x => Math.round(x), label:T('sDust'), h:200})));
+    out.push(card(T('sDust'), T('sDustN'), line(dp, {xlab:T('axGap'), ylab:T('axDust') + ' %', ymax:100, c:'#c85200', xfmt:x => Math.round(x), label:T('sDust'), h:200})));
 
     // balloons
     const B = rows.filter(r => r.kind === 'balloon');
