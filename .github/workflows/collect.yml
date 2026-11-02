@@ -152,7 +152,8 @@ jobs:
         id: savereach
         if: contains(format(',{0},', env.JOBS), ',reach,')
         run: |
-          out=$(bash tools/commit_data.sh "data: refresh cheaper places to stand" data/troves/reach data/troves/reach-state.json)
+          python3 tools/build_reach.py
+          out=$(bash tools/commit_data.sh "data: refresh cheaper places to stand" data/troves/reach data/troves/reach-state.json data/troves/reach-best.json)
           echo "$out"
           case "$out" in *Pushed*) echo "pushed=yes" >> "$GITHUB_OUTPUT";; *) echo "pushed=no" >> "$GITHUB_OUTPUT";; esac
 

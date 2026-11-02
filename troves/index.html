@@ -122,7 +122,7 @@ Site.register({
     bMode:'Reserve', bCareful:'Careful', bRelaxed:'Relaxed', bModeN:'Careful keeps 5× what a recipe needs of scarce troves and 2× of the rest. Relaxed keeps 3× and 1×.',
     colToGold:'Total to Gold', bronze:'Bronze', silver:'Silver', gold:'Gold',
     fHint:'Type a trove name', fHeld:'You hold {n}', fNotOwned:'Not in your inventory', fFound:'Found in', fCraftedAt:'Crafted at', fUsedIn:'Used in', fNothing:'No troves match.',
-    tHunt:'Hunting dashboard',
+    tHunt:'Hunting dashboard', rcLabel:'Stand at a cheaper property within', rcOff:'Off', rcWas:'was {n}, {m} m away',
     tGold:'Gold road', gGold:'Gold on every trove', mGold:'For the gold road, the biggest city is {city}: {n} structures, and {p}% of what they give is still useful (Gold road).',
     hGold:'Gold road', hGoldD:'The long goal: bronze, silver and gold on every trove. It counts what you still need to bank, which troves are the bottleneck, the cities that fit best, and what you can craft from stock you do not need for gold.',
     grH:'Gold on every trove', grN:'Banking uses the troves up, so a trove that is not at gold yet is not spare. Spare is only what you hold above what its gold still costs.',
@@ -185,7 +185,7 @@ Site.register({
     bMode:'Reserva', bCareful:'Cuidadosa', bRelaxed:'Relajada', bModeN:'Cuidadosa guarda 5× lo que pide una receta de los troves escasos y 2× del resto. Relajada guarda 3× y 1×.',
     colToGold:'Total hasta Oro', bronze:'Bronce', silver:'Plata', gold:'Oro',
     fHint:'Escribe el nombre de un trove', fHeld:'Tienes {n}', fNotOwned:'No está en tu inventario', fFound:'Se encuentra en', fCraftedAt:'Se craftea en', fUsedIn:'Usado en', fNothing:'Ningún trove coincide.',
-    tHunt:'Panel de caza',
+    tHunt:'Panel de caza', rcLabel:'Pararse en una propiedad más barata a menos de', rcOff:'Apagado', rcWas:'era {n}, a {m} m',
     tGold:'Camino al oro', gGold:'Oro en cada trove', mGold:'Para el camino al oro, la ciudad más grande es {city}: {n} estructuras, y el {p}% de lo que dan aún sirve (Camino al oro).',
     hGold:'Camino al oro', hGoldD:'La meta larga: bronce, plata y oro en cada trove. Cuenta lo que aún te falta bancar, qué troves son el cuello de botella, las ciudades que mejor encajan y lo que puedes craftear con lo que no necesitas para el oro.',
     grH:'Oro en cada trove', grN:'Bancar gasta los troves, así que uno que aún no está en oro no es sobrante. Sobrante es solo lo que tienes por encima de lo que aún cuesta su oro.',
@@ -215,7 +215,7 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
+let REACH = null, REACHM = store.get('rut:troves:reachm', 80), HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
@@ -457,19 +457,20 @@ function spots(names, k){
   }
   return spotMemo.get(key).slice(0, k);
 }
-const feeTxt = pid => FEES && FEES[pid] != null ? ` · ${FEES[pid]} UPX` : '';
-const spotBtn = pr => `<a class="btn small" target="_blank" rel="noopener" data-pid="${pr[0]}" href="${UPLAND(pr[0])}">📍 ${esc(pr[1])}${feeTxt(pr[0])} ↗</a>`;
+const feeTxt = pid => { const h = hop(pid); return h ? ` · ${h.fee} UPX` + (h.was != null ? ` (${t('rcWas', {n:h.was, m:h.m})})` : '') : FEES && FEES[pid] != null ? ` · ${FEES[pid]} UPX` : ''; };
+const spotBtn = pr => `<a class="btn small" target="_blank" rel="noopener" data-pid="${pr[0]}" href="${go(pr[0])}">📍 ${esc(pr[1])}${feeTxt(pr[0])} ↗</a>`;
 function spotBtns(names, k = 3){
   const r = spots(names, 10);
   if(r === null) return `<span class="muted small">${esc(t('spLoad'))}</span>`;
   if(!r.length) return `<span class="muted small">${esc(t('spNone'))}</span>`;
   return `<div class="spots">${r.slice(0, k).map(spotBtn).join('')}</div>${r.length > k ? `<details class="more"><summary>${esc(t('spMore', {n:r.length - k}))}</summary><div class="spots">${r.slice(k).map(spotBtn).join('')}</div></details>` : ''}`;
 }
+const reachSel = () => REACH ? `<label class="small row" style="gap:6px">${esc(t('rcLabel'))} <select id="reachm"><option value="0"${REACHM ? '' : ' selected'}>${esc(t('rcOff'))}</option><option value="80"${REACHM === 80 ? ' selected' : ''}>80 m</option><option value="100"${REACHM === 100 ? ' selected' : ''}>100 m</option></select></label>` : '';
 function cityBar(){
   ensureCity();
   const cs = (WORLD ? WORLD.cities : []).filter(c => c.kind === 'scan' && c.done).sort((a, b) => a.name.localeCompare(b.name));
   if(!cs.length) return '';
-  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label></div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))} ${esc(t('coolHint'))} <button type="button" class="btn small" id="clearCool">${esc(t('coolClear'))}</button></p>`;
+  return `<div class="sel" style="margin:8px 0"><label class="small row" style="gap:6px">${esc(t('spCity'))} <select id="cityq">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select></label>${reachSel()}</div><p class="hint" style="margin:0 0 8px">${esc(t('spHint'))} ${esc(t('coolHint'))} <button type="button" class="btn small" id="clearCool">${esc(t('coolClear'))}</button></p>`;
 }
 // a trove name that opens to the structures that give it
 const nameWith = n => { const p = PLACES.get(n); return p && p.structures.length ? `<details class="more"><summary><b>${esc(n)}</b></summary><div class="places">${esc(p.structures.join(', '))}${p.plants.length ? ` · ${esc(t('plantsLbl'))}: ${esc(p.plants.join(', '))}` : ''}</div></details>` : `<b>${esc(n)}</b>`; };
@@ -558,7 +559,7 @@ function buildNextCard(left){
     const allFit = vacant.filter(r => need == null || (r[3] || 0) >= need), fit = allFit.filter(r => !shownAt.has(r[0])).sort((a, b) => (a[3] || 0) - (b[3] || 0));
     const byCity = new Map(); fit.forEach(r => byCity.set(r[2], [...(byCity.get(r[2]) || []), r]));
     const cs = [...byCity.entries()].sort((a, b) => b[1].length - a[1].length), extra = cs.length > 5 ? `<div class="small muted">${esc(t('spMore', {n:cs.length - 5}))}</div>` : '';
-    const where = byCity.size ? cs.slice(0, 5).map(([c, rs]) => `<div class="small"><b>${esc(c)}</b> <span class="muted">(${rs.length})</span> ${rs.slice(0, 2).map(r => { shownAt.add(r[0]); return `<a class="btn small" target="_blank" rel="noopener" data-pid="${r[0]}" href="${UPLAND(r[0])}">📍 ${esc(r[1])} · ${r[3]} UP2 ↗</a>`; }).join(' ')}</div>`).join('') + extra : `<span class="muted small">${esc(allFit.length ? t('bnxTaken') : t('bnxNoFit'))}</span>`;
+    const where = byCity.size ? cs.slice(0, 5).map(([c, rs]) => `<div class="small"><b>${esc(c)}</b> <span class="muted">(${rs.length})</span> ${rs.slice(0, 2).map(r => { shownAt.add(r[0]); return `<a class="btn small" target="_blank" rel="noopener" data-pid="${r[0]}" href="${go(r[0])}">📍 ${esc(r[1])} · ${r[3]} UP2 ↗</a>`; }).join(' ')}</div>`).join('') + extra : `<span class="muted small">${esc(allFit.length ? t('bnxTaken') : t('bnxNoFit'))}</span>`;
     return `<tr><td class="n">${i + 1}</td><td><b>${esc(pk.e.name)}</b></td><td class="n" data-v="${pk.got.length}"><b>${pk.got.length}</b></td><td class="small">${pk.got.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}</span>`).join(', ')}</td><td class="small">${esc(size)}</td><td>${where}</td></tr>`;
   });
   return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('bnxH'))} <span class="tag">${picks.length}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('bnxN', {n:left.length}))}</p>
@@ -619,14 +620,14 @@ function ownCraftCard(){
   }
   stops.sort((a, b) => String(a.r[2]).localeCompare(String(b.r[2])) || a.r[1].localeCompare(b.r[1]));
   const covered = wanted.length - left.size;
-  const rows = stops.map((s, i) => `<tr><td class="n">${i + 1}</td><td>${esc(s.r[2])}</td><td><a class="btn small" target="_blank" rel="noopener" data-pid="${s.r[0]}" href="${UPLAND(s.r[0])}">📍 ${esc(s.r[1])} ↗</a></td>
+  const rows = stops.map((s, i) => `<tr><td class="n">${i + 1}</td><td>${esc(s.r[2])}</td><td><a class="btn small" target="_blank" rel="noopener" data-pid="${s.r[0]}" href="${go(s.r[0])}">📍 ${esc(s.r[1])} ↗</a></td>
     <td>${[...s.byStruct.entries()].map(([st, ns]) => `<div class="small"><b>${esc(st)}</b>: ${ns.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}</span>`).join(', ')}</div>`).join('')}</td><td class="n">${[...s.byStruct.values()].reduce((a, b) => a + b.length, 0)}</td></tr>`);
   const own = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('owN', {n:covered, m:wanted.length}))}</p>
     ${rows.length ? tbl([[t('owStop'), 'n'], [t('owCity')], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) : `<p class="muted small" style="margin:0">${esc(t('owNone'))}</p>`}</div>`;
   if(!left.size) return own;
   const buildNext = buildNextCard([...left]);
   const fmt = o => t('owPlain', {km:o.km.toFixed(1), fee:o.fee == null ? t('owUnk') : o.fee + ' UPX'});
-  const btn = o => `<a class="btn small" target="_blank" rel="noopener" data-pid="${o.p[0]}" href="${UPLAND(o.p[0])}">📍 ${esc(o.p[1])} ↗</a>`;
+  const btn = o => `<a class="btn small" target="_blank" rel="noopener" data-pid="${o.p[0]}" href="${go(o.p[0])}">📍 ${esc(o.p[1])}${hop(o.p[0]) ? feeTxt(o.p[0]) : ''} ↗</a>`;
   // One row per address: a visit covers every craft that structure can do, and an address is never listed twice.
   const near = new Map(), cheap = new Map(), skipped = [];
   [...left].sort().forEach(n => {
@@ -753,7 +754,7 @@ function viewGold(){
       body = `<div class="chips2"><button type="button" data-hood="-1" class="${HOOD === -1 ? 'on' : ''}">${esc(t('wAll'))}</button>${[...byHood.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([h]) => `<button type="button" data-hood="${h}" class="${HOOD === h ? 'on' : ''}">${esc(cd.hoods[h])}</button>`).join('')}</div>`
         + tbl([[t('wAddr')], [t('wHood')], [t('grUse'), 'n'], [t('grGives')], [t('wFee'), 'n'], [t('wDist'), 'n'], ['']], shown.map(h => `<tr><td><b>${esc(h.pr[1])}</b></td><td class="small">${esc(cd.hoods[h.pr[4]])}</td><td class="n"><b>${h.u.toFixed(1)}</b></td>
           <td class="places">${esc(h.gives.slice(0, 10).join(', '))}${h.gives.length > 10 ? ' …' : ''}</td><td class="n">${FEES && FEES[h.pr[0]] != null ? FEES[h.pr[0]] : '—'}</td><td class="n">${distTo(cd, h.pr)}</td>
-          <td style="white-space:nowrap"><a class="btn small primary" target="_blank" rel="noopener" data-pid="${h.pr[0]}" href="${UPLAND(h.pr[0])}">${esc(t('wOpen'))} ↗</a> <button type="button" class="btn small" data-copy="${esc(h.pr[1])}">${esc(t('wCopy'))}</button></td></tr>`))
+          <td style="white-space:nowrap"><a class="btn small primary" target="_blank" rel="noopener" data-pid="${h.pr[0]}" href="${go(h.pr[0])}">${esc(t('wOpen'))} ↗</a> <button type="button" class="btn small" data-copy="${esc(h.pr[1])}">${esc(t('wCopy'))}</button></td></tr>`))
         + `<p class="hint">${esc(t('wShown', {a:shown.length, b:all.length}))}</p>`;
     }
     spots = sec(t('grSpotsH', {city:cname}), t('grSpotsN'), cityBar() + `<label class="small row" style="gap:6px;margin-bottom:6px"><input type="checkbox" id="radius" ${RADIUS ? 'checked' : ''}> ${esc(t('rad'))}</label>` + body);
@@ -805,7 +806,7 @@ function viewSpecial(){
     <div class="small muted" style="margin:6px 0">${esc(i ? t('spLeg', {km:n0(Math.round(s.leg))}) : t('spStart'))}</div>${results(s.cid)}
     ${s.list.length ? '' : ((SPECIAL.plain || []).includes(Number(s.cid)) ? `<p class="hint" style="margin:0 0 6px">${esc(t('spPlain'))}</p><button type="button" class="btn small primary" data-gocity="${s.cid}">${esc(t('spPlainBtn'))}</button>` : `<p class="hint" style="margin:0">${esc(t('spFishOnly'))}</p>`)}${s.list.map(x => `<div style="margin:8px 0;padding-top:8px;border-top:1px solid var(--border)"><b>${esc(x.name)}</b> <span class="tag">${esc(t('spBuilt', {n:x.n}))}</span>
       <div class="small" style="margin:4px 0">${x.troves.length ? `<span class="muted">${esc(t('spGives'))}:</span> ${x.troves.map(n => `<span style="white-space:nowrap">${thumb(n)}${esc(n)}${need.has(n) ? ` <span class="tag good">${esc(t('spNeed'))}</span>` : ''}</span>`).join(', ')}` : `<span class="muted">${esc(t('spNoTroves'))}</span>`}</div>
-      <div class="muted small">${esc(t('spVisit'))}</div><div class="spots">${x.spots.map(p => `<a class="btn small" target="_blank" rel="noopener" data-pid="${p[0]}" href="${UPLAND(p[0])}">📍 ${esc(p[1])} · ${esc(p[2])}${feeTxt(p[0])} ↗</a>`).join('')}</div></div>`).join('')}</details>`;
+      <div class="muted small">${esc(t('spVisit'))}</div><div class="spots">${x.spots.map(p => `<a class="btn small" target="_blank" rel="noopener" data-pid="${p[0]}" href="${go(p[0])}">📍 ${esc(p[1])} · ${esc(p[2])}${feeTxt(p[0])} ↗</a>`).join('')}</div></div>`).join('')}</details>`;
   }).join('');
   // the cities side by side, for the end
   const seen = new Set(), rows = [];
@@ -912,6 +913,9 @@ function viewWorldTables(){
 }
 
 const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
+// A costly structure property often has a cheaper property within reach: stand there instead, and trove the structure from there.
+const hop = pid => { const b = REACH && REACHM ? REACH['best' + REACHM][pid] : null; return b ? {pid:b[0], fee:b[1], m:b[2], was:FEES ? FEES[pid] : null} : null; };
+const go = pid => UPLAND((hop(pid) || {pid}).pid);
 async function loadCity(cid){
   if(!cid || cid in CITYDATA) return;
   CITYDATA[cid] = null;
@@ -973,7 +977,7 @@ function viewWorld(){
     body = `<div class="chips2"><button type="button" data-hood="-1" class="${HOOD === -1 ? 'on' : ''}">${esc(t('wAll'))}</button>${hoodW.map(([h]) => `<button type="button" data-hood="${h}" class="${HOOD === h ? 'on' : ''}">${esc(cd.hoods[h])}</button>`).join('')}</div>`
       + tbl([[t('wAddr')], [t('wHood')], [t('wGivesList')], [t('wVia')], [t('wFee'), 'n'], [t('wDist'), 'n'], ['']], shown.map(h => `<tr><td><b>${esc(h.pr[1])}</b></td><td class="small">${esc(cd.hoods[h.pr[4]])}</td>
           <td><b>${h.gives.length}</b> <span class="muted small">· ${esc(h.gives.join(', '))}</span></td><td class="places">${esc(h.via.join(', '))}</td><td class="n">${FEES && FEES[h.pr[0]] != null ? FEES[h.pr[0]] : '—'}</td><td class="n">${distTo(cd, h.pr)}</td>
-          <td style="white-space:nowrap"><a class="btn small primary" target="_blank" rel="noopener" data-pid="${h.pr[0]}" href="${UPLAND(h.pr[0])}">${esc(t('wOpen'))} ↗</a> <button type="button" class="btn small" data-copy="${esc(h.pr[1])}">${esc(t('wCopy'))}</button></td></tr>`))
+          <td style="white-space:nowrap"><a class="btn small primary" target="_blank" rel="noopener" data-pid="${h.pr[0]}" href="${go(h.pr[0])}">${esc(t('wOpen'))} ↗</a> <button type="button" class="btn small" data-copy="${esc(h.pr[1])}">${esc(t('wCopy'))}</button></td></tr>`))
       + `<p class="hint">${esc(t('wShown', {a:shown.length, b:all.length}))}</p>`;
   }
   const partial = !city.done ? `<div class="card" style="margin-bottom:8px">${esc(t('wPartial', {n:n0(city.read), t:n0(city.total)}))}</div>` : '';
@@ -1055,6 +1059,7 @@ document.addEventListener('change', e => {
   if(e.target.id === 'file') takeFile(e.target.files[0]);
   const gk = {'g-bank':'bank', 'g-bonus':'bonus', 'g-discover':'discover', 'g-gold':'gold'}[e.target.id]; if(gk){ GOAL[gk] = e.target.checked; store.set('rut:troves:goal', GOAL); draw(); return; }
   if(e.target.id === 'bonusT'){ BONUS_T = Math.max(1, Math.min(500, Math.round(Number(e.target.value)) || 20)); store.set('rut:troves:bonusT', BONUS_T); draw(); return; }
+  if(e.target.id === 'reachm'){ REACHM = Number(e.target.value); store.set('rut:troves:reachm', REACHM); draw(); return; }
   if(e.target.id === 'cityq'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); return; }
   if(e.target.id === 'city'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); }
   if(e.target.id === 'radius'){ RADIUS = e.target.checked; store.set('rut:troves:radius', RADIUS); draw(); return; }
@@ -1091,6 +1096,7 @@ async function boot(){
   try{ const f = await fetch('../data/troves/fees.json').then(x => x.ok ? x.json() : null); FEES = f ? f.fees : null; }catch{ FEES = null; }
   try{ SPECIAL = await fetch('../data/troves/city-specific.json').then(x => x.ok ? x.json() : null); }catch{ SPECIAL = null; }
   try{ RESULTS = await fetch('../data/troves/special-results.json').then(x => x.ok ? x.json() : null); }catch{ RESULTS = null; }
+  try{ REACH = await fetch('../data/troves/reach-best.json').then(x => x.ok ? x.json() : null); }catch{ REACH = null; }
   try{ HUNTS = await fetch('../data/troves/rockdrigo/hunts.json').then(x => x.ok ? x.json() : null); }catch{ HUNTS = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();
