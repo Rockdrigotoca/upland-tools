@@ -109,6 +109,7 @@ Site.register({
     upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
     tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tWorld:'Grind map', tSpecial:'Special builds', tFind:'Look up',
     spH:'Structures that exist in only one city', spN:'Each of these is built in a single scanned city. Troves have a one-hour cooldown, so plan 3 or 4 searches per city. The order below is the shortest trip by air distance, starting from {start}.', spRoute:'Suggested trip', spLeg:'{km} km from the last stop', spStart:'Start', spFishOnly:'No special build here: this is the starting stop, for the other troves of the city.', spBuilt:'{n} built', spGives:'Gives', spNoTroves:'No troves known for this one yet. It may hold a trove we have not seen: worth a visit to find out.', spNeed:'you need it', spTotal:'{n} cities, about {km} km in all', spVisit:'Properties to visit',
+    pctH:'In percent', pctN:'Where you stand, against the {b} troves that bank and the {m} in the game.', pctFound:'Troves discovered', pctAny:'Banked at bronze or better', pctSilver:'Banked at silver or better', pctGold:'Banked at gold', pctLv:'All banking levels reached', pctRec:'Recipes you can craft now', pctOf:'{a} of {b}',
     dFound:'Troves discovered', dHidden:'{n} still hidden', dBank:'Banking', dBankLv:'{a} of {b} banking levels', dReady:'{n} steps ready now, {l} levels more with {c} crafts (see Easy wins)', dGold:'Gold', dSilver:'Silver', dBronze:'Bronze', dNotBanked:'Not banked',
     dRecipes:'Recipes', dCraftable:'Craftable now', dOneShort:'1 trove short', dTwoShort:'2 short', dMoreShort:'3 or more short', dNewCraft:'{n} new troves you can craft right now', dMoves:'Next moves',
     mFind:'Find {names}: they hold up the most recipes (Find first).', mCraft:'Craft {n} new troves (Craft now). Each is a discovery.', mBank:'Bank {n} steps that are ready, and craft toward {m} more levels (Easy wins).', mCity:'Go to {city}: it has {n} of your {m} missing troves (Grind map).',
@@ -175,6 +176,7 @@ Site.register({
     upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
     tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tWorld:'Mapa de grind', tSpecial:'Construcciones especiales', tFind:'Consultar',
     spH:'Estructuras que existen en una sola ciudad', spN:'Cada una está construida en una sola ciudad escaneada. Los troves tienen una hora de espera, así que planea 3 o 4 búsquedas por ciudad. El orden de abajo es el viaje más corto por distancia aérea, empezando en {start}.', spRoute:'Viaje sugerido', spLeg:'{km} km desde la parada anterior', spStart:'Inicio', spFishOnly:'Aquí no hay construcción especial: es la parada de inicio, para los otros troves de la ciudad.', spBuilt:'{n} construidas', spGives:'Da', spNoTroves:'Aún no se conocen troves de esta. Puede tener uno que no hemos visto: vale la visita para averiguarlo.', spNeed:'te falta', spTotal:'{n} ciudades, unos {km} km en total', spVisit:'Propiedades para visitar',
+    pctH:'En porcentaje', pctN:'Dónde estás, frente a los {b} troves que se bancan y los {m} del juego.', pctFound:'Troves descubiertos', pctAny:'En banco bronce o mejor', pctSilver:'En banco plata o mejor', pctGold:'En banco oro', pctLv:'Todos los niveles de banco', pctRec:'Recetas que puedes craftear ya', pctOf:'{a} de {b}',
     dFound:'Troves descubiertos', dHidden:'{n} aún ocultos', dBank:'Banco', dBankLv:'{a} de {b} niveles de banco', dReady:'{n} pasos listos ya, {l} niveles más con {c} crafteos (ver Fáciles)', dGold:'Oro', dSilver:'Plata', dBronze:'Bronce', dNotBanked:'Sin bancar',
     dRecipes:'Recetas', dCraftable:'Crafteables ya', dOneShort:'Falta 1 trove', dTwoShort:'Faltan 2', dMoreShort:'Faltan 3 o más', dNewCraft:'{n} troves nuevos que puedes craftear ya', dMoves:'Próximos pasos',
     mFind:'Busca {names}: frenan más recetas (Buscar primero).', mCraft:'Craftea {n} troves nuevos (Craftear ya). Cada uno es un descubrimiento.', mBank:'Banquea {n} pasos listos y craftea hacia {m} niveles más (Fáciles).', mCity:'Ve a {city}: tiene {n} de tus {m} troves faltantes (Mapa de grind).',
@@ -336,7 +338,7 @@ function analyse(d){
     if(okName.has(r.name)) e.alt++; else if(!items.has(r.name)) e.newT.add(r.name); else e.stuck.add(r.name);
     block.set(s.n, e);
   }));
-  const blockers = [...block.values()].map(e => ({...e, newT:[...e.newT], stuck:[...e.stuck]})).sort((a, b) => b.newT.length - a.newT.length || b.stuck.length - a.stuck.length || b.recipes - a.recipes || b.alone - a.alone);
+  const blockers = [...block.values()].filter(e => findable(e.n)).map(e => ({...e, newT:[...e.newT], stuck:[...e.stuck]})).sort((a, b) => b.newT.length - a.newT.length || b.stuck.length - a.stuck.length || b.recipes - a.recipes || b.alone - a.alone);
   const sites = n => { const p = PLACES.get(n); return p ? p.structures.length + p.plants.length : null; };
   const [mS, mR] = mode === 'careful' ? [5, 2] : [3, 1];
   const prot = new Set();
@@ -849,7 +851,11 @@ function viewOverview(){
   const cats = new Map(); its.forEach(i => { const c = cats.get(i.cat) || [0, 0, 0, 0]; c[Math.min(i.lvl, 3)]++; cats.set(i.cat, c); });
   const catRows = [...cats.entries()].sort((a, b) => b[1].reduce((x, y) => x + y, 0) - a[1].reduce((x, y) => x + y, 0)).map(([name, c]) => `<tr><td><b>${esc(name)}</b></td><td class="n">${c.reduce((x, y) => x + y, 0)}</td><td style="min-width:140px">${bar([{v:c[3], c:COL.gold, l:t('dGold')}, {v:c[2], c:COL.silver, l:t('dSilver')}, {v:c[1], c:COL.bronze, l:t('dBronze')}, {v:c[0], c:COL.none, l:t('dNotBanked')}]).split('<div class="legend">')[0]}</td></tr>`).join('');
   const help = [['hOver', 'hOverD'], ['hFirst', 'hFirstD'], ['hCraft', 'hCraftD'], ['hEasy', 'hEasyD'], ['hGold', 'hGoldD'], ['hBank', 'hBankD'], ['hWorld', 'hWorldD'], ['hFind', 'hFindD']];
-  return sharedBox() + goalsCard() + `<div class="dash">
+  const bankable = its.filter(i => i.th.length), nb = bankable.length || 1, atLv = k => bankable.filter(i => i.lvl >= k).length;
+  const pcts = [[t('pctFound'), found, max, COL.ok], [t('pctAny'), atLv(1), nb, COL.bronze], [t('pctSilver'), atLv(2), nb, COL.silver], [t('pctGold'), atLv(3), nb, COL.gold], [t('pctLv'), banked, possible || 1, COL.ok], [t('pctRec'), A.craftN, A.recs.length || 1, COL.ok]];
+  const pctCard = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('pctH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('pctN', {b:n0(bankable.length), m:n0(max)}))}</p>`
+    + pcts.map(([l, a, b, c]) => `<div style="margin:6px 0"><div class="row" style="justify-content:space-between;gap:8px"><span>${esc(l)}</span><span><b>${Math.round(a / b * 1000) / 10}%</b> <span class="muted small">${esc(t('pctOf', {a:n0(a), b:n0(b)}))}</span></span></div>${bar([{v:a, c, l}, {v:Math.max(0, b - a), c:COL.dim, l:''}])}</div>`).join('') + `</div>`;
+  return sharedBox() + goalsCard() + pctCard + `<div class="dash">
     <div class="card"><h2>${esc(t('dFound'))}</h2><div class="big">${n0(found)} <span class="muted small">/ ${n0(max)}</span></div>${bar([{v:found, c:COL.ok, l:t('dFound')}, {v:Math.max(0, max - found), c:COL.dim, l:t('dHidden', {n:n0(max - found)})}])}</div>
     ${GOAL.bank ? `<div class="card"><h2>${esc(t('dBank'))}</h2><div class="big">${esc(t('dBankLv', {a:n0(banked), b:n0(possible)}))}</div>${bar([{v:lv[3], c:COL.gold, l:t('dGold')}, {v:lv[2], c:COL.silver, l:t('dSilver')}, {v:lv[1], c:COL.bronze, l:t('dBronze')}, {v:lv[0], c:COL.none, l:t('dNotBanked')}])}
       <p class="small muted" style="margin:8px 0 0">${esc(t('dReady', {n:ready.length, l:workLv + readyLv, c:n0(workCr)}))}</p></div>` : ''}
@@ -1008,11 +1014,13 @@ function unlockTxt(b){
   if(b.alt) parts.push(`<span class="muted">${esc(t('unAlt', {n:b.alt}))}</span>`);
   return parts.join('<br>');
 }
+// A trove with no structure or plant that gives it (only a recipe makes it) cannot be hunted, so the Find lists leave it out.
+function findable(n){ const p = PLACES && PLACES.get(n); return !p || p.structures.length > 0 || p.plants.length > 0 || p.craftAt.length === 0; }
 // Find first, beyond the recipes: every trove that still needs more than crafting can give to reach its next banking level, closest first,
 // and the troves never found that have a known place.
 function levelHuntSections(){
   const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
-  const rows = [...A.items.values()].filter(i => i.th.length && i.lvl < i.th.length).map(i => {
+  const rows = [...A.items.values()].filter(i => i.th.length && i.lvl < i.th.length && findable(i.name)).map(i => {
     const thr = i.th[i.lvl], need = Math.max(0, thr - i.q), nx = A.nextQty.get(i.name), crafted = nx ? nx.doNow : 0;
     return {i, thr, need, crafted, miss:Math.max(0, need - crafted)};
   }).filter(r => r.miss > 0).sort((a, b) => a.miss - b.miss || a.i.name.localeCompare(b.i.name));
