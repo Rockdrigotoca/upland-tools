@@ -1,0 +1,7 @@
+{
+"format":"upland-structure-recipes-v1",
+"note":"Recipes a structure was seen to offer in the game (the structure holds one recipe per trove). Added by hand as they are reported.",
+"structures":{
+"Neighborhood Market":{"Jam Jar":["Raspberry","Blackberry","Honey"]}
+}
+}
