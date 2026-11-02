@@ -1,16 +1,16 @@
 {
-"updatedAt":"2026-11-02T02:09:03Z",
+"updatedAt":"2026-11-02T06:21:07Z",
 "minFee":50,
 "reach":100.0,
 "cities":40,
-"citiesDone":0,
+"citiesDone":3,
 "seeds":4641,
-"listed":581,
-"candidates":11329,
-"priced":0,
-"listRequests":4060,
-"estProps":87250,
-"readsLeft":87250,
-"hoursLeft":6.0,
-"byCity":[["Los Angeles",1957,581,11329,0],["Chicago",926,0,0,0],["San Francisco",273,0,0,0],["Manhattan",182,0,0,0],["New Orleans",135,0,0,0],["Queens",120,0,0,0],["Kansas City",100,0,0,0],["Rome",79,0,0,0],["Miami",76,0,0,0],["Brooklyn",59,0,0,0],["Las Vegas",57,0,0,0],["Rio de Janeiro",52,0,0,0]]
+"listed":3338,
+"candidates":72177,
+"priced":71686,
+"listRequests":1303,
+"estProps":96543,
+"readsLeft":24857,
+"hoursLeft":1.7,
+"byCity":[["Los Angeles",1957,1957,35083,35083],["Chicago",926,926,22325,22325],["San Francisco",273,273,9892,9892],["Manhattan",182,182,4877,4386],["New Orleans",135,0,0,0],["Queens",120,0,0,0],["Kansas City",100,0,0,0],["Rome",79,0,0,0],["Miami",76,0,0,0],["Brooklyn",59,0,0,0],["Las Vegas",57,0,0,0],["Rio de Janeiro",52,0,0,0]]
 }
