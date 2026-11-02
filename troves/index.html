@@ -135,6 +135,7 @@ Site.register({
     grTableH:'Every trove, by how hard it is to finish', grTableN:'Troves that still need troves, the hardest first: few places, much to get.', grToGold:'To gold', grGet:'Still to get', grPlaces:'Places', grBest:'Best cities', grCraftOnly:'craft only', grBottle:'bottleneck', grSpare:'Spare', grDone:'done',
     spPlain:'No structure of its own here. It is on the trip for its many ordinary structures, close to Los Angeles.', spPlainBtn:'Best properties here (Gold road)',
     spRes2:'Another visit',
+    spRun:'{n} finds at {p} properties in about {m} minutes',
     spDone:'Done', spNextTag:'Next', spTodo:'To visit', spRes:'Results', spNoRes:'No result recorded yet.', spGain:'{n} troves gained across {m} types (levels banked in between added back).', spNewT:'New troves', spNil:'none', spTop:'Most gained', spFinds:'Finds', spTog:'Visited together with {names}: one balance for both.',
     spLearnH:'What we have learned', spL1:'Factories and nurseries give no troves, so they are not in the list.', spL2:'Each structure gives one random trove from its list, one visit at a time (1:1).', spL3:'The cities already done are folded away; open one to see its results.',
     spCmpH:'Compare the cities', spCmpN:'Net troves gained between two balances, to look at when all the cities are done.', spCmpCity:'City', spCmpDate:'Date', spCmpGain:'Troves gained', spCmpTypes:'Types', spCmpNew:'New troves', spCmpTop:'Most gained',
@@ -197,6 +198,7 @@ Site.register({
     grTableH:'Cada trove, por lo difícil que es terminarlo', grTableN:'Los troves que aún necesitan troves, los más difíciles primero: pocos lugares, mucho por conseguir.', grToGold:'Al oro', grGet:'Aún por conseguir', grPlaces:'Lugares', grBest:'Mejores ciudades', grCraftOnly:'solo crafteo', grBottle:'cuello de botella', grSpare:'Sobrante', grDone:'listo',
     spPlain:'Aquí no hay estructura propia. Está en el viaje por sus muchas estructuras comunes, cerca de Los Ángeles.', spPlainBtn:'Mejores propiedades aquí (Camino al oro)',
     spRes2:'Otra visita',
+    spRun:'{n} hallazgos en {p} propiedades en unos {m} minutos',
     spDone:'Hecha', spNextTag:'Siguiente', spTodo:'Por visitar', spRes:'Resultados', spNoRes:'Aún no hay resultado.', spGain:'{n} troves ganados en {m} tipos (sumando los niveles bancados entre medias).', spNewT:'Troves nuevos', spNil:'ninguno', spTop:'Los que más subieron', spFinds:'Hallazgos', spTog:'Visitada junto con {names}: un solo balance para ambas.',
     spLearnH:'Lo que hemos aprendido', spL1:'Las fábricas y los viveros no dan troves, así que no están en la lista.', spL2:'Cada estructura da un trove al azar de su lista, una visita a la vez (1:1).', spL3:'Las ciudades ya hechas están plegadas; abre una para ver sus resultados.',
     spCmpH:'Comparar las ciudades', spCmpN:'Troves netos ganados entre dos balances, para mirar cuando todas las ciudades estén hechas.', spCmpCity:'Ciudad', spCmpDate:'Fecha', spCmpGain:'Troves ganados', spCmpTypes:'Tipos', spCmpNew:'Troves nuevos', spCmpTop:'Los que más subieron',
@@ -792,6 +794,7 @@ function viewSpecial(){
       ${r.gain != null ? `<div>${esc(t('spGain', {n:n0(r.gain), m:n0(r.types)}))}${cats ? `<br><span class="muted">${cats}</span>` : ''}</div>
       <div><b>${esc(t('spNewT'))}:</b> ${r.new && r.new.length ? esc(r.new.join(', ')) : esc(t('spNil'))}</div>
       ${r.top && r.top.length ? `<div><b>${esc(t('spTop'))}:</b> ${esc(r.top.map(x => x[0] + ' +' + x[1]).join(', '))}</div>` : ''}` : ''}
+      ${r.n ? `<div class="muted">${esc(t('spRun', {n:n0(r.n), p:n0(r.props), m:n0(r.minutes)}))}${r.bySource && r.bySource.length ? ' · ' + esc(r.bySource.slice(0, 3).map(x => x[0] + ' ' + x[1]).join(', ')) : ''}</div>` : ''}
       ${r.finds && r.finds.length ? `<div><b>${esc(t('spFinds'))}:</b> ${esc(r.finds.join('; '))}</div>` : ''}${r.note ? `<div class="muted">${esc(r.note)}</div>` : ''}</div>`;
   };
   const cards = stops.map((s, i) => {
