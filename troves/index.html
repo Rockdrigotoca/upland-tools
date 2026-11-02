@@ -639,7 +639,30 @@ function cityCraftCard(){
   // the structures of a property by name, so the card can say which one crafts what
   const ownRaw = new Map((OWN || []).filter(r => r[6].length).map(r => [String(r[0]), new Map(r[6].map(b => [fix(b), b]))]));
   const namesOf = pr => ownRaw.get(String(pr[0])) || new Map(pr[5].map(i => [sn[i], cd.structs[i]]));
-  const mine = run(here.map(pr => ({pr, can:own.get(String(pr[0]))})));
+  // Own structures: a craft is spread over every structure of yours that can do it, instead of piling it all on one.
+  const inst = []; here.forEach(pr => ownRaw.get(String(pr[0])).forEach((raw, key) => inst.push({pr, key, raw, items:[]})));
+  const ownCovered = new Set();
+  [...left].forEach(n => {
+    const cands = inst.filter(x => need.get(n).has(x.key)); if(!cands.length) return;
+    cands.sort((a, b) => b.items.length - a.items.length);   // structures already busy with other crafts first, so fewer stops
+    const q = A.craftQty.get(n), total = q ? q.nw + q.bank : 0;
+    if(!total){ cands[0].items.push({n, cap:A.craftMax.get(n) || 0}); ownCovered.add(n); return; }
+    const k = Math.min(cands.length, total), base = Math.floor(total / k), rem = total % k;
+    const vers = q.vers.map(v => ({...v, left:v.k}));
+    cands.slice(0, k).forEach((c, i) => {
+      const cnt = base + (i < rem ? 1 : 0), parts = []; let need2 = cnt;
+      vers.forEach(v => { const take2 = Math.min(v.left, need2); if(take2 > 0){ parts.push({ings:v.ings, k:take2}); v.left -= take2; need2 -= take2; } });
+      c.items.push({n, cnt, nw:i === 0 && q.nw ? 1 : 0, parts});
+    });
+    ownCovered.add(n);
+  });
+  ownCovered.forEach(n => left.delete(n));
+  const mineProps = new Map(); inst.filter(x => x.items.length).forEach(x => { const e = mineProps.get(x.pr[0]) || {pr:x.pr, structs:[]}; e.structs.push(x); mineProps.set(x.pr[0], e); });
+  const mineStops = [...mineProps.values()].sort((a, b) => b.structs.reduce((t0, x) => t0 + x.items.length, 0) - a.structs.reduce((t0, x) => t0 + x.items.length, 0));
+  const shareChip = it => { const base = qchip(it.n);
+    if(it.cap != null) return it.cap ? `<span style="white-space:nowrap">${thumb(it.n)}${esc(it.n)} <span class="muted">(${esc(t('cqUpTo', {n:it.cap}))})</span></span>` : base;
+    return `<span style="white-space:nowrap">${thumb(it.n)}${esc(it.n)} <b>×${it.cnt}</b> <span class="muted">(${esc(it.nw ? t('cqNew') : t('cqBank'))})</span></span> <span class="muted" style="white-space:normal">[${it.parts.map(v => esc(v.k + '× ' + verText(v))).join(' · ')}]</span>`; };
+  const mine = mineStops;
   const inHood = hood >= 0 ? run(cd.props.filter(pr => pr[4] === hood && !own.has(String(pr[0]))).map(pr => ({pr, can:new Set(pr[5].map(i => sn[i]))}))) : [];
   const rest = run(cd.props.filter(pr => pr[4] !== hood && !own.has(String(pr[0]))).map(pr => ({pr, can:new Set(pr[5].map(i => sn[i]))})));
   const chips = ns => newFirst(ns).map(qchip).join(', ');
@@ -657,9 +680,13 @@ function cityCraftCard(){
     const more = stops.length > lim ? `<div class="small muted">${esc(t('spMore', {n:stops.length - lim}))}</div>` : '';
     return `<h3 style="margin:10px 0 4px;font-size:1em">${esc(title)} <span class="tag">${stops.reduce((a, s) => a + s.got.length, 0)}</span></h3>${stops.length ? tbl([[t('owStop'), 'n'], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) + more : `<p class="muted small" style="margin:0">${esc(here.length || title !== t('cwOwn') ? t('cwNone') : t('cwNo'))}</p>`}`;
   };
+  const ownPart = () => {
+    const rows = mine.slice(0, 14).map((e, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(e.pr)}</td><td class="small">${e.structs.map(x => `<div><b>${esc(x.raw)}</b>: ${newFirst(x.items.map(it => it.n)).map(n => shareChip(x.items.find(it => it.n === n))).join(', ')}</div>`).join('')}</td><td class="n">${e.structs.reduce((t0, x) => t0 + x.items.length, 0)}</td></tr>`);
+    return `<h3 style="margin:10px 0 4px;font-size:1em">${esc(t('cwOwn'))} <span class="tag">${ownCovered.size}</span></h3>${mine.length ? tbl([[t('owStop'), 'n'], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) : `<p class="muted small" style="margin:0">${esc(here.length ? t('cwNone') : t('cwNo'))}</p>`}`;
+  };
   const covered = wanted.length - left.size;
   return wrap(`<p class="hint" style="margin:0 0 4px">${esc(t('cwN', {hood:hname || '—'}))} ${esc(t('cwDone', {n:covered, m:wanted.length}))}</p>${qsum(wanted)}`
-    + part(t('cwOwn'), mine, 12) + (hname ? part(t('cwHood', {hood:hname}), inHood, 12) : '') + part(t('cwCity', {city:cname}), rest, 12));
+    + ownPart() + (hname ? part(t('cwHood', {hood:hname}), inHood, 12) : '') + part(t('cwCity', {city:cname}), rest, 12));
 }
 function ownCraftCard(){
   if(!OWN || SRC !== 'rock') return '';
