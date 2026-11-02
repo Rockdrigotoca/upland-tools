@@ -74,6 +74,7 @@ details.more summary{cursor:pointer}
 </div>
 <script src="../shared/site.js"></script>
 <script src="../shared/sort.js"></script>
+<script src="hunts.js"></script>
 <script>
 "use strict";
 const {t, esc, store} = Site;
@@ -121,6 +122,7 @@ Site.register({
     bMode:'Reserve', bCareful:'Careful', bRelaxed:'Relaxed', bModeN:'Careful keeps 5× what a recipe needs of scarce troves and 2× of the rest. Relaxed keeps 3× and 1×.',
     colToGold:'Total to Gold', bronze:'Bronze', silver:'Silver', gold:'Gold',
     fHint:'Type a trove name', fHeld:'You hold {n}', fNotOwned:'Not in your inventory', fFound:'Found in', fCraftedAt:'Crafted at', fUsedIn:'Used in', fNothing:'No troves match.',
+    tHunt:'Hunting log',
     tGold:'Gold road', gGold:'Gold on every trove', mGold:'For the gold road, the biggest city is {city}: {n} structures, and {p}% of what they give is still useful (Gold road).',
     hGold:'Gold road', hGoldD:'The long goal: bronze, silver and gold on every trove. It counts what you still need to bank, which troves are the bottleneck, the cities that fit best, and what you can craft from stock you do not need for gold.',
     grH:'Gold on every trove', grN:'Banking uses the troves up, so a trove that is not at gold yet is not spare. Spare is only what you hold above what its gold still costs.',
@@ -182,6 +184,7 @@ Site.register({
     bMode:'Reserva', bCareful:'Cuidadosa', bRelaxed:'Relajada', bModeN:'Cuidadosa guarda 5× lo que pide una receta de los troves escasos y 2× del resto. Relajada guarda 3× y 1×.',
     colToGold:'Total hasta Oro', bronze:'Bronce', silver:'Plata', gold:'Oro',
     fHint:'Escribe el nombre de un trove', fHeld:'Tienes {n}', fNotOwned:'No está en tu inventario', fFound:'Se encuentra en', fCraftedAt:'Se craftea en', fUsedIn:'Usado en', fNothing:'Ningún trove coincide.',
+    tHunt:'Registro de caza',
     tGold:'Camino al oro', gGold:'Oro en cada trove', mGold:'Para el camino al oro, la ciudad más grande es {city}: {n} estructuras, y el {p}% de lo que dan aún sirve (Camino al oro).',
     hGold:'Camino al oro', hGoldD:'La meta larga: bronce, plata y oro en cada trove. Cuenta lo que aún te falta bancar, qué troves son el cuello de botella, las ciudades que mejor encajan y lo que puedes craftear con lo que no necesitas para el oro.',
     grH:'Oro en cada trove', grN:'Bancar gasta los troves, así que uno que aún no está en oro no es sobrante. Sobrante es solo lo que tienes por encima de lo que aún cuesta su oro.',
@@ -210,7 +213,7 @@ const MINE_KEY = 'rut:troves:mine';
 const n0 = x => Number(x).toLocaleString(Site.locale());
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
-let IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
+let HUNTS = null, IMG = null, SPECIAL = null, OWN = null, SIZE = new Map(), FEES = null, COOL = store.get('rut:troves:cool', {}), LAST = store.get('rut:troves:last', null);
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '';
 let PLACES = null, WORLD = null, DATA = null, SRC = store.get('rut:troves:src', 'rock'), MINE = null, STATUS = '', STATUS_ERR = false;
 let onlyMine = store.get('rut:troves:onlyMine', true);
@@ -646,6 +649,7 @@ function clashCard(){
   if(!A.clash.length) return '';
   return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('clH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('clN'))}</p><ul class="small" style="margin:0;padding-left:18px">${A.clash.map(e => `<li><b>${esc(t('clRow', {name:e.n, need:e.need, have:e.have}))}</b> <span class="muted">${esc(t('clFor', {list:e.by.join(', ')}))}</span></li>`).join('')}</ul></div>`;
 }
+function viewHunt(){ return Hunt.html(HUNTS, {cat:n => (PLACES.get(n) || {}).cat, bal:DATA ? DATA.items : null}); }
 function viewOverview(){
   const its = [...A.items.values()], lv = [0, 0, 0, 0];
   its.forEach(i => lv[Math.min(i.lvl, 3)]++);
@@ -1006,11 +1010,11 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['gold', '🥇', t('tGold'), t('grTabN', {n:n0(A.gold.reduce((a, r) => a + r.gap, 0))})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['special', '🏛', t('tSpecial'), SPECIAL ? t('wScanned', {n:Object.keys(SPECIAL.cities).length}) : ''], ['find', '🧭', t('tFind'), '']];
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['gold', '🥇', t('tGold'), t('grTabN', {n:n0(A.gold.reduce((a, r) => a + r.gap, 0))})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['special', '🏛', t('tSpecial'), SPECIAL ? t('wScanned', {n:Object.keys(SPECIAL.cities).length}) : ''], ['find', '🧭', t('tFind'), '']].concat(HUNTS && SRC === 'rock' ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);
   const hide = {craft:!GOAL.discover && !GOAL.bank && !GOAL.bonus, easy:!GOAL.bank && !GOAL.bonus, bank:!GOAL.bank, gold:!GOAL.gold};
   for(let i = tabs.length - 1; i >= 0; i--) if(hide[tabs[i][0]]) tabs.splice(i, 1);
   if(!tabs.some(x => x[0] === tab)) tab = 'overview';
-  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, gold:viewGold, bank:viewBank, world:viewWorld, special:viewSpecial, find:viewFind}[tab] || viewOverview;
+  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, gold:viewGold, bank:viewBank, world:viewWorld, special:viewSpecial, find:viewFind, hunt:viewHunt}[tab] || viewOverview;
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
@@ -1084,6 +1088,7 @@ async function boot(){
   try{ const f = await fetch('../data/troves/fees.json').then(x => x.ok ? x.json() : null); FEES = f ? f.fees : null; }catch{ FEES = null; }
   try{ SPECIAL = await fetch('../data/troves/city-specific.json').then(x => x.ok ? x.json() : null); }catch{ SPECIAL = null; }
   try{ RESULTS = await fetch('../data/troves/special-results.json').then(x => x.ok ? x.json() : null); }catch{ RESULTS = null; }
+  try{ HUNTS = await fetch('../data/troves/rockdrigo/hunts.json').then(x => x.ok ? x.json() : null); }catch{ HUNTS = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();
 }
