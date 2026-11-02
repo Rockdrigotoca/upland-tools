@@ -413,8 +413,485 @@
     312
    ],
    "finds": []
+  },
+  "120": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "Special build: Singapore Kopitiam (6 finds).",
+   "gain": 76,
+   "types": 40,
+   "byCat": {
+    "social": 21,
+    "care": 24,
+    "resources": 19,
+    "utility": 4,
+    "valuables": 8
+   },
+   "top": [
+    [
+     "Sunlight",
+     11
+    ],
+    [
+     "Shy Giggle",
+     7
+    ],
+    [
+     "Honey",
+     4
+    ],
+    [
+     "Knowing Nod",
+     3
+    ],
+    [
+     "Deep Breath",
+     3
+    ],
+    [
+     "Postcard",
+     3
+    ],
+    [
+     "Salt",
+     3
+    ],
+    [
+     "Rice",
+     2
+    ]
+   ],
+   "new": [],
+   "n": 74,
+   "props": 34,
+   "minutes": 13,
+   "bySource": [
+    [
+     "Singapore Kopitiam",
+     6
+    ],
+    [
+     "Bus Stop",
+     6
+    ],
+    [
+     "Kiosk - Sushi",
+     6
+    ],
+    [
+     "Oil Palm Tree",
+     4
+    ],
+    [
+     "Avocado Tree",
+     4
+    ],
+    [
+     "Asian Modular Apartments: Hawker Centre Edition",
+     4
+    ]
+   ],
+   "finds": []
+  },
+  "133": {
+   "status": "done",
+   "date": "2026-11-01",
+   "note": "A sad one: 41 finds in about 10 minutes. Special builds: African Crafts Market 9 finds, Padstal Edition 7 (Apple, Potato, Kind Word). Some Padstal Edition properties may be living units, which cannot be trove-searched.",
+   "gain": 41,
+   "types": 27,
+   "byCat": {
+    "resources": 15,
+    "valuables": 7,
+    "utility": 2,
+    "care": 7,
+    "social": 9,
+    "junk": 1
+   },
+   "top": [
+    [
+     "Apple",
+     5
+    ],
+    [
+     "Friendly Wave",
+     3
+    ],
+    [
+     "Potato",
+     3
+    ],
+    [
+     "Clay",
+     2
+    ],
+    [
+     "Thread",
+     2
+    ],
+    [
+     "Wool",
+     2
+    ],
+    [
+     "Playbill",
+     2
+    ],
+    [
+     "Warm Hug",
+     2
+    ]
+   ],
+   "new": [],
+   "n": 41,
+   "props": 29,
+   "minutes": 10,
+   "bySource": [
+    [
+     "African Crafts Market",
+     9
+    ],
+    [
+     "Cape Town Modular: Padstal Edition",
+     7
+    ],
+    [
+     "Small Farmers Market",
+     3
+    ],
+    [
+     "Public Pool",
+     2
+    ],
+    [
+     "Weeping Willow Tree",
+     2
+    ],
+    [
+     "Bus Stop",
+     2
+    ]
+   ],
+   "finds": []
+  },
+  "117": {
+   "status": "done",
+   "date": "2026-11-02",
+   "note": "Special build: Tapas Bar, 14 finds, one of them the only Mussel of the six cities.",
+   "gain": 83,
+   "types": 45,
+   "byCat": {
+    "social": 18,
+    "resources": 29,
+    "care": 15,
+    "valuables": 13,
+    "utility": 5,
+    "junk": 3
+   },
+   "top": [
+    [
+     "Deep Breath",
+     8
+    ],
+    [
+     "Salt",
+     8
+    ],
+    [
+     "Pork",
+     6
+    ],
+    [
+     "Eye Roll",
+     5
+    ],
+    [
+     "Handshake",
+     3
+    ],
+    [
+     "Shy Giggle",
+     3
+    ],
+    [
+     "Trove Dust",
+     3
+    ],
+    [
+     "Honey",
+     2
+    ]
+   ],
+   "new": [],
+   "n": 82,
+   "props": 50,
+   "minutes": 15,
+   "bySource": [
+    [
+     "Tapas Bar",
+     14
+    ],
+    [
+     "Bus Stop",
+     10
+    ],
+    [
+     "Maple Tree",
+     4
+    ],
+    [
+     "Bodega",
+     3
+    ],
+    [
+     "Auto Carwash",
+     3
+    ],
+    [
+     "Candy shop",
+     3
+    ]
+   ],
+   "finds": []
+  },
+  "91": {
+   "status": "done",
+   "date": "2026-11-02",
+   "note": "Special build: French Cafe (7 finds). 17 finds came from plants.",
+   "gain": 81,
+   "types": 46,
+   "byCat": {
+    "care": 16,
+    "resources": 18,
+    "social": 28,
+    "valuables": 8,
+    "utility": 6,
+    "junk": 5
+   },
+   "top": [
+    [
+     "Shy Giggle",
+     5
+    ],
+    [
+     "Trove Dust",
+     5
+    ],
+    [
+     "Sunlight",
+     4
+    ],
+    [
+     "Deep Breath",
+     3
+    ],
+    [
+     "Grin",
+     3
+    ],
+    [
+     "Dollar Bill",
+     3
+    ],
+    [
+     "Friendly Wave",
+     3
+    ],
+    [
+     "Handshake",
+     3
+    ]
+   ],
+   "new": [],
+   "n": 79,
+   "props": 33,
+   "minutes": 13,
+   "bySource": [
+    [
+     "Lemon Tree",
+     9
+    ],
+    [
+     "French Cafe",
+     7
+    ],
+    [
+     "European Modular Apartments: Galerie d'Art Edition",
+     6
+    ],
+    [
+     "Ramen Restaurant",
+     5
+    ],
+    [
+     "Maple Tree",
+     4
+    ],
+    [
+     "European Modular Apartments: Ice Cream Shop",
+     3
+    ]
+   ],
+   "finds": []
+  },
+  "141": {
+   "status": "done",
+   "date": "2026-11-02",
+   "note": "The best city of the six: 164 troves in 18 minutes, 69 finds from plants (Avocado, Apple, Lemon trees). Special build: The Amsterdam Cheese House (11 finds).",
+   "gain": 164,
+   "types": 56,
+   "byCat": {
+    "social": 71,
+    "valuables": 18,
+    "care": 37,
+    "resources": 31,
+    "junk": 3,
+    "utility": 4
+   },
+   "top": [
+    [
+     "Sunlight",
+     22
+    ],
+    [
+     "Friendly Wave",
+     12
+    ],
+    [
+     "Knowing Nod",
+     10
+    ],
+    [
+     "Thumbs Up",
+     9
+    ],
+    [
+     "Grin",
+     7
+    ],
+    [
+     "Honey",
+     6
+    ],
+    [
+     "Gather Round",
+     6
+    ],
+    [
+     "Heart",
+     5
+    ]
+   ],
+   "new": [],
+   "n": 156,
+   "props": 47,
+   "minutes": 18,
+   "bySource": [
+    [
+     "Avocado Tree",
+     13
+    ],
+    [
+     "The Amsterdam Cheese House",
+     11
+    ],
+    [
+     "Apple Tree",
+     11
+    ],
+    [
+     "Lemon Tree",
+     9
+    ],
+    [
+     "Walnut Tree",
+     8
+    ],
+    [
+     "Magnolia Tree",
+     8
+    ]
+   ],
+   "finds": []
+  },
+  "137": {
+   "status": "done",
+   "date": "2026-11-02",
+   "note": "Short stop, 5 minutes. Special build: Florence Retro Googie Farmers Market (7 finds).",
+   "gain": 29,
+   "types": 23,
+   "byCat": {
+    "resources": 14,
+    "care": 4,
+    "social": 9,
+    "valuables": 2
+   },
+   "top": [
+    [
+     "Friendly Wave",
+     3
+    ],
+    [
+     "Manure",
+     2
+    ],
+    [
+     "Basil",
+     2
+    ],
+    [
+     "Eye Roll",
+     2
+    ],
+    [
+     "Carrot",
+     2
+    ],
+    [
+     "Handkerchief",
+     1
+    ],
+    [
+     "Shrug",
+     1
+    ],
+    [
+     "Scented Candle",
+     1
+    ]
+   ],
+   "new": [],
+   "n": 29,
+   "props": 15,
+   "minutes": 5,
+   "bySource": [
+    [
+     "Florence Retro Googie Farmers Market",
+     7
+    ],
+    [
+     "Large Office",
+     2
+    ],
+    [
+     "European Modular Apartments: Antiquaire Edition",
+     2
+    ],
+    [
+     "European Modular Apartments: Mantequeria Edition",
+     2
+    ],
+    [
+     "European Modular Apartments: Galerie d'Art Edition",
+     2
+    ],
+    [
+     "Bus Stop",
+     2
+    ]
+   ],
+   "finds": []
   }
  },
- "updatedAt": "2026-11-01",
+ "updatedAt": "2026-11-02",
  "next": 120
 }
