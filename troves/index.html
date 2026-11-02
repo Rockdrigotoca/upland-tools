@@ -995,7 +995,7 @@ function viewCraft(){
   const head = [[t('colTrove')], [t('cUpTo'), 'n'], [t('cReach')], [t('colIng')], [t('colCraftAt')]];
   const nw = A.craftable.filter(c => c.isNew).sort((a, b) => a.name.localeCompare(b.name));
   const old = A.craftable.filter(c => !c.isNew).sort((a, b) => a.name.localeCompare(b.name));
-  return cityBar() + cityCraftCard() + ownCraftCard() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return cityBar() + cityCraftCard() + ownCraftCard() + recipeAdviceCard() + skipCard() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 function viewBank(){
   const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
