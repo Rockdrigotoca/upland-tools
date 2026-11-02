@@ -122,7 +122,7 @@ Site.register({
     bMode:'Reserve', bCareful:'Careful', bRelaxed:'Relaxed', bModeN:'Careful keeps 5× what a recipe needs of scarce troves and 2× of the rest. Relaxed keeps 3× and 1×.',
     colToGold:'Total to Gold', bronze:'Bronze', silver:'Silver', gold:'Gold',
     fHint:'Type a trove name', fHeld:'You hold {n}', fNotOwned:'Not in your inventory', fFound:'Found in', fCraftedAt:'Crafted at', fUsedIn:'Used in', fNothing:'No troves match.',
-    tHunt:'Hunting log',
+    tHunt:'Hunting dashboard',
     tGold:'Gold road', gGold:'Gold on every trove', mGold:'For the gold road, the biggest city is {city}: {n} structures, and {p}% of what they give is still useful (Gold road).',
     hGold:'Gold road', hGoldD:'The long goal: bronze, silver and gold on every trove. It counts what you still need to bank, which troves are the bottleneck, the cities that fit best, and what you can craft from stock you do not need for gold.',
     grH:'Gold on every trove', grN:'Banking uses the troves up, so a trove that is not at gold yet is not spare. Spare is only what you hold above what its gold still costs.',
@@ -184,7 +184,7 @@ Site.register({
     bMode:'Reserva', bCareful:'Cuidadosa', bRelaxed:'Relajada', bModeN:'Cuidadosa guarda 5× lo que pide una receta de los troves escasos y 2× del resto. Relajada guarda 3× y 1×.',
     colToGold:'Total hasta Oro', bronze:'Bronce', silver:'Plata', gold:'Oro',
     fHint:'Escribe el nombre de un trove', fHeld:'Tienes {n}', fNotOwned:'No está en tu inventario', fFound:'Se encuentra en', fCraftedAt:'Se craftea en', fUsedIn:'Usado en', fNothing:'Ningún trove coincide.',
-    tHunt:'Registro de caza',
+    tHunt:'Panel de caza',
     tGold:'Camino al oro', gGold:'Oro en cada trove', mGold:'Para el camino al oro, la ciudad más grande es {city}: {n} estructuras, y el {p}% de lo que dan aún sirve (Camino al oro).',
     hGold:'Camino al oro', hGoldD:'La meta larga: bronce, plata y oro en cada trove. Cuenta lo que aún te falta bancar, qué troves son el cuello de botella, las ciudades que mejor encajan y lo que puedes craftear con lo que no necesitas para el oro.',
     grH:'Oro en cada trove', grN:'Bancar gasta los troves, así que uno que aún no está en oro no es sobrante. Sobrante es solo lo que tienes por encima de lo que aún cuesta su oro.',
@@ -1010,7 +1010,7 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['gold', '🥇', t('tGold'), t('grTabN', {n:n0(A.gold.reduce((a, r) => a + r.gap, 0))})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['special', '🏛', t('tSpecial'), SPECIAL ? t('wScanned', {n:Object.keys(SPECIAL.cities).length}) : ''], ['find', '🧭', t('tFind'), '']].concat(HUNTS && SRC === 'rock' ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['gold', '🥇', t('tGold'), t('grTabN', {n:n0(A.gold.reduce((a, r) => a + r.gap, 0))})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['special', '🏛', t('tSpecial'), SPECIAL ? t('wScanned', {n:Object.keys(SPECIAL.cities).length}) : ''], ['find', '🧭', t('tFind'), '']].concat(HUNTS ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);
   const hide = {craft:!GOAL.discover && !GOAL.bank && !GOAL.bonus, easy:!GOAL.bank && !GOAL.bonus, bank:!GOAL.bank, gold:!GOAL.gold};
   for(let i = tabs.length - 1; i >= 0; i--) if(hide[tabs[i][0]]) tabs.splice(i, 1);
   if(!tabs.some(x => x[0] === tab)) tab = 'overview';
