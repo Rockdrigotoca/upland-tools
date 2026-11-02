@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       only:
-        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger, pulse, structures, fees. Empty = the COLLECTORS variable.'
+        description: 'Jobs to run now, comma separated: prices, buy, collections, ledger, pulse, structures, fees, reach. Empty = the COLLECTORS variable.'
         default: ''
 
 permissions:
@@ -138,6 +138,32 @@ jobs:
         if: contains(format(',{0},', env.JOBS), ',fees,')
         run: |
           bash tools/commit_data.sh "data: refresh teleport prices" data/troves/fees.json data/troves/fees-state.json
+
+      # 8. Teleport price of every property within reach of a costly structure property, to find a cheaper place to stand while
+      # trove-hunting. About 4,600 small map requests, then one read per neighbour (see tools/collect_reach.py). Resumable, and it
+      # starts the next run by itself when it stops with work left, so it keeps going until everything is read.
+      - name: Cheaper places to stand
+        if: contains(format(',{0},', env.JOBS), ',reach,')
+        continue-on-error: true
+        timeout-minutes: 270
+        run: python3 tools/collect_reach.py --max-minutes 250
+
+      - name: Save cheaper places to stand
+        id: savereach
+        if: contains(format(',{0},', env.JOBS), ',reach,')
+        run: |
+          out=$(bash tools/commit_data.sh "data: refresh cheaper places to stand" data/troves/reach data/troves/reach-state.json)
+          echo "$out"
+          case "$out" in *Pushed*) echo "pushed=yes" >> "$GITHUB_OUTPUT";; *) echo "pushed=no" >> "$GITHUB_OUTPUT";; esac
+
+      - name: Carry on with the rest
+        if: steps.savereach.outputs.pushed == 'yes'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          left=$(python3 -c "import json;s=json.load(open('data/troves/reach-state.json'));print(s['readsLeft']+s['listRequests'])")
+          echo "Work left: $left"
+          if [ "$left" -gt 0 ]; then gh workflow run collect.yml -f only=reach; fi
 
       # GitHub turns off schedules in public repos after 60 days without activity; this keeps it on.
       - name: Keep schedule alive
