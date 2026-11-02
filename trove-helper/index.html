@@ -33,16 +33,20 @@ h2.t{font-size:1.2rem;margin:20px 0 4px}
 .bd.new{background:var(--accent);color:var(--accent-ink)}
 .bd.rare{background:#d4a017;color:#1d1c19}
 .gos{display:flex;flex-wrap:wrap;gap:8px}
-.go{flex:1 1 150px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;padding:10px 16px;border-radius:14px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700;font-size:1.05rem}
-.go small{display:block;font-weight:500;font-size:.78rem;opacity:.85}
+.go{flex:1 1 150px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:58px;padding:10px 16px;border-radius:14px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700;font-size:1.05rem}
+.go small{display:block;font-weight:700;font-size:.9rem;opacity:1;margin-top:2px;color:inherit;padding:0}
+.go b{font-size:1.1rem}
+.rprog{height:6px;border-radius:99px;background:rgba(0,0,0,.28);margin-top:6px;overflow:hidden;min-width:120px}
+.rprog i{display:block;height:100%;background:var(--accent-ink);opacity:.9}
+.go.cool .rprog{background:var(--border)}
+.go.cool .rprog i{background:var(--muted)}
 .go.cool{background:var(--surface-2);color:var(--muted)}
 .go .clock{font-variant-numeric:tabular-nums;font-size:1.05rem}
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
 .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;font-size:.9rem}
 .tile .thumb{width:40px;height:40px}
-.tile small{color:var(--muted);font-size:.76rem}
-@media(min-width:0){.wrow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-weight:600}}
-.wrow .clock{font-variant-numeric:tabular-nums;color:var(--muted)}
+.tile > small{color:var(--muted);font-size:.76rem}
+.tile .gos{align-self:stretch;margin-top:auto}
 details.more>summary{cursor:pointer;color:var(--muted);padding:8px 0;font-weight:600}
 </style>
 </head>
@@ -68,7 +72,7 @@ Site.register({
     dash:'How you are doing', dFound:'troves found', dGold:'at gold', dLeft:'to go', dLevels:'of the levels', dLoad:'Load my troves file', dLoadN:'Load your troves file to see how you are doing, which troves are new for you and which recipes you are close to.', dRock:'Showing Rockdrigo’s numbers until you load your file.',
     load:'Load my troves file', forget:'Forget my file', loaded:'Loaded your file ({n} troves).', bad:'That file could not be read. It must be the troves file from the script.',
     t1:'Your own properties', t1N:'Structures you own here that give what you need.', t2:'James’s properties', t3:'Marlow’s properties', t4:'Other places', t4N:'Structures anywhere in the city. The first ones also have more of what you need nearby.',
-    none:'Nothing here for this city yet.', waitH:'Waiting for the hour to pass', seen:'Rockdrigo found it at: {x}', legend:'The medal on each trove is the level you are collecting for. NEW means you have never found it. ★ means few places give it.', go:'Go collect', cooling:'Back in', newT:'NEW', helps:'helps craft {x}', mine:'Your own properties', mineN:'Structures that are yours (or James’s and Marlow’s) in this city. No walking needed.', noOwn:'None of your own, James’s or Marlow’s properties in {city} has a structure that gives what you need.', next:'Your next stop', special:'Special finds', specialN:'Only a few kinds of structure give these, or Rockdrigo has hardly ever found them. They are worth the trip.', onlyAt:'at: {x}', notHere:'not in this city', recH:'One find from a recipe', recN:'Find just this one trove and the recipe is ready.', missing:'missing {x}', moreTypes:'{n} more kinds of structure', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
+    none:'Nothing here for this city yet.', runOf:'{d} of {n} visited', runAll:'All visited',  seen:'Rockdrigo found it at: {x}', legend:'The medal on each trove is the level you are collecting for. NEW means you have never found it. ★ means few places give it.', go:'Go collect', cooling:'Back in', newT:'NEW', helps:'helps craft {x}', mine:'Your own properties', mineN:'Structures that are yours (or James’s and Marlow’s) in this city. No walking needed.', noOwn:'None of your own, James’s or Marlow’s properties in {city} has a structure that gives what you need.', next:'Your next stop', special:'Special finds', specialN:'Only a few kinds of structure give these, or Rockdrigo has hardly ever found them. They are worth the trip.', onlyAt:'at: {x}', notHere:'not in this city', recH:'One find from a recipe', recN:'Find just this one trove and the recipe is ready.', missing:'missing {x}', moreTypes:'{n} more kinds of structure', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
     elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
     wait:'Loading…', fail:'Could not load the data.', reset:'Clear all clocks',
     alt:'The other option', altN:'Switch the list above to “Recipes and collections” if you only want to fill recipes and collections.',
@@ -84,7 +88,7 @@ Site.register({
     dash:'Cómo vas', dFound:'troves hallados', dGold:'en oro', dLeft:'por hacer', dLevels:'de los niveles', dLoad:'Cargar mi archivo de troves', dLoadN:'Carga tu archivo de troves para ver cómo vas, qué troves son nuevos para ti y qué recetas tienes cerca.', dRock:'Se muestran los números de Rockdrigo hasta que cargues tu archivo.',
     load:'Cargar mi archivo de troves', forget:'Olvidar mi archivo', loaded:'Cargué tu archivo ({n} troves).', bad:'No pude leer ese archivo. Debe ser el archivo de troves del script.',
     t1:'Tus propiedades', t1N:'Estructuras tuyas aquí que dan lo que necesitas.', t2:'Propiedades de James', t3:'Propiedades de Marlow', t4:'Otros lugares', t4N:'Estructuras en toda la ciudad. Las primeras también tienen más de lo que necesitas cerca.',
-    none:'Aquí no hay nada para esta ciudad todavía.', waitH:'Esperando a que pase la hora', seen:'Rockdrigo lo halló en: {x}', legend:'La medalla de cada trove es el nivel que estás buscando. NUEVO es que nunca lo has hallado. ★ es que pocos lugares lo dan.', go:'Ir a recolectar', cooling:'Vuelve en', newT:'NUEVO', helps:'sirve para {x}', mine:'Tus propiedades', mineN:'Estructuras tuyas (o de James y Marlow) en esta ciudad. Sin caminar.', noOwn:'Ninguna propiedad tuya, de James o de Marlow en {city} tiene una estructura que dé lo que necesitas.', next:'Tu siguiente parada', special:'Hallazgos especiales', specialN:'Solo unas pocas estructuras los dan. Vale la pena el viaje.', onlyAt:'en: {x}', notHere:'no está en esta ciudad', recH:'Un hallazgo para una receta', recN:'Encuentra solo este trove y la receta queda lista.', missing:'falta {x}', moreTypes:'{n} tipos de estructura más', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
+    none:'Aquí no hay nada para esta ciudad todavía.', runOf:'{d} de {n} visitados', runAll:'Todos visitados',  seen:'Rockdrigo lo halló en: {x}', legend:'La medalla de cada trove es el nivel que estás buscando. NUEVO es que nunca lo has hallado. ★ es que pocos lugares lo dan.', go:'Ir a recolectar', cooling:'Vuelve en', newT:'NUEVO', helps:'sirve para {x}', mine:'Tus propiedades', mineN:'Estructuras tuyas (o de James y Marlow) en esta ciudad. Sin caminar.', noOwn:'Ninguna propiedad tuya, de James o de Marlow en {city} tiene una estructura que dé lo que necesitas.', next:'Tu siguiente parada', special:'Hallazgos especiales', specialN:'Solo unas pocas estructuras los dan. Vale la pena el viaje.', onlyAt:'en: {x}', notHere:'no está en esta ciudad', recH:'Un hallazgo para una receta', recN:'Encuentra solo este trove y la receta queda lista.', missing:'falta {x}', moreTypes:'{n} tipos de estructura más', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
     elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
     wait:'Cargando…', fail:'No pude cargar los datos.', reset:'Borrar todos los relojes',
     alt:'La otra opción', altN:'Cambia la lista de arriba a “Recetas y colecciones” si solo quieres completar recetas y colecciones.',
@@ -97,7 +101,7 @@ const TOKEN = /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}|[Bb]
 const PEOPLE = [['mstullis', 't1'], ['talljames', 't2'], ['missmarlow', 't3']];
 const n0 = x => Number(x).toLocaleString(Site.locale());
 
-let COOLN = store.get('rut:helper:coolNames', {});
+let RUN = new Map();
 let PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
 let CITY = store.get('rut:helper:city', '32'), MODE = store.get('rut:helper:mode', 'gold'), MSG = '';
 
@@ -181,9 +185,9 @@ function elsewhere(cd, P){
 function bestFor(P, trove, k = 1){
   const p = PL.get(trove); if(!p) return [];
   const keys = new Set(p.structures.map(norm)), now = Date.now();
-  return P.cand.filter(c => c.ks.some(x => keys.has(x))).sort((a, b) => ((COOL[a.pid] || 0) + 36e5 > now) - ((COOL[b.pid] || 0) + 36e5 > now) || b.near - a.near).slice(0, k);
+  return P.cand.filter(c => c.ks.some(x => keys.has(x))).sort((a, b) => b.near - a.near).slice(0, k);
 }
-const tileGo = (P, trove) => { const c = bestFor(P, trove)[0]; return c ? `<div class="gos" style="margin-top:6px;width:100%">${goBtn(c.pid, c.near ? t('near', {n:c.near}) : '', trove)}</div>` : ''; };
+const tileGo = (P, trove) => { const l = bestFor(P, trove, 60); return l.length ? `<div class="gos" style="margin-top:6px;width:100%">${runBtn('v:' + trove, l)}</div>` : ''; };
 const thumb = n => IMG && IMG.ids[n] ? `<img class="thumb" loading="lazy" alt="" src="${IMG.base}${IMG.ids[n]}.png" onerror="this.remove()">` : '<span class="thumb ph"></span>';
 const clock = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
 const NAMES = {mstullis:'', talljames:'James', missmarlow:'Marlow'};
@@ -208,6 +212,26 @@ function info(name){
   return {name, isNew:!it || it.q === 0 && !it.lvl, lvl:it ? it.lvl : 0, maxLvl:it ? it.th.length : 3, q:it ? it.q : 0, helps, rare:p ? (p.structures.length <= 4 || huntCount(name) <= 3) : false};
 }
 const chip = n => { const i = info(n); return `<span class="chip">${thumb(n)}<b>${esc(n)}</b>${!balance().mine ? '' : i.isNew ? `<em class="bd new">${esc(t('newT'))}</em>` : i.lvl < i.maxLvl ? `<em class="bd">${LVN[Math.min(i.lvl + 1, 3)]}</em>` : ''}${i.rare ? `<em class="bd rare">★</em>` : ''}${i.helps.length ? `<small>${esc(t('helps', {x:i.helps.slice(0, 2).join(', ')}))}</small>` : ''}</span>`; };
+// one button for a whole list of places: it opens the next one she has not visited this hour, and counts how many are done
+const cooling = pid => COOL[pid] && COOL[pid] + 36e5 > Date.now();
+function runBtn(key, list){
+  RUN.set(key, list);
+  return `<a class="go run" data-run="${esc(key)}" data-pid="" target="_blank" rel="noopener" href="#"></a>`;
+}
+function refreshRuns(){
+  document.querySelectorAll('a.go.run').forEach(el => {
+    const list = RUN.get(el.dataset.run) || [], free = list.find(c => !cooling(c.pid)), done = list.filter(c => cooling(c.pid)).length, n = list.length;
+    const prog = `<div class="rprog"><i style="width:${n ? Math.round(done / n * 100) : 0}%"></i></div>`;
+    if(free){
+      el.href = UPLAND(free.pid); el.dataset.pid = free.pid; el.classList.remove('cool');
+      el.innerHTML = `<span><b>▶ ${esc(t('go'))}</b><small>${esc(t('runOf', {d:done, n}))}${free.near ? ' · ' + esc(t('near', {n:free.near})) : ''}</small>${prog}</span>`;
+    } else {
+      const soon = Math.min(...list.map(c => COOL[c.pid] + 36e5));
+      el.href = '#'; el.dataset.pid = ''; el.classList.add('cool');
+      el.innerHTML = `<span><b>⏳ ${esc(t('runAll'))}</b><small>${esc(t('runOf', {d:done, n}))}</small>${prog}</span><span class="clock" data-until="${soon}">${clock(soon - Date.now())}</span>`;
+    }
+  });
+}
 const goBtn = (pid, sub, label) => {
   const at = COOL[pid], left = at ? at + 36e5 - Date.now() : 0, cool = left > 0;
   return `<a class="go ${cool ? 'cool' : ''}" data-pid="${pid}" data-label="${esc(label || '')}" target="_blank" rel="noopener" href="${UPLAND(pid)}"><span>${cool ? '⏳' : '▶'} ${esc(t(cool ? 'cooling' : 'go'))}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${cool ? `<span class="clock" data-until="${at + 36e5}">${clock(left)}</span>` : ''}</a>`;
@@ -218,7 +242,7 @@ function typeCard(k, P, name, stops, opts = {}){
   list.sort((a, b) => (info(b).rare - info(a).rare) || (info(b).isNew - info(a).isNew) || a.localeCompare(b));
   return `<div class="tcard ${opts.hero ? 'hero' : ''}"><div class="thead"><h3>${esc(name)}</h3><span class="muted small">${esc(t('gives', {n:list.length}))}</span></div>
     <div class="chips">${list.slice(0, opts.hero ? 12 : 8).map(chip).join('')}${list.length > (opts.hero ? 12 : 8) ? `<span class="chip more">${esc(t('more', {n:list.length - (opts.hero ? 12 : 8)}))}</span>` : ''}</div>
-    <div class="gos">${stops.map(s => goBtn(s.pid, s.sub, name)).join('')}</div></div>`;
+    <div class="gos">${opts.run ? runBtn('t:' + k, opts.run.slice(0, 120)) : stops.map(s => goBtn(s.pid, s.sub, name)).join('')}</div></div>`;
 }
 function dash(){
   const b = balance(); if(!b) return '';
@@ -229,12 +253,6 @@ function dash(){
   return `<div class="card" style="margin-bottom:12px"><div class="mini"><span><b>${n0(b.found)}${b.max ? ' / ' + n0(b.max) : ''}</b> ${esc(t('dFound'))}</span><span><b>${n0(gold)}</b> 🥇</span><span><b>${pc}%</b> ${esc(t('dLevels'))}</span></div>
     <div class="prog" title="${pc}%"><i style="width:${pc}%"></i></div>
     <p class="small muted" style="margin:8px 0 0"><label class="btn small" style="display:inline-flex;margin-top:4px"><input type="file" id="file" accept=".json,application/json" hidden>${esc(b.mine ? t('load') : t('dLoad'))}</label>${b.mine ? ` <button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}</p>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
-}
-// everything she has tapped in the last hour, so the clocks stay in sight whatever the cards below do
-function waitingCard(){
-  const now = Date.now(), rows = Object.entries(COOL).filter(([, a]) => a + 36e5 > now).sort((a, b) => a[1] - b[1]);
-  if(!rows.length) return '';
-  return `<div class="card" style="margin-bottom:12px"><div class="small muted" style="margin-bottom:6px">⏳ ${esc(t('waitH'))}</div>${rows.map(([pid, a]) => `<div class="wrow"><span>${esc(COOLN[pid] || '—')}</span><span class="clock" data-until="${a + 36e5}">${clock(a + 36e5 - now)}</span></div>`).join('')}</div>`;
 }
 async function draw(){
   const app = document.getElementById('app');
@@ -256,7 +274,7 @@ async function draw(){
     const pickOwn = own.find(s => free(s.pid));
     const g0 = P.groups.find(g => g.list.slice(0, 2).some(c => free(c.pid)));
     const hero = pickOwn ? typeCard(norm(pickOwn.label), P, pickOwn.label + (pickOwn.whoName ? ' · ' + pickOwn.whoName : ''), [{pid:pickOwn.pid}], {hero:true})
-      : g0 ? typeCard(g0.k, P, g0.name, g0.list.slice(0, 2).map(c => ({pid:c.pid, sub:c.near ? t('near', {n:c.near}) : ''})), {hero:true}) : '';
+      : g0 ? typeCard(g0.k, P, g0.name, [], {hero:true, run:g0.list}) : '';
     // special finds: needed troves that only a few kinds of structure give
     const special = [...P.need].map(n => ({n, p:PL.get(n)})).filter(x => x.p && x.p.structures.length && info(x.n).rare).map(x => ({...x, inCity:x.p.structures.some(s => P.sn.includes(norm(s))), hc:huntCount(x.n)})).sort((a, b) => b.inCity - a.inCity || (b.hc > 0) - (a.hc > 0) || a.hc - b.hc || a.p.structures.length - b.p.structures.length).slice(0, 20);
     const specialHtml = special.length ? `<h2 class="t">⭐ ${esc(t('special'))}</h2><p class="sub">${esc(t('specialN'))}</p><div class="shelf">${special.map(x => { const i = info(x.n); return `<div class="tile">${thumb(x.n)}<b>${esc(x.n)}</b>${i.isNew ? `<em class="bd new">${esc(t('newT'))}</em>` : ''}<small>${x.inCity ? esc(t('onlyAt', {x:x.p.structures.filter(s => P.sn.includes(norm(s))).join(', ')})) : esc(t('notHere'))}</small>${seenAt(x.n) ? `<small>${esc(t('seen', {x:seenAt(x.n)}))}</small>` : ''}${x.inCity ? tileGo(P, x.n) : ''}</div>`; }).join('')}</div>` : '';
@@ -266,7 +284,7 @@ async function draw(){
     const seenR = new Set(), recHtml = rec.length ? `<h2 class="t">📖 ${esc(t('recH'))}</h2><p class="sub">${esc(t('recN'))}</p><div class="shelf">${rec.filter(r => !seenR.has(r.rn) && seenR.add(r.rn)).slice(0, 8).map(r => `<div class="tile">${thumb(r.rn)}<b>${esc(r.rn)}</b><small>${esc(t('missing', {x:r.g}))}</small>${tileGo(P, r.g)}</div>`).join('')}</div>` : '';
     // the rest of the city, best kinds of structure first; only the first few are open
     const shown = P.groups.slice(0, 6), rest = P.groups.slice(6);
-    const gcard = g => typeCard(g.k, P, g.name, g.list.slice(0, 3).map(c => ({pid:c.pid, sub:c.near ? t('near', {n:c.near}) : ''})));
+    const gcard = g => typeCard(g.k, P, g.name, [], {run:g.list});
     const groupHtml = `<h2 class="t">${esc(t('t4'))}</h2><p class="sub">${esc(t('t4N'))}</p>${shown.map(gcard).join('')}${rest.length ? `<details class="more"><summary>${esc(t('moreTypes', {n:rest.length}))}</summary>${rest.map(gcard).join('')}</details>` : ''}`;
     const el = elsewhere(cd, P);
     const elHtml = el.length ? `<h2 class="t">${esc(t('elseH', {city:cname}))}</h2><p class="sub">${esc(t('elseN', {city:cname}))}</p><div class="card" style="padding:10px 14px">${el.slice(0, 40).map(r => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)">${thumb(r.name)}<b>${esc(r.name)}</b> <span class="muted">${r.found.length ? esc(t('elseWhere', {x:r.found.join('; ')})) : r.list.length ? esc(t('elseList', {x:r.list.join(', ')})) : esc(t('elseNone'))}</span></div>`).join('')}</div>` : '';
@@ -279,31 +297,33 @@ async function draw(){
     <p class="small muted" style="margin:0">${esc(t(MODE === 'gold' ? 'mGoldN' : 'mRecN'))}</p></div>
     ${dash()}
     <div class="card" style="margin-bottom:12px"><details><summary><b>${esc(t('stepsH'))}</b></summary>${steps}</details></div>
-    ${waitingCard()}
     <div id="next" class="small muted" style="margin:0 0 4px"></div>
     ${body}
     <p class="small" style="margin:18px 0 0"><button type="button" class="btn small" id="resetCool">${esc(t('reset'))}</button></p>`;
-  tick();
+  refreshRuns(); tick();
 }
 function tick(){
   const now = Date.now(); let soon = Infinity;
-  document.querySelectorAll('.clock').forEach(c => { const left = Number(c.dataset.until) - now; if(left <= 0){ const a = c.closest('a.go'); if(a){ a.classList.remove('cool'); a.querySelector('span').firstChild.textContent = '▶ ' + t('go'); c.remove(); } else { draw(); } } else { c.textContent = clock(left); soon = Math.min(soon, left); } });
+  document.querySelectorAll('.clock').forEach(c => { const left = Number(c.dataset.until) - now; if(left <= 0){ const a = c.closest('a.go'); if(a && a.classList.contains('run')) refreshRuns(); else if(a){ a.classList.remove('cool'); a.querySelector('span').firstChild.textContent = '▶ ' + t('go'); c.remove(); } } else { c.textContent = clock(left); soon = Math.min(soon, left); } });
   const el = document.getElementById('next'); if(el) el.textContent = soon < Infinity ? t('ready') + ' ' + clock(soon) : Object.keys(COOL).length ? t('allReady') : '';
 }
 setInterval(tick, 1000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden) draw(); });
-window.addEventListener('pageshow', e => { if(e.persisted) draw(); });
+document.addEventListener('visibilitychange', () => { if(!document.hidden){ refreshRuns(); tick(); } });
+window.addEventListener('pageshow', e => { if(e.persisted){ refreshRuns(); tick(); } });
 
 // ---------- events ----------
 document.addEventListener('click', e => {
   const a = e.target.closest('a.go[data-pid]');
   if(a){
-    const pid = a.dataset.pid, at = Date.now(); COOL[pid] = at; COOLN[pid] = a.dataset.label || ''; store.set(COOL_KEY, COOL); store.set('rut:helper:coolNames', COOLN);
+    const pid = a.dataset.pid, at = Date.now();
+    if(!pid){ e.preventDefault(); return; }
+    COOL[pid] = at; store.set(COOL_KEY, COOL);
+    if(a.classList.contains('run')){ setTimeout(refreshRuns, 80); return; }
     document.querySelectorAll('a.go[data-pid="' + pid + '"]').forEach(x => { x.classList.add('cool'); const sp = x.querySelector('span'); sp.firstChild.textContent = '⏳ ' + t('cooling'); if(!x.querySelector('.clock')) x.insertAdjacentHTML('beforeend', `<span class="clock" data-until="${at + 36e5}">${clock(36e5)}</span>`); });
     tick(); return;
   }
   const m = e.target.closest('[data-mode]'); if(m){ MODE = m.dataset.mode; store.set('rut:helper:mode', MODE); draw(); return; }
-  if(e.target.closest('#resetCool')){ COOL = {}; COOLN = {}; store.set(COOL_KEY, COOL); store.set('rut:helper:coolNames', COOLN); draw(); return; }
+  if(e.target.closest('#resetCool')){ COOL = {}; store.set(COOL_KEY, COOL); draw(); return; }
   if(e.target.closest('#forget')){ MINE = null; store.set(MINE_KEY, null); MSG = ''; draw(); }
 });
 document.addEventListener('change', async e => {
