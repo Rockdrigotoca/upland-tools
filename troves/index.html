@@ -30,6 +30,7 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .cl-go{font-weight:600}
 .cl-rec{color:var(--muted);font-size:.9rem;margin-top:2px}
 .cl-sum{margin:0 0 6px;font-size:1.05rem}
+.chip2{display:inline-flex;align-items:center;gap:5px;background:var(--surface-2);border-radius:10px;padding:4px 9px;font-size:.92rem}
 .boxtabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:8px;margin:0 0 14px}
 .boxtab{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:var(--surface);box-shadow:var(--shadow);cursor:pointer;min-width:0}
 .boxtab:hover{border-color:var(--muted)}
@@ -112,6 +113,7 @@ Site.register({
     needH:'Collect these to fill your recipes', needN:'{n} troves are all that stand between you and {m} unfinished recipes. Under each name: how many recipes it holds up, and how many more you need.', needMore:'{r} recipes · {g} more', dlClean:'Download cleaned file', dlNote:'A small file with only trove names and numbers, no token. Send it to a phone and upload it there.',
     coolLeft:'{n} min', coolClear:'Clear the timers', coolHint:'A property you open turns grey with a 60-minute timer: that is when you can search it again.', rad:'Count structures within 80 m of the property (your avatar’s reach: not confirmed)', wFee:'Fee (UPX)', wDist:'km from the last one', bnxH:'Structures to build next', bnxN:'To craft the rest in your own structures, build these. Priority is how many of the {n} crafts each one unlocks, after the ones above it. Where: your empty properties that are big enough, by city.', bnxSize:'Needs', bnxUp2:'{n} UP2', bnxSug:'≤ {n} UP2 (suggested)', bnxUnk:'size unknown', bnxIn:'Build in', bnxNoFit:'None of your empty properties is big enough', bnxTaken:'The properties that fit are already suggested for a structure above', bnxUnlocks:'Unlocks',
     owKm:'km', owCheapH:'Cheaper places to craft', owCheapN:'Same crafts, a lower teleport price than the closest place. Each address is listed once, with the crafts it covers and the most it saves against the closest one.', owSaves:'Saves up to',
+    raH:'Which recipe to use', raN:'Many troves have two recipes. This one costs fewer hard-to-find troves (how often your hunting log has seen them): use it whenever the structure lets you choose.', raUse:'use', raAvoid:'avoid:', raEats:'it eats {x}', raKeepH:'Keep these out of crafts', raKeepN:'The hardest troves to find that recipes ask for. Craft with them only when you have to.', raSeen:'found {n}×', raIn:'in {m} recipes', skH:'Structures you can start skipping', skN:'{n} of {m} structures give mostly troves you no longer need. The lower the percentage, the less a visit is worth.', skOf:'{n} of {m} troves still needed', skStill:'still needed: {x}', skNone:'Every structure still gives mostly troves you need.',
     cqRecipes:'A structure offers one of these recipes:', cqCan:'up to {n}', cqSelf:'the property itself', cqLevel:'level {n}', cqHold:'(you hold {q}, it takes {m})', cqShort:'only {a} of {b}: short of ingredients', cqCrafts:'{n} to craft', cqSum2:'Craft {n} new troves first (one of each, that is what discovers them). Then, for each trove below, craft the number shown in one visit to reach its next banking level: {m} copies in all.', cqUpTo:'you can craft up to {n}', cqNew:'new', cqBank:'bank', cqBoth:'1 new + {b} to bank', cqSum:'In all: {n} new troves to craft first (one of each, that is what discovers them), then {m} copies to bank. Do them in that order.',
     cwH:'Where to craft in {city}', cwN:'Craft as much as you can in your own structures here, then in the neighbourhood you own the most in ({hood}), then in the rest of the city. Each stop is chosen to cover the most crafts left.', cwOwn:'1 · Your own structures', cwHood:'2 · {hood}', cwCity:'3 · Rest of {city}', cwNone:'Nothing left for this step.', cwDone:'{n} of {m} wanted crafts covered here.', cwLoad:'Loading the city…', cwNo:'You have no structures in this city.',
     owH:'Craft in your own structures', owN:'Crafting at a structure you own means no visit to someone else’s. These stops cover {n} of {m} crafts, fewest stops first, grouped by city.', owStop:'Stop', owCity:'City', owWhere:'Where', owCrafts:'Craft here', owNone:'Nothing you want to craft can be done in your own structures.',
@@ -176,6 +178,7 @@ Site.register({
     needH:'Junta estos para completar tus recetas', needN:'{n} troves son lo único que te separa de {m} recetas sin completar. Debajo de cada nombre: cuántas recetas frena y cuántos más necesitas.', needMore:'{r} recetas · {g} más', dlClean:'Descargar archivo limpio', dlNote:'Un archivo pequeño solo con nombres y números de troves, sin token. Envíalo a un teléfono y súbelo ahí.',
     coolLeft:'{n} min', coolClear:'Borrar los temporizadores', coolHint:'Una propiedad que abres se pone gris con un temporizador de 60 minutos: ahí puedes buscar de nuevo.', rad:'Contar estructuras a menos de 80 m de la propiedad (alcance de tu avatar: sin confirmar)', wFee:'Costo (UPX)', wDist:'km desde la última', bnxH:'Estructuras por construir', bnxN:'Para craftear el resto en tus propias estructuras, construye estas. La prioridad es cuántos de los {n} crafteos desbloquea cada una, después de las de arriba. Dónde: tus propiedades vacías que son lo bastante grandes, por ciudad.', bnxSize:'Pide', bnxUp2:'{n} UP2', bnxSug:'≤ {n} UP2 (sugerido)', bnxUnk:'tamaño desconocido', bnxIn:'Construir en', bnxNoFit:'Ninguna de tus propiedades vacías es lo bastante grande', bnxTaken:'Las propiedades que caben ya se sugirieron para una estructura de arriba', bnxUnlocks:'Desbloquea',
     owKm:'km', owCheapH:'Lugares más baratos para craftear', owCheapN:'Los mismos crafteos, con un precio de teletransporte menor que el lugar más cercano. Cada dirección aparece una sola vez, con los crafteos que cubre y lo máximo que ahorra frente al más cercano.', owSaves:'Ahorra hasta',
+    raH:'Qué receta usar', raN:'Muchos troves tienen dos recetas. Esta cuesta menos troves difíciles de encontrar (qué tan seguido los ha visto tu registro de caza): úsala cuando la estructura te deje elegir.', raUse:'usa', raAvoid:'evita:', raEats:'se come {x}', raKeepH:'Déjalos fuera de los crafteos', raKeepN:'Los troves más difíciles de encontrar que piden las recetas. Craftea con ellos solo si no hay de otra.', raSeen:'hallado {n}×', raIn:'en {m} recetas', skH:'Estructuras que puedes dejar de visitar', skN:'{n} de {m} estructuras dan sobre todo troves que ya no necesitas. Mientras más bajo el porcentaje, menos vale una visita.', skOf:'{n} de {m} troves aún se necesitan', skStill:'aún se necesitan: {x}', skNone:'Todas las estructuras aún dan sobre todo troves que necesitas.',
     cqRecipes:'Una estructura ofrece una de estas recetas:', cqCan:'hasta {n}', cqSelf:'la propiedad misma', cqLevel:'nivel {n}', cqHold:'(tienes {q}, pide {m})', cqShort:'solo {a} de {b}: faltan ingredientes', cqCrafts:'{n} por craftear', cqSum2:'Craftea primero {n} troves nuevos (uno de cada uno, eso los descubre). Luego, de cada trove de abajo, craftea de una vez la cantidad indicada para llegar a su siguiente nivel de banco: {m} copias en total.', cqUpTo:'puedes craftear hasta {n}', cqNew:'nuevo', cqBank:'banco', cqBoth:'1 nuevo + {b} al banco', cqSum:'En total: {n} troves nuevos para craftear primero (uno de cada uno, eso los descubre), y luego {m} copias para el banco. Hazlos en ese orden.',
     cwH:'Dónde craftear en {city}', cwN:'Craftea lo más que puedas en tus propias estructuras de aquí, luego en el barrio donde tienes más ({hood}) y al final en el resto de la ciudad. Cada parada se elige para cubrir los crafteos que más falten.', cwOwn:'1 · Tus estructuras', cwHood:'2 · {hood}', cwCity:'3 · Resto de {city}', cwNone:'Nada pendiente en este paso.', cwDone:'{n} de {m} crafteos cubiertos aquí.', cwLoad:'Cargando la ciudad…', cwNo:'No tienes estructuras en esta ciudad.',
     owH:'Craftea en tus propias estructuras', owN:'Craftear en una estructura tuya evita visitar la de otro. Estas paradas cubren {n} de {m} crafteos, las menos paradas posibles, agrupadas por ciudad.', owStop:'Parada', owCity:'Ciudad', owWhere:'Dónde', owCrafts:'Craftea aquí', owNone:'Nada de lo que quieres craftear se puede hacer en tus estructuras.',
@@ -448,6 +451,11 @@ function analyse(d){
   });
   const clash = [...clashMap.values()].sort((a, b) => (b.need - b.have) - (a.need - a.have));
   const oneShort = recs.filter(r => r.short.length === 1).length;
+  // How hard a trove is to find: the fewer times the hunting log has seen it, the scarcer. Recipes that eat scarce troves are the last choice.
+  const hc = new Map(); let hN = 0;
+  if(HUNTS) HUNTS.finds.forEach(f => { if(HUNTS.src[f[2]][1] === 'balloon') return; hc.set(HUNTS.troves[f[3]], (hc.get(HUNTS.troves[f[3]]) || 0) + f[4]); hN += f[4]; });
+  const scarce = n => { if(!hN){ const p = PLACES.get(n); return p ? 1 / (1 + p.structures.length + p.plants.length) : 0.5; } const c = hc.get(n) || 0; return c > 0 ? 1 / (1 + c / hN * 1000) : 0.9; };
+  const verCost = v => v.ings.reduce((a, g) => a + g.req * scarce(g.n), 0);
   // How many of each to craft: first one of every new trove (that is what discovers it), then the copies that bank levels,
   // all out of the same stock so the plan can be done in full, in this order.
   const qrest = new Map(), craftQty = new Map();
@@ -456,7 +464,7 @@ function analyse(d){
   const entry = n => craftQty.get(n) || craftQty.set(n, {nw:0, bank:0, vers:[]}).get(n);
   const addVer = (en, ings, k) => { if(k <= 0) return; const sig = ings.map(g => g.n + ':' + g.req).join('|'), f = en.vers.find(v => v.sig === sig); if(f) f.k += k; else en.vers.push({sig, ings, k}); };
   craftable.filter(c => c.isNew).sort((a, b) => a.versions.length - b.versions.length || a.name.localeCompare(b.name)).forEach(c => {
-    const v = c.versions.filter(x => x.ings.every(g => left2(g.n) >= g.req)).sort((x, y) => Math.min(...y.ings.map(g => left2(g.n) - g.req)) - Math.min(...x.ings.map(g => left2(g.n) - g.req)))[0];
+    const v = c.versions.filter(x => x.ings.every(g => left2(g.n) >= g.req)).sort((x, y) => verCost(x) - verCost(y))[0];
     if(!v) return;
     v.ings.forEach(g => take(g.n, g.req)); const en = entry(c.name); en.nw = 1; addVer(en, v.ings, 1);
   });
@@ -466,7 +474,7 @@ function analyse(d){
   [...items.values()].filter(i => i.th.length && i.lvl < i.th.length && byRecipe.has(i.name)).map(i => ({i, gap:i.th[i.lvl] - i.q})).sort((a, b) => a.gap - b.gap || a.i.name.localeCompare(b.i.name)).forEach(({i, gap}) => {
     if(gap <= 0){ nextQty.set(i.name, {need:0, doNow:0, q:i.q, lvl:i.lvl, thr:i.th[i.lvl], vers:[]}); return; }
     let todo = gap; const vers = [];
-    byRecipe.get(i.name).map(v => ({v, can:Math.min(...v.ings.map(g => Math.floor(nleft(g.n) / g.req)))})).sort((a, b) => b.can - a.can).forEach(({v}) => {
+    byRecipe.get(i.name).map(v => ({v, cost:verCost(v)})).sort((a, b) => a.cost - b.cost).forEach(({v}) => {
       const k = Math.min(todo, ...v.ings.map(g => Math.floor(nleft(g.n) / g.req)));
       if(k > 0){ v.ings.forEach(g => nrest.set(g.n, nleft(g.n) - g.req * k)); vers.push({ings:v.ings, k}); todo -= k; }
     });
@@ -487,8 +495,9 @@ function analyse(d){
   });
   const craftMax = new Map(craftable.map(c => [c.name, c.copies]));
   // every recipe of a trove and how many copies the stock allows of each (a structure offers just one of them)
-  const recipeCap = new Map([...byRecipe.entries()].map(([name, vs]) => [name, vs.map(v => ({ings:v.ings, can:Math.min(...v.ings.map(g => Math.floor(have(g.n) / g.req)))}))]));
-  return {items, recs, blockers, rows, craftable, bulk, easy, bonusFor, gold, goldCraft, clash, craftQty, craftMax, nextQty, recipeCap, craftN:recs.filter(r => r.ok).length, oneShort, prot};
+  const recipeCap = new Map([...byRecipe.entries()].map(([name, vs]) => [name, vs.map(v => ({ings:v.ings, cost:verCost(v), can:Math.min(...v.ings.map(g => Math.floor(have(g.n) / g.req)))})).sort((a, b) => a.cost - b.cost)]));
+  const scarceOf = n => ({s:scarce(n), seen:hc.get(n) || 0});
+  return {items, recs, blockers, rows, craftable, bulk, easy, bonusFor, gold, goldCraft, clash, craftQty, craftMax, nextQty, recipeCap, scarceOf, craftN:recs.filter(r => r.ok).length, oneShort, prot};
 }
 
 // ---------- drawing ----------
@@ -756,6 +765,37 @@ function clashCard(){
   return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('clH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('clN'))}</p><ul class="small" style="margin:0;padding-left:18px">${A.clash.map(e => `<li><b>${esc(t('clRow', {name:e.n, need:e.need, have:e.have}))}</b> <span class="muted">${esc(t('clFor', {list:e.by.join(', ')}))}</span></li>`).join('')}</ul></div>`;
 }
 function viewHunt(){ return Hunt.html(HUNTS, {cat:n => (PLACES.get(n) || {}).cat, bal:DATA ? DATA.items : null, all:[...PLACES.keys()], where:n => { const p = PLACES.get(n); return p && (p.structures.length || p.plants.length) ? '(' + p.structures.concat(p.plants).slice(0, 2).join(', ') + ')' : ''; }}); }
+// Which recipe to use: the one that eats the fewest hard-to-find troves; and which troves to keep out of crafts.
+function recipeAdviceCard(){
+  const sc = n => A.scarceOf(n), verT = v => v.ings.map(g => (g.req > 1 ? g.req + ' ' : '') + g.n).join(' + ');
+  const rows = [];
+  A.recipeCap.forEach((vs, name) => {
+    if(vs.length < 2) return;
+    const lo = vs[0], hi = vs[vs.length - 1];
+    if(hi.cost < 0.5 || hi.cost < lo.cost * 2) return;
+    const bad = hi.ings.filter(g => sc(g.n).s >= 0.5).map(g => g.n);
+    rows.push({name, lo, hi, bad, gain:hi.cost - lo.cost});
+  });
+  rows.sort((a, b) => b.gain - a.gain);
+  const keep = new Map();
+  A.recipeCap.forEach((vs, name) => vs.forEach(v => v.ings.forEach(g => { if(sc(g.n).s >= 0.6){ const e = keep.get(g.n) || {n:g.n, used:new Set()}; e.used.add(name); keep.set(g.n, e); } })));
+  const keepL = [...keep.values()].sort((a, b) => sc(b.n).s - sc(a.n).s || b.used.size - a.used.size);
+  const li = rows.slice(0, 25).map(r => `<li><span class="cl-n">${thumb(r.name)}<b>${esc(r.name)}</b></span> <span class="cl-go">${esc(t('raUse'))}</span> ${esc(verT(r.lo))}<div class="cl-rec">${esc(t('raAvoid'))} ${esc(verT(r.hi))}${r.bad.length ? ' · ' + esc(t('raEats', {x:r.bad.join(', ')})) : ''}</div></li>`).join('');
+  const kp = keepL.slice(0, 24).map(e => `<span class="chip2">${thumb(e.n)}<b>${esc(e.n)}</b> <span class="muted">${esc(t('raSeen', {n:sc(e.n).seen}))} · ${esc(t('raIn', {m:e.used.size}))}</span></span>`).join('');
+  return `<div class="card cw" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('raH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('raN'))}</p>
+    ${rows.length ? `<ul class="cl-list">${li}</ul>` : ''}<h3 style="margin:14px 0 6px;font-size:1.05em">${esc(t('raKeepH'))}</h3><p class="small muted" style="margin:0 0 6px">${esc(t('raKeepN'))}</p><div style="display:flex;flex-wrap:wrap;gap:6px">${kp}</div></div>`;
+}
+// Structures you can start skipping: the ones whose troves you mostly do not need any more.
+function skipCard(){
+  const gap = new Map(A.gold.map(r => [r.name, r.gap]));
+  const needed = n => !A.items.has(n) || (gap.get(n) || 0) > 0;
+  const st = new Map();
+  PLACES.forEach((p, name) => p.structures.forEach(x => { const k = norm(x).replace(/ 1$/, ''), e = st.get(k) || {name:x, all:[]}; e.all.push(name); st.set(k, e); }));
+  const rows = [...st.values()].map(e => { const need = e.all.filter(needed); return {name:e.name, total:e.all.length, need:need.length, share:need.length / e.all.length, still:need}; }).filter(r => r.total >= 2).sort((a, b) => a.share - b.share || a.name.localeCompare(b.name));
+  const low = rows.filter(r => r.share <= 0.5).slice(0, 20);
+  const li = low.map(r => `<li>${sthumb(r.name)}<b>${esc(r.name)}</b> <span class="cl-q">${Math.round(r.share * 100)}%</span> <span class="muted">${esc(t('skOf', {n:r.need, m:r.total}))}${r.still.length ? ' · ' + esc(t('skStill', {x:r.still.slice(0, 6).join(', ')})) : ''}</span></li>`).join('');
+  return `<div class="card cw" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('skH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('skN', {n:rows.filter(r => r.share <= 0.5).length, m:rows.length}))}</p>${low.length ? `<ul class="cl-list">${li}</ul>` : `<p class="muted small" style="margin:0">${esc(t('skNone'))}</p>`}</div>`;
+}
 function viewOverview(){
   const its = [...A.items.values()], lv = [0, 0, 0, 0];
   its.forEach(i => lv[Math.min(i.lvl, 3)]++);
@@ -872,7 +912,7 @@ function viewGold(){
       const tag = r.gap <= 0 ? `<span class="tag good">${esc(t('grDone'))}</span>` : (r.sites === 0 ? `<span class="tag">${esc(t('grCraftOnly'))}</span>` : (r.sites > 0 && r.sites <= 5 && r.gap >= 50 ? `<span class="tag bad">${esc(t('grBottle'))}</span>` : ''));
       return `<tr><td>${thumb(r.name)}<b>${esc(r.name)}</b> ${tag}</td><td>${esc(levelName(r.lvl))}</td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.need)}</td><td class="n"><b>${n0(r.gap)}</b></td><td class="n">${r.sites == null ? '—' : r.sites}</td><td class="places">${esc(best)}</td><td class="n">${n0(r.spare)}</td></tr>`;
     })));
-  return guideCard() + head + cityT + cityCraftCard() + ownCraftCard() + spots + craftT + allT;
+  return guideCard() + head + cityT + cityCraftCard() + ownCraftCard() + spots + recipeAdviceCard() + skipCard() + craftT + allT;
 }
 function viewSpecial(){
   if(!SPECIAL) return `<div class="card muted">${esc(t('wNone'))}</div>`;
