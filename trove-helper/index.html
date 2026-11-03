@@ -79,7 +79,7 @@ details.more>summary{cursor:pointer;color:var(--muted);padding:8px 0;font-weight
 const {t, esc, store} = Site;
 Site.register({
   en:{
-    title:'Rockdrigo’s Trove Helper', subtitle:'Tap, collect, repeat. For MsTullis.',
+    title:'Rockdrigo’s Trove Helper', subtitle:'Tap, collect, repeat. For MsTullis, and almost anyone else.',
     hi:'Hello MsTullis!', hiN:'Pick a city, then tap the buttons from the top down. Each one opens Upland on a property where you can collect something you still need.',
     stepsH:'How it works',
     s1:'Open the Upland app first and stay logged in.', s2:'Check the city below (it starts on Los Angeles).', s3:'Tap a button. Upland opens on that property. Collect the troves there.', s4:'The button shows a clock for one hour. Come back to it after that, or go to the next one.', s5:'Start from the top: your own properties first, then James’s, then Marlow’s, then the rest.',
@@ -91,6 +91,7 @@ Site.register({
     t1:'Your own properties', t1N:'Structures you own here that give what you need.', t2:'James’s properties', t3:'Marlow’s properties', t4:'Other places', t4N:'Structures anywhere in the city. The first ones also have more of what you need nearby.',
     none:'Nothing here for this city yet.', cheap:'{n} UPX stop', upx:'{n} UPX', runOf:'{d} of {n} visited', runAll:'All visited',  seen:'Rockdrigo found it at: {x}', legend:'The medal on each trove is the level you are collecting for. NEW means you have never found it. ★ means few places give it.', go:'Go collect', cooling:'Back in', newT:'NEW', helps:'helps craft {x}', mine:'Your own properties', mineN:'Structures that are yours (or James’s and Marlow’s) in this city. No walking needed.', noOwn:'None of your own, James’s or Marlow’s properties in {city} has a structure that gives what you need.', next:'Your next stop', special:'Special finds', specialN:'Only a few kinds of structure give these, or Rockdrigo has hardly ever found them. They are worth the trip.', onlyAt:'at: {x}', notHere:'not in this city', recH:'One find from a recipe', recN:'Find just this one trove and the recipe is ready.', missing:'missing {x}', moreTypes:'{n} more kinds of structure', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
     elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
+    ovStarter:'No file needed to start. If you load one later, the helper skips what you already have.', ovGrown:'Got your troves file? The full Troves tool does a lot more.', ovGrownGo:'Open Troves',
     ovH:'Let’s go troving!', ovN:'Three quick choices, then one big button. You can come back here any time.',
     ovCity:'1 · Where are you?', ovGoal:'2 · What are you looking for?', ovWhere:'3 · Where do you want to go?',
     gAll:'Everything', gAllN:'Any trove you can still get more of. Every visit gives one trove at random, so the more structures you visit, the faster it fills.',
@@ -104,7 +105,7 @@ Site.register({
     alt:'The other option', altN:'Switch the list above to “Recipes and collections” if you only want to fill recipes and collections.',
   },
   es:{
-    title:'El Ayudante de Troves de Rockdrigo', subtitle:'Toca, recolecta, repite. Para MsTullis.',
+    title:'El Ayudante de Troves de Rockdrigo', subtitle:'Toca, recolecta, repite. Para MsTullis y casi cualquier otra persona.',
     hi:'¡Hola MsTullis!', hiN:'Elige una ciudad y toca los botones de arriba hacia abajo. Cada uno abre Upland en una propiedad donde puedes recolectar algo que aún necesitas.',
     stepsH:'Cómo funciona',
     s1:'Abre primero la app de Upland y no cierres sesión.', s2:'Revisa la ciudad de abajo (empieza en Los Ángeles).', s3:'Toca un botón. Upland abre esa propiedad. Recolecta los troves de ahí.', s4:'El botón muestra un reloj de una hora. Vuelve a él después, o pasa al siguiente.', s5:'Empieza por arriba: primero tus propiedades, luego las de James, luego las de Marlow y luego el resto.',
@@ -116,6 +117,7 @@ Site.register({
     t1:'Tus propiedades', t1N:'Estructuras tuyas aquí que dan lo que necesitas.', t2:'Propiedades de James', t3:'Propiedades de Marlow', t4:'Otros lugares', t4N:'Estructuras en toda la ciudad. Las primeras también tienen más de lo que necesitas cerca.',
     none:'Aquí no hay nada para esta ciudad todavía.', cheap:'parada de {n} UPX', upx:'{n} UPX', runOf:'{d} de {n} visitados', runAll:'Todos visitados',  seen:'Rockdrigo lo halló en: {x}', legend:'La medalla de cada trove es el nivel que estás buscando. NUEVO es que nunca lo has hallado. ★ es que pocos lugares lo dan.', go:'Ir a recolectar', cooling:'Vuelve en', newT:'NUEVO', helps:'sirve para {x}', mine:'Tus propiedades', mineN:'Estructuras tuyas (o de James y Marlow) en esta ciudad. Sin caminar.', noOwn:'Ninguna propiedad tuya, de James o de Marlow en {city} tiene una estructura que dé lo que necesitas.', next:'Tu siguiente parada', special:'Hallazgos especiales', specialN:'Solo unas pocas estructuras los dan. Vale la pena el viaje.', onlyAt:'en: {x}', notHere:'no está en esta ciudad', recH:'Un hallazgo para una receta', recN:'Encuentra solo este trove y la receta queda lista.', missing:'falta {x}', moreTypes:'{n} tipos de estructura más', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
     elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
+    ovStarter:'No necesitas ningún archivo para empezar. Si cargas uno después, el ayudante salta lo que ya tienes.', ovGrown:'¿Tienes tu archivo de troves? La herramienta completa de Troves hace mucho más.', ovGrownGo:'Abrir Troves',
     ovH:'¡A buscar troves!', ovN:'Tres elecciones rápidas y un botón grande. Puedes volver aquí cuando quieras.',
     ovCity:'1 · ¿Dónde estás?', ovGoal:'2 · ¿Qué buscas?', ovWhere:'3 · ¿A dónde quieres ir?',
     gAll:'Todo', gAllN:'Cualquier trove del que aún puedas tener más. Cada visita da un trove al azar, así que mientras más estructuras visites, más rápido se llena.',
@@ -128,6 +130,8 @@ Site.register({
     wait:'Cargando…', fail:'No pude cargar los datos.', reset:'Borrar todos los relojes',
     alt:'La otra opción', altN:'Cambia la lista de arriba a “Recetas y colecciones” si solo quieres completar recetas y colecciones.',
   },
+  en_cunk:{ subtitle:'Tap, collect, repeat. For MsTullis, and almost anyone else. Almost.' },
+  es_cunk:{ subtitle:'Toca, recolecta, repite. Para MsTullis y casi cualquier otra persona. Casi.' },
 });
 const norm = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().replace(/ 1$/, '');
 const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
@@ -334,7 +338,7 @@ async function draw(){
   if(VIEW === 'overview'){
     const cool = Object.values(COOL).filter(a => a + 36e5 > Date.now()).length;
     const sum = PLAN ? `<div class="card" style="margin-bottom:0"><b>${esc(t('ovSum', {city:CNAME}))}</b><div class="sumrow"><span>${esc(t('sumKinds'))}: <b>${n0(PLAN.groups.length)}</b></span><span>${esc(t('sumSpecial'))}: <b>${n0(SPECN)}</b></span>${ELN ? `<span>${esc(t('sumElse'))}: <b>${n0(ELN)}</b></span>` : ''}</div>${cool ? `<p class="small muted" style="margin:8px 0 0">${esc(t('ovWait', {n:cool}))}</p>` : ''}</div>` : '';
-    app.innerHTML = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('hi'))} ${esc(t('ovH'))}</h2><p class="hint" style="margin:0">${esc(t('ovN'))}</p></div>
+    app.innerHTML = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('hi'))} ${esc(t('ovH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('ovN'))}</p><p class="small" style="margin:0">${esc(t('ovStarter'))}</p><p class="small" style="margin:6px 0 0">${esc(t('ovGrown'))} <a href="../troves/"><b>${esc(t('ovGrownGo'))} →</b></a></p></div>
       <h2 class="t" style="margin-top:4px">${esc(t('ovCity'))}</h2>${citySel}
       <h2 class="t">${esc(t('ovGoal'))}</h2><div class="opts">${opt('mode', 'gold', MODE, '🧺', 'gAll', 'gAllN')}${opt('mode', 'rec', MODE, '📖', 'gRec', 'gRecN')}${opt('mode', 'rare', MODE, '⭐', 'gRare', 'gRareN')}</div>
       <div style="margin-top:14px">${sum}</div>
