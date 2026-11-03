@@ -122,6 +122,8 @@ Site.register({
     spH:'Structures that exist in only one city', spN:'Each of these is built in a single scanned city. Troves have a one-hour cooldown, so plan 3 or 4 searches per city. The order below is the shortest trip by air distance, starting from {start}.', spRoute:'Suggested trip', spLeg:'{km} km from the last stop', spStart:'Start', spFishOnly:'No special build here: this is the starting stop, for the other troves of the city.', spBuilt:'{n} built', spGives:'Gives', spNoTroves:'No troves known for this one yet. It may hold a trove we have not seen: worth a visit to find out.', spNeed:'you need it', spTotal:'{n} cities, about {km} km in all', spVisit:'Properties to visit',
     ptCraft:'Which recipe to use, where to craft in each city, which structures to build next and which to skip are all on the Craft tab.', ptGo:'Open Craft',
     stH:'Your strategy', stFew:'Not much left to hunt right now: {names}. Everything else is crafting and banking.', stMany:'{n} troves to hunt, the rarest first.', stLevels:'{n} troves still have a banking level that only hunting can give.',
+    tCities:'Cities',
+    fnNeverTag:'Never found', fnWhy:'Why', fnFew:'Not much to hunt right now: the troves below are all that is left that unlocks a recipe or was never found.', fnLots:'These troves unlock recipes or were never found, the ones holding up most recipes first.', fnListH:'What to find ({n})', fnListN:'Recipes blocked first, then never-found troves, then the next banking level of each trove.', fnRestH:'The rest ({n})',
     foCollapse:'Collapse all', foExpand:'Expand all',
     pctH:'In percent', pctN:'Where you stand, against the {b} troves that bank and the {m} in the game.', pctFound:'Troves discovered', pctAny:'Banked at bronze or better', pctSilver:'Banked at silver or better', pctGold:'Banked at gold', pctLv:'All banking levels reached', pctRec:'Recipes you can craft now', pctOf:'{a} of {b}',
     dFound:'Troves discovered', dHidden:'{n} still hidden', dBank:'Banking', dBankLv:'{a} of {b} banking levels', dReady:'{n} steps ready now, {l} levels more with {c} crafts (see Easy wins)', dGold:'Gold', dSilver:'Silver', dBronze:'Bronze', dNotBanked:'Not banked',
@@ -192,6 +194,8 @@ Site.register({
     spH:'Estructuras que existen en una sola ciudad', spN:'Cada una está construida en una sola ciudad escaneada. Los troves tienen una hora de espera, así que planea 3 o 4 búsquedas por ciudad. El orden de abajo es el viaje más corto por distancia aérea, empezando en {start}.', spRoute:'Viaje sugerido', spLeg:'{km} km desde la parada anterior', spStart:'Inicio', spFishOnly:'Aquí no hay construcción especial: es la parada de inicio, para los otros troves de la ciudad.', spBuilt:'{n} construidas', spGives:'Da', spNoTroves:'Aún no se conocen troves de esta. Puede tener uno que no hemos visto: vale la visita para averiguarlo.', spNeed:'te falta', spTotal:'{n} ciudades, unos {km} km en total', spVisit:'Propiedades para visitar',
     ptCraft:'Qué receta usar, dónde craftear en cada ciudad, qué estructuras construir y cuáles saltarte están en la pestaña Craftear.', ptGo:'Abrir Craftear',
     stH:'Tu estrategia', stFew:'Queda poco por cazar ahora: {names}. Lo demás es craftear y bancar.', stMany:'{n} troves por cazar, los más raros primero.', stLevels:'{n} troves aún tienen un nivel de banco que solo se consigue cazando.',
+    tCities:'Ciudades',
+    fnNeverTag:'Nunca encontrado', fnWhy:'Por qué', fnFew:'Queda poco por cazar: los troves de abajo son lo único que desbloquea una receta o nunca se ha encontrado.', fnLots:'Estos troves desbloquean recetas o nunca se han encontrado, primero los que frenan más recetas.', fnListH:'Qué buscar ({n})', fnListN:'Primero las recetas bloqueadas, luego los troves nunca encontrados y luego el siguiente nivel de banco de cada trove.', fnRestH:'El resto ({n})',
     foCollapse:'Cerrar todo', foExpand:'Abrir todo',
     pctH:'En porcentaje', pctN:'Dónde estás, frente a los {b} troves que se bancan y los {m} del juego.', pctFound:'Troves descubiertos', pctAny:'En banco bronce o mejor', pctSilver:'En banco plata o mejor', pctGold:'En banco oro', pctLv:'Todos los niveles de banco', pctRec:'Recetas que puedes craftear ya', pctOf:'{a} de {b}',
     dFound:'Troves descubiertos', dHidden:'{n} aún ocultos', dBank:'Banco', dBankLv:'{a} de {b} niveles de banco', dReady:'{n} pasos listos ya, {l} niveles más con {c} crafteos (ver Fáciles)', dGold:'Oro', dSilver:'Plata', dBronze:'Bronce', dNotBanked:'Sin bancar',
@@ -930,7 +934,7 @@ function goldSpots(cd){
   });
   return out.sort((a, b) => b.u - a.u || b.gives.length - a.gives.length);
 }
-function viewGold(){
+function goldPart(){
   const g = A.gold, lv = [0, 0, 0, 0]; g.forEach(r => lv[Math.min(r.lvl, 3)]++);
   const banked = g.reduce((a, r) => a + Math.min(r.lvl, 3), 0), possible = g.length * 3;
   const found = DATA.troves.found || A.items.size, max = DATA.troves.max || found;
@@ -973,9 +977,9 @@ function viewGold(){
       const tag = r.gap <= 0 ? `<span class="tag good">${esc(t('grDone'))}</span>` : (r.sites === 0 ? `<span class="tag">${esc(t('grCraftOnly'))}</span>` : (r.sites > 0 && r.sites <= 5 && r.gap >= 50 ? `<span class="tag bad">${esc(t('grBottle'))}</span>` : ''));
       return `<tr><td>${thumb(r.name)}<b>${esc(r.name)}</b> ${tag}</td><td>${esc(levelName(r.lvl))}</td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.need)}</td><td class="n"><b>${n0(r.gap)}</b></td><td class="n">${r.sites == null ? '—' : r.sites}</td><td class="places">${esc(best)}</td><td class="n">${n0(r.spare)}</td></tr>`;
     })));
-  return guideCard() + head + cityT + craftPointer() + spots + craftT + allT;
+  return guideCard() + head + cityT + spots + craftT + allT;
 }
-function viewSpecial(){
+function specialPart(){
   if(!SPECIAL) return `<div class="card muted">${esc(t('wNone'))}</div>`;
   const km = (a, b) => { const r = x => x * Math.PI / 180, h = Math.sin(r(b[0] - a[0]) / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(r((b[1] - a[1])) / 2) ** 2; return 12742 * Math.asin(Math.sqrt(h)); };
   const need = new Set(A.blockers.map(b => b.n));
@@ -1041,23 +1045,30 @@ function unlockTxt(b){
 }
 // A trove with no structure or plant that gives it (only a recipe makes it) cannot be hunted, so the Find lists leave it out.
 function findable(n){ const p = PLACES && PLACES.get(n); return !p || p.structures.length > 0 || p.plants.length > 0 || p.craftAt.length === 0; }
-// Find first, beyond the recipes: every trove that still needs more than crafting can give to reach its next banking level, closest first,
-// and the troves never found that have a known place.
-function levelHuntSections(){
-  const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
-  const rows = [...A.items.values()].filter(i => i.th.length && i.lvl < i.th.length && findable(i.name)).map(i => {
+// Find: one list. A trove is here when finding it unlocks recipes, when its next banking level needs more than crafting can give,
+// or when it has never been found and a place is known. Recipe-only troves are left out (findable()).
+function levelRows(){
+  return [...A.items.values()].filter(i => i.th.length && i.lvl < i.th.length && findable(i.name)).map(i => {
     const thr = i.th[i.lvl], need = Math.max(0, thr - i.q), nx = A.nextQty.get(i.name), crafted = nx ? nx.doNow : 0;
     return {i, thr, need, crafted, miss:Math.max(0, need - crafted)};
-  }).filter(r => r.miss > 0).sort((a, b) => a.miss - b.miss || a.i.name.localeCompare(b.i.name));
-  const tr = rows.slice(0, 100).map(r => `<tr><td>${thumb(r.i.name)}${nameWith(r.i.name)}</td><td>${medal(r.i.lvl + 1)} ${esc(t('cqLevel', {n:r.i.lvl + 1}))}</td><td class="n">${n0(r.i.q)} / ${n0(r.thr)}</td><td class="n" data-v="${r.miss}"><b>${n0(r.miss)}</b>${r.crafted ? `<div class="muted small">${esc(t('fnCraft', {n:r.crafted}))}</div>` : ''}</td><td>${PLACES.get(r.i.name) && PLACES.get(r.i.name).structures.length ? spotBtns(PLACES.get(r.i.name).structures) : `<span class="muted small">${esc(t('fnNoPlace'))}</span>`}</td></tr>`);
-  const never = [...PLACES.entries()].filter(([n, p]) => !A.items.has(n) && p.structures.length).sort((a, b) => a[1].structures.length - b[1].structures.length || a[0].localeCompare(b[0]));
-  const nr = never.map(([n, p]) => `<tr><td>${thumb(n)}${nameWith(n)}</td><td class="small">${esc(p.structures.slice(0, 4).join(', '))}</td><td>${spotBtns(p.structures)}</td></tr>`);
-  return sec(t('fnH'), t('fnN', {n:rows.length}), tbl([[t('colTrove')], [t('fnNext')], [t('fnHold'), 'n'], [t('fnMissing'), 'n'], [t('colWhere')]], tr))
-    + (nr.length ? sec(t('fnNeverH'), t('fnNeverN'), tbl([[t('colTrove')], [t('colWhere')], [t('fnGo')]], nr)) : '');
+  }).filter(r => r.miss > 0);
 }
 function viewMissing(){
-  return cityBar() + levelHuntSections() + sec(t('tMissing'), t('ovFirstN'), tbl([[t('colTrove')], [t('colUnlocks')], [t('colHave'), 'n'], [t('colNeed'), 'n'], [t('colWhere')]],
-    A.blockers.map(b => `<tr><td><div class="row" style="gap:0;flex-wrap:nowrap">${thumb(b.n)}${nameWith(b.n)}</div></td><td class="small" data-v="${b.newT.length * 1000 + b.stuck.length * 10 + b.alt}">${unlockTxt(b)}</td><td class="n">${n0((A.items.get(b.n) || {q:0}).q)}</td><td class="n">+${b.gap}</td><td>${spotBtns((PLACES.get(b.n) || {structures:[]}).structures)}</td></tr>`)));
+  const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
+  const rows = new Map(), get = n => { if(!rows.has(n)) rows.set(n, {n}); return rows.get(n); };
+  A.blockers.forEach((b, i) => { const r = get(b.n); r.b = b; r.ord = i; });
+  levelRows().forEach(l => { const r = get(l.i.name); r.l = l; });
+  [...PLACES.entries()].filter(([n, p]) => !A.items.has(n) && (p.structures.length || p.plants.length)).forEach(([n, p]) => { const r = get(n); r.never = p; });
+  const list = [...rows.values()].sort((x, y) => (x.b ? 0 : 1) - (y.b ? 0 : 1) || (x.b && y.b ? x.ord - y.ord : 0) || (y.never ? 1 : 0) - (x.never ? 1 : 0) || ((x.l ? x.l.miss : 1e9) - (y.l ? y.l.miss : 1e9)) || x.n.localeCompare(y.n));
+  const row = r => {
+    const why = [r.b ? unlockTxt(r.b) : '', r.never ? `<span class="tag warn">${esc(t('fnNeverTag'))}</span>` : '', r.l ? `${medal(r.l.i.lvl + 1)} ${esc(t('cqLevel', {n:r.l.i.lvl + 1}))}: <b>+${n0(r.l.miss)}</b>${r.l.crafted ? ` <span class="muted small">${esc(t('fnCraft', {n:r.l.crafted}))}</span>` : ''}` : ''].filter(Boolean).join('<br>');
+    const have = A.items.get(r.n), p = PLACES.get(r.n), pl = p ? p.structures : [];
+    return `<tr><td><div class="row" style="gap:0;flex-wrap:nowrap">${thumb(r.n)}${nameWith(r.n)}</div></td><td class="small">${why}</td><td class="n">${have ? n0(have.q) + (r.l ? ' / ' + n0(r.l.thr) : '') : '0'}</td><td>${pl.length ? spotBtns(pl) : `<span class="muted small">${esc(t('fnNoPlace'))}</span>`}</td></tr>`;
+  };
+  const head = [[t('colTrove')], [t('fnWhy')], [t('fnHold'), 'n'], [t('colWhere')]];
+  const top = list.slice(0, 40), rest = list.slice(40);
+  const lead = `<div class="card" style="margin-bottom:12px"><b>${esc(list.filter(r => r.b || r.never).length <= 12 ? t('fnFew') : t('fnLots'))}</b></div>`;
+  return cityBar() + lead + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
@@ -1075,6 +1086,10 @@ function viewCraft(){
   return cityBar() + recipeAdviceCard() + cityCraftCard() + ownCraftCard() + skipCard() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 function viewBank(){
+  return cityBar() + craftPointer() + (GOAL.bank ? bankPart() : '') + (GOAL.bank || GOAL.bonus ? easyPart() : '') + (GOAL.gold ? goldPart() : '');
+}
+function viewCities(){ return worldPart() + specialPart(); }
+function bankPart(){
   const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
   const prot = A.rows.filter(r => r.scarce && r.nxt != null).sort((a, b) => b.uses - a.uses);
   const modeSel = `<div class="row" style="margin:6px 0"><span class="small muted">${esc(t('bMode'))}</span><div class="seg" id="mode"><button type="button" data-mode="careful" class="${mode === 'careful' ? 'on' : ''}">${esc(t('bCareful'))}</button><button type="button" data-mode="relaxed" class="${mode === 'relaxed' ? 'on' : ''}">${esc(t('bRelaxed'))}</button></div></div><p class="hint">${esc(t('bModeN'))}</p>`;
@@ -1086,7 +1101,7 @@ function viewBank(){
     + sec(t('bProtect'), t('bProtectN'), tbl([[t('colTrove')], [t('colHeld'), 'n'], [t('colNeed'), 'n'], [t('colUsed'), 'n'], [t('colSites'), 'n']],
         prot.map(r => `<tr><td>${thumb(r.name)}<b>${esc(r.name)}</b></td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.max)}</td><td class="n">${r.uses}</td><td class="n">${r.sites == null ? '—' : r.sites}</td></tr>`)));
 }
-function viewEasy(){
+function easyPart(){
   const levels = A.easy.reduce((a, e) => a + (e.to - e.from), 0), crafts = A.easy.reduce((a, e) => a + e.crafts, 0);
   const just = A.easy.filter(e => e.crafts === 0), work = A.easy.filter(e => e.crafts > 0);
   const uses = e => [...e.uses.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([n, q]) => `${esc(n)} ×${n0(q)}`).join(', ') + (e.uses.size > 4 ? ` <span class="muted">+${e.uses.size - 4}</span>` : '');
@@ -1098,7 +1113,7 @@ function viewEasy(){
     + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td><td>${spotBtns((PLACES.get(e.name) || {craftAt:[]}).craftAt)}</td></tr>`)))
     + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
   const either = GOAL.bonus || GOAL.bank;
-  return cityBar() + craftPointer() + (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 // Which scanned cities hold a trove: cities where at least one of its structures is built, with the structures found there.
 const presence = (() => { const memo = new Map(); return name => {
@@ -1140,7 +1155,7 @@ async function loadCity(cid){
   if(!cid || cid in CITYDATA) return;
   CITYDATA[cid] = null;
   try{ const r = await fetch('../data/troves/places/' + cid + '.json'); CITYDATA[cid] = r.ok ? await r.json() : false; }catch{ CITYDATA[cid] = false; }
-  if(['world', 'missing', 'craft', 'easy', 'gold'].includes(tab)) draw();
+  if(['cities', 'missing', 'craft', 'bank'].includes(tab)) draw();
 }
 // Properties within 80 m of each other (the reach of your avatar, as far as we know: not confirmed), using a small grid.
 function near80(cd){
@@ -1177,7 +1192,7 @@ function distTo(cd, pr){
   const r = x => x * Math.PI / 180, h = Math.sin(r(pr[2] - l[2]) / 2) ** 2 + Math.cos(r(l[2])) * Math.cos(r(pr[2])) * Math.sin(r(pr[3] - l[3]) / 2) ** 2;
   return (12742 * Math.asin(Math.sqrt(h))).toFixed(1);
 }
-function viewWorld(){
+function worldPart(){
   if(!WORLD || !WORLD.cities.length) return `<div class="card muted">${esc(t('wNone'))}</div>`;
   const cities = WORLD.cities.filter(c => c.kind === 'scan').sort((a, b) => a.name.localeCompare(b.name));
   if(!cities.some(c => String(c.id) === String(CITY))) CITY = String((cities.find(c => c.id === 32) || cities[0] || WORLD.cities[0]).id);
@@ -1247,7 +1262,7 @@ function foldify(root){
     const key = tab + '|' + g.h.textContent.trim().replace(/\s+/g, ' ').slice(0, 60);
     const d = document.createElement('details');
     d.className = 'fold' + (g.card ? ' card' : ''); d.dataset.fold = key; d.id = 'f' + i;
-    d.open = key in FOLD ? !!FOLD[key] : (tab === 'overview' || i < 2);
+    d.open = key in FOLD ? !!FOLD[key] : (tab === 'overview' || i < (tab === 'missing' ? 1 : 2));
     const sm = document.createElement('summary');
     const note = g.card ? null : g.el.querySelector('p');
     const hs = g.h.cloneNode(true); const label = document.createElement('span'); label.innerHTML = hs.innerHTML; sm.appendChild(label);
@@ -1273,11 +1288,12 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['easy', '⭐', t('tEasy'), t('eTabN', {n:A.easy.length})], ['gold', '🥇', t('tGold'), t('grTabN', {n:n0(A.gold.reduce((a, r) => a + r.gap, 0))})], ['bank', '🏦', t('tBank'), ''], ['world', '🌍', t('tWorld'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['special', '🏛', t('tSpecial'), SPECIAL ? t('wScanned', {n:Object.keys(SPECIAL.cities).length}) : ''], ['find', '🧭', t('tFind'), '']].concat(HUNTS ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);
-  const hide = {craft:!GOAL.discover && !GOAL.bank && !GOAL.bonus, easy:!GOAL.bank && !GOAL.bonus, bank:!GOAL.bank, gold:!GOAL.gold};
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['bank', '🏦', t('tBank'), t('eTabN', {n:A.easy.length})], ['cities', '🌍', t('tCities'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['find', '🧭', t('tFind'), '']].concat(HUNTS ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);
+  const hide = {craft:!GOAL.discover && !GOAL.bank && !GOAL.bonus, bank:!GOAL.bank && !GOAL.bonus && !GOAL.gold};
+  tab = {easy:'bank', gold:'bank', world:'cities', special:'cities'}[tab] || tab;
   for(let i = tabs.length - 1; i >= 0; i--) if(hide[tabs[i][0]]) tabs.splice(i, 1);
   if(!tabs.some(x => x[0] === tab)) tab = 'overview';
-  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, easy:viewEasy, gold:viewGold, bank:viewBank, world:viewWorld, special:viewSpecial, find:viewFind, hunt:viewHunt}[tab] || viewOverview;
+  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, bank:viewBank, cities:viewCities, find:viewFind, hunt:viewHunt}[tab] || viewOverview;
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
