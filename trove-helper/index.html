@@ -59,6 +59,11 @@ h2.t{font-size:1.2rem;margin:20px 0 4px}
 .tile .thumb{width:40px;height:40px}
 .tile > small{color:var(--muted);font-size:.76rem}
 .tile .gos{align-self:stretch;margin-top:auto}
+details.fold{margin:6px 0}
+details.fold>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.2rem;padding:12px 0}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::before{content:'▸';color:var(--accent);transition:transform .15s}
+details.fold[open]>summary::before{transform:rotate(90deg)}
 details.more>summary{cursor:pointer;color:var(--muted);padding:8px 0;font-weight:600}
 </style>
 </head>
@@ -343,8 +348,24 @@ async function draw(){
       ${body}
       <p class="small" style="margin:18px 0 0"><button type="button" class="btn small" id="resetCool">${esc(t('reset'))}</button></p>`;
   }
+  if(VIEW !== 'overview') foldify();
   refreshRuns(); tick();
 }
+// Each section (a heading and what follows it) folds; open or closed is remembered, and the first two start open.
+let FOLD = store.get('rut:helper:fold', {});
+function foldify(){
+  const app = document.getElementById('app'); let g = null, n = 0;
+  [...app.children].forEach(el => {
+    if(el.matches('h2.t')){
+      const d = document.createElement('details'), key = el.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
+      d.className = 'fold'; d.dataset.fold = key; d.open = key in FOLD ? !!FOLD[key] : n < 2; n++;
+      const sm = document.createElement('summary'); sm.innerHTML = el.innerHTML; d.appendChild(sm);
+      el.replaceWith(d); g = d;
+    } else if(g && !el.querySelector('#resetCool')) g.appendChild(el);
+    else g = null;
+  });
+}
+document.addEventListener('click', e => { const sm = e.target.closest('details.fold > summary'); if(!sm) return; const d = sm.parentNode; setTimeout(() => { FOLD[d.dataset.fold] = d.open; store.set('rut:helper:fold', FOLD); }, 0); });
 function tick(){
   const now = Date.now(); let soon = Infinity;
   document.querySelectorAll('.clock').forEach(c => { const left = Number(c.dataset.until) - now; if(left <= 0){ const a = c.closest('a.go'); if(a && a.classList.contains('run')) refreshRuns(); else if(a){ a.classList.remove('cool'); a.querySelector('span').firstChild.textContent = '▶ ' + t('go'); c.remove(); } } else { c.textContent = clock(left); soon = Math.min(soon, left); } });
