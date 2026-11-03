@@ -49,6 +49,17 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .drop{border:2px dashed var(--border);border-radius:10px;padding:12px 14px;text-align:center;color:var(--muted);cursor:pointer}
 .drop.over{border-color:var(--accent);color:var(--text)}
 .places{font-size:.8125rem;color:var(--muted);overflow-wrap:anywhere}
+.fold{margin:10px 0}
+.fold>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.0625rem;padding:8px 0}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:'▸';color:var(--accent);transition:transform .15s}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold>summary .fc{font-weight:400;font-size:.8125rem;color:var(--muted)}
+details.fold.card{padding:6px 14px}
+details.fold.card>summary{padding:6px 0}
+.foldbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.foldbar button,.foldbar a{font:inherit;font-size:.8125rem;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:inherit;cursor:pointer;text-decoration:none}
+.foldbar a{color:var(--accent)}
 .sec{margin:18px 0 6px}
 .sec p{margin:0 0 8px;color:var(--muted);font-size:.8125rem}
 details.more summary{cursor:pointer;color:var(--accent);font-size:.8125rem}
@@ -109,6 +120,9 @@ Site.register({
     upErrJson:'That is not a JSON file.', upErrShape:'That file is not a troves file from the script.', upErrBig:'That file is too big to be a troves file.',
     tOverview:'Overview', tMissing:'Find first', tCraft:'Craft now', tBank:'Bank', tEasy:'Easy wins', tWorld:'Grind map', tSpecial:'Special builds', tFind:'Look up',
     spH:'Structures that exist in only one city', spN:'Each of these is built in a single scanned city. Troves have a one-hour cooldown, so plan 3 or 4 searches per city. The order below is the shortest trip by air distance, starting from {start}.', spRoute:'Suggested trip', spLeg:'{km} km from the last stop', spStart:'Start', spFishOnly:'No special build here: this is the starting stop, for the other troves of the city.', spBuilt:'{n} built', spGives:'Gives', spNoTroves:'No troves known for this one yet. It may hold a trove we have not seen: worth a visit to find out.', spNeed:'you need it', spTotal:'{n} cities, about {km} km in all', spVisit:'Properties to visit',
+    ptCraft:'Which recipe to use, where to craft in each city, which structures to build next and which to skip are all on the Craft tab.', ptGo:'Open Craft',
+    stH:'Your strategy', stFew:'Not much left to hunt right now: {names}. Everything else is crafting and banking.', stMany:'{n} troves to hunt, the rarest first.', stLevels:'{n} troves still have a banking level that only hunting can give.',
+    foCollapse:'Collapse all', foExpand:'Expand all',
     pctH:'In percent', pctN:'Where you stand, against the {b} troves that bank and the {m} in the game.', pctFound:'Troves discovered', pctAny:'Banked at bronze or better', pctSilver:'Banked at silver or better', pctGold:'Banked at gold', pctLv:'All banking levels reached', pctRec:'Recipes you can craft now', pctOf:'{a} of {b}',
     dFound:'Troves discovered', dHidden:'{n} still hidden', dBank:'Banking', dBankLv:'{a} of {b} banking levels', dReady:'{n} steps ready now, {l} levels more with {c} crafts (see Easy wins)', dGold:'Gold', dSilver:'Silver', dBronze:'Bronze', dNotBanked:'Not banked',
     dRecipes:'Recipes', dCraftable:'Craftable now', dOneShort:'1 trove short', dTwoShort:'2 short', dMoreShort:'3 or more short', dNewCraft:'{n} new troves you can craft right now', dMoves:'Next moves',
@@ -176,6 +190,9 @@ Site.register({
     upErrJson:'Eso no es un archivo JSON.', upErrShape:'Ese archivo no es un archivo de troves del script.', upErrBig:'Ese archivo es demasiado grande para ser de troves.',
     tOverview:'Resumen', tMissing:'Buscar primero', tCraft:'Craftear ya', tBank:'Banco', tEasy:'Fáciles', tWorld:'Mapa de grind', tSpecial:'Construcciones especiales', tFind:'Consultar',
     spH:'Estructuras que existen en una sola ciudad', spN:'Cada una está construida en una sola ciudad escaneada. Los troves tienen una hora de espera, así que planea 3 o 4 búsquedas por ciudad. El orden de abajo es el viaje más corto por distancia aérea, empezando en {start}.', spRoute:'Viaje sugerido', spLeg:'{km} km desde la parada anterior', spStart:'Inicio', spFishOnly:'Aquí no hay construcción especial: es la parada de inicio, para los otros troves de la ciudad.', spBuilt:'{n} construidas', spGives:'Da', spNoTroves:'Aún no se conocen troves de esta. Puede tener uno que no hemos visto: vale la visita para averiguarlo.', spNeed:'te falta', spTotal:'{n} ciudades, unos {km} km en total', spVisit:'Propiedades para visitar',
+    ptCraft:'Qué receta usar, dónde craftear en cada ciudad, qué estructuras construir y cuáles saltarte están en la pestaña Craftear.', ptGo:'Abrir Craftear',
+    stH:'Tu estrategia', stFew:'Queda poco por cazar ahora: {names}. Lo demás es craftear y bancar.', stMany:'{n} troves por cazar, los más raros primero.', stLevels:'{n} troves aún tienen un nivel de banco que solo se consigue cazando.',
+    foCollapse:'Cerrar todo', foExpand:'Abrir todo',
     pctH:'En porcentaje', pctN:'Dónde estás, frente a los {b} troves que se bancan y los {m} del juego.', pctFound:'Troves descubiertos', pctAny:'En banco bronce o mejor', pctSilver:'En banco plata o mejor', pctGold:'En banco oro', pctLv:'Todos los niveles de banco', pctRec:'Recetas que puedes craftear ya', pctOf:'{a} de {b}',
     dFound:'Troves descubiertos', dHidden:'{n} aún ocultos', dBank:'Banco', dBankLv:'{a} de {b} niveles de banco', dReady:'{n} pasos listos ya, {l} niveles más con {c} crafteos (ver Fáciles)', dGold:'Oro', dSilver:'Plata', dBronze:'Bronce', dNotBanked:'Sin bancar',
     dRecipes:'Recetas', dCraftable:'Crafteables ya', dOneShort:'Falta 1 trove', dTwoShort:'Faltan 2', dMoreShort:'Faltan 3 o más', dNewCraft:'{n} troves nuevos que puedes craftear ya', dMoves:'Próximos pasos',
@@ -763,13 +780,7 @@ function ownCraftCard(){
     best.got.forEach(n => { const x = [...need.get(n)].find(k => via.can.has(k)), st = via.can.get(x); byStruct.set(st, [...(byStruct.get(st) || []), n]); left.delete(n); });
     stops.push({r:via.r, byStruct});
   }
-  stops.sort((a, b) => String(a.r[2]).localeCompare(String(b.r[2])) || a.r[1].localeCompare(b.r[1]));
-  const covered = wanted.length - left.size;
-  const rows = stops.map((s, i) => `<tr><td class="n">${i + 1}</td><td>${esc(s.r[2])}</td><td><a class="btn small" target="_blank" rel="noopener" data-pid="${s.r[0]}" href="${go(s.r[0])}">📍 ${esc(s.r[1])} ↗</a></td>
-    <td>${[...s.byStruct.entries()].map(([st, ns]) => `<div class="small" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${sthumb(st)}<span><b>${esc(st)}</b>: ${newFirst(ns).map(qchip).join(', ')}</span></div>`).join('')}</td><td class="n">${[...s.byStruct.values()].reduce((a, b) => a + b.length, 0)}</td></tr>`);
-  const own = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('owN', {n:covered, m:wanted.length}))}</p>${qsum(wanted)}
-    ${rows.length ? tbl([[t('owStop'), 'n'], [t('owCity')], [t('owWhere')], [t('owCrafts')], ['#', 'n']], rows) : `<p class="muted small" style="margin:0">${esc(t('owNone'))}</p>`}</div>`;
-  if(!left.size) return own;
+  if(!left.size) return '';
   const buildNext = buildNextCard([...left]);
   const fmt = o => t('owPlain', {km:o.km.toFixed(1), fee:o.fee == null ? t('owUnk') : o.fee + ' UPX'});
   const btn = o => `<a class="btn small" target="_blank" rel="noopener" data-pid="${o.p[0]}" href="${go(o.p[0])}">📍 ${esc(o.p[1])}${hop(o.p[0]) ? feeTxt(o.p[0]) : ''} ↗</a>`;
@@ -790,7 +801,7 @@ function ownCraftCard(){
   const cheapRows = [...cheap.values()].sort((a, b) => b.save - a.save).map(c => `<tr><td>${btn(c.o)}</td><td class="n" data-v="${c.o.km}">${c.o.km.toFixed(1)}</td><td class="n" data-v="${c.o.fee}">${c.o.fee} UPX</td><td class="n" data-v="${c.save}">${c.save ? '−' + c.save + ' UPX' : '—'}</td><td class="small">${chips(c.troves)}</td></tr>`);
   const h = [[t('owWhere')], [t('owKm'), 'n'], [t('wFee'), 'n']];
   const city = (WORLD && (WORLD.cities.find(c => String(c.id) === String(CITY)) || {}).name) || '';
-  return own + buildNext + `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owTravelH'))} <span class="tag">${left.size}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('owTravelN', {city}))} ${esc(t('owFeeNote'))}</p>${tbl(h.concat([[t('owCrafts')], ['#', 'n']]), nearRows)}</div>`
+  return buildNext + `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owTravelH'))} <span class="tag">${left.size}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('owTravelN', {city}))} ${esc(t('owFeeNote'))}</p>${tbl(h.concat([[t('owCrafts')], ['#', 'n']]), nearRows)}</div>`
     + (cheapRows.length ? `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('owCheapH'))} <span class="tag">${cheapRows.length}</span></h2><p class="hint" style="margin:0 0 6px">${esc(t('owCheapN'))}</p>${tbl(h.concat([[t('owSaves'), 'n'], [t('owCrafts')]]), cheapRows)}</div>` : '');
 }
 function clashCard(){
@@ -851,21 +862,35 @@ function viewOverview(){
   const cats = new Map(); its.forEach(i => { const c = cats.get(i.cat) || [0, 0, 0, 0]; c[Math.min(i.lvl, 3)]++; cats.set(i.cat, c); });
   const catRows = [...cats.entries()].sort((a, b) => b[1].reduce((x, y) => x + y, 0) - a[1].reduce((x, y) => x + y, 0)).map(([name, c]) => `<tr><td><b>${esc(name)}</b></td><td class="n">${c.reduce((x, y) => x + y, 0)}</td><td style="min-width:140px">${bar([{v:c[3], c:COL.gold, l:t('dGold')}, {v:c[2], c:COL.silver, l:t('dSilver')}, {v:c[1], c:COL.bronze, l:t('dBronze')}, {v:c[0], c:COL.none, l:t('dNotBanked')}]).split('<div class="legend">')[0]}</td></tr>`).join('');
   const help = [['hOver', 'hOverD'], ['hFirst', 'hFirstD'], ['hCraft', 'hCraftD'], ['hEasy', 'hEasyD'], ['hGold', 'hGoldD'], ['hBank', 'hBankD'], ['hWorld', 'hWorldD'], ['hFind', 'hFindD']];
+  // Strategy: the same moves, numbered, with what there is left to hunt said first. The order follows the goals that are on.
+  const huntable = [...A.items.values()].filter(i => findable(i.name) && i.th.length && i.lvl < i.th.length).length;
+  const never = [...PLACES.entries()].filter(([n, p]) => !A.items.has(n) && (p.structures.length || p.plants.length)).map(x => x[0]);
+  const few = A.blockers.length + never.length <= 12;
+  const names = [...A.blockers.map(b => b.n), ...never].slice(0, 5).join(', ');
+  const order = ['missing', 'craft', 'easy', 'gold', 'world'], prio = {discover:'craft', bank:'easy', bonus:'easy', gold:'gold'};
+  const first = Object.keys(prio).find(k => GOAL[k]);
+  const steps = moves.slice().sort((a, b) => { const f = first ? prio[first] : ''; return (b[2] === f) - (a[2] === f) || order.indexOf(a[2]) - order.indexOf(b[2]); });
+  const stratCard = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('stH'))}</h2>
+    <p class="hint" style="margin:0 0 8px"><b>${esc(few ? t('stFew', {names}) : t('stMany', {n:A.blockers.length + never.length}))}</b> ${esc(t('stLevels', {n:huntable}))}</p>
+    ${steps.map((m, i) => `<div class="move"><span class="ic">${i + 1}</span><span>${m[0]} ${esc(m[1])} <a href="#" data-go="${m[2]}">→</a></span></div>`).join('')}</div>`;
   const bankable = its.filter(i => i.th.length), nb = bankable.length || 1, atLv = k => bankable.filter(i => i.lvl >= k).length;
   const pcts = [[t('pctFound'), found, max, COL.ok], [t('pctAny'), atLv(1), nb, COL.bronze], [t('pctSilver'), atLv(2), nb, COL.silver], [t('pctGold'), atLv(3), nb, COL.gold], [t('pctLv'), banked, possible || 1, COL.ok], [t('pctRec'), A.craftN, A.recs.length || 1, COL.ok]];
   const pctCard = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('pctH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('pctN', {b:n0(bankable.length), m:n0(max)}))}</p>`
     + pcts.map(([l, a, b, c]) => `<div style="margin:6px 0"><div class="row" style="justify-content:space-between;gap:8px"><span>${esc(l)}</span><span><b>${Math.round(a / b * 1000) / 10}%</b> <span class="muted small">${esc(t('pctOf', {a:n0(a), b:n0(b)}))}</span></span></div>${bar([{v:a, c, l}, {v:Math.max(0, b - a), c:COL.dim, l:''}])}</div>`).join('') + `</div>`;
-  return sharedBox() + goalsCard() + pctCard + `<div class="dash">
+  return sharedBox() + goalsCard() + stratCard + pctCard + `<div class="dash">
     <div class="card"><h2>${esc(t('dFound'))}</h2><div class="big">${n0(found)} <span class="muted small">/ ${n0(max)}</span></div>${bar([{v:found, c:COL.ok, l:t('dFound')}, {v:Math.max(0, max - found), c:COL.dim, l:t('dHidden', {n:n0(max - found)})}])}</div>
     ${GOAL.bank ? `<div class="card"><h2>${esc(t('dBank'))}</h2><div class="big">${esc(t('dBankLv', {a:n0(banked), b:n0(possible)}))}</div>${bar([{v:lv[3], c:COL.gold, l:t('dGold')}, {v:lv[2], c:COL.silver, l:t('dSilver')}, {v:lv[1], c:COL.bronze, l:t('dBronze')}, {v:lv[0], c:COL.none, l:t('dNotBanked')}])}
       <p class="small muted" style="margin:8px 0 0">${esc(t('dReady', {n:ready.length, l:workLv + readyLv, c:n0(workCr)}))}</p></div>` : ''}
     <div class="card"><h2>${esc(t('dRecipes'))}</h2><div class="big">${n0(A.craftN)} <span class="muted small">/ ${n0(A.recs.length)}</span></div>${bar([{v:A.craftN, c:COL.ok, l:t('dCraftable')}, {v:A.oneShort, c:COL.warn, l:t('dOneShort')}, {v:two, c:COL.bad, l:t('dTwoShort')}, {v:more, c:COL.none, l:t('dMoreShort')}])}
       <p class="small muted" style="margin:8px 0 0">${esc(t('dNewCraft', {n:newCraft}))}</p></div>
-    <div class="card"><h2>${esc(t('dMoves'))}</h2>${moves.map(m => `<div class="move"><span class="ic">${m[0]}</span><span>${esc(m[1])} <a href="#" data-go="${m[2]}">→</a></span></div>`).join('')}</div>
   </div>
   ${needCard()}
   <div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 6px">${esc(t('dCats'))}</h2>${tbl([[t('dCat')], [t('dTotal'), 'n'], [t('dBank')]], [catRows])}</div>
   <details class="card help"><summary>${esc(t('hHow'))}</summary><dl>${help.map(([a, b]) => `<div><dt>${esc(t(a))}</dt><dd>${esc(t(b))}</dd></div>`).join('')}</dl></details>`;
+}
+// The craft plan lives on the Craft tab only; the other tabs point there instead of repeating it.
+function craftPointer(){
+  return `<div class="card" style="margin-bottom:12px"><span>${esc(t('ptCraft'))}</span> <a href="#" data-go="craft"><b>${esc(t('ptGo'))} →</b></a></div>`;
 }
 function guideCard(){
   return `<details class="card help" style="margin-bottom:12px"><summary>${esc(t('guH'))}</summary><p class="small" style="margin:6px 0 4px">${esc(t('guN'))}</p>
@@ -948,7 +973,7 @@ function viewGold(){
       const tag = r.gap <= 0 ? `<span class="tag good">${esc(t('grDone'))}</span>` : (r.sites === 0 ? `<span class="tag">${esc(t('grCraftOnly'))}</span>` : (r.sites > 0 && r.sites <= 5 && r.gap >= 50 ? `<span class="tag bad">${esc(t('grBottle'))}</span>` : ''));
       return `<tr><td>${thumb(r.name)}<b>${esc(r.name)}</b> ${tag}</td><td>${esc(levelName(r.lvl))}</td><td class="n">${n0(r.q)}</td><td class="n">${n0(r.need)}</td><td class="n"><b>${n0(r.gap)}</b></td><td class="n">${r.sites == null ? '—' : r.sites}</td><td class="places">${esc(best)}</td><td class="n">${n0(r.spare)}</td></tr>`;
     })));
-  return guideCard() + head + cityT + recipeAdviceCard() + cityCraftCard() + ownCraftCard() + spots + skipCard() + craftT + allT;
+  return guideCard() + head + cityT + craftPointer() + spots + craftT + allT;
 }
 function viewSpecial(){
   if(!SPECIAL) return `<div class="card muted">${esc(t('wNone'))}</div>`;
@@ -1073,7 +1098,7 @@ function viewEasy(){
     + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td><td>${spotBtns((PLACES.get(e.name) || {craftAt:[]}).craftAt)}</td></tr>`)))
     + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
   const either = GOAL.bonus || GOAL.bank;
-  return cityBar() + ownCraftCard() + (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return cityBar() + craftPointer() + (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 // Which scanned cities hold a trove: cities where at least one of its structures is built, with the structures found there.
 const presence = (() => { const memo = new Map(); return name => {
@@ -1206,6 +1231,42 @@ function srcCard(){
     <div class="status ${STATUS_ERR ? 'err' : ''}" role="status">${esc(STATUS)}</div>`;
   document.getElementById('howto').textContent = t('howto');
 }
+// Every section of a tab folds: the h2 (or the card's h2) becomes the summary and what follows it, up to the next section, goes inside.
+// Open or closed is remembered per section; a tab starts with its first two sections open.
+let FOLD = store.get('rut:troves:fold', {});
+function foldify(root){
+  const kids = [...root.children], groups = [];
+  let cur = null;
+  kids.forEach(el => {
+    const h = el.matches('.sec') ? el.querySelector('h2') : (el.matches('.card') && !el.matches('details') && el.firstElementChild && el.firstElementChild.tagName === 'H2' ? el.firstElementChild : null);
+    if(h){ cur = {el, h, card:!el.matches('.sec'), body:[]}; groups.push(cur); }
+    else if(cur && !el.matches('details.card, .foldbar, .kpis')) cur.body.push(el);
+    else cur = null;
+  });
+  groups.forEach((g, i) => {
+    const key = tab + '|' + g.h.textContent.trim().replace(/\s+/g, ' ').slice(0, 60);
+    const d = document.createElement('details');
+    d.className = 'fold' + (g.card ? ' card' : ''); d.dataset.fold = key; d.id = 'f' + i;
+    d.open = key in FOLD ? !!FOLD[key] : (tab === 'overview' || i < 2);
+    const sm = document.createElement('summary');
+    const note = g.card ? null : g.el.querySelector('p');
+    const hs = g.h.cloneNode(true); const label = document.createElement('span'); label.innerHTML = hs.innerHTML; sm.appendChild(label);
+    d.appendChild(sm);
+    g.el.parentNode.insertBefore(d, g.el);
+    if(g.card){ [...g.el.children].slice(1).forEach(c => d.appendChild(c)); g.el.remove(); }
+    else { if(note) d.appendChild(note); g.el.remove(); g.body.forEach(b => d.appendChild(b)); }
+  });
+  if(groups.length >= 3){
+    const bar = document.createElement('div'); bar.className = 'foldbar';
+    bar.innerHTML = `<button type="button" data-fold-all="0">${esc(t('foCollapse'))}</button><button type="button" data-fold-all="1">${esc(t('foExpand'))}</button>` + [...root.querySelectorAll(':scope > details.fold')].map(d => `<a href="#${d.id}" data-fold-to="${d.id}">${esc(d.querySelector('summary').textContent.trim().replace(/\s+\d+$/, '').slice(0, 28))}</a>`).join('');
+    root.insertBefore(bar, root.firstChild);
+  }
+}
+document.addEventListener('click', e => { const sm = e.target.closest('details.fold > summary'); if(!sm) return; const d = sm.parentNode; setTimeout(() => { FOLD[d.dataset.fold] = d.open; store.set('rut:troves:fold', FOLD); }, 0); });
+document.addEventListener('click', e => {
+  const all = e.target.closest('[data-fold-all]'); if(all){ document.querySelectorAll('details.fold').forEach(d => { d.open = all.dataset.foldAll === '1'; }); return; }
+  const to = e.target.closest('[data-fold-to]'); if(to){ e.preventDefault(); const d = document.getElementById(to.dataset.foldTo); if(d){ d.open = true; d.scrollIntoView({behavior:'smooth', block:'start'}); } }
+});
 function draw(){
   srcCard();
   const app = document.getElementById('app');
@@ -1220,6 +1281,7 @@ function draw(){
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
+  foldify(app.querySelector('section'));
   paintCool();
 }
 
