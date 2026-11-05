@@ -1,9 +1,9 @@
 {
-"backfillCursor":"2026-08-17T20:24:38",
-"chainCursor":"2026-11-05T10:52:45",
-"updatedAt":"2026-11-05T10:55:45Z",
-"historyFrom":"2026-08-17T20:24:38",
+"backfillCursor":"2026-08-13T20:24:38",
+"chainCursor":"2026-11-05T21:25:32",
+"updatedAt":"2026-11-05T21:28:32Z",
+"historyFrom":"2026-08-13T20:24:38",
 "months":["2026-08","2026-09","2026-10","2026-11"],
-"lastSnapshotAt":"2026-11-05T10:55:45",
+"lastSnapshotAt":"2026-11-05T21:28:32",
 "histMonths":["2026-10","2026-11"]
 }
