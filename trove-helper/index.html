@@ -91,6 +91,7 @@ Site.register({
     t1:'Your own properties', t1N:'Structures you own here that give what you need.', t2:'James’s properties', t3:'Marlow’s properties', t4:'Other places', t4N:'Structures anywhere in the city. The first ones also have more of what you need nearby.',
     none:'Nothing here for this city yet.', cheap:'{n} UPX stop', upx:'{n} UPX', runOf:'{d} of {n} visited', runAll:'All visited',  seen:'Rockdrigo found it at: {x}', legend:'The medal on each trove is the level you are collecting for. NEW means you have never found it. ★ means few places give it.', go:'Go collect', cooling:'Back in', newT:'NEW', helps:'helps craft {x}', mine:'Your own properties', mineN:'Structures that are yours (or James’s and Marlow’s) in this city. No walking needed.', noOwn:'None of your own, James’s or Marlow’s properties in {city} has a structure that gives what you need.', next:'Your next stop', special:'Special finds', specialN:'Only a few kinds of structure give these, or Rockdrigo has hardly ever found them. They are worth the trip.', onlyAt:'at: {x}', notHere:'not in this city', recH:'One find from a recipe', recN:'Find just this one trove and the recipe is ready.', missing:'missing {x}', moreTypes:'{n} more kinds of structure', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
     elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
+    syncOn:'Connected to Discord as {name}. Your file and your timers are shared with the bot.', syncNow:'Sync now', syncOff:'Disconnect', syncDone:'Synced.', syncFail:'Could not reach the bot. Your timers stay on this phone.',
     ovStarter:'No file needed to start. If you load one later, the helper skips what you already have.', ovGrown:'Got your troves file? The full Troves tool does a lot more.', ovGrownGo:'Open Troves',
     ovH:'Let’s go troving!', ovN:'Three quick choices, then one big button. You can come back here any time.',
     ovCity:'1 · Where are you?', ovGoal:'2 · What are you looking for?', ovWhere:'3 · Where do you want to go?',
@@ -117,6 +118,7 @@ Site.register({
     t1:'Tus propiedades', t1N:'Estructuras tuyas aquí que dan lo que necesitas.', t2:'Propiedades de James', t3:'Propiedades de Marlow', t4:'Otros lugares', t4N:'Estructuras en toda la ciudad. Las primeras también tienen más de lo que necesitas cerca.',
     none:'Aquí no hay nada para esta ciudad todavía.', cheap:'parada de {n} UPX', upx:'{n} UPX', runOf:'{d} de {n} visitados', runAll:'Todos visitados',  seen:'Rockdrigo lo halló en: {x}', legend:'La medalla de cada trove es el nivel que estás buscando. NUEVO es que nunca lo has hallado. ★ es que pocos lugares lo dan.', go:'Ir a recolectar', cooling:'Vuelve en', newT:'NUEVO', helps:'sirve para {x}', mine:'Tus propiedades', mineN:'Estructuras tuyas (o de James y Marlow) en esta ciudad. Sin caminar.', noOwn:'Ninguna propiedad tuya, de James o de Marlow en {city} tiene una estructura que dé lo que necesitas.', next:'Tu siguiente parada', special:'Hallazgos especiales', specialN:'Solo unas pocas estructuras los dan. Vale la pena el viaje.', onlyAt:'en: {x}', notHere:'no está en esta ciudad', recH:'Un hallazgo para una receta', recN:'Encuentra solo este trove y la receta queda lista.', missing:'falta {x}', moreTypes:'{n} tipos de estructura más', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
     elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
+    syncOn:'Conectada a Discord como {name}. Tu archivo y tus relojes se comparten con el bot.', syncNow:'Sincronizar ahora', syncOff:'Desconectar', syncDone:'Sincronizado.', syncFail:'No pude llegar al bot. Tus relojes se quedan en este teléfono.',
     ovStarter:'No necesitas ningún archivo para empezar. Si cargas uno después, el ayudante salta lo que ya tienes.', ovGrown:'¿Tienes tu archivo de troves? La herramienta completa de Troves hace mucho más.', ovGrownGo:'Abrir Troves',
     ovH:'¡A buscar troves!', ovN:'Tres elecciones rápidas y un botón grande. Puedes volver aquí cuando quieras.',
     ovCity:'1 · ¿Dónde estás?', ovGoal:'2 · ¿Qué buscas?', ovWhere:'3 · ¿A dónde quieres ir?',
@@ -141,6 +143,41 @@ const PEOPLE = [['mstullis', 't1'], ['talljames', 't2'], ['missmarlow', 't3']];
 const n0 = x => Number(x).toLocaleString(Site.locale());
 
 let RUN = new Map(), BEST = null, FEES = null;
+// Optional link with Discord: the bot's "Open on the web" button opens this page with a private key after the #. The key is kept on this
+// phone and removed from the address bar; with it the page shows the file she uploaded in Discord and shares the visit timers both ways.
+const SYNC_KEY = 'rut:helper:sync';
+let SYNC = store.get(SYNC_KEY, null), SYNCNAME = '';
+(function takeKey(){
+  const h = new URLSearchParams(location.hash.replace(/^#/, '')), k = h.get('key'), api = h.get('api');
+  if(k && api && /^[a-f0-9]{20,}$/.test(k) && (/^https:\/\/[a-z0-9.-]+$/i.test(api) || (location.hostname === 'localhost' && /^http:\/\/localhost:\d+$/.test(api)))){ SYNC = {key:k, api, fresh:true}; store.set(SYNC_KEY, SYNC); }
+  if(location.hash) history.replaceState(null, '', location.pathname + location.search);
+})();
+async function sync(manual){
+  if(!SYNC) return;
+  try{
+    const r = await fetch(SYNC.api + '/hunt/me', {headers:{'x-key':SYNC.key}, cache:'no-store'});
+    if(r.status === 401){ SYNC = null; store.set(SYNC_KEY, null); MSG = ''; draw(); return; }
+    if(!r.ok) throw new Error('bad');
+    const d = await r.json();
+    SYNCNAME = d.name || '';
+    let changed = !!manual || !!SYNC.fresh;
+    if(d.file && d.file.items && d.file.items.length){ if(!MINE || MINE.items.length !== d.file.items.length || (MINE.troves && MINE.troves.found) !== (d.file.troves && d.file.troves.found)) changed = true; MINE = d.file; store.set(MINE_KEY, MINE); }
+    (d.visits || []).forEach(([pid, at]) => { const ms = Date.parse(at); if(ms && (!COOL[pid] || COOL[pid] < ms)){ COOL[pid] = ms; changed = true; } });
+    store.set(COOL_KEY, COOL);
+    if(SYNC.fresh){   // first connection: take her city and goal from Discord, once
+      const goal = {all:'gold', rec:'rec', rare:'rare'}[d.goal];
+      if(goal){ MODE = goal; store.set('rut:helper:mode', MODE); }
+      if(d.city){ CITY = String(d.city); store.set('rut:helper:city', CITY); }
+      SYNC.fresh = false; store.set(SYNC_KEY, SYNC);
+    }
+    if(manual) MSG = t('syncDone');
+    if(changed) draw();
+  }catch(e){ if(manual){ MSG = t('syncFail'); draw(); } }
+}
+function pushVisits(pids, at){
+  if(!SYNC || !pids.length) return;
+  fetch(SYNC.api + '/hunt/visit', {method:'POST', headers:{'x-key':SYNC.key, 'content-type':'application/json'}, body:JSON.stringify({pids, at:new Date(at).toISOString(), city:Number(CITY)}), keepalive:true}).catch(() => {});
+}
 // a costly property often has a cheaper one within 80 m: stand there instead
 const hopOf = pid => { const b = BEST && BEST.best80 ? BEST.best80[pid] : null; return b ? {pid:b[0], fee:b[1], lat:b[3], lng:b[4]} : null; };
 // what she pays to stand for this stop: the cheaper neighbour when there is one
@@ -343,6 +380,7 @@ async function draw(){
       <h2 class="t">${esc(t('ovGoal'))}</h2><div class="opts">${opt('mode', 'gold', MODE, '🧺', 'gAll', 'gAllN')}${opt('mode', 'rec', MODE, '📖', 'gRec', 'gRecN')}${opt('mode', 'rare', MODE, '⭐', 'gRare', 'gRareN')}</div>
       <div style="margin-top:14px">${sum}</div>
       <button type="button" class="start" data-view="go">▶ ${esc(t('ovStart'))}</button>
+      ${SYNC ? `<div class="card" style="margin-top:12px"><p class="small" style="margin:0 0 8px">🔗 ${esc(t('syncOn', {name:SYNCNAME || '…'}))}</p><button type="button" class="btn small" id="syncNow">${esc(t('syncNow'))}</button> <button type="button" class="btn small" id="syncOff">${esc(t('syncOff'))}</button>${MSG ? `<p class="small muted" style="margin:8px 0 0">${esc(MSG)}</p>` : ''}</div>` : ''}
       <h2 class="t">${esc(t('ovFile'))}</h2><p class="sub">${esc(t('ovFileN'))}</p>${dash()}
       <div class="card" style="margin-bottom:12px"><details><summary><b>${esc(t('stepsH'))}</b></summary>${steps}</details></div>`;
   } else {
@@ -376,7 +414,8 @@ function tick(){
   const el = document.getElementById('next'); if(el) el.textContent = soon < Infinity ? t('ready') + ' ' + clock(soon) : Object.keys(COOL).length ? t('allReady') : '';
 }
 setInterval(tick, 1000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden){ refreshRuns(); tick(); } });
+document.addEventListener('visibilitychange', () => { if(!document.hidden){ sync(); refreshRuns(); tick(); } });
+setInterval(() => { if(!document.hidden) sync(); }, 90000);
 window.addEventListener('pageshow', e => { if(e.persisted){ refreshRuns(); tick(); } });
 
 // ---------- events ----------
@@ -386,19 +425,22 @@ document.addEventListener('click', e => {
     const pid = a.dataset.pid, at = Date.now();
     if(!pid){ e.preventDefault(); return; }
     COOL[pid] = at; store.set(COOL_KEY, COOL);
+    const touched = [pid];
     if(a.classList.contains('run')){
       // the properties within 80 m of where she stands are covered by this visit too, so they count as done
       let me = null; (RUN.get(a.dataset.run) || []).forEach(c => { if(String(c.pid) === pid) me = c; });
       const hp = hopOf(pid), lat = hp && hp.lat != null ? hp.lat : me && me.lat, lng = hp && hp.lng != null ? hp.lng : me && me.lng;
-      if(lat != null){ const cs = Math.cos(lat * Math.PI / 180); RUN.forEach(l => l.forEach(c => { if(c.lat != null && !cooling(c.pid) && Math.hypot((c.lat - lat) * 111320, (c.lng - lng) * 111320 * cs) <= 80) COOL[c.pid] = at; })); store.set(COOL_KEY, COOL); }
-      setTimeout(refreshRuns, 80); return;
+      if(lat != null){ const cs = Math.cos(lat * Math.PI / 180); RUN.forEach(l => l.forEach(c => { if(c.lat != null && !cooling(c.pid) && Math.hypot((c.lat - lat) * 111320, (c.lng - lng) * 111320 * cs) <= 80) { COOL[c.pid] = at; touched.push(c.pid); } })); store.set(COOL_KEY, COOL); }
+      pushVisits(touched, at); setTimeout(refreshRuns, 80); return;
     }
     document.querySelectorAll('a.go[data-pid="' + pid + '"]').forEach(x => { x.classList.add('cool'); const sp = x.querySelector('span'); sp.firstChild.textContent = '⏳ ' + t('cooling'); if(!x.querySelector('.clock')) x.insertAdjacentHTML('beforeend', `<span class="clock" data-until="${at + 36e5}">${clock(36e5)}</span>`); });
-    tick(); return;
+    pushVisits(touched, at); tick(); return;
   }
   const sc = e.target.closest('[data-scope]'); if(sc){ SCOPE = sc.dataset.scope; store.set('rut:helper:scope', SCOPE); if(!sc.dataset.view){ draw(); return; } }
   const m = e.target.closest('[data-mode]'); if(m){ MODE = m.dataset.mode; store.set('rut:helper:mode', MODE); draw(); return; }
   const vw = e.target.closest('[data-view]'); if(vw){ VIEW = vw.dataset.view; store.set('rut:helper:view', VIEW); draw().then(() => window.scrollTo({top:0})); return; }
+  if(e.target.closest('#syncNow')){ sync(true); return; }
+  if(e.target.closest('#syncOff')){ SYNC = null; store.set(SYNC_KEY, null); SYNCNAME = ''; MSG = ''; draw(); return; }
   if(e.target.closest('#resetCool')){ COOL = {}; store.set(COOL_KEY, COOL); draw(); return; }
   if(e.target.closest('#forget')){ MINE = null; store.set(MINE_KEY, null); MSG = ''; draw(); }
 });
@@ -437,6 +479,7 @@ async function boot(){
   WORLD = w; ROCK = r; HUNTS = h; IMG = im; BEST = bst; FEES = fe;
   await Promise.all(PEOPLE.map(async ([u]) => { const o = await j('../data/structures/players/' + u + '.json'); OWNERS[u] = o ? o.rows : []; }));
   draw();
+  sync();
 }
 boot();
 </script>
