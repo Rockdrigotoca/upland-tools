@@ -124,6 +124,10 @@ Site.register({
     stH:'Your strategy', stFew:'Not much left to hunt right now: {names}. Everything else is crafting and banking.', stMany:'{n} troves to hunt, the rarest first.', stLevels:'{n} troves still have a banking level that only hunting can give.',
     tCities:'Cities',
     fnNeverTag:'Never found', fnWhy:'Why', fnFew:'Not much to hunt right now: the troves below are all that is left that unlocks a recipe or was never found.', fnLots:'These troves unlock recipes or were never found, the ones holding up most recipes first.', fnListH:'What to find ({n})', fnListN:'Recipes blocked first, then never-found troves, then the next banking level of each trove.', fnRestH:'The rest ({n})',
+    bvH:'Best places to hunt in {city}', bvN:'One visit gives one find for every structure within reach, each picked at random from that structure’s list. A place is worth the share of those lists you still need, added up over everything in reach, divided by its fee.', bvS_value:'Best value', bvS_cheap:'Cheapest', bvS_finds:'Most finds', bvPlace:'Place', bvStruct:'Structures in reach', bvFinds:'Useful finds a visit', bvPerUpx:'Per UPX', bvFoot:'Reach is about 80 m (not confirmed). * means the fee is not known yet, 25 UPX is assumed. One place per cluster is shown.',
+    hsH:'Hotspots in {city}', hsN:'The properties with the most structures on them, from a scan by Wibenji.', hsHood:'Neighbourhood', hsTroves:'Different troves', hsCredit:'Hotspot data: Wibenji’s TroveHelper scan, used with permission.',
+    plH:'Plants worth visiting in {city}', plN:'Plant families that give troves you still need, hard-to-find ones first. Plants on properties of this city.', plPlant:'Plant', plTroves:'Gives you need', plWhere:'Where', plGives:'{n} troves you need', plHard:'{n} hard to find', plNone:'No plant in {city} gives troves you still need.',
+    mNear:'{n} troves are only 1 or 2 short of their next level: {names}. The cheapest levels there are.', mBest:'Best place to hunt in {city}: {addr}, about {n} useful finds a visit for {fee} UPX.', stOrder:'Order matters: craft the new troves first, then bank. Banking is permanent, so keep what the crafts need. Platinum and Diamond need automation and are left out.',
     foCollapse:'Collapse all', foExpand:'Expand all',
     pctH:'In percent', pctN:'Where you stand, against the {b} troves that bank and the {m} in the game.', pctFound:'Troves discovered', pctAny:'Banked at bronze or better', pctSilver:'Banked at silver or better', pctGold:'Banked at gold', pctLv:'All banking levels reached', pctRec:'Recipes you can craft now', pctOf:'{a} of {b}',
     dFound:'Troves discovered', dHidden:'{n} still hidden', dBank:'Banking', dBankLv:'{a} of {b} banking levels', dReady:'{n} steps ready now, {l} levels more with {c} crafts (see Easy wins)', dGold:'Gold', dSilver:'Silver', dBronze:'Bronze', dNotBanked:'Not banked',
@@ -196,6 +200,10 @@ Site.register({
     stH:'Tu estrategia', stFew:'Queda poco por cazar ahora: {names}. Lo demás es craftear y bancar.', stMany:'{n} troves por cazar, los más raros primero.', stLevels:'{n} troves aún tienen un nivel de banco que solo se consigue cazando.',
     tCities:'Ciudades',
     fnNeverTag:'Nunca encontrado', fnWhy:'Por qué', fnFew:'Queda poco por cazar: los troves de abajo son lo único que desbloquea una receta o nunca se ha encontrado.', fnLots:'Estos troves desbloquean recetas o nunca se han encontrado, primero los que frenan más recetas.', fnListH:'Qué buscar ({n})', fnListN:'Primero las recetas bloqueadas, luego los troves nunca encontrados y luego el siguiente nivel de banco de cada trove.', fnRestH:'El resto ({n})',
+    bvH:'Mejores lugares para cazar en {city}', bvN:'Una visita da un hallazgo por cada estructura al alcance, cada uno al azar de la lista de esa estructura. Un lugar vale la parte de esas listas que aún necesitas, sumada sobre todo lo que alcanza, entre su costo.', bvS_value:'Mejor valor', bvS_cheap:'Más barato', bvS_finds:'Más hallazgos', bvPlace:'Lugar', bvStruct:'Estructuras al alcance', bvFinds:'Hallazgos útiles por visita', bvPerUpx:'Por UPX', bvFoot:'El alcance es de unos 80 m (sin confirmar). * significa que aún no se conoce el costo; se supone 25 UPX. Se muestra un lugar por grupo.',
+    hsH:'Puntos calientes en {city}', hsN:'Las propiedades con más estructuras, de un escaneo de Wibenji.', hsHood:'Barrio', hsTroves:'Troves distintos', hsCredit:'Datos de puntos calientes: escaneo TroveHelper de Wibenji, usado con permiso.',
+    plH:'Plantas que vale la pena visitar en {city}', plN:'Familias de plantas que dan troves que aún necesitas, primero los difíciles. Plantas en propiedades de esta ciudad.', plPlant:'Planta', plTroves:'Da lo que necesitas', plWhere:'Dónde', plGives:'{n} troves que necesitas', plHard:'{n} difíciles', plNone:'Ninguna planta en {city} da troves que aún necesites.',
+    mNear:'{n} troves están a 1 o 2 de su siguiente nivel: {names}. Son los niveles más baratos.', mBest:'Mejor lugar para cazar en {city}: {addr}, unos {n} hallazgos útiles por visita por {fee} UPX.', stOrder:'El orden importa: primero craftea los troves nuevos y luego bancas. El banco es permanente, así que guarda lo que necesiten los crafteos. Platino y Diamante requieren automatización y se dejan fuera.',
     foCollapse:'Cerrar todo', foExpand:'Abrir todo',
     pctH:'En porcentaje', pctN:'Dónde estás, frente a los {b} troves que se bancan y los {m} del juego.', pctFound:'Troves descubiertos', pctAny:'En banco bronce o mejor', pctSilver:'En banco plata o mejor', pctGold:'En banco oro', pctLv:'Todos los niveles de banco', pctRec:'Recetas que puedes craftear ya', pctOf:'{a} de {b}',
     dFound:'Troves descubiertos', dHidden:'{n} aún ocultos', dBank:'Banco', dBankLv:'{a} de {b} niveles de banco', dReady:'{n} pasos listos ya, {l} niveles más con {c} crafteos (ver Fáciles)', dGold:'Oro', dSilver:'Plata', dBronze:'Bronce', dNotBanked:'Sin bancar',
@@ -342,7 +350,8 @@ function use(){
   EXTRA = (DATA && DATA.newTroves) || [];
 }
 function analyse(d){
-  const items = new Map(d.items.map(i => [i[0], {name:i[0], cat:i[1], q:i[2], lvl:i[3], th:i[4]}]));
+  // Gold is the manual goal: Platinum and Diamond need automation, so they are kept apart (th5) and never count as unfinished.
+  const items = new Map(d.items.map(i => [i[0], {name:i[0], cat:i[1], q:i[2], lvl:Math.min(i[3], 3), th:i[4].slice(0, 3), th5:i[4], lvl5:i[3]}]));
   const have = n => (items.get(n) || {q:0}).q;
   const recs = d.recipes.map(([name, ings]) => {
     const g = ings.map(([n, req]) => ({n, req, have:have(n)}));
@@ -871,11 +880,16 @@ function viewOverview(){
   const never = [...PLACES.entries()].filter(([n, p]) => !A.items.has(n) && (p.structures.length || p.plants.length)).map(x => x[0]);
   const few = A.blockers.length + never.length <= 12;
   const names = [...A.blockers.map(b => b.n), ...never].slice(0, 5).join(', ');
-  const order = ['missing', 'craft', 'easy', 'gold', 'world'], prio = {discover:'craft', bank:'easy', bonus:'easy', gold:'gold'};
+  const near = [...A.items.values()].filter(i => i.th.length && i.lvl < i.th.length && i.th[i.lvl] - i.q >= 1 && i.th[i.lvl] - i.q <= 2).sort((a, b) => (a.th[a.lvl] - a.q) - (b.th[b.lvl] - b.q) || a.name.localeCompare(b.name));
+  const best = bestStops('value', 1);
+  if(near.length) moves.splice(2, 0, ['🪙', t('mNear', {n:near.length, names:near.slice(0, 5).map(i => i.name).join(', ')}), 'bank']);
+  if(best && best[0]) moves.splice(1, 0, ['📍', t('mBest', {city:cityName(), addr:best[0].pr[1], n:best[0].E.toFixed(0), fee:best[0].fee == null ? '?' : best[0].fee}), 'missing']);
+  const order = ['craft', 'missing', 'bank', 'easy', 'gold', 'world'], prio = {discover:'craft', bank:'easy', bonus:'easy', gold:'gold'};
   const first = Object.keys(prio).find(k => GOAL[k]);
   const steps = moves.slice().sort((a, b) => { const f = first ? prio[first] : ''; return (b[2] === f) - (a[2] === f) || order.indexOf(a[2]) - order.indexOf(b[2]); });
   const stratCard = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('stH'))}</h2>
     <p class="hint" style="margin:0 0 8px"><b>${esc(few ? t('stFew', {names}) : t('stMany', {n:A.blockers.length + never.length}))}</b> ${esc(t('stLevels', {n:huntable}))}</p>
+    <p class="hint" style="margin:0 0 8px">${esc(t('stOrder'))}</p>
     ${steps.map((m, i) => `<div class="move"><span class="ic">${i + 1}</span><span>${m[0]} ${esc(m[1])} <a href="#" data-go="${m[2]}">→</a></span></div>`).join('')}</div>`;
   const bankable = its.filter(i => i.th.length), nb = bankable.length || 1, atLv = k => bankable.filter(i => i.lvl >= k).length;
   const pcts = [[t('pctFound'), found, max, COL.ok], [t('pctAny'), atLv(1), nb, COL.bronze], [t('pctSilver'), atLv(2), nb, COL.silver], [t('pctGold'), atLv(3), nb, COL.gold], [t('pctLv'), banked, possible || 1, COL.ok], [t('pctRec'), A.craftN, A.recs.length || 1, COL.ok]];
@@ -1053,6 +1067,69 @@ function levelRows(){
     return {i, thr, need, crafted, miss:Math.max(0, need - crafted)};
   }).filter(r => r.miss > 0);
 }
+// ---- where to go: best value, hotspots and plants (Wibenji's scan, used with permission) ----
+// One visit gives one find per structure within reach (about 80 m), each picked at random from that structure's list.
+// So a stop is worth the share of those lists that you still need, added up over every structure in reach, divided by what the stop costs.
+let VSORT = store.get('rut:troves:vsort', 'value'), WIB = null;
+const cityName = () => ((WORLD && WORLD.cities.find(c => String(c.id) === String(CITY))) || {}).name || '';
+const feeFor = pid => { const h = hop(pid); return h ? h.fee : FEES && FEES[pid] != null ? FEES[pid] : null; };
+function wantedNames(){
+  const need = new Set();
+  A.items.forEach(i => { if(i.th.length ? i.lvl < i.th.length : false) need.add(i.name); });
+  PLACES.forEach((p, n) => { if(!A.items.has(n) && (p.structures.length || p.plants.length)) need.add(n); });
+  return need;
+}
+function valueStops(){
+  ensureCity();
+  const cd = CITYDATA[CITY]; if(!cd || !PLACES || !A) return null;
+  if(A._vs && A._vs.city === CITY) return A._vs.rows;
+  const need = wantedNames(), lists = new Map();
+  PLACES.forEach((p, n) => p.structures.forEach(s => { const k = norm(s).replace(/ 1$/, ''); (lists.get(k) || lists.set(k, []).get(k)).push(n); }));
+  const share = cd.structs.map(x => { const l = lists.get(norm(x).replace(/ 1$/, '')); return l ? l.filter(n => need.has(n)).length / l.length : 0; });
+  const rows = cd.props.filter(pr => pr[5].length).map(pr => ({pr, own:pr[5].reduce((a, i) => a + share[i], 0), cnt:pr[5].length}));
+  const R = 80 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
+  rows.forEach(r => { r.c = cell(r); const k = r.c[0] + ',' + r.c[1]; (grid.get(k) || grid.set(k, []).get(k)).push(r); });
+  const dist = (a, b) => Math.hypot((b.pr[2] - a.pr[2]) * 111320, (b.pr[3] - a.pr[3]) * 111320 * Math.cos(a.pr[2] * Math.PI / 180));
+  rows.forEach(r => {
+    let E = 0, n = 0;
+    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { if(o === r || dist(r, o) <= 80){ E += o.own; n += o.cnt; } });
+    r.E = E; r.n = n; r.fee = feeFor(r.pr[0]); r.v = E / (r.fee || 25);
+  });
+  A._vs = {city:CITY, rows, dist};
+  return rows;
+}
+// the best few, one per cluster (no two within 120 m of each other), in the chosen order
+function bestStops(sort, k = 12){
+  const rows = valueStops(); if(!rows) return null;
+  const order = {value:(a, b) => b.v - a.v, cheap:(a, b) => (a.fee == null ? 999 : a.fee) - (b.fee == null ? 999 : b.fee) || b.E - a.E, finds:(a, b) => b.E - a.E || (a.fee || 25) - (b.fee || 25)}[sort] || ((a, b) => b.v - a.v);
+  const pool = rows.filter(r => r.E >= 1).sort(order), out = [];
+  for(const r of pool){ if(out.length >= k) break; if(out.every(o => A._vs.dist(o, r) > 120)) out.push(r); }
+  return out;
+}
+function bestPlacesSection(){
+  const list = bestStops(VSORT);
+  if(list === null) return sec(t('bvH', {city:cityName()}), t('bvN'), `<div class="card muted">${esc(t('cwLoad'))}</div>`);
+  const seg = ['value', 'cheap', 'finds'].map(k => `<button type="button" data-vsort="${k}" class="${VSORT === k ? 'on' : ''}">${esc(t('bvS_' + k))}</button>`).join('');
+  const rows = list.map((r, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(r.pr)}</td><td class="n">${n0(r.n)}</td><td class="n" data-v="${r.E}"><b>${r.E.toFixed(1)}</b></td><td class="n" data-v="${r.v}">${(r.v * 100 / 100).toFixed(2)}${r.fee == null ? '*' : ''}</td></tr>`);
+  return sec(t('bvH', {city:cityName()}), t('bvN'), `<div class="row" style="margin:6px 0"><div class="seg" id="vsort">${seg}</div></div>` + tbl([['#', 'n'], [t('bvPlace')], [t('bvStruct'), 'n'], [t('bvFinds'), 'n'], [t('bvPerUpx'), 'n']], rows) + `<p class="hint">${esc(t('bvFoot'))}</p>`);
+}
+function hotspotSection(){
+  const list = WIB && WIB.hotspots[cityName()]; if(!list || !list.length) return '';
+  const rows = list.slice(0, 10).map((h, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn([h[0], h[1]])}</td><td>${esc(h[2] || '')}</td><td class="n">${n0(h[3])}</td><td class="n">${n0(h[4])}</td></tr>`);
+  return sec(t('hsH', {city:cityName()}), t('hsN'), tbl([['#', 'n'], [t('bvPlace')], [t('hsHood')], [t('bvStruct'), 'n'], [t('hsTroves'), 'n']], rows) + `<p class="hint">${esc(t('hsCredit'))}</p>`);
+}
+function plantSection(){
+  if(!WIB || !A) return '';
+  const need = wantedNames(), city = cityName(), hard = n => A.scarceOf(n).s >= 0.5;
+  const fams = WIB.plants.map(f => {
+    const useful = f.troves.filter(n => need.has(n)), here = f.props.filter(p => p[2] === city);
+    return {f, useful, hard:useful.filter(hard).length, here, elsewhere:f.props.length - here.length};
+  }).filter(x => x.useful.length >= 3).sort((a, b) => b.hard - a.hard || b.useful.length - a.useful.length);
+  const inCity = fams.filter(x => x.here.length), other = fams.filter(x => !x.here.length);
+  if(!inCity.length && !other.length) return '';
+  const cards = inCity.slice(0, 8).map(x => `<tr><td><b>${esc(x.f.name)}</b><div class="muted small">${esc(t('plGives', {n:x.useful.length}))}${x.hard ? ' · ' + esc(t('plHard', {n:x.hard})) : ''}</div></td><td class="small">${esc(x.useful.slice(0, 8).join(', '))}${x.useful.length > 8 ? '…' : ''}</td><td>${x.here.slice(0, 3).map(p => spotBtn([p[0], p[1]])).join(' ')}${x.here.length > 3 ? ` <span class="muted small">${esc(t('more', {n:x.here.length - 3}))}</span>` : ''}</td></tr>`);
+  return sec(t('plH', {city}), t('plN'), cards.length ? tbl([[t('plPlant')], [t('plTroves')], [t('plWhere')]], cards) : `<div class="card muted">${esc(t('plNone', {city}))}</div>`);
+}
 function viewMissing(){
   const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
   const rows = new Map(), get = n => { if(!rows.has(n)) rows.set(n, {n}); return rows.get(n); };
@@ -1068,7 +1145,7 @@ function viewMissing(){
   const head = [[t('colTrove')], [t('fnWhy')], [t('fnHold'), 'n'], [t('colWhere')]];
   const top = list.slice(0, 40), rest = list.slice(40);
   const lead = `<div class="card" style="margin-bottom:12px"><b>${esc(list.filter(r => r.b || r.never).length <= 12 ? t('fnFew') : t('fnLots'))}</b></div>`;
-  return cityBar() + lead + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
+  return cityBar() + lead + bestPlacesSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
@@ -1330,6 +1407,7 @@ document.addEventListener('click', e => {
   if(e.target.closest('#clearCool')){ COOL = {}; store.set('rut:troves:cool', COOL); paintCool(); return; }
   const go = e.target.closest('[data-go]'); if(go){ e.preventDefault(); tab = go.dataset.go; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   const gc = e.target.closest('[data-gocity]'); if(gc){ CITY = gc.dataset.gocity; store.set('rut:troves:city', CITY); HOOD = -1; tab = 'gold'; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
+  const vs = e.target.closest('[data-vsort]'); if(vs){ VSORT = vs.dataset.vsort; store.set('rut:troves:vsort', VSORT); draw(); return; }
   const hd = e.target.closest('[data-hood]'); if(hd){ HOOD = Number(hd.dataset.hood); draw(); return; }
   const cp = e.target.closest('[data-copy]'); if(cp){ try{ navigator.clipboard.writeText(cp.dataset.copy); cp.textContent = t('xDone'); }catch{} return; }
   if(e.target.closest('#copyNew')){ try{ navigator.clipboard.writeText(JSON.stringify(EXTRA)); e.target.textContent = t('xDone'); }catch{} return; }
@@ -1373,6 +1451,7 @@ async function boot(){
     ROCK = checkShape(r);
   }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
   try{ IMG = await fetch('../data/troves/images.json').then(x => x.ok ? x.json() : null); }catch{ IMG = null; }
+  try{ WIB = await fetch('../data/troves/wibenji.json').then(x => x.ok ? x.json() : null); }catch{ WIB = null; }
   try{
     const [m, g] = await Promise.all(['master.json', 'up2-suggestions.json'].map(f => fetch('../data/structures/' + f).then(x => x.ok ? x.json() : null).catch(() => null)));
     ((m || {}).structures || []).forEach(x => { if(x.up2) SIZE.set(x.name.trim().toLowerCase(), {up2:x.up2}); });

@@ -93,6 +93,8 @@ Site.register({
     elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
     sentFile:'Sent privately to Sir Quailbert. Look for his message in your Discord DMs.', sentFail:'Your file loaded here, but I could not send it to the bot. Try again later.',
     syncOn:'Connected to Discord as {name}. Your file and your timers are shared with the bot.', syncNow:'Sync now', syncOff:'Disconnect', syncDone:'Synced.', syncFail:'Could not reach the bot. Your timers stay on this phone.',
+    bvH:'Best value', bvN:'One visit gives one find for every structure around you. These places give you the most of what you still need for what they cost.', bvSub:'about {n} finds a visit · {m} structures',
+    plH:'Plants worth a visit', plN:'Plants near here that give troves you still need.',
     ovStarter:'No file needed to start. If you load one later, the helper skips what you already have.', ovGrown:'Got your troves file? The full Troves tool does a lot more.', ovGrownGo:'Open Troves',
     ovH:'Let’s go troving!', ovN:'Three quick choices, then one big button. You can come back here any time.',
     ovCity:'1 · Where are you?', ovGoal:'2 · What are you looking for?', ovWhere:'3 · Where do you want to go?',
@@ -121,6 +123,8 @@ Site.register({
     elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
     sentFile:'Enviado en privado a Sir Quailbert. Busca su mensaje en tus DMs de Discord.', sentFail:'Tu archivo se cargó aquí, pero no pude enviarlo al bot. Inténtalo más tarde.',
     syncOn:'Conectada a Discord como {name}. Tu archivo y tus relojes se comparten con el bot.', syncNow:'Sincronizar ahora', syncOff:'Desconectar', syncDone:'Sincronizado.', syncFail:'No pude llegar al bot. Tus relojes se quedan en este teléfono.',
+    bvH:'Mejor valor', bvN:'Una visita da un hallazgo por cada estructura a tu alrededor. Estos lugares te dan lo máximo de lo que aún necesitas por lo que cuestan.', bvSub:'unos {n} hallazgos por visita · {m} estructuras',
+    plH:'Plantas que valen una visita', plN:'Plantas cerca que dan troves que aún necesitas.',
     ovStarter:'No necesitas ningún archivo para empezar. Si cargas uno después, el ayudante salta lo que ya tienes.', ovGrown:'¿Tienes tu archivo de troves? La herramienta completa de Troves hace mucho más.', ovGrownGo:'Abrir Troves',
     ovH:'¡A buscar troves!', ovN:'Tres elecciones rápidas y un botón grande. Puedes volver aquí cuando quieras.',
     ovCity:'1 · ¿Dónde estás?', ovGoal:'2 · ¿Qué buscas?', ovWhere:'3 · ¿A dónde quieres ir?',
@@ -193,7 +197,7 @@ function pushVisits(pids, at){
 const hopOf = pid => { const b = BEST && BEST.best80 ? BEST.best80[pid] : null; return b ? {pid:b[0], fee:b[1], lat:b[3], lng:b[4]} : null; };
 // what she pays to stand for this stop: the cheaper neighbour when there is one
 const standFee = pid => { const h = hopOf(pid); return h ? h.fee : FEES && FEES.fees[pid] != null ? FEES.fees[pid] : null; };
-let PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
+let WIB = null, PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
 let CITY = store.get('rut:helper:city', '32'), MODE = store.get('rut:helper:mode', 'gold'), SCOPE = 'city', VIEW = store.get('rut:helper:view', 'overview'), MSG = '';
 
 async function j(u){ try{ const r = await fetch(u, {cache:'no-cache'}); return r.ok ? await r.json() : null; }catch{ return null; } }
@@ -204,7 +208,7 @@ function balance(){
   // her own file only: nobody else's numbers are shown to her; without it every trove counts as still needed
   if(!MINE) return {items:new Map(), mine:false, found:0, max:null, recipes:[]};
   const src = MINE;
-  const items = new Map(src.items.map(i => [i[0], {q:i[2], lvl:i[3], th:i[4]}]));
+  const items = new Map(src.items.map(i => [i[0], {q:i[2], lvl:Math.min(i[3], 3), th:i[4].slice(0, 3)}]));   // gold is the manual goal
   return {items, mine:!!MINE, found:src.troves ? src.troves.found : items.size, max:src.troves ? src.troves.max : null, recipes:src.recipes || []};
 }
 function neededSet(){
@@ -324,9 +328,9 @@ function refreshRuns(){
     }
   });
 }
-const goBtn = (pid, sub, label) => {
+const goBtn = (pid, sub, label, href) => {
   const at = COOL[pid], left = at ? at + 36e5 - Date.now() : 0, cool = left > 0;
-  return `<a class="go ${cool ? 'cool' : ''}" data-pid="${pid}" data-label="${esc(label || '')}" target="_blank" rel="noopener" href="${UPLAND(pid)}"><span>${cool ? '⏳' : '▶'} ${esc(t(cool ? 'cooling' : 'go'))}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${cool ? `<span class="clock" data-until="${at + 36e5}">${clock(left)}</span>` : ''}</a>`;
+  return `<a class="go ${cool ? 'cool' : ''}" data-pid="${pid}" data-label="${esc(label || '')}" target="_blank" rel="noopener" href="${href || UPLAND(pid)}"><span>${cool ? '⏳' : '▶'} ${esc(t(cool ? 'cooling' : 'go'))}${sub ? `<small>${esc(sub)}</small>` : ''}</span>${cool ? `<span class="clock" data-until="${at + 36e5}">${clock(left)}</span>` : ''}</a>`;
 };
 // a card for one kind of structure: what it gives that she needs, and the buttons to get there
 function typeCard(k, P, name, stops, opts = {}){
@@ -342,6 +346,33 @@ function dash(){
   return `<div class="card" style="margin-bottom:12px"><div class="mini"><span><b>${n0(b.found)}${b.max ? ' / ' + n0(b.max) : ''}</b> ${esc(t('dFound'))}</span></div>
     <p class="small muted" style="margin:8px 0 0"><label class="btn small" style="display:inline-flex;margin-top:4px"><input type="file" id="file" accept=".json,.har,application/json" hidden>${esc(b.mine ? t('load') : t('dLoad'))}</label>${b.mine ? ` <button type="button" class="btn small" id="forget">${esc(t('forget'))}</button>` : ''}<span class="small muted" style="display:block;margin-top:8px">${esc(t('fileHelp'))} <a href="../troves/howto/">${esc(t('howto'))}</a> · <a href="https://github.com/Rockdrigotoca/upland-tools/blob/main/tools/clean_har.py" target="_blank" rel="noopener">${esc(t('cleaner'))}</a></span></p>${MSG ? `<p class="small" style="margin:6px 0 0">${esc(MSG)}</p>` : ''}</div>`;
 }
+// One visit gives one find per structure within reach (about 80 m), each picked at random from that structure's list. A place is worth the share of
+// those lists she still needs, added up over everything in reach, divided by what standing there costs.
+function bestPlaces(cd, P, k = 6){
+  const lists = new Map();
+  PL.forEach((p, n) => p.structures.forEach(x => { const q = norm(x); (lists.get(q) || lists.set(q, []).get(q)).push(n); }));
+  const share = cd.structs.map(x => { const l = lists.get(norm(x)); return l ? l.filter(n => P.need.has(n)).length / l.length : 0; });
+  const rows = cd.props.filter(pr => pr[5].length).map(pr => ({pr, own:pr[5].reduce((a, i) => a + share[i], 0), cnt:pr[5].length}));
+  const R = 80 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
+  rows.forEach(r => { r.c = cell(r); const q = r.c[0] + ',' + r.c[1]; (grid.get(q) || grid.set(q, []).get(q)).push(r); });
+  const dist = (a, b) => Math.hypot((b.pr[2] - a.pr[2]) * 111320, (b.pr[3] - a.pr[3]) * 111320 * Math.cos(a.pr[2] * Math.PI / 180));
+  rows.forEach(r => {
+    let E = 0, n = 0;
+    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { if(o === r || dist(r, o) <= 80){ E += o.own; n += o.cnt; } });
+    r.E = E; r.n = n; r.fee = standFee(r.pr[0]); r.v = E / (r.fee || 25);
+  });
+  const out = [];
+  rows.filter(r => r.E >= 1 && !cooling(r.pr[0])).sort((a, b) => b.v - a.v).forEach(r => { if(out.length < k && out.every(o => dist(o, r) > 120)) out.push(r); });
+  return out;
+}
+function plantCards(cname, need){
+  if(!WIB) return '';
+  const fams = WIB.plants.map(f => ({f, useful:f.troves.filter(n => need.has(n)), here:f.props.filter(p => p[2] === cname)})).filter(x => x.useful.length >= 3 && x.here.length)
+    .sort((a, b) => b.useful.filter(n => info(n).rare).length - a.useful.filter(n => info(n).rare).length || b.useful.length - a.useful.length).slice(0, 6);
+  if(!fams.length) return '';
+  return `<h2 class="t">🌿 ${esc(t('plH'))}</h2><p class="sub">${esc(t('plN'))}</p>` + fams.map(x => `<div class="tcard"><div class="thead"><h3>${esc(x.f.name)}</h3><span class="muted small">${esc(t('gives', {n:x.useful.length}))}</span></div><div class="chips">${x.useful.slice(0, 8).map(chip).join('')}</div><div class="gos">${x.here.slice(0, 3).map(p => goBtn(p[0], p[1])).join('')}</div></div>`).join('');
+}
+
 async function draw(){
   const app = document.getElementById('app');
   if(!PL || !WORLD){ app.innerHTML = `<div class="card">${esc(t('wait'))}</div>`; return; }
@@ -376,10 +407,11 @@ async function draw(){
     const groupHtml = `<h2 class="t">${esc(t('t4'))}</h2><p class="sub">${esc(t('t4N'))}</p>${shown.map(gcard).join('')}${rest.length ? `<details class="more"><summary>${esc(t('moreTypes', {n:rest.length}))}</summary>${rest.map(gcard).join('')}</details>` : ''}`;
     const el = elsewhere(cd, P); SPECN = special.length; ELN = el.length;
     const elHtml = el.length ? `<h2 class="t">${esc(t('elseH', {city:cname}))}</h2><p class="sub">${esc(t('elseN', {city:cname}))}</p><div class="card" style="padding:10px 14px">${el.slice(0, 40).map(r => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)">${thumb(r.name)}<b>${esc(r.name)}</b> <span class="muted">${r.found.length ? esc(t('elseWhere', {x:r.found.join('; ')})) : r.list.length ? esc(t('elseList', {x:r.list.join(', ')})) : esc(t('elseNone'))}</span></div>`).join('')}</div>` : '';
+    const bestList = bestPlaces(cd, P), bestHtml = bestList.length ? `<h2 class="t">💎 ${esc(t('bvH'))}</h2><p class="sub">${esc(t('bvN'))}</p>` + bestList.map(r => { const hp = hopOf(r.pr[0]); return `<div class="tcard"><div class="thead"><h3>${esc(r.pr[1])}</h3><span class="muted small">${esc(t('bvSub', {n:r.E.toFixed(0), m:r.n}))}</span></div><div class="gos">${goBtn(r.pr[0], r.fee != null ? t('upx', {n:r.fee}) : '', 'best', hp ? UPLAND(hp.pid) : '')}</div></div>`; }).join('') : '', plantHtml = plantCards(cname, P.need);
     const lead = hero ? `<h2 class="t" style="margin-top:4px">${esc(t('next'))}</h2><p class="sub">${esc(t('legend'))}</p>${hero}` : '';
     body = SCOPE === 'own'
       ? `${lead}${ownHtml}${own.length ? '' : `<button type="button" class="start" data-scope="city" data-view="go">${esc(t('wCity'))} →</button>`}`
-      : `${lead}${specialHtml}${recHtml}${ownHtml}${groupHtml}${elHtml}`;
+      : `${lead}${bestHtml}${specialHtml}${recHtml}${ownHtml}${plantHtml}${groupHtml}${elHtml}`;
   }
   const opt = (attr, val, cur, ic, name, note) => `<button type="button" class="opt ${cur === val ? 'on' : ''}" data-${attr}="${val}"><span class="ic" aria-hidden="true">${ic}</span><span><b>${esc(t(name))}</b><small>${esc(t(note))}</small></span></button>`;
   const citySel = `<select id="cityq" class="cityq" aria-label="${esc(t('city'))}">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
@@ -485,9 +517,9 @@ document.addEventListener('change', async e => {
 async function boot(){
   Site.mount({onChange:draw});
   draw();
-  const [p, w, r, h, im, bst, fe] = await Promise.all([j('../data/troves/places.json'), j('../data/troves/world.json'), j('../data/troves/rockdrigo/latest.json'), j('../data/troves/rockdrigo/hunts.json'), j('../data/troves/images.json'), j('../data/troves/reach-best.json'), j('../data/troves/fees.json')]);
+  const [p, w, r, h, im, bst, fe, wib] = await Promise.all([j('../data/troves/places.json'), j('../data/troves/world.json'), j('../data/troves/rockdrigo/latest.json'), j('../data/troves/rockdrigo/hunts.json'), j('../data/troves/images.json'), j('../data/troves/reach-best.json'), j('../data/troves/fees.json'), j('../data/troves/wibenji.json')]);
   PL = p ? new Map(p.troves.map(([name, cat, structures, plants]) => [name, {cat, structures, plants}])) : null;
-  WORLD = w; ROCK = r; HUNTS = h; IMG = im; BEST = bst; FEES = fe;
+  WIB = wib; WORLD = w; ROCK = r; HUNTS = h; IMG = im; BEST = bst; FEES = fe;
   await Promise.all(PEOPLE.map(async ([u]) => { const o = await j('../data/structures/players/' + u + '.json'); OWNERS[u] = o ? o.rows : []; }));
   draw();
   sync();
