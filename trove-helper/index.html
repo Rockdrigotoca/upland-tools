@@ -91,6 +91,7 @@ Site.register({
     t1:'Your own properties', t1N:'Structures you own here that give what you need.', t2:'James’s properties', t3:'Marlow’s properties', t4:'Other places', t4N:'Structures anywhere in the city. The first ones also have more of what you need nearby.',
     none:'Nothing here for this city yet.', cheap:'{n} UPX stop', upx:'{n} UPX', runOf:'{d} of {n} visited', runAll:'All visited',  seen:'Rockdrigo found it at: {x}', legend:'The medal on each trove is the level you are collecting for. NEW means you have never found it. ★ means few places give it.', go:'Go collect', cooling:'Back in', newT:'NEW', helps:'helps craft {x}', mine:'Your own properties', mineN:'Structures that are yours (or James’s and Marlow’s) in this city. No walking needed.', noOwn:'None of your own, James’s or Marlow’s properties in {city} has a structure that gives what you need.', next:'Your next stop', special:'Special finds', specialN:'Only a few kinds of structure give these, or Rockdrigo has hardly ever found them. They are worth the trip.', onlyAt:'at: {x}', notHere:'not in this city', recH:'One find from a recipe', recN:'Find just this one trove and the recipe is ready.', missing:'missing {x}', moreTypes:'{n} more kinds of structure', open:'Open in Upland', gives:'{n} troves you need', more:'{n} more', near:'+{n} nearby', ready:'Next one ready in', allReady:'Everything is ready to collect.', tap:'tap to open',
     elseH:'Not in {city}', elseN:'You still need these, but no structure in {city} gives them. Rockdrigo found them here:', elseWhere:'found in {x}', elseList:'seen at {x}', elseNone:'not seen yet',
+    sentFile:'Sent privately to Sir Quailbert. Look for his message in your Discord DMs.', sentFail:'Your file loaded here, but I could not send it to the bot. Try again later.',
     syncOn:'Connected to Discord as {name}. Your file and your timers are shared with the bot.', syncNow:'Sync now', syncOff:'Disconnect', syncDone:'Synced.', syncFail:'Could not reach the bot. Your timers stay on this phone.',
     ovStarter:'No file needed to start. If you load one later, the helper skips what you already have.', ovGrown:'Got your troves file? The full Troves tool does a lot more.', ovGrownGo:'Open Troves',
     ovH:'Let’s go troving!', ovN:'Three quick choices, then one big button. You can come back here any time.',
@@ -118,6 +119,7 @@ Site.register({
     t1:'Tus propiedades', t1N:'Estructuras tuyas aquí que dan lo que necesitas.', t2:'Propiedades de James', t3:'Propiedades de Marlow', t4:'Otros lugares', t4N:'Estructuras en toda la ciudad. Las primeras también tienen más de lo que necesitas cerca.',
     none:'Aquí no hay nada para esta ciudad todavía.', cheap:'parada de {n} UPX', upx:'{n} UPX', runOf:'{d} de {n} visitados', runAll:'Todos visitados',  seen:'Rockdrigo lo halló en: {x}', legend:'La medalla de cada trove es el nivel que estás buscando. NUEVO es que nunca lo has hallado. ★ es que pocos lugares lo dan.', go:'Ir a recolectar', cooling:'Vuelve en', newT:'NUEVO', helps:'sirve para {x}', mine:'Tus propiedades', mineN:'Estructuras tuyas (o de James y Marlow) en esta ciudad. Sin caminar.', noOwn:'Ninguna propiedad tuya, de James o de Marlow en {city} tiene una estructura que dé lo que necesitas.', next:'Tu siguiente parada', special:'Hallazgos especiales', specialN:'Solo unas pocas estructuras los dan. Vale la pena el viaje.', onlyAt:'en: {x}', notHere:'no está en esta ciudad', recH:'Un hallazgo para una receta', recN:'Encuentra solo este trove y la receta queda lista.', missing:'falta {x}', moreTypes:'{n} tipos de estructura más', open:'Abrir en Upland', gives:'{n} troves que necesitas', more:'{n} más', near:'+{n} cerca', ready:'El siguiente estará listo en', allReady:'Todo está listo para recolectar.', tap:'toca para abrir',
     elseH:'Fuera de {city}', elseN:'Aún los necesitas, pero ninguna estructura de {city} los da. Rockdrigo los encontró aquí:', elseWhere:'hallado en {x}', elseList:'visto en {x}', elseNone:'aún no se ha visto',
+    sentFile:'Enviado en privado a Sir Quailbert. Busca su mensaje en tus DMs de Discord.', sentFail:'Tu archivo se cargó aquí, pero no pude enviarlo al bot. Inténtalo más tarde.',
     syncOn:'Conectada a Discord como {name}. Tu archivo y tus relojes se comparten con el bot.', syncNow:'Sincronizar ahora', syncOff:'Desconectar', syncDone:'Sincronizado.', syncFail:'No pude llegar al bot. Tus relojes se quedan en este teléfono.',
     ovStarter:'No necesitas ningún archivo para empezar. Si cargas uno después, el ayudante salta lo que ya tienes.', ovGrown:'¿Tienes tu archivo de troves? La herramienta completa de Troves hace mucho más.', ovGrownGo:'Abrir Troves',
     ovH:'¡A buscar troves!', ovN:'Tres elecciones rápidas y un botón grande. Puedes volver aquí cuando quieras.',
@@ -173,6 +175,15 @@ async function sync(manual){
     if(manual) MSG = t('syncDone');
     if(changed) draw();
   }catch(e){ if(manual){ MSG = t('syncFail'); draw(); } }
+}
+// Her cleaned file (never the HAR: only troves and recipes) goes to the bot over HTTPS, where it is scrambled before it is stored.
+async function pushFile(d){
+  if(!SYNC) return;
+  try{
+    const r = await fetch(SYNC.api + '/hunt/file', {method:'POST', headers:{'x-key':SYNC.key}, body:JSON.stringify({format:'upland-troves-v1', date:new Date().toISOString().slice(0, 10), troves:d.troves, items:d.items, recipes:d.recipes})});
+    MSG = r.ok ? t('sentFile') : t('sentFail');
+  }catch(e){ MSG = t('sentFail'); }
+  draw();
 }
 function pushVisits(pids, at){
   if(!SYNC || !pids.length) return;
@@ -466,7 +477,7 @@ document.addEventListener('change', async e => {
         else if(x && x.categories && x.discoveredRecipes) d = fromBal(x);
       }
     }catch{ d = null; }
-    if(d && d.items.length){ d.items = d.items.slice(0, 1500); d.recipes = d.recipes.slice(0, 3000); MINE = d; store.set(MINE_KEY, MINE); MSG = t('loaded', {n:d.items.length}); } else MSG = t('bad');
+    if(d && d.items.length){ d.items = d.items.slice(0, 1500); d.recipes = d.recipes.slice(0, 3000); MINE = d; store.set(MINE_KEY, MINE); MSG = t('loaded', {n:d.items.length}); pushFile(d); } else MSG = t('bad');
     draw();
   }
 });
