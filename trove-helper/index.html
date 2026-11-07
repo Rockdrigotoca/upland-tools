@@ -427,8 +427,7 @@ async function draw(){
       <h2 class="t">${esc(t('ovFile'))}</h2><p class="sub">${esc(t('ovFileN'))}</p>${dash()}
       <div class="card" style="margin-bottom:12px"><details><summary><b>${esc(t('stepsH'))}</b></summary>${steps}</details></div>`;
   } else {
-    const goalName = {gold:'gAll', rec:'gRec', rare:'gRare'}[MODE] || 'gAll';
-    app.innerHTML = `<div class="card" style="margin-bottom:12px"><div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="back" data-view="overview">← ${esc(t('ovBack'))}</button><span class="small muted">${esc(t(goalName))}</span></div><div style="margin-top:10px">${citySel}</div></div>
+    app.innerHTML = `<div class="card" style="margin-bottom:12px"><div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="back" data-view="overview">← ${esc(t('ovBack'))}</button><span class="chips" style="margin:0">${[['gold', 'gAll'], ['rec', 'gRec'], ['rare', 'gRare']].map(([m, k]) => `<button type="button" class="btn small${MODE === m ? ' primary' : ''}" data-mode="${m}" aria-pressed="${MODE === m}">${esc(t(k))}</button>`).join('')}</span></div><div style="margin-top:10px">${citySel}</div></div>
       <div id="next" class="small muted" style="margin:0 0 4px"></div>
       ${body}
       <p class="small" style="margin:18px 0 0"><button type="button" class="btn small" id="resetCool">${esc(t('reset'))}</button></p>`;
