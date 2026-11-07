@@ -190,7 +190,7 @@ Site.register({
     tpH:'Your trip plan', tpN:'The cities you will hunt, in your order. For each one: how many troves you still need to expect per visit at its best stops, what a stand costs, and what that makes per find. Open a city for where to start.', tpCity:'City', tpPer:'Needed finds per visit', tpFee:'Avg fee', tpUpx:'UPX per needed find', tpLap:'One lap (UPX)', tpRank:'Worth (rank)', tpAct:'Your log: needed share', tpAdd:'+ Add a city', tpReset:'Reset', tpUp:'Move earlier', tpRm:'Remove', tpNone:'No scan for this city yet.',
     tpSum:'{f} needed finds per visit · {u} UPX each', tpLapTxt:'One lap of the best {n} stops costs about {upx} UPX and should give about {f} troves you still need. The cooldown is an hour: do the lap, move on, and come back for the next lap after an hour.', tpStart:'Start with', tpRare:'Hard troves you still need that are given here (places that carry them):',
     tpActual:'Your log here: {n} finds, {p} of them troves you still need. The plan said {q}.', tpNoLog:'Not hunted yet. After you hunt here and load the session, this line compares the plan with what you got.',
-    tpFoot:'The plan scales the one-find-per-structure model by 0.79, which is how far it was off in Los Angeles. In the last column ✓ means the log is within 8 points of the plan, ▼ lower, ▲ higher. Reach (80 m) is not confirmed. Plants are not counted. Needs are as of your balance.'
+    tpFoot:'The plan scales the one-find-per-structure model by 0.79, which is how far it was off in Los Angeles. In the last column ✓ means the log is within 8 points of the plan, ▼ lower, ▲ higher. Each structure counts for its chance of being in reach: sure up to 60 m, fading to nothing at 100 m (reach is 80 m around where your avatar lands, about 20 m from the property, measured in Los Angeles). Plants are not counted. Needs are as of your balance.'
   },
   es:{
     title:'Los Troves de Rockdrigo', subtitle:'Qué buscar primero, qué craftear ya y qué guardar en el banco.',
@@ -272,7 +272,7 @@ Site.register({
     tpH:'Tu plan de viaje', tpN:'Las ciudades que vas a cazar, en tu orden. Para cada una: cuántos troves que aún necesitas esperar por visita en sus mejores paradas, lo que cuesta pararse y lo que sale por hallazgo. Abre una ciudad para ver dónde empezar.', tpCity:'Ciudad', tpPer:'Hallazgos útiles por visita', tpFee:'Cuota media', tpUpx:'UPX por hallazgo útil', tpLap:'Una vuelta (UPX)', tpRank:'Valor (puesto)', tpAct:'Tu registro: parte útil', tpAdd:'+ Añadir ciudad', tpReset:'Restablecer', tpUp:'Subir', tpRm:'Quitar', tpNone:'Aún no hay escaneo de esta ciudad.',
     tpSum:'{f} hallazgos útiles por visita · {u} UPX cada uno', tpLapTxt:'Una vuelta por las mejores {n} paradas cuesta unos {upx} UPX y debería dar unos {f} troves que aún necesitas. El enfriamiento es de una hora: haz la vuelta, sigue adelante y repite pasada una hora.', tpStart:'Empieza por', tpRare:'Troves difíciles que aún necesitas y se dan aquí (lugares que los tienen):',
     tpActual:'Tu registro aquí: {n} hallazgos, {p} son troves que aún necesitas. El plan decía {q}.', tpNoLog:'Aún no has cazado aquí. Cuando cazues y cargues la sesión, esta línea compara el plan con lo que obtuviste.',
-    tpFoot:'El plan reduce el modelo de un hallazgo por estructura a 0.79, lo que se desvió en Los Ángeles. En la última columna ✓ es a menos de 8 puntos del plan, ▼ menos, ▲ más. El alcance (80 m) no está confirmado. No cuenta las plantas. Las necesidades son las de tu balance.'
+    tpFoot:'El plan reduce el modelo de un hallazgo por estructura a 0.79, lo que se desvió en Los Ángeles. En la última columna ✓ es a menos de 8 puntos del plan, ▼ menos, ▲ más. Cada estructura cuenta según su probabilidad de estar al alcance: segura hasta 60 m y sin nada a 100 m (el alcance es de 80 m desde donde cae tu avatar, a unos 20 m de la propiedad, medido en Los Ángeles). No cuenta las plantas. Las necesidades son las de tu balance.'
   }
 });
 
@@ -1091,6 +1091,9 @@ function wantedNames(){
   PLACES.forEach((p, n) => { if(!A.items.has(n) && (p.structures.length || p.plants.length)) need.add(n); });
   return need;
 }
+// A structure d metres from the property you send to is in reach with this chance: sure up to 60 m, fading to nothing at 100 m (reach is
+// 80 m around where the avatar lands, and it lands about 20 m away in a random direction; measured on a hunting log).
+const reachW = d => d <= 60 ? 1 : d >= 100 ? 0 : Math.acos(Math.max(-1, Math.min(1, (d * d - 6000) / (40 * d)))) / Math.PI;
 const distM = (a, b) => Math.hypot((b.pr[2] - a.pr[2]) * 111320, (b.pr[3] - a.pr[3]) * 111320 * Math.cos(a.pr[2] * Math.PI / 180));
 // What to hunt for: everything still open, what the recipes you know are short of (and troves you have none of), or only the hard ones
 function needFor(goal){
@@ -1111,12 +1114,12 @@ function valueStopsOf(cid, goal = 'all'){
   PLACES.forEach((p, n) => p.structures.forEach(s => { const k = norm(s).replace(/ 1$/, ''); (lists.get(k) || lists.set(k, []).get(k)).push(n); }));
   const share = cd.structs.map(x => { const l = lists.get(norm(x).replace(/ 1$/, '')); return l ? l.filter(n => need.has(n)).length / l.length : 0; });
   const rows = cd.props.filter(pr => pr[5].length).map(pr => ({pr, own:pr[5].reduce((a, i) => a + share[i], 0), cnt:pr[5].length}));
-  const R = 80 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
+  const R = 100 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
   rows.forEach(r => { r.c = cell(r); const k = r.c[0] + ',' + r.c[1]; (grid.get(k) || grid.set(k, []).get(k)).push(r); });
   rows.forEach(r => {
     let E = 0, n = 0;
-    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { if(o === r || distM(r, o) <= 80){ E += o.own; n += o.cnt; } });
-    r.E = E; r.n = n; r.fee = feeFor(r.pr[0]); r.v = E / (r.fee || 25);
+    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { const w = o === r ? 1 : reachW(distM(r, o)); if(w > 0){ E += o.own * w; n += o.cnt * w; } });
+    r.E = E; r.nf = n; r.n = Math.round(n); r.fee = feeFor(r.pr[0]); r.v = E / (r.fee || 25);
   });
   cd._vs[goal] = rows;
   return rows;
@@ -1206,8 +1209,8 @@ function viewBank(){
   return cityBar() + craftPointer() + (GOAL.bank ? bankPart() : '') + (GOAL.bank || GOAL.bonus ? easyPart() : '') + (GOAL.gold ? goldPart() : '');
 }
 // ---- trip plan: the cities you will hunt, in your order, with what each should give ----
-// The one-find-per-structure model counts every structure's list evenly, which was about a fifth too generous against the Los Angeles log
-// (it said 69% of finds would be troves still needed, the log gave 54.5%), so the plan scales it by 0.79. Each city then shows the log next to the plan.
+// The one-find-per-structure model counts every trove on a structure's list evenly, which was still about a fifth too generous against the
+// Los Angeles log once reach has its soft edge (it said 62% of finds would be troves still needed, the log gave 50%), so the plan scales it by 0.79. Each city then shows the log next to the plan.
 const CAL = 0.79, TRIP_DEFAULT = ['Sao Paulo', 'New Orleans', 'Miami', 'Washington D.C.', 'Queens', 'Rome'];
 let TRIP = store.get('rut:troves:trip', null);
 const tripList = () => Array.isArray(TRIP) && TRIP.length ? TRIP : TRIP_DEFAULT;
@@ -1220,7 +1223,7 @@ function tripInfo(name, need){
   const rows = valueStopsOf(c.id); if(!rows) return {name, loading:true};
   const best = bestStopsIn(rows, 'value', 12); if(!best.length) return {name, none:true};
   const m = f => best.reduce((a, r) => a + f(r), 0) / best.length;
-  const E = m(r => r.E) * CAL, fee = m(r => r.fee || 25), share = m(r => r.n ? r.E / r.n : 0) * CAL;
+  const E = m(r => r.E) * CAL, fee = m(r => r.fee || 25), share = m(r => r.nf ? r.E / r.nf : 0) * CAL;
   if(!cd._rare || cd._rareA !== A){
     const sn = cd.structs.map(x => norm(x).replace(/ 1$/, ''));
     cd._rare = [...need].filter(n => A.scarceOf(n).s >= 0.5 && PLACES.get(n) && PLACES.get(n).structures.length).map(n => {

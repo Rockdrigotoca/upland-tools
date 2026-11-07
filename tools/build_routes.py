@@ -4,7 +4,7 @@
 For each city in data/troves/places/ this writes data/helper/routes/<city id>.json:
   {"city", "name", "updated", "troves": [names], "rare": [indexes into troves],
    "kinds": [[trove indexes that one kind of structure gives]], "kindNames": [the structure each kind is, as it is written],
-   "stops": [[property id, address, lat, lng, stand fee or null, stand property id, near, [trove indexes], [kind indexes of every structure within 80 m]]]}
+   "stops": [[property id, address, lat, lng, stand fee or null, stand property id, near, [trove indexes], [kind indexes of every structure that can be in reach], [chance in reach, percent, one per kind index]]]}
 and data/helper/routes/index.json: [[city id, name, stops]].
 
 A stop is a property with structures on it. "Stand property" is where to stand: the cheaper neighbour within 80 m when
@@ -26,6 +26,19 @@ D = os.path.join(ROOT, 'data')
 OUT = os.path.join(D, 'helper', 'routes')
 POOL = 300        # kept by most structures in reach, by most troves, and by lowest fee
 M_LAT = 111320.0
+# Reach: 80 m around where the avatar lands, and it lands about 20 m from the property in a random direction (measured on the
+# recorder log, see memory trove-reach-geometry). So a structure d metres from the stand is in reach with this chance.
+REACH, OFFSET = 80.0, 20.0
+MAXD = REACH + OFFSET
+
+
+def reach_weight(d):
+    if d <= REACH - OFFSET:
+        return 1.0
+    if d >= MAXD:
+        return 0.0
+    c = (d * d + OFFSET * OFFSET - REACH * REACH) / (2 * d * OFFSET)
+    return math.acos(max(-1.0, min(1.0, c))) / math.pi
 
 
 def norm(s):
@@ -72,26 +85,33 @@ def main():
             stand, fee = (str(b[0]), b[1]) if b else (pid, fees.get(pid))
             rows.append({'pid': pid, 'addr': p[1], 'lat': p[2], 'lng': p[3], 'stand': stand, 'fee': fee, 'ts': ts, 'own': [kind_ix[sn[k]] for k in p[5] if sn[k] in kind_ix]})
         # stops within 80 m of each other
-        r80 = 80 / M_LAT
+        r80 = MAXD / M_LAT
         grid = {}
         cell = lambda x: (math.floor(x['lat'] / r80), math.floor(x['lng'] / (r80 / max(math.cos(math.radians(x['lat'])), .2))))
         for x in rows:
             grid.setdefault(cell(x), []).append(x)
         for x in rows:
             cy, cx = cell(x)
-            n, reach = 0, list(x['own'])
+            n, reach, wts = 0, list(x['own']), [100] * len(x['own'])
             for a in (-1, 0, 1):
                 for c in (-1, 0, 1):
                     for o in grid.get((cy + a, cx + c), []):
-                        if o is not x and math.hypot((o['lat'] - x['lat']) * M_LAT, (o['lng'] - x['lng']) * M_LAT * math.cos(math.radians(x['lat']))) <= 80:
-                            n += 1
-                            reach.extend(o['own'])
-            x['near'], x['reach'] = n, reach
+                        if o is not x:
+                            d = math.hypot((o['lat'] - x['lat']) * M_LAT, (o['lng'] - x['lng']) * M_LAT * math.cos(math.radians(x['lat'])))
+                            w = reach_weight(d)
+                            if w > 0:
+                                if d <= REACH:
+                                    n += 1
+                                for k in o['own']:
+                                    reach.append(k); wts.append(round(w * 100))
+            x['near'] = n
+            order = sorted(range(len(reach)), key=lambda i: reach[i])
+            x['reach'], x['rw'] = [reach[i] for i in order], [wts[i] for i in order]
         by_n = sorted(rows, key=lambda x: (-len(x['ts']), x['fee'] if x['fee'] is not None else 999))[:POOL]
-        by_reach = sorted(rows, key=lambda x: (-len(x['reach']), x['fee'] if x['fee'] is not None else 999))[:POOL]
+        by_reach = sorted(rows, key=lambda x: (-sum(x['rw']), x['fee'] if x['fee'] is not None else 999))[:POOL]
         by_fee = sorted((x for x in rows if len(x['ts']) >= 2 and x['fee'] is not None), key=lambda x: (x['fee'], -len(x['ts'])))[:POOL]
         keep = {x['pid']: x for x in by_n + by_reach + by_fee}
-        stops = [[x['pid'], x['addr'], round(x['lat'], 5), round(x['lng'], 5), x['fee'], x['stand'], x['near'], x['ts'], sorted(x['reach'])] for x in sorted(keep.values(), key=lambda x: (x['fee'] if x['fee'] is not None else 999, -len(x['ts'])))]
+        stops = [[x['pid'], x['addr'], round(x['lat'], 5), round(x['lng'], 5), x['fee'], x['stand'], x['near'], x['ts'], x['reach'], x['rw']] for x in sorted(keep.values(), key=lambda x: (x['fee'] if x['fee'] is not None else 999, -len(x['ts'])))]
         json.dump({'city': int(cid), 'name': cd['name'], 'updated': places.get('updated', ''), 'troves': names, 'rare': rare, 'kinds': kinds, 'kindNames': [kname[k] for k in sorted(kind)], 'stops': stops},
                   open(os.path.join(OUT, cid + '.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
         index.append([int(cid), cd['name'], len(stops)])

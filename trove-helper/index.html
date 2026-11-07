@@ -350,18 +350,21 @@ function dash(){
 }
 // One visit gives one find per structure within reach (about 80 m), each picked at random from that structure's list. A place is worth the share of
 // those lists she still needs, added up over everything in reach, divided by what standing there costs.
+// A structure d metres from the property you send to is in reach with this chance: sure up to 60 m, fading to nothing at 100 m (reach is
+// 80 m around where the avatar lands, and it lands about 20 m away in a random direction; measured on a hunting log).
+const reachW = d => d <= 60 ? 1 : d >= 100 ? 0 : Math.acos(Math.max(-1, Math.min(1, (d * d - 6000) / (40 * d)))) / Math.PI;
 function bestPlaces(cd, P, k = 6){
   const lists = new Map();
   PL.forEach((p, n) => p.structures.forEach(x => { const q = norm(x); (lists.get(q) || lists.set(q, []).get(q)).push(n); }));
   const share = cd.structs.map(x => { const l = lists.get(norm(x)); return l ? l.filter(n => P.need.has(n)).length / l.length : 0; });
   const rows = cd.props.filter(pr => pr[5].length).map(pr => ({pr, own:pr[5].reduce((a, i) => a + share[i], 0), cnt:pr[5].length}));
-  const R = 80 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
+  const R = 100 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
   rows.forEach(r => { r.c = cell(r); const q = r.c[0] + ',' + r.c[1]; (grid.get(q) || grid.set(q, []).get(q)).push(r); });
   const dist = (a, b) => Math.hypot((b.pr[2] - a.pr[2]) * 111320, (b.pr[3] - a.pr[3]) * 111320 * Math.cos(a.pr[2] * Math.PI / 180));
   rows.forEach(r => {
     let E = 0, n = 0;
-    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { if(o === r || dist(r, o) <= 80){ E += o.own; n += o.cnt; } });
-    r.E = E; r.n = n; r.fee = standFee(r.pr[0]); r.v = E / (r.fee || 25);
+    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { const w = o === r ? 1 : reachW(dist(r, o)); if(w > 0){ E += o.own * w; n += o.cnt * w; } });
+    r.E = E; r.n = Math.round(n); r.fee = standFee(r.pr[0]); r.v = E / (r.fee || 25);
   });
   const out = [];
   rows.filter(r => r.E >= 1 && !cooling(r.pr[0])).sort((a, b) => b.v - a.v).forEach(r => { if(out.length < k && out.every(o => dist(o, r) > 120)) out.push(r); });
