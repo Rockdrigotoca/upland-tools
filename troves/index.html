@@ -185,6 +185,7 @@ Site.register({
     spCmpH:'Compare the cities', spCmpN:'Net troves gained between two balances, to look at when all the cities are done.', spCmpCity:'City', spCmpDate:'Date', spCmpGain:'Troves gained', spCmpTypes:'Types', spCmpNew:'New troves', spCmpTop:'Most gained',
     guH:'How to use this (for you and for other players)', guN:'Load your own file at the top, then:', gu1:'Look at the cities table: it ranks every scanned city by how many troves you still need that its structures give.', gu2:'Pick a city and open the best properties. At each one, trove, wait an hour, trove again (each structure gives one random trove).', gu3:'Troves that are craft-only or have few places are the bottleneck. Go to the cities listed for them.', gu4:'Craft only from spare stock (the table), never from a trove you still have to bank. Banking uses the troves up.', gu5:'Load a new file after every city. The page and the results of the special builds follow what you hold.',
     updated:'Trove places updated {d}.',
+    hdH:'Your hardest troves, with where to get them in {city}', hdN:'The troves that few places give, hardest first. Each shows the cheapest stand in the chosen city; if it has none, it points to the cheapest city that does.', hdTrove:'Trove', hdPlaces:'Places that give it', hdHold:'You hold', hdWhere:'Where', hdHere:'{n} stops here', hdOther:'Not in {city}. Cheapest elsewhere: {other} ({fee} UPX)', hdNone:'No stop found in a city I know.',
     bvG_all:'Everything', bvG_rec:'Recipes and collections', bvG_rare:'Rare finds',
     tpH:'Your trip plan', tpN:'The cities you will hunt, in your order. For each one: how many troves you still need to expect per visit at its best stops, what a stand costs, and what that makes per find. Open a city for where to start.', tpCity:'City', tpPer:'Needed finds per visit', tpFee:'Avg fee', tpUpx:'UPX per needed find', tpLap:'One lap (UPX)', tpRank:'Worth (rank)', tpAct:'Your log: needed share', tpAdd:'+ Add a city', tpReset:'Reset', tpUp:'Move earlier', tpRm:'Remove', tpNone:'No scan for this city yet.',
     tpSum:'{f} needed finds per visit · {u} UPX each', tpLapTxt:'One lap of the best {n} stops costs about {upx} UPX and should give about {f} troves you still need. The cooldown is an hour: do the lap, move on, and come back for the next lap after an hour.', tpStart:'Start with', tpRare:'Hard troves you still need that are given here (places that carry them):',
@@ -266,6 +267,7 @@ Site.register({
     spCmpH:'Comparar las ciudades', spCmpN:'Troves netos ganados entre dos balances, para mirar cuando todas las ciudades estén hechas.', spCmpCity:'Ciudad', spCmpDate:'Fecha', spCmpGain:'Troves ganados', spCmpTypes:'Tipos', spCmpNew:'Troves nuevos', spCmpTop:'Los que más subieron',
     guH:'Cómo usar esto (para ti y para otros jugadores)', guN:'Carga tu propio archivo arriba y luego:', gu1:'Mira la tabla de ciudades: ordena cada ciudad escaneada por cuántos troves que aún necesitas dan sus estructuras.', gu2:'Elige una ciudad y abre las mejores propiedades. En cada una, trovea, espera una hora, trovea otra vez (cada estructura da un trove al azar).', gu3:'Los troves solo crafteables o con pocos lugares son el cuello de botella. Ve a las ciudades que se indican para ellos.', gu4:'Craftea solo con el stock sobrante (la tabla), nunca con un trove que aún debes bancar. Bancar gasta los troves.', gu5:'Carga un archivo nuevo después de cada ciudad. La página y los resultados de las construcciones especiales siguen lo que tienes.',
     updated:'Lugares de troves actualizados el {d}.',
+    hdH:'Tus troves más difíciles, y dónde conseguirlos en {city}', hdN:'Los troves que dan pocos lugares, los más difíciles primero. Cada uno muestra la parada más barata de la ciudad elegida; si no tiene, te lleva a la ciudad más barata que sí.', hdTrove:'Trove', hdPlaces:'Lugares que lo dan', hdHold:'Tienes', hdWhere:'Dónde', hdHere:'{n} paradas aquí', hdOther:'No en {city}. Lo más barato en otro lugar: {other} ({fee} UPX)', hdNone:'No encontré una parada en una ciudad que conozca.',
     bvG_all:'Todo', bvG_rec:'Recetas y colecciones', bvG_rare:'Hallazgos raros',
     tpH:'Tu plan de viaje', tpN:'Las ciudades que vas a cazar, en tu orden. Para cada una: cuántos troves que aún necesitas esperar por visita en sus mejores paradas, lo que cuesta pararse y lo que sale por hallazgo. Abre una ciudad para ver dónde empezar.', tpCity:'Ciudad', tpPer:'Hallazgos útiles por visita', tpFee:'Cuota media', tpUpx:'UPX por hallazgo útil', tpLap:'Una vuelta (UPX)', tpRank:'Valor (puesto)', tpAct:'Tu registro: parte útil', tpAdd:'+ Añadir ciudad', tpReset:'Restablecer', tpUp:'Subir', tpRm:'Quitar', tpNone:'Aún no hay escaneo de esta ciudad.',
     tpSum:'{f} hallazgos útiles por visita · {u} UPX cada uno', tpLapTxt:'Una vuelta por las mejores {n} paradas cuesta unos {upx} UPX y debería dar unos {f} troves que aún necesitas. El enfriamiento es de una hora: haz la vuelta, sigue adelante y repite pasada una hora.', tpStart:'Empieza por', tpRare:'Troves difíciles que aún necesitas y se dan aquí (lugares que los tienen):',
@@ -1080,7 +1082,7 @@ function levelRows(){
 // ---- where to go: best value, hotspots and plants (Wibenji's scan, used with permission) ----
 // One visit gives one find per structure within reach (about 80 m), each picked at random from that structure's list.
 // So a stop is worth the share of those lists that you still need, added up over every structure in reach, divided by what the stop costs.
-let VSORT = store.get('rut:troves:vsort', 'value'), VGOAL = store.get('rut:troves:vgoal', 'all'), WIB = null;
+let HARDF = null, VSORT = store.get('rut:troves:vsort', 'value'), VGOAL = store.get('rut:troves:vgoal', 'all'), WIB = null;
 const cityName = () => ((WORLD && WORLD.cities.find(c => String(c.id) === String(CITY))) || {}).name || '';
 const feeFor = pid => { const h = hop(pid); return h ? h.fee : FEES && FEES[pid] != null ? FEES[pid] : null; };
 function wantedNames(){
@@ -1137,6 +1139,20 @@ function bestPlacesSection(){
   const gseg = ['all', 'rec', 'rare'].map(k => `<button type="button" data-vgoal="${k}" class="${VGOAL === k ? 'on' : ''}">${esc(t('bvG_' + k))}</button>`).join('');
   return sec(t('bvH', {city:cityName()}), t('bvN'), `<div class="row" style="margin:6px 0;gap:10px;flex-wrap:wrap"><div class="seg" id="vgoal">${gseg}</div><div class="seg" id="vsort">${seg}</div></div>` + tbl([['#', 'n'], [t('bvPlace')], [t('bvStruct'), 'n'], [t('bvFinds'), 'n'], [t('bvPerUpx'), 'n']], rows) + `<p class="hint">${esc(t('bvFoot'))}</p>`);
 }
+// The hardest troves you still need (the fewest places give them), each with the cheapest stand in the chosen city, or the cheapest city that has one
+function hardSection(){
+  if(!HARDF || !A || !WORLD) return '';
+  const nameOf = id => (WORLD.cities.find(c => String(c.id) === String(id)) || {}).name || '', fee = f => f == null ? 999 : f, city = cityName();
+  const rows = Object.entries(HARDF.troves).filter(([n]) => { const it = A.items.get(n); return !it || (it.th.length ? it.lvl < it.th.length : false); })
+    .sort((a, b) => a[1].s - b[1].s || a[0].localeCompare(b[0])).slice(0, 12).map(([n, h], i) => {
+      const here = h.c[String(CITY)]; let other = null;
+      if(!here) Object.entries(h.c).forEach(([id, c]) => { if(nameOf(id) && (!other || fee(c[1]) < fee(other.c[1]))) other = {id, c}; });
+      const it = A.items.get(n);
+      const where = here ? `${spotBtn([here[2], here[3]])} <span class="muted small">${esc(t('hdHere', {n:here[0]}))}</span>` : other ? `<span class="muted small">${esc(t('hdOther', {city, other:nameOf(other.id), fee:other.c[1] == null ? '?' : other.c[1]}))}</span> ${spotBtn([other.c[2], other.c[3]])}` : `<span class="muted small">${esc(t('hdNone'))}</span>`;
+      return `<tr><td class="n">${i + 1}</td><td><b>${esc(n)}</b></td><td class="n" data-v="${h.s}">${h.s}</td><td class="n">${it ? n0(it.q) : 0}</td><td>${where}</td></tr>`;
+    });
+  return rows.length ? sec(t('hdH', {city}), t('hdN'), tbl([['#', 'n'], [t('hdTrove')], [t('hdPlaces'), 'n'], [t('hdHold'), 'n'], [t('hdWhere')]], rows)) : '';
+}
 function hotspotSection(){
   const list = WIB && WIB.hotspots[cityName()]; if(!list || !list.length) return '';
   const rows = list.slice(0, 10).map((h, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn([h[0], h[1]])}</td><td>${esc(h[2] || '')}</td><td class="n">${n0(h[3])}</td><td class="n">${n0(h[4])}</td></tr>`);
@@ -1169,7 +1185,7 @@ function viewMissing(){
   const head = [[t('colTrove')], [t('fnWhy')], [t('fnHold'), 'n'], [t('colWhere')]];
   const top = list.slice(0, 40), rest = list.slice(40);
   const lead = `<div class="card" style="margin-bottom:12px"><b>${esc(list.filter(r => r.b || r.never).length <= 12 ? t('fnFew') : t('fnLots'))}</b></div>`;
-  return cityBar() + lead + bestPlacesSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
+  return cityBar() + lead + bestPlacesSection() + hardSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
@@ -1548,6 +1564,7 @@ async function boot(){
   try{ SREC = await fetch('../data/troves/structure-recipes.json').then(x => x.ok ? x.json() : null); }catch{ SREC = null; }
   try{ STIMG = await fetch('../data/structures/images.json').then(x => x.ok ? x.json() : null); }catch{ STIMG = null; }
   try{ REACH = await fetch('../data/troves/reach-best.json').then(x => x.ok ? x.json() : null); }catch{ REACH = null; }
+  try{ HARDF = await fetch('../data/helper/hard.json').then(x => x.ok ? x.json() : null); }catch{ HARDF = null; }
   try{ HUNTS = await fetch('../data/troves/rockdrigo/hunts.json').then(x => x.ok ? x.json() : null); }catch{ HUNTS = null; }
   try{ WORLD = await fetch('../data/troves/world.json').then(x => x.ok ? x.json() : null); }catch{ WORLD = null; }
   use(); draw();

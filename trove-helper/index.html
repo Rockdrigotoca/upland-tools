@@ -94,6 +94,7 @@ Site.register({
     sentFile:'Sent privately to Sir Quailbert. Look for his message in your Discord DMs.', sentFail:'Your file loaded here, but I could not send it to the bot. Try again later.',
     syncOn:'Connected to Discord as {name}. Your file and your timers are shared with the bot.', syncNow:'Sync now', syncOff:'Disconnect', syncDone:'Synced.', syncFail:'Could not reach the bot. Your timers stay on this phone.',
     bvH:'Best value', bvN:'One visit gives one find for every structure around you. These places give you the most of what you still need for what they cost.', bvSub:'about {n} finds a visit · {m} structures',
+    hdH:'Your hardest troves', hdN:'The troves that few places give, hardest first, with the cheapest stand for each. If this city has none, it points to the cheapest city that does.', hdOnly:'only {n} places give it', hdHere:'{n} here', hdOther:'Not in {city}. Cheapest elsewhere: {other} ({fee} UPX)', hdNone:'No stop found in a city I know.',
     plH:'Plants worth a visit', plN:'Plants near here that give troves you still need.',
     ovStarter:'No file needed to start. If you load one later, the helper skips what you already have.', ovGrown:'Got your troves file? The full Troves tool does a lot more.', ovGrownGo:'Open Troves',
     ovH:'Let’s go troving!', ovN:'Three quick choices, then one big button. You can come back here any time.',
@@ -124,6 +125,7 @@ Site.register({
     sentFile:'Enviado en privado a Sir Quailbert. Busca su mensaje en tus DMs de Discord.', sentFail:'Tu archivo se cargó aquí, pero no pude enviarlo al bot. Inténtalo más tarde.',
     syncOn:'Conectada a Discord como {name}. Tu archivo y tus relojes se comparten con el bot.', syncNow:'Sincronizar ahora', syncOff:'Desconectar', syncDone:'Sincronizado.', syncFail:'No pude llegar al bot. Tus relojes se quedan en este teléfono.',
     bvH:'Mejor valor', bvN:'Una visita da un hallazgo por cada estructura a tu alrededor. Estos lugares te dan lo máximo de lo que aún necesitas por lo que cuestan.', bvSub:'unos {n} hallazgos por visita · {m} estructuras',
+    hdH:'Tus troves más difíciles', hdN:'Los troves que dan pocos lugares, los más difíciles primero, con la parada más barata de cada uno. Si esta ciudad no tiene ninguno, te lleva a la ciudad más barata que sí.', hdOnly:'solo {n} lugares lo dan', hdHere:'{n} aquí', hdOther:'No en {city}. Lo más barato en otro lugar: {other} ({fee} UPX)', hdNone:'No encontré una parada en una ciudad que conozca.',
     plH:'Plantas que valen una visita', plN:'Plantas cerca que dan troves que aún necesitas.',
     ovStarter:'No necesitas ningún archivo para empezar. Si cargas uno después, el ayudante salta lo que ya tienes.', ovGrown:'¿Tienes tu archivo de troves? La herramienta completa de Troves hace mucho más.', ovGrownGo:'Abrir Troves',
     ovH:'¡A buscar troves!', ovN:'Tres elecciones rápidas y un botón grande. Puedes volver aquí cuando quieras.',
@@ -197,7 +199,7 @@ function pushVisits(pids, at){
 const hopOf = pid => { const b = BEST && BEST.best80 ? BEST.best80[pid] : null; return b ? {pid:b[0], fee:b[1], lat:b[3], lng:b[4]} : null; };
 // what she pays to stand for this stop: the cheaper neighbour when there is one
 const standFee = pid => { const h = hopOf(pid); return h ? h.fee : FEES && FEES.fees[pid] != null ? FEES.fees[pid] : null; };
-let WIB = null, PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
+let HARD = null, WIB = null, PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
 let CITY = store.get('rut:helper:city', '32'), MODE = store.get('rut:helper:mode', 'gold'), SCOPE = 'city', VIEW = store.get('rut:helper:view', 'overview'), MSG = '';
 
 async function j(u){ try{ const r = await fetch(u, {cache:'no-cache'}); return r.ok ? await r.json() : null; }catch{ return null; } }
@@ -365,6 +367,20 @@ function bestPlaces(cd, P, k = 6){
   rows.filter(r => r.E >= 1 && !cooling(r.pr[0])).sort((a, b) => b.v - a.v).forEach(r => { if(out.length < k && out.every(o => dist(o, r) > 120)) out.push(r); });
   return out;
 }
+// The hardest troves she still needs (the fewest places give them), each with the cheapest stand in this city, or the cheapest city that has one
+function hardCards(cid, cname){
+  if(!HARD || !WORLD) return '';
+  const b = balance(), nameOf = id => (WORLD.cities.find(c => String(c.id) === String(id)) || {}).name || '', fee = f => f == null ? 999 : f;
+  const rows = Object.entries(HARD.troves).filter(([n]) => { const it = b.items.get(n); return !it || (it.th.length ? it.lvl < it.th.length : false); })
+    .sort((a, c) => a[1].s - c[1].s || a[0].localeCompare(c[0])).slice(0, 8);
+  if(!rows.length) return '';
+  return `<h2 class="t">🎯 ${esc(t('hdH'))}</h2><p class="sub">${esc(t('hdN'))}</p>` + rows.map(([n, h]) => {
+    const here = h.c[String(cid)];
+    let other = null; if(!here) Object.entries(h.c).forEach(([id, c]) => { if(nameOf(id) && (!other || fee(c[1]) < fee(other.c[1]))) other = {id, c}; });
+    const act = here ? goBtn(here[2], (here[1] != null ? t('upx', {n:here[1]}) + ' · ' : '') + t('hdHere', {n:here[0]}), n) : other ? `<span class="muted small">${esc(t('hdOther', {city:cname, other:nameOf(other.id), fee:other.c[1] == null ? '?' : other.c[1]}))}</span>` : `<span class="muted small">${esc(t('hdNone'))}</span>`;
+    return `<div class="tcard"><div class="thead"><h3>${esc(n)}</h3><span class="muted small">${esc(t('hdOnly', {n:h.s}))}</span></div><div class="gos">${act}</div></div>`;
+  }).join('');
+}
 function plantCards(cname, need){
   if(!WIB) return '';
   const fams = WIB.plants.map(f => ({f, useful:f.troves.filter(n => need.has(n)), here:f.props.filter(p => p[2] === cname)})).filter(x => x.useful.length >= 3 && x.here.length)
@@ -407,11 +423,11 @@ async function draw(){
     const groupHtml = `<h2 class="t">${esc(t('t4'))}</h2><p class="sub">${esc(t('t4N'))}</p>${shown.map(gcard).join('')}${rest.length ? `<details class="more"><summary>${esc(t('moreTypes', {n:rest.length}))}</summary>${rest.map(gcard).join('')}</details>` : ''}`;
     const el = elsewhere(cd, P); SPECN = special.length; ELN = el.length;
     const elHtml = el.length ? `<h2 class="t">${esc(t('elseH', {city:cname}))}</h2><p class="sub">${esc(t('elseN', {city:cname}))}</p><div class="card" style="padding:10px 14px">${el.slice(0, 40).map(r => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--border)">${thumb(r.name)}<b>${esc(r.name)}</b> <span class="muted">${r.found.length ? esc(t('elseWhere', {x:r.found.join('; ')})) : r.list.length ? esc(t('elseList', {x:r.list.join(', ')})) : esc(t('elseNone'))}</span></div>`).join('')}</div>` : '';
-    const bestList = bestPlaces(cd, P), bestHtml = bestList.length ? `<h2 class="t">💎 ${esc(t('bvH'))}</h2><p class="sub">${esc(t('bvN'))}</p>` + bestList.map(r => { const hp = hopOf(r.pr[0]); return `<div class="tcard"><div class="thead"><h3>${esc(r.pr[1])}</h3><span class="muted small">${esc(t('bvSub', {n:r.E.toFixed(0), m:r.n}))}</span></div><div class="gos">${goBtn(r.pr[0], r.fee != null ? t('upx', {n:r.fee}) : '', 'best', hp ? UPLAND(hp.pid) : '')}</div></div>`; }).join('') : '', plantHtml = plantCards(cname, P.need);
+    const bestList = bestPlaces(cd, P), bestHtml = bestList.length ? `<h2 class="t">💎 ${esc(t('bvH'))}</h2><p class="sub">${esc(t('bvN'))}</p>` + bestList.map(r => { const hp = hopOf(r.pr[0]); return `<div class="tcard"><div class="thead"><h3>${esc(r.pr[1])}</h3><span class="muted small">${esc(t('bvSub', {n:r.E.toFixed(0), m:r.n}))}</span></div><div class="gos">${goBtn(r.pr[0], r.fee != null ? t('upx', {n:r.fee}) : '', 'best', hp ? UPLAND(hp.pid) : '')}</div></div>`; }).join('') : '', plantHtml = plantCards(cname, P.need), hardHtml = hardCards(CITY, cname);
     const lead = hero ? `<h2 class="t" style="margin-top:4px">${esc(t('next'))}</h2><p class="sub">${esc(t('legend'))}</p>${hero}` : '';
     body = SCOPE === 'own'
       ? `${lead}${ownHtml}${own.length ? '' : `<button type="button" class="start" data-scope="city" data-view="go">${esc(t('wCity'))} →</button>`}`
-      : `${lead}${bestHtml}${specialHtml}${recHtml}${ownHtml}${plantHtml}${groupHtml}${elHtml}`;
+      : `${lead}${bestHtml}${hardHtml}${specialHtml}${recHtml}${ownHtml}${plantHtml}${groupHtml}${elHtml}`;
   }
   const opt = (attr, val, cur, ic, name, note) => `<button type="button" class="opt ${cur === val ? 'on' : ''}" data-${attr}="${val}"><span class="ic" aria-hidden="true">${ic}</span><span><b>${esc(t(name))}</b><small>${esc(t(note))}</small></span></button>`;
   const citySel = `<select id="cityq" class="cityq" aria-label="${esc(t('city'))}">${cs.map(c => `<option value="${c.id}"${String(c.id) === String(CITY) ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>`;
@@ -518,7 +534,7 @@ async function boot(){
   draw();
   const [p, w, r, h, im, bst, fe, wib] = await Promise.all([j('../data/troves/places.json'), j('../data/troves/world.json'), j('../data/troves/rockdrigo/latest.json'), j('../data/troves/rockdrigo/hunts.json'), j('../data/troves/images.json'), j('../data/troves/reach-best.json'), j('../data/troves/fees.json'), j('../data/troves/wibenji.json')]);
   PL = p ? new Map(p.troves.map(([name, cat, structures, plants]) => [name, {cat, structures, plants}])) : null;
-  WIB = wib; WORLD = w; ROCK = r; HUNTS = h; IMG = im; BEST = bst; FEES = fe;
+  WIB = wib; HARD = await j('../data/helper/hard.json'); WORLD = w; ROCK = r; HUNTS = h; IMG = im; BEST = bst; FEES = fe;
   await Promise.all(PEOPLE.map(async ([u]) => { const o = await j('../data/structures/players/' + u + '.json'); OWNERS[u] = o ? o.rows : []; }));
   draw();
   sync();
