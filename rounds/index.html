@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo’s Rounds</title>
+<meta name="description" content="How you hunt troves: visits, rhythm, finds per visit and where they came from. See an example, then drop your own hunting session file. It is read in your browser and never uploaded.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0 16px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px}
+.stat b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}
+.stat span{font-size:.8rem;color:var(--muted)}
+.hours{display:flex;align-items:flex-end;gap:3px;height:96px;margin:8px 0 2px}
+.hours i{flex:1;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px}
+.hl{display:flex;gap:3px;font-size:.65rem;color:var(--muted)}.hl span{flex:1;text-align:center}
+.drop{border:2px dashed var(--border);border-radius:14px;padding:16px;text-align:center}
+.drop.over{border-color:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:.875rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tips li{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <section class="card" id="src"></section>
+  <div id="app"></div>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc} = Site;
+Site.register({
+  en:{
+    title:'Rockdrigo’s Rounds', subtitle:'How you hunt: when, how much, and what each visit gives.',
+    exH:'Rockdrigo’s own rounds', exN:'This is Rockdrigo’s real hunting session, from the first Los Angeles run. Everything below is worked out from timestamps, nothing else.',
+    yourH:'Your own rounds', yourN:'Drop a hunting session file (the .json the hunt recorder saves). It is read in this browser and never uploaded.', pick:'Choose a file', or:'or drop it here', back:'Back to the example', bad:'That file is not a hunting session. It should be the .json the recorder saves.',
+    botH:'Hunting with Sir Quailbert?', botN:'Every time you press Visited in /go it is written down, only for you, and 📊 My rounds in your DMs shows the same kind of picture from your own steps. Nothing is posted anywhere. You can also drop a recorder file here for the finds side, which the bot cannot see.',
+    harN:'For your trove balance (not your rounds), the Trove Helper takes your HAR file the same way: read here, only the troves kept.',
+    visits:'Visits', finds:'Troves found', perVisit:'Finds per visit', empty:'Visits that gave nothing', active:'Active minutes', perHour:'Visits per active hour', days:'Hunting days', streak:'Day streak', sessions:'Sessions', longest:'Longest session', sends:'Stand fees paid', fees:'UPX in fees', free:'Visits with no fee seen',
+    rhythmH:'Your rhythm', rhythmN:'Visits by hour of the day, in your time.', busiest:'Busiest hour',
+    srcH:'Where the finds came from', srcCol:'Source', unitsCol:'Troves', shareCol:'Share',
+    bestH:'Best visits', whenCol:'When', findsCol:'Finds', evCol:'Spots',
+    tipsH:'Worth knowing', tipEarly:'About {n} visits went back to the same area less than an hour after the last one. The hour had not run out, so those cost a fee for little.', tipFree:'The recorder saw a stand fee for only {n} of your {m} visits. The rest were free stands, or visits it did not catch.', tipEmpty:'{p}% of visits gave nothing. When a stop gives nothing twice, move on.', tipLong:'Your longest session was {n} visits in {m} min. That is the rhythm to aim for each time.', tipFew:'Not much to go on yet. Hunt a bit more and come back.',
+    ev:'{n} events', noData:'Could not load the example.', unit:'{n} min', of:'of'
+  },
+  es:{
+    title:'Rondas de Rockdrigo', subtitle:'Cómo cazas: cuándo, cuánto y qué da cada visita.',
+    exH:'Las rondas de Rockdrigo', exN:'Esta es una sesión real de caza de Rockdrigo, de la primera vuelta por Los Ángeles. Todo sale de las marcas de tiempo, nada más.',
+    yourH:'Tus propias rondas', yourN:'Suelta un archivo de sesión de caza (el .json que guarda el registrador). Se lee en este navegador y nunca se sube.', pick:'Elegir archivo', or:'o suéltalo aquí', back:'Volver al ejemplo', bad:'Ese archivo no es una sesión de caza. Debe ser el .json que guarda el registrador.',
+    botH:'¿Cazas con Sir Quailbert?', botN:'Cada vez que pulsas Visitado en /go se anota, solo para ti, y 📊 Mis rondas en tus mensajes privados muestra una imagen parecida con tus propios pasos. Nada se publica. También puedes soltar aquí un archivo del registrador para ver los hallazgos, que el bot no ve.',
+    harN:'Para tu balance de troves (no tus rondas), el Ayudante de Troves recibe tu archivo HAR igual: se lee aquí y solo se guardan los troves.',
+    visits:'Visitas', finds:'Troves encontrados', perVisit:'Hallazgos por visita', empty:'Visitas sin nada', active:'Minutos activos', perHour:'Visitas por hora activa', days:'Días de caza', streak:'Racha de días', sessions:'Sesiones', longest:'Sesión más larga', sends:'Cuotas pagadas', fees:'UPX en cuotas', free:'Visitas sin cuota vista',
+    rhythmH:'Tu ritmo', rhythmN:'Visitas por hora del día, en tu hora.', busiest:'Hora más activa',
+    srcH:'De dónde vinieron los hallazgos', srcCol:'Fuente', unitsCol:'Troves', shareCol:'Parte',
+    bestH:'Mejores visitas', whenCol:'Cuándo', findsCol:'Hallazgos', evCol:'Lugares',
+    tipsH:'Conviene saber', tipEarly:'Unas {n} visitas volvieron a la misma zona menos de una hora después de la anterior. La hora no había terminado, así que costaron cuota por poco.', tipFree:'El registrador vio una cuota solo en {n} de tus {m} visitas. El resto fueron lugares gratis, o visitas que no captó.', tipEmpty:'{p}% de las visitas no dieron nada. Si una parada no da nada dos veces, sigue adelante.', tipLong:'Tu sesión más larga fue de {n} visitas en {m} min. Ese es el ritmo al que apuntar.', tipFew:'Aún hay poco que analizar. Caza un poco más y vuelve.',
+    ev:'{n} eventos', noData:'No pude cargar el ejemplo.', unit:'{n} min', of:'de'
+  }
+});
+const $ = s => document.querySelector(s), n0 = x => Number(x).toLocaleString(Site.locale());
+let EX = null, MINE = null, ERR = '';
+
+// A hunt recorder export -> plain events: [{t seconds, prop, n troves, src}]
+function fromRecorder(raw){
+  if(!raw || raw.kind !== 'trove-hunting-session' || !Array.isArray(raw.hunts)) return null;
+  const src = h => h.kind === 'plant' ? (h.type || 'Plant') : (((h.model || '').split('/')[1] || 'Structure').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+  const ev = raw.hunts.filter(h => h && Number.isFinite(h.t)).slice(0, 60000).map(h => ({t:Math.round(h.t / 1000), prop:String(h.prop), n:(h.troves || []).reduce((a, x) => a + (Number(x.n) || 0), 0), src:src(h)}));
+  return {ev:ev.sort((a, b) => a.t - b.t), sends:(raw.sends || []).filter(s => s && Number.isFinite(s.t)).map(s => [Math.round(s.t / 1000), Number(s.fee) || 0])};
+}
+function fromLite(l){
+  if(!l || l.format !== 'upland-rounds-v1') return null;
+  return {ev:l.events.map(r => ({t:r[0], prop:r[1], n:r[2], src:l.src[r[3]]})), sends:l.sends};
+}
+// One visit is one burst of hunt events (they arrive within seconds of each other).
+function analyse(d){
+  const GAP = 8, visits = [];
+  d.ev.forEach(e => { const v = visits[visits.length - 1]; if(v && e.t - v.end <= GAP){ v.end = e.t; v.n += e.n; v.ev++; v.props.add(e.prop); } else visits.push({start:e.t, end:e.t, n:e.n, ev:1, props:new Set([e.prop])}); });
+  const out = {visits:visits.length, finds:visits.reduce((a, v) => a + v.n, 0)};
+  if(!visits.length) return out;
+  out.empty = visits.filter(v => !v.n).length;
+  const day = s => { const x = new Date(s * 1000); return x.getFullYear() + '-' + (x.getMonth() + 1) + '-' + x.getDate(); };
+  const days = new Set(visits.map(v => day(v.start)));
+  out.days = days.size;
+  let streak = 0, k = 0, now = Math.max(Date.now() / 1000, visits[visits.length - 1].start);
+  if(!days.has(day(now))) k = 1;
+  while(days.has(day(now - k * 86400))){ streak++; k++; }
+  out.streak = streak;
+  let act = 0; visits.forEach((v, i) => { act += v.end - v.start; if(i && v.start - visits[i - 1].end <= 600) act += v.start - visits[i - 1].end; });
+  out.active = Math.max(1, Math.round(act / 60));
+  out.perHour = visits.length / (out.active / 60);
+  const sess = []; let cur = null;
+  visits.forEach(v => { if(cur && v.start - cur.end <= 5400){ cur.end = v.end; cur.n++; } else { cur = {start:v.start, end:v.end, n:1}; sess.push(cur); } });
+  out.sessions = sess.length;
+  out.longest = sess.reduce((a, s) => s.n > a.n ? s : a, sess[0]); out.longest = {n:out.longest.n, min:Math.round((out.longest.end - out.longest.start) / 60)};
+  out.hours = Array(24).fill(0); visits.forEach(v => { out.hours[new Date(v.start * 1000).getHours()]++; });
+  out.peak = out.hours.indexOf(Math.max(...out.hours));
+  // back in the same area before the hour was over: most of the same spots as an earlier visit less than 58 minutes before
+  let early = 0;
+  visits.forEach((v, i) => { for(let j = i - 1; j >= 0 && v.start - visits[j].end < 58 * 60; j--){ const w = visits[j]; let c = 0; v.props.forEach(p => { if(w.props.has(p)) c++; }); if(c / Math.min(v.props.size, w.props.size) >= 0.5){ early++; break; } } });
+  out.early = early;
+  const by = new Map(); d.ev.forEach(e => { if(e.n) by.set(e.src, (by.get(e.src) || 0) + e.n); });
+  out.src = [...by.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+  out.best = visits.slice().sort((a, b) => b.n - a.n).slice(0, 5);
+  out.sends = d.sends.length; out.fees = d.sends.reduce((a, s) => a + s[1], 0);
+  out.from = visits[0].start; out.to = visits[visits.length - 1].end;
+  return out;
+}
+const stat = (n, label) => `<div class="stat"><b>${n}</b><span>${esc(label)}</span></div>`;
+function view(d, head, note){
+  const a = analyse(d);
+  if(!a.visits) return `<div class="card">${esc(t('tipFew'))}</div>`;
+  const top = Math.max(...a.hours), hh = h => String(h).padStart(2, '0') + ':00', fmt = s => new Date(s * 1000).toLocaleString(Site.locale(), {dateStyle:'medium', timeStyle:'short'});
+  const free = Math.max(0, a.visits - a.sends), tips = [];
+  if(a.early) tips.push(t('tipEarly', {n:a.early}));
+  if(a.sends && free > a.sends) tips.push(t('tipFree', {n:a.sends, m:a.visits}));
+  if(a.empty / a.visits >= 0.1) tips.push(t('tipEmpty', {p:Math.round(a.empty / a.visits * 100)}));
+  if(a.sessions >= 1 && a.longest.n >= 10) tips.push(t('tipLong', {n:a.longest.n, m:a.longest.min}));
+  if(a.visits < 10) tips.push(t('tipFew'));
+  const total = a.src.reduce((x, s) => x + s[1], 0) || 1;
+  return `<div class="sec"><h2>${esc(head)}</h2><p>${esc(note)}</p></div>
+  <div class="grid">${stat(n0(a.visits), t('visits'))}${stat(n0(a.finds), t('finds'))}${stat((a.finds / a.visits).toFixed(1), t('perVisit'))}${stat(Math.round(a.empty / a.visits * 100) + '%', t('empty'))}${stat(n0(a.active), t('active'))}${stat(a.perHour.toFixed(1), t('perHour'))}${stat(a.days, t('days'))}${stat(a.streak, t('streak'))}${stat(a.sessions, t('sessions'))}${stat(a.longest.n + ' · ' + t('unit', {n:a.longest.min}), t('longest'))}${stat(n0(a.sends), t('sends'))}${stat(n0(a.fees), t('fees'))}${stat(n0(free), t('free'))}</div>
+  <div class="sec"><h2>${esc(t('rhythmH'))}</h2><p>${esc(t('rhythmN'))} ${esc(t('busiest'))}: ${hh(a.peak)}.</p></div>
+  <div class="card"><div class="hours">${a.hours.map(h => `<i style="height:${Math.round(h / top * 100)}%" title="${h}"></i>`).join('')}</div><div class="hl">${a.hours.map((h, i) => `<span>${i % 3 === 0 ? i : ''}</span>`).join('')}</div></div>
+  <div class="sec"><h2>${esc(t('srcH'))}</h2></div>
+  <div class="card" style="overflow-x:auto"><table><thead><tr><th>${esc(t('srcCol'))}</th><th class="n">${esc(t('unitsCol'))}</th><th class="n">${esc(t('shareCol'))}</th></tr></thead><tbody>${a.src.map(s => `<tr><td>${esc(s[0])}</td><td class="n">${n0(s[1])}</td><td class="n">${Math.round(s[1] / total * 100)}%</td></tr>`).join('')}</tbody></table></div>
+  <div class="sec"><h2>${esc(t('bestH'))}</h2></div>
+  <div class="card" style="overflow-x:auto"><table><thead><tr><th>${esc(t('whenCol'))}</th><th class="n">${esc(t('findsCol'))}</th><th class="n">${esc(t('evCol'))}</th></tr></thead><tbody>${a.best.map(v => `<tr><td>${esc(fmt(v.start))}</td><td class="n">${n0(v.n)}</td><td class="n">${n0(v.props.size)}</td></tr>`).join('')}</tbody></table></div>
+  ${tips.length ? `<div class="sec"><h2>${esc(t('tipsH'))}</h2></div><div class="card"><ul class="tips">${tips.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}`;
+}
+function draw(){
+  $('#src').innerHTML = `<h2 style="margin:0 0 4px">${esc(t('yourH'))}</h2><p class="small" style="margin:0 0 10px">${esc(t('yourN'))}</p>
+    <div class="drop" id="drop"><label class="btn" style="display:inline-flex"><input type="file" id="file" accept=".json,application/json" hidden>${esc(t('pick'))}</label> <span class="muted small">${esc(t('or'))}</span></div>
+    ${ERR ? `<p class="small" style="margin:8px 0 0;color:var(--bad)">${esc(ERR)}</p>` : ''}${MINE ? `<p style="margin:10px 0 0"><button type="button" class="btn small" id="back">${esc(t('back'))}</button></p>` : ''}
+    <p class="small muted" style="margin:12px 0 0"><b>${esc(t('botH'))}</b> ${esc(t('botN'))}</p><p class="small muted" style="margin:6px 0 0">${esc(t('harN'))}</p>`;
+  $('#app').innerHTML = MINE ? view(MINE, t('yourH'), '') : EX ? view(EX, t('exH'), t('exN')) : `<div class="card muted">${esc(t('noData'))}</div>`;
+}
+function take(file){
+  if(!file) return;
+  ERR = '';
+  if(file.size > 25e6){ ERR = t('bad'); draw(); return; }
+  const r = new FileReader();
+  r.onload = () => { try{ const d = fromRecorder(JSON.parse(r.result)); if(d && d.ev.length) MINE = d; else ERR = t('bad'); }catch{ ERR = t('bad'); } draw(); window.scrollTo({top:0}); };
+  r.readAsText(file);
+}
+document.addEventListener('change', e => { if(e.target.id === 'file') take(e.target.files[0]); });
+document.addEventListener('click', e => { if(e.target.id === 'back'){ MINE = null; ERR = ''; draw(); } });
+document.addEventListener('dragover', e => { e.preventDefault(); });
+document.addEventListener('drop', e => { e.preventDefault(); take(e.dataTransfer.files[0]); });
+Site.mount({onChange:draw});
+draw();
+fetch('../data/troves/rockdrigo/rounds.json').then(r => r.ok ? r.json() : null).then(l => { EX = fromLite(l); draw(); }).catch(() => draw());
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 
 For each city in data/troves/places/ this writes data/helper/routes/<city id>.json:
   {"city", "name", "updated", "troves": [names], "rare": [indexes into troves],
-   "kinds": [[trove indexes that one kind of structure gives]],
+   "kinds": [[trove indexes that one kind of structure gives]], "kindNames": [the structure each kind is, as it is written],
    "stops": [[property id, address, lat, lng, stand fee or null, stand property id, near, [trove indexes], [kind indexes of every structure within 80 m]]]}
 and data/helper/routes/index.json: [[city id, name, stops]].
 
@@ -46,11 +46,12 @@ def main():
     names = [r[0] for r in findable]
     tidx = {n: i for i, n in enumerate(names)}
     rare = [i for i, r in enumerate(findable) if len(r[2]) <= 4 or seen.get(r[0], 0) <= 3]
-    kind = {}                                                    # structure name -> trove indexes
+    kind, kname = {}, {}                                         # structure name -> trove indexes, and as it is written
     kind_ix, kinds = {}, []                                      # structure name -> index in kinds
     for i, r in enumerate(findable):
         for s in r[2]:
             kind.setdefault(norm(s), []).append(i)
+            kname.setdefault(norm(s), re.sub(r' 1$', '', s))
     for k in sorted(kind):
         kind_ix[k] = len(kinds)
         kinds.append(kind[k])
@@ -91,7 +92,7 @@ def main():
         by_fee = sorted((x for x in rows if len(x['ts']) >= 2 and x['fee'] is not None), key=lambda x: (x['fee'], -len(x['ts'])))[:POOL]
         keep = {x['pid']: x for x in by_n + by_reach + by_fee}
         stops = [[x['pid'], x['addr'], round(x['lat'], 5), round(x['lng'], 5), x['fee'], x['stand'], x['near'], x['ts'], sorted(x['reach'])] for x in sorted(keep.values(), key=lambda x: (x['fee'] if x['fee'] is not None else 999, -len(x['ts'])))]
-        json.dump({'city': int(cid), 'name': cd['name'], 'updated': places.get('updated', ''), 'troves': names, 'rare': rare, 'kinds': kinds, 'stops': stops},
+        json.dump({'city': int(cid), 'name': cd['name'], 'updated': places.get('updated', ''), 'troves': names, 'rare': rare, 'kinds': kinds, 'kindNames': [kname[k] for k in sorted(kind)], 'stops': stops},
                   open(os.path.join(OUT, cid + '.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
         index.append([int(cid), cd['name'], len(stops)])
         print(cd['name'], len(rows), '->', len(stops), os.path.getsize(os.path.join(OUT, cid + '.json')) // 1024, 'KB')
