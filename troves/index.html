@@ -186,6 +186,7 @@ Site.register({
     guH:'How to use this (for you and for other players)', guN:'Load your own file at the top, then:', gu1:'Look at the cities table: it ranks every scanned city by how many troves you still need that its structures give.', gu2:'Pick a city and open the best properties. At each one, trove, wait an hour, trove again (each structure gives one random trove).', gu3:'Troves that are craft-only or have few places are the bottleneck. Go to the cities listed for them.', gu4:'Craft only from spare stock (the table), never from a trove you still have to bank. Banking uses the troves up.', gu5:'Load a new file after every city. The page and the results of the special builds follow what you hold.',
     updated:'Trove places updated {d}.',
     hdH:'Your hardest troves, with where to get them in {city}', hdN:'The troves that few places give, hardest first. Each shows the cheapest stand in the chosen city; if it has none, it points to the cheapest city that does.', hdTrove:'Trove', hdPlaces:'Places that give it', hdHold:'You hold', hdWhere:'Where', hdHere:'{n} stops here', hdOther:'Not in {city}. Cheapest elsewhere: {other} ({fee} UPX)', hdNone:'No stop found in a city I know.',
+    boH:'Bonus drops you are missing ({n})', boN:'{n} troves you do not have are given by no structure or plant. They only drop as a bonus when you craft something at certain structures. These structures can drop the most of them, with what you can craft there right now. The chance is not published.', boStruct:'Craft at', boCount:'Missing troves it can drop', boWhich:'Which', boNow:'You can craft there now', boFoot:'From UPXLand’s structure lists. Structures that drop the same troves are grouped. Its crafted-here lists are still incomplete, so some recipes are missing.',
     bvG_all:'Everything', bvG_rec:'Recipes and collections', bvG_rare:'Rare finds',
     tpH:'Your trip plan', tpN:'The cities you will hunt, in your order. For each one: how many troves you still need to expect per visit at its best stops, what a stand costs, and what that makes per find. Open a city for where to start.', tpCity:'City', tpPer:'Needed finds per visit', tpFee:'Avg fee', tpUpx:'UPX per needed find', tpLap:'One lap (UPX)', tpRank:'Worth (rank)', tpAct:'Your log: needed share', tpAdd:'+ Add a city', tpReset:'Reset', tpUp:'Move earlier', tpRm:'Remove', tpNone:'No scan for this city yet.',
     tpSum:'{f} needed finds per visit · {u} UPX each', tpLapTxt:'One lap of the best {n} stops costs about {upx} UPX and should give about {f} troves you still need. The cooldown is an hour: do the lap, move on, and come back for the next lap after an hour.', tpStart:'Start with', tpRare:'Hard troves you still need that are given here (places that carry them):',
@@ -268,6 +269,7 @@ Site.register({
     guH:'Cómo usar esto (para ti y para otros jugadores)', guN:'Carga tu propio archivo arriba y luego:', gu1:'Mira la tabla de ciudades: ordena cada ciudad escaneada por cuántos troves que aún necesitas dan sus estructuras.', gu2:'Elige una ciudad y abre las mejores propiedades. En cada una, trovea, espera una hora, trovea otra vez (cada estructura da un trove al azar).', gu3:'Los troves solo crafteables o con pocos lugares son el cuello de botella. Ve a las ciudades que se indican para ellos.', gu4:'Craftea solo con el stock sobrante (la tabla), nunca con un trove que aún debes bancar. Bancar gasta los troves.', gu5:'Carga un archivo nuevo después de cada ciudad. La página y los resultados de las construcciones especiales siguen lo que tienes.',
     updated:'Lugares de troves actualizados el {d}.',
     hdH:'Tus troves más difíciles, y dónde conseguirlos en {city}', hdN:'Los troves que dan pocos lugares, los más difíciles primero. Cada uno muestra la parada más barata de la ciudad elegida; si no tiene, te lleva a la ciudad más barata que sí.', hdTrove:'Trove', hdPlaces:'Lugares que lo dan', hdHold:'Tienes', hdWhere:'Dónde', hdHere:'{n} paradas aquí', hdOther:'No en {city}. Lo más barato en otro lugar: {other} ({fee} UPX)', hdNone:'No encontré una parada en una ciudad que conozca.',
+    boH:'Bonus drops que te faltan ({n})', boN:'Ninguna estructura ni planta da los {n} troves que no tienes. Solo caen como bonus cuando fabricas algo en ciertas estructuras. Estas estructuras pueden soltar más de ellos, con lo que puedes fabricar ahí ahora. La probabilidad no es pública.', boStruct:'Fabrica en', boCount:'Troves que te faltan y puede soltar', boWhich:'Cuáles', boNow:'Puedes fabricar ahí ahora', boFoot:'De las listas de estructuras de UPXLand. Las estructuras que sueltan los mismos troves van juntas. Sus listas de fabricación aún están incompletas, así que faltan algunas recetas.',
     bvG_all:'Todo', bvG_rec:'Recetas y colecciones', bvG_rare:'Hallazgos raros',
     tpH:'Tu plan de viaje', tpN:'Las ciudades que vas a cazar, en tu orden. Para cada una: cuántos troves que aún necesitas esperar por visita en sus mejores paradas, lo que cuesta pararse y lo que sale por hallazgo. Abre una ciudad para ver dónde empezar.', tpCity:'Ciudad', tpPer:'Hallazgos útiles por visita', tpFee:'Cuota media', tpUpx:'UPX por hallazgo útil', tpLap:'Una vuelta (UPX)', tpRank:'Valor (puesto)', tpAct:'Tu registro: parte útil', tpAdd:'+ Añadir ciudad', tpReset:'Restablecer', tpUp:'Subir', tpRm:'Quitar', tpNone:'Aún no hay escaneo de esta ciudad.',
     tpSum:'{f} hallazgos útiles por visita · {u} UPX cada uno', tpLapTxt:'Una vuelta por las mejores {n} paradas cuesta unos {upx} UPX y debería dar unos {f} troves que aún necesitas. El enfriamiento es de una hora: haz la vuelta, sigue adelante y repite pasada una hora.', tpStart:'Empieza por', tpRare:'Troves difíciles que aún necesitas y se dan aquí (lugares que los tienen):',
@@ -1070,7 +1072,7 @@ function unlockTxt(b){
   return parts.join('<br>');
 }
 // A trove with no structure or plant that gives it (only a recipe makes it) cannot be hunted, so the Find lists leave it out.
-function findable(n){ const p = PLACES && PLACES.get(n); return !p || p.structures.length > 0 || p.plants.length > 0 || p.craftAt.length === 0; }
+function findable(n){ const p = PLACES && PLACES.get(n); return !p || p.structures.length > 0 || p.plants.length > 0 || (p.craftAt.length === 0 && !p.bonus.length); }
 // Find: one list. A trove is here when finding it unlocks recipes, when its next banking level needs more than crafting can give,
 // or when it has never been found and a place is known. Recipe-only troves are left out (findable()).
 function levelRows(){
@@ -1156,6 +1158,21 @@ function hardSection(){
     });
   return rows.length ? sec(t('hdH', {city}), t('hdN'), tbl([['#', 'n'], [t('hdTrove')], [t('hdPlaces'), 'n'], [t('hdHold'), 'n'], [t('hdWhere')]], rows)) : '';
 }
+// Troves no structure or plant gives: they only drop as a bonus when something is crafted at certain structures. Group the structures that can
+// drop the same ones, and say what you could craft there right now.
+function bonusSection(){
+  if(!PLACES || !A) return '';
+  const miss = [...PLACES.entries()].filter(([n, p]) => !A.items.has(n) && p.bonus.length && !p.structures.length && !p.plants.length).map(x => x[0]);
+  if(!miss.length) return '';
+  const by = new Map(); miss.forEach(n => PLACES.get(n).bonus.forEach(s => (by.get(s) || by.set(s, []).get(s)).push(n)));
+  const fam = new Map(); by.forEach((ts, s) => { const k = ts.slice().sort().join('|'); (fam.get(k) || fam.set(k, {ts:ts.slice().sort(), names:[]}).get(k)).names.push(s); });
+  const now = A.recs.filter(r => r.ok);
+  const rows = [...fam.values()].sort((a, b) => b.ts.length - a.ts.length || a.names[0].localeCompare(b.names[0])).slice(0, 12).map((f, i) => {
+    const set = new Set(f.names.map(norm)), can = [...new Set(now.filter(r => ((PLACES.get(r.name) || {craftAt:[]}).craftAt || []).some(c => set.has(norm(c)))).map(r => r.name))];
+    return `<tr><td class="n">${i + 1}</td><td><b>${esc(f.names.slice(0, 3).join(', '))}</b>${f.names.length > 3 ? ` <span class="muted small">+${f.names.length - 3}</span>` : ''}</td><td class="n" data-v="${f.ts.length}">${f.ts.length}</td><td class="small">${esc(f.ts.slice(0, 8).join(', '))}${f.ts.length > 8 ? '…' : ''}</td><td class="small">${can.length ? esc(can.slice(0, 4).join(', ')) + (can.length > 4 ? ' …' : '') : '<span class="muted">—</span>'}</td></tr>`;
+  });
+  return sec(t('boH', {n:miss.length}), t('boN', {n:miss.length}), tbl([['#', 'n'], [t('boStruct')], [t('boCount'), 'n'], [t('boWhich')], [t('boNow')]], rows) + `<p class="hint">${esc(t('boFoot'))}</p>`);
+}
 function hotspotSection(){
   const list = WIB && WIB.hotspots[cityName()]; if(!list || !list.length) return '';
   const rows = list.slice(0, 10).map((h, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn([h[0], h[1]])}</td><td>${esc(h[2] || '')}</td><td class="n">${n0(h[3])}</td><td class="n">${n0(h[4])}</td></tr>`);
@@ -1188,7 +1205,7 @@ function viewMissing(){
   const head = [[t('colTrove')], [t('fnWhy')], [t('fnHold'), 'n'], [t('colWhere')]];
   const top = list.slice(0, 40), rest = list.slice(40);
   const lead = `<div class="card" style="margin-bottom:12px"><b>${esc(list.filter(r => r.b || r.never).length <= 12 ? t('fnFew') : t('fnLots'))}</b></div>`;
-  return cityBar() + lead + bestPlacesSection() + hardSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
+  return cityBar() + lead + bestPlacesSection() + hardSection() + bonusSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
@@ -1550,7 +1567,7 @@ async function boot(){
   draw();
   try{
     const [p, r] = await Promise.all([fetch('../data/troves/places.json').then(x => x.json()), fetch('../data/troves/rockdrigo/latest.json').then(x => x.json())]);
-    PLACES = new Map(p.troves.map(([name, cat, structures, plants, craftAt]) => [name, {cat, structures, plants, craftAt}]));
+    PLACES = new Map(p.troves.map(([name, cat, structures, plants, craftAt, bonus]) => [name, {cat, structures, plants, craftAt, bonus:bonus || []}]));
     ROCK = checkShape(r);
   }catch(e){ document.getElementById('app').innerHTML = `<div class="card status err">${esc(String(e))}</div>`; return; }
   try{ IMG = await fetch('../data/troves/images.json').then(x => x.ok ? x.json() : null); }catch{ IMG = null; }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The hard-to-find troves and where each can be had cheaply, city by city: data/helper/hard.json.
+"""The hard-to-find troves and where each can be had cheaply, city by city: data/helper/hard.json, plus "bonus": {trove: structures that can drop it when something is crafted there} for the troves only a bonus drop gives.
 
   {"updated", "max": largest number of places that still counts as hard,
    "troves": {name: {"s": places that give it (structures and plants), "c": {city id: [properties that carry a structure giving it,
@@ -54,7 +54,9 @@ def main():
                     c[0] += 1
                     if fee is not None and (c[1] is None or fee < c[1]):
                         c[1:] = [fee, stand, p[1]]
-    out = {'updated': places.get('updated', ''), 'max': MAX, 'troves': {n: {'s': v['s'], 'c': v['c']} for n, v in sorted(hard.items())}}
+    # troves no structure or plant gives: they only drop as a bonus when something is crafted at one of these structures
+    bonus = {r[0]: sorted(r[5], key=lambda x: (len(x), x)) for r in places['troves'] if len(r) > 5 and r[5] and not r[2] and not r[3]}
+    out = {'updated': places.get('updated', ''), 'max': MAX, 'troves': {n: {'s': v['s'], 'c': v['c']} for n, v in sorted(hard.items())}, 'bonus': bonus}
     path = os.path.join(D, 'helper', 'hard.json')
     json.dump(out, open(path, 'w'), ensure_ascii=False, separators=(',', ':'))
     print(len(out['troves']), 'hard troves,', os.path.getsize(path) // 1024, 'KB')

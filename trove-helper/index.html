@@ -94,6 +94,7 @@ Site.register({
     sentFile:'Sent privately to Sir Quailbert. Look for his message in your Discord DMs.', sentFail:'Your file loaded here, but I could not send it to the bot. Try again later.',
     syncOn:'Connected to Discord as {name}. Your file and your timers are shared with the bot.', syncNow:'Sync now', syncOff:'Disconnect', syncDone:'Synced.', syncFail:'Could not reach the bot. Your timers stay on this phone.',
     bvH:'Best value', bvN:'One visit gives one find for every structure around you. These places give you the most of what you still need for what they cost.', bvSub:'about {n} finds a visit · {m} structures',
+    hdBonus:'{n} more troves you do not have never show up when you press Trove: they only drop as a bonus when you craft something at certain structures.', hdBonusGo:'See which structures',
     hdH:'Your hardest troves', hdN:'The troves that few places give, hardest first, with the cheapest stand for each. If this city has none, it points to the cheapest city that does.', hdOnly:'only {n} places give it', hdHere:'{n} here', hdOther:'Not in {city}. Cheapest elsewhere: {other} ({fee} UPX)', hdNone:'No stop found in a city I know.',
     plH:'Plants worth a visit', plN:'Plants near here that give troves you still need.',
     ovStarter:'No file needed to start. If you load one later, the helper skips what you already have.', ovGrown:'Got your troves file? The full Troves tool does a lot more.', ovGrownGo:'Open Troves',
@@ -125,6 +126,7 @@ Site.register({
     sentFile:'Enviado en privado a Sir Quailbert. Busca su mensaje en tus DMs de Discord.', sentFail:'Tu archivo se cargó aquí, pero no pude enviarlo al bot. Inténtalo más tarde.',
     syncOn:'Conectada a Discord como {name}. Tu archivo y tus relojes se comparten con el bot.', syncNow:'Sincronizar ahora', syncOff:'Desconectar', syncDone:'Sincronizado.', syncFail:'No pude llegar al bot. Tus relojes se quedan en este teléfono.',
     bvH:'Mejor valor', bvN:'Una visita da un hallazgo por cada estructura a tu alrededor. Estos lugares te dan lo máximo de lo que aún necesitas por lo que cuestan.', bvSub:'unos {n} hallazgos por visita · {m} estructuras',
+    hdBonus:'Otros {n} troves que no tienes nunca salen al pulsar Trove: solo caen como bonus cuando fabricas algo en ciertas estructuras.', hdBonusGo:'Ver qué estructuras',
     hdH:'Tus troves más difíciles', hdN:'Los troves que dan pocos lugares, los más difíciles primero, con la parada más barata de cada uno. Si esta ciudad no tiene ninguno, te lleva a la ciudad más barata que sí.', hdOnly:'solo {n} lugares lo dan', hdHere:'{n} aquí', hdOther:'No en {city}. Lo más barato en otro lugar: {other} ({fee} UPX)', hdNone:'No encontré una parada en una ciudad que conozca.',
     plH:'Plantas que valen una visita', plN:'Plantas cerca que dan troves que aún necesitas.',
     ovStarter:'No necesitas ningún archivo para empezar. Si cargas uno después, el ayudante salta lo que ya tienes.', ovGrown:'¿Tienes tu archivo de troves? La herramienta completa de Troves hace mucho más.', ovGrownGo:'Abrir Troves',
@@ -377,7 +379,8 @@ function hardCards(cid, cname){
   const rows = Object.entries(HARD.troves).filter(([n]) => { const it = b.items.get(n); return !it || (it.th.length ? it.lvl < it.th.length : false); })
     .sort((a, c) => a[1].s - c[1].s || a[0].localeCompare(c[0])).slice(0, 8);
   if(!rows.length) return '';
-  return `<h2 class="t">🎯 ${esc(t('hdH'))}</h2><p class="sub">${esc(t('hdN'))}</p>` + rows.map(([n, h]) => {
+  const bonusN = Object.keys(HARD.bonus || {}).filter(n => !b.items.has(n)).length;
+  return `<h2 class="t">🎯 ${esc(t('hdH'))}</h2><p class="sub">${esc(t('hdN'))}</p>` + (bonusN ? `<p class="small muted" style="margin:0 0 10px">🎁 ${esc(t('hdBonus', {n:bonusN}))} <a href="../troves/">${esc(t('hdBonusGo'))}</a></p>` : '') + rows.map(([n, h]) => {
     const here = h.c[String(cid)];
     let other = null; if(!here) Object.entries(h.c).forEach(([id, c]) => { if(nameOf(id) && (!other || fee(c[1]) < fee(other.c[1]))) other = {id, c}; });
     const act = here ? goBtn(here[2], (here[1] != null ? t('upx', {n:here[1]}) + ' · ' : '') + t('hdHere', {n:here[0]}), n) : other ? `<span class="muted small">${esc(t('hdOther', {city:cname, other:nameOf(other.id), fee:other.c[1] == null ? '?' : other.c[1]}))}</span>` : `<span class="muted small">${esc(t('hdNone'))}</span>`;
