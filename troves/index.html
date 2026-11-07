@@ -1233,6 +1233,7 @@ function craftRow(c){
 // have to hunt. Stock is used first (optionally keeping what banking needs), each recipe takes the version that leaves the least to hunt.
 let PLAN = Object.assign({mode:'new', fam:'', rec:'', reserve:false, n:60}, store.get('rut:troves:plan', {})), PLANV = 0;
 const savePlan = () => { store.set('rut:troves:plan', PLAN); PLANV++; };
+const SHOW_HUNT = false;
 const fixN = x => norm(x).replace(/ 1$/, '');
 function planIndex(){
   if(A._pi) return A._pi;
@@ -1290,7 +1291,7 @@ function planNeed(){
 function planCard(){
   if(!A || !PLACES) return '';
   const P = craftPlan(); if(!P) return '';
-  const own = new Map(); (OWN || []).forEach(r => r[6].forEach(b => own.set(fixN(b), (own.get(fixN(b)) || 0) + 1)));
+  const own = new Map(); (SRC === 'rock' ? OWN || [] : []).forEach(r => r[6].forEach(b => own.set(fixN(b), (own.get(fixN(b)) || 0) + 1)));
   const seg = ['new', 'bonus'].map(m => `<button type="button" data-plan="mode:${m}" class="${PLAN.mode === m ? 'on' : ''}">${esc(t('pl_' + m))}</button>`).join('');
   let ctl = `<div class="row" style="margin:6px 0;gap:10px;flex-wrap:wrap"><div class="seg">${seg}</div><label class="small row" style="gap:6px"><input type="checkbox" id="planReserve" ${PLAN.reserve ? 'checked' : ''}> ${esc(t('plReserve'))}</label></div>`;
   if(P.mode === 'new') ctl += `<div class="sel"><label class="small row" style="gap:6px">${esc(t('plCount'))} <input type="number" id="planN" min="1" max="${P.targets}" step="1" value="${P.picked.length}" style="width:5.5em"> <span class="muted">${esc(t('plOf', {m:P.targets}))}</span></label></div>`;
@@ -1578,7 +1579,7 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['bank', '🏦', t('tBank'), t('eTabN', {n:A.easy.length})], ['cities', '🌍', t('tCities'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['find', '🧭', t('tFind'), '']].concat(HUNTS ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);
+  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['bank', '🏦', t('tBank'), t('eTabN', {n:A.easy.length})], ['cities', '🌍', t('tCities'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['find', '🧭', t('tFind'), '']].concat(SHOW_HUNT && HUNTS ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);   // hidden for now: it was made for the balloon event
   const hide = {craft:!GOAL.discover && !GOAL.bank && !GOAL.bonus, bank:!GOAL.bank && !GOAL.bonus && !GOAL.gold};
   tab = {easy:'bank', gold:'bank', world:'cities', special:'cities'}[tab] || tab;
   for(let i = tabs.length - 1; i >= 0; i--) if(hide[tabs[i][0]]) tabs.splice(i, 1);
