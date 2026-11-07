@@ -184,7 +184,11 @@ Site.register({
     spLearnH:'What we have learned', spL1:'Factories and nurseries give no troves, so they are not in the list.', spL2:'Each structure gives one random trove from its list, one visit at a time (1:1).', spL3:'The cities already done are folded away; open one to see its results.',
     spCmpH:'Compare the cities', spCmpN:'Net troves gained between two balances, to look at when all the cities are done.', spCmpCity:'City', spCmpDate:'Date', spCmpGain:'Troves gained', spCmpTypes:'Types', spCmpNew:'New troves', spCmpTop:'Most gained',
     guH:'How to use this (for you and for other players)', guN:'Load your own file at the top, then:', gu1:'Look at the cities table: it ranks every scanned city by how many troves you still need that its structures give.', gu2:'Pick a city and open the best properties. At each one, trove, wait an hour, trove again (each structure gives one random trove).', gu3:'Troves that are craft-only or have few places are the bottleneck. Go to the cities listed for them.', gu4:'Craft only from spare stock (the table), never from a trove you still have to bank. Banking uses the troves up.', gu5:'Load a new file after every city. The page and the results of the special builds follow what you hold.',
-    updated:'Trove places updated {d}.'
+    updated:'Trove places updated {d}.',
+    tpH:'Your trip plan', tpN:'The cities you will hunt, in your order. For each one: how many troves you still need to expect per visit at its best stops, what a stand costs, and what that makes per find. Open a city for where to start.', tpCity:'City', tpPer:'Needed finds per visit', tpFee:'Avg fee', tpUpx:'UPX per needed find', tpLap:'One lap (UPX)', tpRank:'Worth (rank)', tpAct:'Your log: needed share', tpAdd:'+ Add a city', tpReset:'Reset', tpUp:'Move earlier', tpRm:'Remove', tpNone:'No scan for this city yet.',
+    tpSum:'{f} needed finds per visit · {u} UPX each', tpLapTxt:'One lap of the best {n} stops costs about {upx} UPX and should give about {f} troves you still need. The cooldown is an hour: do the lap, move on, and come back for the next lap after an hour.', tpStart:'Start with', tpRare:'Hard troves you still need that are given here (places that carry them):',
+    tpActual:'Your log here: {n} finds, {p} of them troves you still need. The plan said {q}.', tpNoLog:'Not hunted yet. After you hunt here and load the session, this line compares the plan with what you got.',
+    tpFoot:'The plan scales the one-find-per-structure model by 0.79, which is how far it was off in Los Angeles. In the last column ✓ means the log is within 8 points of the plan, ▼ lower, ▲ higher. Reach (80 m) is not confirmed. Plants are not counted. Needs are as of your balance.'
   },
   es:{
     title:'Los Troves de Rockdrigo', subtitle:'Qué buscar primero, qué craftear ya y qué guardar en el banco.',
@@ -260,7 +264,11 @@ Site.register({
     spLearnH:'Lo que hemos aprendido', spL1:'Las fábricas y los viveros no dan troves, así que no están en la lista.', spL2:'Cada estructura da un trove al azar de su lista, una visita a la vez (1:1).', spL3:'Las ciudades ya hechas están plegadas; abre una para ver sus resultados.',
     spCmpH:'Comparar las ciudades', spCmpN:'Troves netos ganados entre dos balances, para mirar cuando todas las ciudades estén hechas.', spCmpCity:'Ciudad', spCmpDate:'Fecha', spCmpGain:'Troves ganados', spCmpTypes:'Tipos', spCmpNew:'Troves nuevos', spCmpTop:'Los que más subieron',
     guH:'Cómo usar esto (para ti y para otros jugadores)', guN:'Carga tu propio archivo arriba y luego:', gu1:'Mira la tabla de ciudades: ordena cada ciudad escaneada por cuántos troves que aún necesitas dan sus estructuras.', gu2:'Elige una ciudad y abre las mejores propiedades. En cada una, trovea, espera una hora, trovea otra vez (cada estructura da un trove al azar).', gu3:'Los troves solo crafteables o con pocos lugares son el cuello de botella. Ve a las ciudades que se indican para ellos.', gu4:'Craftea solo con el stock sobrante (la tabla), nunca con un trove que aún debes bancar. Bancar gasta los troves.', gu5:'Carga un archivo nuevo después de cada ciudad. La página y los resultados de las construcciones especiales siguen lo que tienes.',
-    updated:'Lugares de troves actualizados el {d}.'
+    updated:'Lugares de troves actualizados el {d}.',
+    tpH:'Tu plan de viaje', tpN:'Las ciudades que vas a cazar, en tu orden. Para cada una: cuántos troves que aún necesitas esperar por visita en sus mejores paradas, lo que cuesta pararse y lo que sale por hallazgo. Abre una ciudad para ver dónde empezar.', tpCity:'Ciudad', tpPer:'Hallazgos útiles por visita', tpFee:'Cuota media', tpUpx:'UPX por hallazgo útil', tpLap:'Una vuelta (UPX)', tpRank:'Valor (puesto)', tpAct:'Tu registro: parte útil', tpAdd:'+ Añadir ciudad', tpReset:'Restablecer', tpUp:'Subir', tpRm:'Quitar', tpNone:'Aún no hay escaneo de esta ciudad.',
+    tpSum:'{f} hallazgos útiles por visita · {u} UPX cada uno', tpLapTxt:'Una vuelta por las mejores {n} paradas cuesta unos {upx} UPX y debería dar unos {f} troves que aún necesitas. El enfriamiento es de una hora: haz la vuelta, sigue adelante y repite pasada una hora.', tpStart:'Empieza por', tpRare:'Troves difíciles que aún necesitas y se dan aquí (lugares que los tienen):',
+    tpActual:'Tu registro aquí: {n} hallazgos, {p} son troves que aún necesitas. El plan decía {q}.', tpNoLog:'Aún no has cazado aquí. Cuando cazues y cargues la sesión, esta línea compara el plan con lo que obtuviste.',
+    tpFoot:'El plan reduce el modelo de un hallazgo por estructura a 0.79, lo que se desvió en Los Ángeles. En la última columna ✓ es a menos de 8 puntos del plan, ▼ menos, ▲ más. El alcance (80 m) no está confirmado. No cuenta las plantas. Las necesidades son las de tu balance.'
   }
 });
 
@@ -1079,33 +1087,34 @@ function wantedNames(){
   PLACES.forEach((p, n) => { if(!A.items.has(n) && (p.structures.length || p.plants.length)) need.add(n); });
   return need;
 }
-function valueStops(){
-  ensureCity();
-  const cd = CITYDATA[CITY]; if(!cd || !PLACES || !A) return null;
-  if(A._vs && A._vs.city === CITY) return A._vs.rows;
+const distM = (a, b) => Math.hypot((b.pr[2] - a.pr[2]) * 111320, (b.pr[3] - a.pr[3]) * 111320 * Math.cos(a.pr[2] * Math.PI / 180));
+function valueStopsOf(cid){
+  const cd = CITYDATA[cid]; if(!cd || !PLACES || !A) return null;
+  if(cd._vs && cd._vsA === A) return cd._vs;
   const need = wantedNames(), lists = new Map();
   PLACES.forEach((p, n) => p.structures.forEach(s => { const k = norm(s).replace(/ 1$/, ''); (lists.get(k) || lists.set(k, []).get(k)).push(n); }));
   const share = cd.structs.map(x => { const l = lists.get(norm(x).replace(/ 1$/, '')); return l ? l.filter(n => need.has(n)).length / l.length : 0; });
   const rows = cd.props.filter(pr => pr[5].length).map(pr => ({pr, own:pr[5].reduce((a, i) => a + share[i], 0), cnt:pr[5].length}));
   const R = 80 / 111320, cell = r => [Math.floor(r.pr[2] / R), Math.floor(r.pr[3] / (R / Math.max(Math.cos(r.pr[2] * Math.PI / 180), .2)))], grid = new Map();
   rows.forEach(r => { r.c = cell(r); const k = r.c[0] + ',' + r.c[1]; (grid.get(k) || grid.set(k, []).get(k)).push(r); });
-  const dist = (a, b) => Math.hypot((b.pr[2] - a.pr[2]) * 111320, (b.pr[3] - a.pr[3]) * 111320 * Math.cos(a.pr[2] * Math.PI / 180));
   rows.forEach(r => {
     let E = 0, n = 0;
-    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { if(o === r || dist(r, o) <= 80){ E += o.own; n += o.cnt; } });
+    for(let a = -1; a <= 1; a++) for(let b = -1; b <= 1; b++) (grid.get((r.c[0] + a) + ',' + (r.c[1] + b)) || []).forEach(o => { if(o === r || distM(r, o) <= 80){ E += o.own; n += o.cnt; } });
     r.E = E; r.n = n; r.fee = feeFor(r.pr[0]); r.v = E / (r.fee || 25);
   });
-  A._vs = {city:CITY, rows, dist};
+  cd._vs = rows; cd._vsA = A;
   return rows;
 }
+function valueStops(){ ensureCity(); return valueStopsOf(CITY); }
 // the best few, one per cluster (no two within 120 m of each other), in the chosen order
-function bestStops(sort, k = 12){
-  const rows = valueStops(); if(!rows) return null;
+function bestStopsIn(rows, sort, k = 12){
+  if(!rows) return null;
   const order = {value:(a, b) => b.v - a.v, cheap:(a, b) => (a.fee == null ? 999 : a.fee) - (b.fee == null ? 999 : b.fee) || b.E - a.E, finds:(a, b) => b.E - a.E || (a.fee || 25) - (b.fee || 25)}[sort] || ((a, b) => b.v - a.v);
   const pool = rows.filter(r => r.E >= 1).sort(order), out = [];
-  for(const r of pool){ if(out.length >= k) break; if(out.every(o => A._vs.dist(o, r) > 120)) out.push(r); }
+  for(const r of pool){ if(out.length >= k) break; if(out.every(o => distM(o, r) > 120)) out.push(r); }
   return out;
 }
+const bestStops = (sort, k = 12) => bestStopsIn(valueStops(), sort, k);
 function bestPlacesSection(){
   const list = bestStops(VSORT);
   if(list === null) return sec(t('bvH', {city:cityName()}), t('bvN'), `<div class="card muted">${esc(t('cwLoad'))}</div>`);
@@ -1165,7 +1174,60 @@ function viewCraft(){
 function viewBank(){
   return cityBar() + craftPointer() + (GOAL.bank ? bankPart() : '') + (GOAL.bank || GOAL.bonus ? easyPart() : '') + (GOAL.gold ? goldPart() : '');
 }
-function viewCities(){ return worldPart() + specialPart(); }
+// ---- trip plan: the cities you will hunt, in your order, with what each should give ----
+// The one-find-per-structure model counts every structure's list evenly, which was about a fifth too generous against the Los Angeles log
+// (it said 69% of finds would be troves still needed, the log gave 54.5%), so the plan scales it by 0.79. Each city then shows the log next to the plan.
+const CAL = 0.79, TRIP_DEFAULT = ['Sao Paulo', 'New Orleans', 'Miami', 'Washington D.C.', 'Queens', 'Rome'];
+let TRIP = store.get('rut:troves:trip', null);
+const tripList = () => Array.isArray(TRIP) && TRIP.length ? TRIP : TRIP_DEFAULT;
+function tripInfo(name, need){
+  const c = WORLD && WORLD.cities.find(x => x.kind === 'scan' && x.done && norm(x.name) === norm(name));
+  if(!c) return {name, none:true};
+  loadCity(c.id);
+  const cd = CITYDATA[c.id];
+  if(cd === false) return {name, none:true};
+  const rows = valueStopsOf(c.id); if(!rows) return {name, loading:true};
+  const best = bestStopsIn(rows, 'value', 12); if(!best.length) return {name, none:true};
+  const m = f => best.reduce((a, r) => a + f(r), 0) / best.length;
+  const E = m(r => r.E) * CAL, fee = m(r => r.fee || 25), share = m(r => r.n ? r.E / r.n : 0) * CAL;
+  if(!cd._rare || cd._rareA !== A){
+    const sn = cd.structs.map(x => norm(x).replace(/ 1$/, ''));
+    cd._rare = [...need].filter(n => A.scarceOf(n).s >= 0.5 && PLACES.get(n) && PLACES.get(n).structures.length).map(n => {
+      const h = new Set(PLACES.get(n).structures.map(x => norm(x).replace(/ 1$/, ''))); let k = 0;
+      cd.props.forEach(pr => { if(pr[5].some(i => h.has(sn[i]))) k++; });
+      return {n, k};
+    }).filter(x => x.k).sort((a, b) => b.k - a.k).slice(0, 10);
+    cd._rareA = A;
+  }
+  let act = null;
+  if(HUNTS){
+    const ci = HUNTS.cities.findIndex(x => norm(x) === norm(name));
+    if(ci >= 0){ let tot = 0, nd = 0, fin = 0; HUNTS.finds.forEach(f => { if(HUNTS.props[f[5]][2] === ci){ tot += f[4]; fin++; if(need.has(HUNTS.troves[f[3]])) nd += f[4]; } }); if(tot) act = {fin, share:nd / tot}; }
+  }
+  return {name, id:c.id, best, E, fee, share, upx:E ? fee / E : null, lap:best.reduce((a, r) => a + (r.fee || 25), 0), lapGet:best.reduce((a, r) => a + r.E, 0) * CAL, struct:m(r => r.n), v:E / fee, rare:cd._rare, act};
+}
+function tripPart(){
+  if(!WORLD || !A || !PLACES) return '';
+  const names = tripList(), need = wantedNames(), info = names.map(n => tripInfo(n, need));
+  const rank = new Map(info.filter(i => i.v != null).sort((a, b) => b.v - a.v).map((i, k) => [i.name, k + 1]));
+  const pct = x => Math.round(x * 100) + '%';
+  const chips = `<div class="chips2">${names.map((n, i) => `<button type="button" class="on" disabled>${i + 1}. ${esc(n)}</button><button type="button" data-trip="up:${i}" title="${esc(t('tpUp'))}"${i ? '' : ' disabled'}>↑</button><button type="button" data-trip="rm:${i}" title="${esc(t('tpRm'))}">✕</button>`).join('<span style="width:6px"></span>')}</div>`;
+  const left = WORLD.cities.filter(c => c.kind === 'scan' && c.done && !names.some(n => norm(n) === norm(c.name))).sort((a, b) => a.name.localeCompare(b.name));
+  const add = `<div class="row" style="gap:8px;margin:6px 0"><select id="tripadd"><option value="">${esc(t('tpAdd'))}</option>${left.map(c => `<option>${esc(c.name)}</option>`).join('')}</select><button type="button" class="btn small" data-trip="reset">${esc(t('tpReset'))}</button></div>`;
+  const rows = info.map((i, k) => {
+    if(i.loading) return `<tr><td class="n">${k + 1}</td><td><b>${esc(i.name)}</b></td><td colspan="6" class="muted">${esc(t('loading'))}</td></tr>`;
+    if(i.none) return `<tr><td class="n">${k + 1}</td><td><b>${esc(i.name)}</b></td><td colspan="6" class="muted">${esc(t('tpNone'))}</td></tr>`;
+    const verdict = i.act ? (Math.abs(i.act.share - i.share) <= 0.08 ? '✓' : i.act.share < i.share ? '▼' : '▲') + ' ' + pct(i.act.share) : '—';
+    return `<tr><td class="n">${k + 1}</td><td><b>${esc(i.name)}</b></td><td class="n" data-v="${i.E}">${i.E.toFixed(1)}</td><td class="n">${Math.round(i.fee)}</td><td class="n" data-v="${i.upx}">${i.upx.toFixed(1)}</td><td class="n">${n0(Math.round(i.lap))}</td><td class="n">${rank.get(i.name)}</td><td class="n">${verdict}</td></tr>`;
+  });
+  const cards = info.filter(i => i.best).map(i => `<details class="more"><summary><b>${esc(i.name)}</b> <span class="muted small">· ${esc(t('tpSum', {f:i.E.toFixed(1), u:i.upx.toFixed(1)}))}</span></summary>
+    <p class="small">${esc(t('tpLapTxt', {n:i.best.length, upx:n0(Math.round(i.lap)), f:i.lapGet.toFixed(0)}))}</p>
+    <p class="small"><b>${esc(t('tpStart'))}</b></p><div class="places">${i.best.slice(0, 6).map(r => spotBtn(r.pr)).join(' ')}</div>
+    ${i.rare.length ? `<p class="small"><b>${esc(t('tpRare'))}</b> ${esc(i.rare.map(x => `${x.n} (${n0(x.k)})`).join(', '))}</p>` : ''}
+    <p class="small ${i.act ? '' : 'muted'}">${i.act ? esc(t('tpActual', {n:n0(i.act.fin), p:pct(i.act.share), q:pct(i.share)})) : esc(t('tpNoLog'))}</p></details>`).join('');
+  return sec(t('tpH'), t('tpN'), chips + add + tbl([['#', 'n'], [t('tpCity')], [t('tpPer'), 'n'], [t('tpFee'), 'n'], [t('tpUpx'), 'n'], [t('tpLap'), 'n'], [t('tpRank'), 'n'], [t('tpAct'), 'n']], rows) + cards + `<p class="hint">${esc(t('tpFoot'))}</p>`);
+}
+function viewCities(){ return tripPart() + worldPart() + specialPart(); }
 function bankPart(){
   const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
   const prot = A.rows.filter(r => r.scarce && r.nxt != null).sort((a, b) => b.uses - a.uses);
@@ -1407,6 +1469,11 @@ document.addEventListener('click', e => {
   if(e.target.closest('#clearCool')){ COOL = {}; store.set('rut:troves:cool', COOL); paintCool(); return; }
   const go = e.target.closest('[data-go]'); if(go){ e.preventDefault(); tab = go.dataset.go; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   const gc = e.target.closest('[data-gocity]'); if(gc){ CITY = gc.dataset.gocity; store.set('rut:troves:city', CITY); HOOD = -1; tab = 'gold'; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
+  const tp = e.target.closest('[data-trip]'); if(tp){
+    const [a, b] = tp.dataset.trip.split(':'), l = tripList().slice(), i = Number(b);
+    if(a === 'up' && i > 0) [l[i - 1], l[i]] = [l[i], l[i - 1]]; else if(a === 'rm') l.splice(i, 1);
+    TRIP = a === 'reset' || !l.length ? null : l; store.set('rut:troves:trip', TRIP); draw(); return;
+  }
   const vs = e.target.closest('[data-vsort]'); if(vs){ VSORT = vs.dataset.vsort; store.set('rut:troves:vsort', VSORT); draw(); return; }
   const hd = e.target.closest('[data-hood]'); if(hd){ HOOD = Number(hd.dataset.hood); draw(); return; }
   const cp = e.target.closest('[data-copy]'); if(cp){ try{ navigator.clipboard.writeText(cp.dataset.copy); cp.textContent = t('xDone'); }catch{} return; }
@@ -1424,6 +1491,7 @@ document.addEventListener('change', e => {
   if(e.target.id === 'bonusT'){ BONUS_T = Math.max(1, Math.min(500, Math.round(Number(e.target.value)) || 20)); store.set('rut:troves:bonusT', BONUS_T); draw(); return; }
   if(e.target.id === 'neigh'){ NEIGH = e.target.checked; store.set('rut:troves:neigh', NEIGH); return; }
   if(e.target.id === 'reachm'){ REACHM = Number(e.target.value); store.set('rut:troves:reachm', REACHM); spotMemo.clear(); draw(); return; }
+  if(e.target.id === 'tripadd'){ if(e.target.value){ TRIP = tripList().concat(e.target.value); store.set('rut:troves:trip', TRIP); draw(); } return; }
   if(e.target.id === 'cityq'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); return; }
   if(e.target.id === 'city'){ CITY = e.target.value; store.set('rut:troves:city', CITY); HOOD = -1; draw(); }
   if(e.target.id === 'radius'){ RADIUS = e.target.checked; store.set('rut:troves:radius', RADIUS); draw(); return; }
