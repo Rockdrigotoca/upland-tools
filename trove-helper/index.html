@@ -103,7 +103,7 @@ Site.register({
     gAll:'Everything', gAllN:'Any trove you can still get more of. Every visit gives one trove at random, so the more structures you visit, the faster it fills.',
     gRec:'Recipes and collections', gRecN:'Only the troves you do not have yet, or that your recipes are missing. This works best once you load your troves file.',
     gPlan:'My craft plan', gPlanN:'Hunt for what your craft plan is short of: the base troves behind the new troves you can craft. Needs your file.',
-    plH:'Your craft plan', plN:'Ingredients first: what to hunt so you can craft. Your own stock is used before anything is hunted.', plNoFile:'Load your troves file (above) and this shows what to hunt and what to craft, using your recipes.', plSum:'The {p} cheapest new troves (of {m} you can craft)', plLine:'{c} crafts · {h} troves to hunt across {k} kinds', plCount:'Aim at', plRes:'Keep what banking needs', plHunt:'Hunt first', plShort:'{n} short', plNothing:'Nothing: you hold what these need.', plCraft:'Then craft, in order', plGo:'Hunt for this plan',
+    cpH:'Your craft plan', cpN:'Ingredients first: what to hunt so you can craft. Your own stock is used before anything is hunted.', cpNoFile:'Load your troves file (above) and this shows what to hunt and what to craft, using your recipes.', cpSum:'The {p} cheapest new troves (of {m} you can craft)', cpLine:'{c} crafts · {h} troves to hunt across {k} kinds', cpCount:'Aim at', cpRes:'Keep what banking needs', cpHunt:'Hunt first', cpShort:'{n} short', cpNothing:'Nothing: you hold what these need.', cpCraft:'Then craft, in order', cpGo:'Hunt for this plan',
     gRare:'Rare finds', gRareN:'Only the troves that few structures give, or that have hardly ever been found. Fewer stops, bigger prizes.',
     wOwn:'Only my own properties', wOwnN:'Yours, James’s and Marlow’s. No walking, no teleport fees.', wCity:'The whole city', wCityN:'Your own first, then the best places in the city: the structures that give the most of what you need, with others close by.',
     ovSum:'In {city} right now', sumOwn:'your own stops', sumKinds:'kinds of structure', sumSpecial:'special finds', sumElse:'not in this city',
@@ -137,7 +137,7 @@ Site.register({
     gAll:'Todo', gAllN:'Cualquier trove del que aún puedas tener más. Cada visita da un trove al azar, así que mientras más estructuras visites, más rápido se llena.',
     gRec:'Recetas y colecciones', gRecN:'Solo los troves que aún no tienes o que les faltan a tus recetas. Funciona mejor cuando cargues tu archivo de troves.',
     gPlan:'Mi plan de fabricación', gPlanN:'Caza lo que le falta a tu plan: los troves base detrás de los troves nuevos que puedes fabricar. Necesita tu archivo.',
-    plH:'Tu plan de fabricación', plN:'Ingredientes primero: qué cazar para poder fabricar. Se usa tu existencia antes de cazar nada.', plNoFile:'Carga tu archivo de troves (arriba) y aquí verás qué cazar y qué fabricar, con tus recetas.', plSum:'Los {p} troves nuevos más baratos (de {m} que puedes fabricar)', plLine:'{c} fabricaciones · {h} troves por cazar en {k} tipos', plCount:'Apuntar a', plRes:'Guardar lo que necesita el banco', plHunt:'Caza primero', plShort:'faltan {n}', plNothing:'Nada: ya tienes lo que necesitan.', plCraft:'Luego fabrica, en orden', plGo:'Cazar para este plan',
+    cpH:'Tu plan de fabricación', cpN:'Ingredientes primero: qué cazar para poder fabricar. Se usa tu existencia antes de cazar nada.', cpNoFile:'Carga tu archivo de troves (arriba) y aquí verás qué cazar y qué fabricar, con tus recetas.', cpSum:'Los {p} troves nuevos más baratos (de {m} que puedes fabricar)', cpLine:'{c} fabricaciones · {h} troves por cazar en {k} tipos', cpCount:'Apuntar a', cpRes:'Guardar lo que necesita el banco', cpHunt:'Caza primero', cpShort:'faltan {n}', cpNothing:'Nada: ya tienes lo que necesitan.', cpCraft:'Luego fabrica, en orden', cpGo:'Cazar para este plan',
     gRare:'Hallazgos raros', gRareN:'Solo los troves que dan pocas estructuras o que casi nunca se han encontrado. Menos paradas, premios más grandes.',
     wOwn:'Solo mis propiedades', wOwnN:'Tuyas, de James y de Marlow. Sin caminar y sin costo de teletransporte.', wCity:'Toda la ciudad', wCityN:'Primero las tuyas, luego los mejores lugares de la ciudad: las estructuras que dan más de lo que necesitas, con otras cerca.',
     ovSum:'En {city} ahora', sumOwn:'paradas tuyas', sumKinds:'tipos de estructura', sumSpecial:'hallazgos especiales', sumElse:'no están en esta ciudad',
@@ -259,16 +259,16 @@ const planWeights = () => { const cp = helperPlan(), out = new Map(); if(cp) cp.
 function planCardH(){
   if(!PLAND) return '';
   const b = balance();
-  if(!b.mine) return `<h2 class="t">📦 ${esc(t('plH'))}</h2><p class="sub">${esc(t('plNoFile'))}</p>`;
+  if(!b.mine) return `<h2 class="t">📦 ${esc(t('cpH'))}</h2><p class="sub">${esc(t('cpNoFile'))}</p>`;
   const cp = helperPlan(), B = cp.bom, hunt = [...B.need.entries()].filter(([n]) => PLAND.huntSet.has(n)).sort((a, c) => c[1] - a[1]);
   const where = e => { const ca = (PLAND.craftAt || {})[e.name] || []; return ca.length ? ' · ' + ca.slice(0, 2).join(' / ') : ''; };
-  return `<h2 class="t">📦 ${esc(t('plH'))}</h2><p class="sub">${esc(t('plN'))}</p>
-    <div class="tcard"><div class="thead"><h3>${esc(t('plSum', {p:cp.picked, m:cp.all}))}</h3></div>
-      <p class="small">${esc(t('plLine', {c:B.crafts, h:hunt.reduce((a, x) => a + x[1], 0), k:hunt.length}))}</p>
-      <div class="row" style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0"><label class="small">${esc(t('plCount'))} <select id="planN">${[10, 25, 40, 60, 100].map(v => `<option value="${v}"${v === PLANN ? ' selected' : ''}>${v}</option>`).join('')}</select></label><label class="small"><input type="checkbox" id="planRes" ${PLANRES ? 'checked' : ''}> ${esc(t('plRes'))}</label></div>
-      <p class="small"><b>${esc(t('plHunt'))}</b></p><div class="chips">${hunt.slice(0, 8).map(([n, d]) => `<span class="chip"><b>${esc(n)}</b> ${esc(t('plShort', {n:d}))}</span>`).join('') || `<span class="muted small">${esc(t('plNothing'))}</span>`}</div>
-      <p class="small"><b>${esc(t('plCraft'))}</b></p><ul class="small" style="margin:4px 0 8px 18px">${B.steps.slice(0, 6).map(e => `<li>${esc(e.name)} × ${e.qty}<span class="muted">${esc(where(e))}</span></li>`).join('')}</ul>
-      <button type="button" class="btn small primary" data-mode="plan">${esc(t('plGo'))}</button></div>`;
+  return `<h2 class="t">📦 ${esc(t('cpH'))}</h2><p class="sub">${esc(t('cpN'))}</p>
+    <div class="tcard"><div class="thead"><h3>${esc(t('cpSum', {p:cp.picked, m:cp.all}))}</h3></div>
+      <p class="small">${esc(t('cpLine', {c:B.crafts, h:hunt.reduce((a, x) => a + x[1], 0), k:hunt.length}))}</p>
+      <div class="row" style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0"><label class="small">${esc(t('cpCount'))} <select id="planN">${[10, 25, 40, 60, 100].map(v => `<option value="${v}"${v === PLANN ? ' selected' : ''}>${v}</option>`).join('')}</select></label><label class="small"><input type="checkbox" id="planRes" ${PLANRES ? 'checked' : ''}> ${esc(t('cpRes'))}</label></div>
+      <p class="small"><b>${esc(t('cpHunt'))}</b></p><div class="chips">${hunt.slice(0, 8).map(([n, d]) => `<span class="chip"><b>${esc(n)}</b> ${esc(t('cpShort', {n:d}))}</span>`).join('') || `<span class="muted small">${esc(t('cpNothing'))}</span>`}</div>
+      <p class="small"><b>${esc(t('cpCraft'))}</b></p><ul class="small" style="margin:4px 0 8px 18px">${B.steps.slice(0, 6).map(e => `<li>${esc(e.name)} × ${e.qty}<span class="muted">${esc(where(e))}</span></li>`).join('')}</ul>
+      <button type="button" class="btn small primary" data-mode="plan">${esc(t('cpGo'))}</button></div>`;
 }
 function neededSet(){
   const b = balance(), need = new Set(); if(!b || !PL) return need;
