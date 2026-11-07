@@ -57,6 +57,13 @@ def main():
     # troves no structure or plant gives: they only drop as a bonus when something is crafted at one of these structures
     bonus = {r[0]: sorted(r[5], key=lambda x: (len(x), x)) for r in places['troves'] if len(r) > 5 and r[5] and not r[2] and not r[3]}
     out = {'updated': places.get('updated', ''), 'max': MAX, 'troves': {n: {'s': v['s'], 'c': v['c']} for n, v in sorted(hard.items())}, 'bonus': bonus}
+    # for the craft plan (bot and Trove Helper): which troves a place can give, and where each is crafted
+    plan = {'updated': places.get('updated', ''),
+            'huntable': sorted(r[0] for r in places['troves'] if r[2] or r[3]),
+            'craftAt': {r[0]: sorted(r[4], key=lambda x: (len(x), x))[:6] for r in places['troves'] if r[4]}}
+    ppath = os.path.join(D, 'helper', 'plan.json')
+    json.dump(plan, open(ppath, 'w'), ensure_ascii=False, separators=(',', ':'))
+    print('plan.json', os.path.getsize(ppath) // 1024, 'KB')
     path = os.path.join(D, 'helper', 'hard.json')
     json.dump(out, open(path, 'w'), ensure_ascii=False, separators=(',', ':'))
     print(len(out['troves']), 'hard troves,', os.path.getsize(path) // 1024, 'KB')
