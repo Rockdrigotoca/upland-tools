@@ -22,7 +22,7 @@ PLACES = os.path.join(ROOT, 'data', 'troves', 'places.json')
 
 def city_of(addr):
     p = [s.strip() for s in addr.split(',')]
-    return p[-2] if len(p) >= 3 else '?'
+    return p[-2] if len(p) >= 3 else (p[-1] if len(p) == 2 else '?')
 
 
 def source_of(f):
@@ -51,9 +51,42 @@ def load():
     return {'format': 'upland-trove-hunts-v1', 'finds': [], 'src': [], 'troves': [], 'cities': [], 'props': []}
 
 
+def from_recorder(raw):
+    """The steampunk hunt recorder writes one row per hunt (a visit to a structure or plant) with its troves inside; turn it into the
+    one-row-per-find shape the rest of this file works with. Structures are named from their model folder, which is all that export has."""
+    addr = {}
+    # properties the recorder gave no address for: the route files of the helper know many of them
+    import glob
+    for f in glob.glob(os.path.join(ROOT, 'data', 'helper', 'routes', '*.json')):
+        if f.endswith('index.json'):
+            continue
+        r = json.load(open(f))
+        for st in r['stops']:
+            addr[str(st[0])] = st[1] + ', ' + r['name']
+    for h in raw['hunts']:
+        if h.get('address'):
+            addr[h['prop']] = h['address']
+    finds = []
+    for h in raw['hunts']:
+        if not h.get('troves'):
+            continue
+        model = h.get('model') or ''
+        if h['kind'] == 'plant':
+            name = h.get('type') or 'Unknown'
+        else:
+            parts = model.split('/')
+            name = parts[1].replace('_', ' ').title() if len(parts) > 2 else 'Unknown'
+        for t in h['troves']:
+            finds.append({'at': h['t'], 'propertyId': h['prop'], 'name': t['name'], 'quantity': t.get('n', 1), 'sourceKind': h['kind'],
+                          'sourceTypeName': name, 'sourceModel': model, 'sourceInstanceId': h['id'], 'address': addr.get(h['prop']) or ''})
+    return {'createdAt': raw.get('createdAt', ''), 'from': raw.get('from', ''), 'finds': finds}
+
+
 def merge(path):
     d = load()
     raw = json.load(open(path))
+    if 'hunts' in raw and 'finds' not in raw:
+        raw = from_recorder(raw)
     # no ids are kept: a find is the same find when second, property, source and trove agree; overlapping exports add only the surplus
     have = {}
     for at, _, si, ti, _, pi, inst in d['finds']:
