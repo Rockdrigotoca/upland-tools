@@ -206,7 +206,7 @@ const hopOf = pid => { const b = BEST && BEST.best80 ? BEST.best80[pid] : null; 
 // what she pays to stand for this stop: the cheaper neighbour when there is one
 const standFee = pid => { const h = hopOf(pid); return h ? h.fee : FEES && FEES.fees[pid] != null ? FEES.fees[pid] : null; };
 let PLAND = null, HARD = null, WIB = null, PL = null, WORLD = null, CD = {}, OWNERS = {}, ROCK = null, HUNTS = null, IMG = null, MINE = store.get(MINE_KEY, null), COOL = store.get(COOL_KEY, {});
-let CITY = store.get('rut:helper:city', '32'), MODE = store.get('rut:helper:mode', 'gold'), SCOPE = 'city', VIEW = store.get('rut:helper:view', 'overview'), MSG = '';
+let CITY = store.get('rut:helper:city', '32'), MODE = store.get('rut:helper:mode', 'plan'), SCOPE = 'city', VIEW = store.get('rut:helper:view', 'overview'), MSG = '';
 
 async function j(u){ try{ const r = await fetch(u, {cache:'no-cache'}); return r.ok ? await r.json() : null; }catch{ return null; } }
 async function city(id){ if(!(id in CD)) CD[id] = await j('../data/troves/places/' + id + '.json') || false; return CD[id]; }
@@ -499,14 +499,14 @@ async function draw(){
     const sum = PLAN ? `<div class="card" style="margin-bottom:0"><b>${esc(t('ovSum', {city:CNAME}))}</b><div class="sumrow"><span>${esc(t('sumKinds'))}: <b>${n0(PLAN.groups.length)}</b></span><span>${esc(t('sumSpecial'))}: <b>${n0(SPECN)}</b></span>${ELN ? `<span>${esc(t('sumElse'))}: <b>${n0(ELN)}</b></span>` : ''}</div>${cool ? `<p class="small muted" style="margin:8px 0 0">${esc(t('ovWait', {n:cool}))}</p>` : ''}</div>` : '';
     app.innerHTML = `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('hi'))} ${esc(t('ovH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('ovN'))}</p><p class="small" style="margin:0">${esc(t('ovStarter'))}</p><p class="small" style="margin:6px 0 0">${esc(t('ovGrown'))} <a href="../troves/"><b>${esc(t('ovGrownGo'))} →</b></a></p></div>
       <h2 class="t" style="margin-top:4px">${esc(t('ovCity'))}</h2>${citySel}
-      <h2 class="t">${esc(t('ovGoal'))}</h2><div class="opts">${opt('mode', 'gold', MODE, '🧺', 'gAll', 'gAllN')}${opt('mode', 'rec', MODE, '📖', 'gRec', 'gRecN')}${opt('mode', 'rare', MODE, '⭐', 'gRare', 'gRareN')}${opt('mode', 'plan', MODE, '📦', 'gPlan', 'gPlanN')}</div>
+      <h2 class="t">${esc(t('ovGoal'))}</h2><div class="opts">${opt('mode', 'plan', MODE, '📦', 'gPlan', 'gPlanN')}${opt('mode', 'gold', MODE, '🧺', 'gAll', 'gAllN')}${opt('mode', 'rec', MODE, '📖', 'gRec', 'gRecN')}${opt('mode', 'rare', MODE, '⭐', 'gRare', 'gRareN')}</div>
       <div style="margin-top:14px">${sum}</div>
       <button type="button" class="start" data-view="go">▶ ${esc(t('ovStart'))}</button>
       ${SYNC ? `<div class="card" style="margin-top:12px"><p class="small" style="margin:0 0 8px">🔗 ${esc(t('syncOn', {name:SYNCNAME || '…'}))}</p><button type="button" class="btn small" id="syncNow">${esc(t('syncNow'))}</button> <button type="button" class="btn small" id="syncOff">${esc(t('syncOff'))}</button>${MSG ? `<p class="small muted" style="margin:8px 0 0">${esc(MSG)}</p>` : ''}</div>` : ''}
       <h2 class="t">${esc(t('ovFile'))}</h2><p class="sub">${esc(t('ovFileN'))}</p>${dash()}
       <div class="card" style="margin-bottom:12px"><details><summary><b>${esc(t('stepsH'))}</b></summary>${steps}</details></div>`;
   } else {
-    app.innerHTML = `<div class="card" style="margin-bottom:12px"><div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="back" data-view="overview">← ${esc(t('ovBack'))}</button><span class="chips" style="margin:0">${[['gold', 'gAll'], ['rec', 'gRec'], ['rare', 'gRare'], ['plan', 'gPlan']].map(([m, k]) => `<button type="button" class="btn small${MODE === m ? ' primary' : ''}" data-mode="${m}" aria-pressed="${MODE === m}">${esc(t(k))}</button>`).join('')}</span></div><div style="margin-top:10px">${citySel}</div></div>
+    app.innerHTML = `<div class="card" style="margin-bottom:12px"><div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="back" data-view="overview">← ${esc(t('ovBack'))}</button><span class="chips" style="margin:0">${[['plan', 'gPlan'], ['gold', 'gAll'], ['rec', 'gRec'], ['rare', 'gRare']].map(([m, k]) => `<button type="button" class="btn small${MODE === m ? ' primary' : ''}" data-mode="${m}" aria-pressed="${MODE === m}">${esc(t(k))}</button>`).join('')}</span></div><div style="margin-top:10px">${citySel}</div></div>
       <div id="next" class="small muted" style="margin:0 0 4px"></div>
       ${body}
       <p class="small" style="margin:18px 0 0"><button type="button" class="btn small" id="resetCool">${esc(t('reset'))}</button></p>`;
@@ -521,7 +521,7 @@ function foldify(){
   [...app.children].forEach(el => {
     if(el.matches('h2.t')){
       const d = document.createElement('details'), key = el.textContent.trim().replace(/\s+/g, ' ').slice(0, 40);
-      d.className = 'fold'; d.dataset.fold = key; d.open = key in FOLD ? !!FOLD[key] : n < 2; n++;
+      d.className = 'fold'; d.dataset.fold = key; d.open = key in FOLD ? !!FOLD[key] : n < 3; n++;   // next stop, plan and best value open; the rest is one tap away
       const sm = document.createElement('summary'); sm.innerHTML = el.innerHTML; d.appendChild(sm);
       el.replaceWith(d); g = d;
     } else if(g && !el.querySelector('#resetCool')) g.appendChild(el);

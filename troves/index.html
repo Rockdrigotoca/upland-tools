@@ -187,6 +187,7 @@ Site.register({
     updated:'Trove places updated {d}.',
     hdH:'Your hardest troves, with where to get them in {city}', hdN:'The troves that few places give, hardest first. Each shows the cheapest stand in the chosen city; if it has none, it points to the cheapest city that does.', hdTrove:'Trove', hdPlaces:'Places that give it', hdHold:'You hold', hdWhere:'Where', hdHere:'{n} stops here', hdOther:'Not in {city}. Cheapest elsewhere: {other} ({fee} UPX)', hdNone:'No stop found in a city I know.',
     boH:'Bonus drops you are missing ({n})', boN:'{n} troves you do not have are given by no structure or plant. They only drop as a bonus when you craft something at certain structures. These structures can drop the most of them, with what you can craft there right now. The chance is not published.', boStruct:'Craft at', boCount:'Missing troves it can drop', boWhich:'Which', boNow:'You can craft there now', boFoot:'From UPXLand’s structure lists. Structures that drop the same troves are grouped. Its crafted-here lists are still incomplete, so some recipes are missing.',
+    tNPlan:'Plan', tNHunt:'Hunt', tNRef:'Reference', cpNextH:'Do this next', cpNextHunt:'Hunt {names}: {n} troves short for your plan.', cpNextCraft:'Nothing left to hunt for this plan: start crafting.', cpNextBank:'Bank {n} troves now: they are ready.', cpOpenCraft:'Open Craft', cpOpenBank:'Open Bank',
     cpH:'Ingredients first: your craft plan', cpN:'What to hunt so you can craft. Targets are broken down through their recipes to the base troves, using your stock first. Crafting many of one trove raises its bonus chance, so the bonus batch picks the recipe that leaves the least to hunt at a structure that can drop what you are missing. Crafting at structures you own comes first.', cp_new:'New troves', cp_bonus:'Bonus batch', cpReserve:'Keep what banking needs', cpFam:'Craft at', cpRec:'Recipe', cpShortN:'{n} to hunt', cpNone:'Nothing to plan: no recipe found for this structure.', cpGo:'Hunt for this plan', cpHunt:'Hunt these', cpShort:'Still short', cpPlaces:'Places', cpCraft:'Craft in this order', cpProduct:'Craft', cpWhere:'Where', cpYours:'yours',
     cpCount:'How many', cpOf:'of {m} new troves, cheapest to hunt first', cpSumNew:'To craft one each of the {p} cheapest new troves (of {m} you have a recipe for): {crafts} crafts, {hunt} troves to hunt across {kinds} kinds.', cpSumBonus:'To craft {n} {name} at {at}: {crafts} crafts, {hunt} troves to hunt.', cpStuck:'{n} base troves have no place to hunt them (made only by recipe you do not know yet, or not listed): {names}.', cpFoot:'Needs from your balance. Each recipe uses the version that leaves the least to hunt. Bonus drop odds are not published, so the batch size is a target, not a promise.',
     bvG_plan:'For my craft plan',
@@ -273,6 +274,7 @@ Site.register({
     updated:'Lugares de troves actualizados el {d}.',
     hdH:'Tus troves más difíciles, y dónde conseguirlos en {city}', hdN:'Los troves que dan pocos lugares, los más difíciles primero. Cada uno muestra la parada más barata de la ciudad elegida; si no tiene, te lleva a la ciudad más barata que sí.', hdTrove:'Trove', hdPlaces:'Lugares que lo dan', hdHold:'Tienes', hdWhere:'Dónde', hdHere:'{n} paradas aquí', hdOther:'No en {city}. Lo más barato en otro lugar: {other} ({fee} UPX)', hdNone:'No encontré una parada en una ciudad que conozca.',
     boH:'Bonus drops que te faltan ({n})', boN:'Ninguna estructura ni planta da los {n} troves que no tienes. Solo caen como bonus cuando fabricas algo en ciertas estructuras. Estas estructuras pueden soltar más de ellos, con lo que puedes fabricar ahí ahora. La probabilidad no es pública.', boStruct:'Fabrica en', boCount:'Troves que te faltan y puede soltar', boWhich:'Cuáles', boNow:'Puedes fabricar ahí ahora', boFoot:'De las listas de estructuras de UPXLand. Las estructuras que sueltan los mismos troves van juntas. Sus listas de fabricación aún están incompletas, así que faltan algunas recetas.',
+    tNPlan:'Plan', tNHunt:'Cazar', tNRef:'Referencia', cpNextH:'Haz esto ahora', cpNextHunt:'Caza {names}: te faltan {n} troves para tu plan.', cpNextCraft:'Ya no queda nada por cazar para este plan: empieza a fabricar.', cpNextBank:'Guarda {n} troves ahora: ya están listos.', cpOpenCraft:'Abrir Fabricar', cpOpenBank:'Abrir Banco',
     cpH:'Ingredientes primero: tu plan de fabricación', cpN:'Qué cazar para poder fabricar. Los objetivos se descomponen por sus recetas hasta los troves base, usando primero tu existencia. Fabricar muchos de un trove sube su probabilidad de bonus, así que el lote de bonus elige la receta que deja menos por cazar en una estructura que pueda soltar lo que te falta. Primero se fabrica en estructuras tuyas.', cp_new:'Troves nuevos', cp_bonus:'Lote de bonus', cpReserve:'Guardar lo que necesita el banco', cpFam:'Fabricar en', cpRec:'Receta', cpShortN:'{n} por cazar', cpNone:'Nada que planear: no hay receta para esta estructura.', cpGo:'Cazar para este plan', cpHunt:'Caza esto', cpShort:'Aún falta', cpPlaces:'Lugares', cpCraft:'Fabrica en este orden', cpProduct:'Fabricar', cpWhere:'Dónde', cpYours:'tuya',
     cpCount:'Cuántos', cpOf:'de {m} troves nuevos, primero los más baratos de cazar', cpSumNew:'Para fabricar uno de cada uno de los {p} troves nuevos más baratos (de {m} con receta): {crafts} fabricaciones, {hunt} troves por cazar en {kinds} tipos.', cpSumBonus:'Para fabricar {n} {name} en {at}: {crafts} fabricaciones, {hunt} troves por cazar.', cpStuck:'{n} troves base no tienen dónde cazarse (solo por receta que aún no conoces, o sin listar): {names}.', cpFoot:'Necesidades según tu balance. Cada receta usa la versión que deja menos por cazar. La probabilidad del bonus no es pública, así que el tamaño del lote es una meta, no una promesa.',
     bvG_plan:'Para mi plan de fabricación',
@@ -300,7 +302,7 @@ let onlyMine = store.get('rut:troves:onlyMine', true);
 let SPOPEN = store.get('rut:troves:spOpen', {}), RESULTS = null, CITY = store.get('rut:troves:city', ''), HOOD = -1, TARGET = '', CITYDATA = {}, EXTRA = [];
 let RADIUS = store.get('rut:troves:radius', false);
 let GOAL = Object.assign({bank:true, bonus:true, discover:true, gold:true}, store.get('rut:troves:goal', {})), BONUS_T = store.get('rut:troves:bonusT', 20);
-let tab = store.get('rut:troves:tab', 'overview'), mode = store.get('rut:troves:mode', 'careful'), query = '';
+let tab = store.get('rut:troves:tab', 'plan'), mode = store.get('rut:troves:mode', 'careful'), query = '';
 
 // ---------- reading a file ----------
 function fromBalance(b){
@@ -841,7 +843,7 @@ function clashCard(){
   if(!A.clash.length) return '';
   return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 4px">${esc(t('clH'))}</h2><p class="hint" style="margin:0 0 6px">${esc(t('clN'))}</p><ul class="small" style="margin:0;padding-left:18px">${A.clash.map(e => `<li><b>${esc(t('clRow', {name:e.n, need:e.need, have:e.have}))}</b> <span class="muted">${esc(t('clFor', {list:e.by.join(', ')}))}</span></li>`).join('')}</ul></div>`;
 }
-function viewHunt(){ return Hunt.html(HUNTS, {cat:n => (PLACES.get(n) || {}).cat, bal:DATA ? DATA.items : null, all:[...PLACES.keys()], where:n => { const p = PLACES.get(n); return p && (p.structures.length || p.plants.length) ? '(' + p.structures.concat(p.plants).slice(0, 2).join(', ') + ')' : ''; }}); }
+function viewDash(){ return Hunt.html(HUNTS, {cat:n => (PLACES.get(n) || {}).cat, bal:DATA ? DATA.items : null, all:[...PLACES.keys()], where:n => { const p = PLACES.get(n); return p && (p.structures.length || p.plants.length) ? '(' + p.structures.concat(p.plants).slice(0, 2).join(', ') + ')' : ''; }}); }
 // Which recipe to use: the one that eats the fewest hard-to-find troves; and which troves to keep out of crafts.
 function recipeAdviceCard(){
   const sc = n => A.scarceOf(n), verT = v => v.ings.map(g => (g.req > 1 ? g.req + ' ' : '') + g.n).join(' + ');
@@ -1090,7 +1092,7 @@ function levelRows(){
 // ---- where to go: best value, hotspots and plants (Wibenji's scan, used with permission) ----
 // One visit gives one find per structure within reach (about 80 m), each picked at random from that structure's list.
 // So a stop is worth the share of those lists that you still need, added up over every structure in reach, divided by what the stop costs.
-let HARDF = null, VSORT = store.get('rut:troves:vsort', 'value'), VGOAL = store.get('rut:troves:vgoal', 'all'), WIB = null;
+let HARDF = null, VSORT = store.get('rut:troves:vsort', 'value'), VGOAL = store.get('rut:troves:vgoal', 'plan'), WIB = null;
 const cityName = () => ((WORLD && WORLD.cities.find(c => String(c.id) === String(CITY))) || {}).name || '';
 const feeFor = pid => { const h = hop(pid); return h ? h.fee : FEES && FEES[pid] != null ? FEES[pid] : null; };
 function wantedNames(){
@@ -1148,7 +1150,7 @@ function bestPlacesSection(){
   if(list === null) return sec(t('bvH', {city:cityName()}), t('bvN'), `<div class="card muted">${esc(t('cwLoad'))}</div>`);
   const seg = ['value', 'cheap', 'finds'].map(k => `<button type="button" data-vsort="${k}" class="${VSORT === k ? 'on' : ''}">${esc(t('bvS_' + k))}</button>`).join('');
   const rows = list.map((r, i) => `<tr><td class="n">${i + 1}</td><td>${spotBtn(r.pr)}</td><td class="n">${n0(r.n)}</td><td class="n" data-v="${r.E}"><b>${r.E.toFixed(1)}</b></td><td class="n" data-v="${r.v}">${(r.v * 100 / 100).toFixed(2)}${r.fee == null ? '*' : ''}</td></tr>`);
-  const gseg = ['all', 'rec', 'rare', 'plan'].map(k => `<button type="button" data-vgoal="${k}" class="${VGOAL === k ? 'on' : ''}">${esc(t('bvG_' + k))}</button>`).join('');
+  const gseg = ['plan', 'all', 'rec', 'rare'].map(k => `<button type="button" data-vgoal="${k}" class="${VGOAL === k ? 'on' : ''}">${esc(t('bvG_' + k))}</button>`).join('');
   return sec(t('bvH', {city:cityName()}), t('bvN'), `<div class="row" style="margin:6px 0;gap:10px;flex-wrap:wrap"><div class="seg" id="vgoal">${gseg}</div><div class="seg" id="vsort">${seg}</div></div>` + tbl([['#', 'n'], [t('bvPlace')], [t('bvStruct'), 'n'], [t('bvFinds'), 'n'], [t('bvPerUpx'), 'n']], rows) + `<p class="hint">${esc(t('bvFoot'))}</p>`);
 }
 // The hardest troves you still need (the fewest places give them), each with the cheapest stand in the chosen city, or the cheapest city that has one
@@ -1202,7 +1204,7 @@ function plantSection(){
   const cards = inCity.slice(0, 8).map(x => `<tr><td><b>${esc(x.f.name)}</b><div class="muted small">${esc(t('plGives', {n:x.useful.length}))}${x.hard ? ' · ' + esc(t('plHard', {n:x.hard})) : ''}</div></td><td class="small">${esc(x.useful.slice(0, 8).join(', '))}${x.useful.length > 8 ? '…' : ''}</td><td>${x.here.slice(0, 3).map(p => spotBtn([p[0], p[1]])).join(' ')}${x.here.length > 3 ? ` <span class="muted small">${esc(t('more', {n:x.here.length - 3}))}</span>` : ''}</td></tr>`);
   return sec(t('plH', {city}), t('plN'), cards.length ? tbl([[t('plPlant')], [t('plTroves')], [t('plWhere')]], cards) : `<div class="card muted">${esc(t('plNone', {city}))}</div>`);
 }
-function viewMissing(){
+function viewMissing(part){
   const medal = l => ['', '🥉', '🥈', '🥇'][Math.min(l, 3)];
   const rows = new Map(), get = n => { if(!rows.has(n)) rows.set(n, {n}); return rows.get(n); };
   A.blockers.forEach((b, i) => { const r = get(b.n); r.b = b; r.ord = i; });
@@ -1217,7 +1219,8 @@ function viewMissing(){
   const head = [[t('colTrove')], [t('fnWhy')], [t('fnHold'), 'n'], [t('colWhere')]];
   const top = list.slice(0, 40), rest = list.slice(40);
   const lead = `<div class="card" style="margin-bottom:12px"><b>${esc(list.filter(r => r.b || r.never).length <= 12 ? t('fnFew') : t('fnLots'))}</b></div>`;
-  return cityBar() + lead + bestPlacesSection() + hardSection() + bonusDropsSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
+  const lists = lead + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
+  return part === 'lists' ? lists : cityBar() + bestPlacesSection() + tripPart() + hardSection() + plantSection() + hotspotSection();
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
@@ -1318,10 +1321,11 @@ function planCard(){
     + `<p class="hint">${esc(t('cpFoot'))}</p>`);
 }
 function viewCraft(){
+  const bonusBlock = bonusDropsSection() + (GOAL.bonus ? bonusSection() : '');
   const head = [[t('colTrove')], [t('cUpTo'), 'n'], [t('cReach')], [t('colIng')], [t('colCraftAt')]];
   const nw = A.craftable.filter(c => c.isNew).sort((a, b) => a.name.localeCompare(b.name));
   const old = A.craftable.filter(c => !c.isNew).sort((a, b) => a.name.localeCompare(b.name));
-  return cityBar() + planCard() + recipeAdviceCard() + cityCraftCard() + ownCraftCard() + skipCard() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return cityBar() + recipeAdviceCard() + cityCraftCard() + ownCraftCard() + bonusBlock + skipCard() + clashCard() + (GOAL.discover ? sec(t('cNew'), t('cNewN'), tbl(head, nw.map(craftRow))) : '') + (GOAL.bank || GOAL.bonus ? sec(t('cAgain'), t('cAgainN'), tbl(head, old.map(craftRow))) : '') + (GOAL.discover || GOAL.bank || GOAL.bonus ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 function viewBank(){
   return cityBar() + craftPointer() + (GOAL.bank ? bankPart() : '') + (GOAL.bank || GOAL.bonus ? easyPart() : '') + (GOAL.gold ? goldPart() : '');
@@ -1379,7 +1383,21 @@ function tripPart(){
     <p class="small ${i.act ? '' : 'muted'}">${i.act ? esc(t('tpActual', {n:n0(i.act.fin), p:pct(i.act.share), q:pct(i.share)})) : esc(t('tpNoLog'))}</p></details>`).join('');
   return sec(t('tpH'), t('tpN'), chips + add + tbl([['#', 'n'], [t('tpCity')], [t('tpPer'), 'n'], [t('tpFee'), 'n'], [t('tpUpx'), 'n'], [t('tpLap'), 'n'], [t('tpRank'), 'n'], [t('tpAct'), 'n']], rows) + cards + `<p class="hint">${esc(t('tpFoot'))}</p>`);
 }
-function viewCities(){ return tripPart() + worldPart() + specialPart(); }
+function viewCities(){ return worldPart() + specialPart(); }
+// the first thing you see: what to do next, then the plan itself
+function nextCard(){
+  const P = craftPlan(); if(!P || !P.bom) return '';
+  const B = P.bom, hunt = [...B.need.entries()].filter(([n]) => { const p = PLACES.get(n); return p && (p.structures.length || p.plants.length); }).sort((a, b) => b[1] - a[1]);
+  const ready = A.easy.filter(e => e.crafts === 0).length, short = hunt.reduce((a, x) => a + x[1], 0);
+  const moves = [];
+  if(hunt.length) moves.push(['🎯', t('cpNextHunt', {names:hunt.slice(0, 4).map(x => x[0]).join(', '), n:n0(short)}), `<button type="button" class="btn small primary" data-plango="1">${esc(t('cpGo'))}</button>`]);
+  else moves.push(['🛠', t('cpNextCraft'), `<a href="#" class="btn small" data-go="craft">${esc(t('cpOpenCraft'))}</a>`]);
+  if(ready) moves.push(['🏦', t('cpNextBank', {n:ready}), `<a href="#" class="btn small" data-go="bank">${esc(t('cpOpenBank'))}</a>`]);
+  return `<div class="card" style="margin-bottom:12px"><h2 style="margin:0 0 6px">${esc(t('cpNextH'))}</h2>${moves.map(m => `<div class="move"><span class="ic">${m[0]}</span><span>${esc(m[1])} ${m[2]}</span></div>`).join('')}</div>`;
+}
+function viewPlanTab(){ return nextCard() + planCard(); }
+// everything that is not part of the flow, closed by default
+function viewRef(){ return viewOverview() + viewMissing('lists') + viewCities() + viewFind(); }
 function bankPart(){
   const now = A.rows.filter(r => r.canBank).sort((a, b) => a.nxt - b.nxt || a.toGold - b.toGold);
   const prot = A.rows.filter(r => r.scarce && r.nxt != null).sort((a, b) => b.uses - a.uses);
@@ -1404,7 +1422,7 @@ function easyPart(){
     + sec(t('ePlan'), t('ePlanN'), tbl(h2, work.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td class="n"><b>${n0(e.crafts)}</b></td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="places">${uses(e)}</td><td>${spotBtns((PLACES.get(e.name) || {craftAt:[]}).craftAt)}</td></tr>`)))
     + sec(t('eJust'), t('eJustN'), tbl(h1, just.map(e => `<tr><td>${thumb(e.name)}<b>${esc(e.name)}</b></td><td>${now(e)}</td><td><span class="tag good">${esc(levelName(e.to))}</span></td><td class="small">${steps(e)}</td><td class="n">${n0(e.gold)}</td></tr>`)));
   const either = GOAL.bonus || GOAL.bank;
-  return (GOAL.bonus ? bonusSection() : '') + (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
+  return (GOAL.bank ? bank() : '') + (either ? '' : `<div class="card muted">${esc(t('gNone'))}</div>`);
 }
 // Which scanned cities hold a trove: cities where at least one of its structures is built, with the structures found there.
 const presence = (() => { const memo = new Map(); return name => {
@@ -1446,7 +1464,7 @@ async function loadCity(cid){
   if(!cid || cid in CITYDATA) return;
   CITYDATA[cid] = null;
   try{ const r = await fetch('../data/troves/places/' + cid + '.json'); CITYDATA[cid] = r.ok ? await r.json() : false; }catch{ CITYDATA[cid] = false; }
-  if(['cities', 'missing', 'craft', 'bank'].includes(tab)) draw();
+  if(['plan', 'hunt', 'craft', 'bank', 'ref'].includes(tab)) draw();
 }
 // Properties within 80 m of each other (the reach of your avatar, as far as we know: not confirmed), using a small grid.
 function near80(cd){
@@ -1553,7 +1571,7 @@ function foldify(root){
     const key = tab + '|' + g.h.textContent.trim().replace(/\s+/g, ' ').slice(0, 60);
     const d = document.createElement('details');
     d.className = 'fold' + (g.card ? ' card' : ''); d.dataset.fold = key; d.id = 'f' + i;
-    d.open = key in FOLD ? !!FOLD[key] : (tab === 'overview' || i < (tab === 'missing' ? 1 : 2));
+    d.open = key in FOLD ? !!FOLD[key] : (tab !== 'ref' && i < 2);
     const sm = document.createElement('summary');
     const note = g.card ? null : g.el.querySelector('p');
     const hs = g.h.cloneNode(true); const label = document.createElement('span'); label.innerHTML = hs.innerHTML; sm.appendChild(label);
@@ -1579,12 +1597,12 @@ function draw(){
   if(!A){ app.innerHTML = `<div class="card muted" style="margin-top:12px">${esc(t('loading'))}</div>`; return; }
   const st = DATA.stamina;
   const kpi = (v, l) => `<div class="kpi"><div class="v">${v}</div><div class="l">${esc(l)}</div></div>`;
-  const tabs = [['overview', '📋', t('tOverview'), ''], ['missing', '🔎', t('tMissing'), A.blockers.length], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['bank', '🏦', t('tBank'), t('eTabN', {n:A.easy.length})], ['cities', '🌍', t('tCities'), WORLD ? t('wScanned', {n:WORLD.cities.length}) : ''], ['find', '🧭', t('tFind'), '']].concat(SHOW_HUNT && HUNTS ? [['hunt', '📊', t('tHunt'), n0(HUNTS.finds.length)]] : []);   // hidden for now: it was made for the balloon event
+  const tabs = [['plan', '📦', t('tNPlan'), ''], ['hunt', '🔎', t('tNHunt'), ''], ['craft', '🛠', t('tCraft'), t('cTabN', {n:A.craftable.filter(c => c.isNew).length})], ['bank', '🏦', t('tBank'), t('eTabN', {n:A.easy.length})], ['ref', '📚', t('tNRef'), '']];
   const hide = {craft:!GOAL.discover && !GOAL.bank && !GOAL.bonus, bank:!GOAL.bank && !GOAL.bonus && !GOAL.gold};
-  tab = {easy:'bank', gold:'bank', world:'cities', special:'cities'}[tab] || tab;
+  tab = {overview:'plan', missing:'hunt', cities:'hunt', easy:'bank', gold:'bank', world:'hunt', special:'ref', find:'ref', hunt:'hunt'}[tab] || tab;
   for(let i = tabs.length - 1; i >= 0; i--) if(hide[tabs[i][0]]) tabs.splice(i, 1);
-  if(!tabs.some(x => x[0] === tab)) tab = 'overview';
-  const view = {overview:viewOverview, missing:viewMissing, craft:viewCraft, bank:viewBank, cities:viewCities, find:viewFind, hunt:viewHunt}[tab] || viewOverview;
+  if(!tabs.some(x => x[0] === tab)) tab = 'plan';
+  const view = {plan:viewPlanTab, hunt:viewMissing, craft:viewCraft, bank:viewBank, ref:viewRef}[tab] || viewPlanTab;
   app.innerHTML = `<div class="kpis">${kpi(`${n0(DATA.troves.found)}${DATA.troves.max ? ' / ' + n0(DATA.troves.max) : ''}`, t('kFound'))}${kpi(n0(A.craftN), t('kCraft'))}${kpi(n0(A.oneShort), t('kOne'))}${kpi(n0(A.blockers.length), t('kBlock'))}${st ? kpi(`${n0(st.current)}${st.max ? ' / ' + n0(st.max) : ''}`, t('kStamina')) : ''}${kpi(esc(DATA.date || '—'), t('kDate'))}</div>
     <nav class="boxtabs" id="tabs">${tabs.map(([id, ic, name, ct]) => `<button type="button" class="boxtab ${tab === id ? 'on' : ''}" data-tab="${id}"><span class="ic" aria-hidden="true">${ic}</span><span class="nm">${esc(name)}</span><span class="ct">${esc(ct === '' ? '' : ct)}</span></button>`).join('')}</nav>
     <section>${view()}</section>`;
@@ -1627,7 +1645,7 @@ document.addEventListener('click', e => {
     TRIP = a === 'reset' || !l.length ? null : l; store.set('rut:troves:trip', TRIP); draw(); return;
   }
   const pm = e.target.closest('[data-plan]'); if(pm){ const [k, v] = pm.dataset.plan.split(':'); PLAN[k] = v; savePlan(); draw(); return; }
-  const pg = e.target.closest('[data-plango]'); if(pg){ VGOAL = 'plan'; store.set('rut:troves:vgoal', VGOAL); tab = 'missing'; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
+  const pg = e.target.closest('[data-plango]'); if(pg){ VGOAL = 'plan'; store.set('rut:troves:vgoal', VGOAL); tab = 'hunt'; store.set('rut:troves:tab', tab); draw(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   const vg = e.target.closest('[data-vgoal]'); if(vg){ VGOAL = vg.dataset.vgoal; store.set('rut:troves:vgoal', VGOAL); draw(); return; }
   const vs = e.target.closest('[data-vsort]'); if(vs){ VSORT = vs.dataset.vsort; store.set('rut:troves:vsort', VSORT); draw(); return; }
   const hd = e.target.closest('[data-hood]'); if(hd){ HOOD = Number(hd.dataset.hood); draw(); return; }
