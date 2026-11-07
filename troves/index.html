@@ -1160,7 +1160,7 @@ function hardSection(){
 }
 // Troves no structure or plant gives: they only drop as a bonus when something is crafted at certain structures. Group the structures that can
 // drop the same ones, and say what you could craft there right now.
-function bonusSection(){
+function bonusDropsSection(){
   if(!PLACES || !A) return '';
   const miss = [...PLACES.entries()].filter(([n, p]) => !A.items.has(n) && p.bonus.length && !p.structures.length && !p.plants.length).map(x => x[0]);
   if(!miss.length) return '';
@@ -1205,7 +1205,7 @@ function viewMissing(){
   const head = [[t('colTrove')], [t('fnWhy')], [t('fnHold'), 'n'], [t('colWhere')]];
   const top = list.slice(0, 40), rest = list.slice(40);
   const lead = `<div class="card" style="margin-bottom:12px"><b>${esc(list.filter(r => r.b || r.never).length <= 12 ? t('fnFew') : t('fnLots'))}</b></div>`;
-  return cityBar() + lead + bestPlacesSection() + hardSection() + bonusSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
+  return cityBar() + lead + bestPlacesSection() + hardSection() + bonusDropsSection() + hotspotSection() + plantSection() + sec(t('fnListH', {n:list.length}), t('fnListN'), tbl(head, top.map(row))) + (rest.length ? sec(t('fnRestH', {n:rest.length}), '', tbl(head, rest.map(row))) : '');
 }
 function craftRow(c){
   const ing = c.versions.map(v => v.ings.map(g => `${esc(g.n)} ×${g.req}`).join(', ')).join('<br><span class="muted">or</span> ');
