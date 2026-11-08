@@ -34,7 +34,7 @@ def row(p):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--users', default='mstullis,rockdrigo,talljames,missmarlow')
+    ap.add_argument('--users', default='mstullis,rockdrigo,talljames,missmarlow,bielykvietok,wamawa')
     ap.add_argument('--minutes', type=float, default=120)
     ap.add_argument('--rate', type=float, default=5.0)
     args = ap.parse_args()
