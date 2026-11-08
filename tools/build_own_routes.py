@@ -5,7 +5,7 @@
 
 For each player and each city route (data/helper/routes/<city id>.json) this writes data/helper/own/<user>/<city id>.json:
   {"user", "updated", "max": 250, "stops": {stop property id: [own property id, own address, metres]}}
-The nearest of the player's own properties within 250 m of each stop. A visit to your own property costs nothing, so the bot (and later the
+The nearest of the player's own properties within 250 m of each stop. index.json says how many free stops each city has. A visit to your own property costs nothing, so the bot (and later the
 helper) can offer the stop for free: visit the property, then walk the avatar toward the stop. The reach rules (80 m) are untouched.
 """
 import json
@@ -38,7 +38,7 @@ def main():
         os.makedirs(out_dir, exist_ok=True)
         for fn in os.listdir(out_dir):
             os.remove(os.path.join(out_dir, fn))
-        made = total = 0
+        made = total = 0; index = {}
         dl = MAX / M_LAT
         for city, own in by_city.items():
             route = routes[city]
@@ -55,7 +55,8 @@ def main():
                     stops[s[0]] = [str(best[1][0]), best[1][1], round(best[0])]
             if stops:
                 json.dump({'user': user, 'updated': data.get('updatedAt', ''), 'max': MAX, 'stops': stops}, open(os.path.join(out_dir, str(route['city']) + '.json'), 'w'), ensure_ascii=False, separators=(',', ':'))
-                made += 1; total += len(stops)
+                made += 1; total += len(stops); index[str(route['city'])] = len(stops)
+        json.dump(index, open(os.path.join(out_dir, 'index.json'), 'w'), separators=(',', ':'))
         print(user, len(data['rows']), 'properties ->', made, 'cities,', total, 'free stops')
 
 
