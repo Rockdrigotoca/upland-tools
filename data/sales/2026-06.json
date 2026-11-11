@@ -1,0 +1,19 @@
+{"fields":["ts","nft","key","mint","cur","price","fee","merchantFee","seller","buyer","shopOwner","shop"],"rows":[
+[1782851881,7668552,"ACE GENESIS MICRO | Micro House",1551,"UPX",682.5,32.5,0.0,"ace696","davoodkvm",null,null],
+[1782851886,7669209,"ACE GENESIS MICRO | Micro House",1564,"UPX",682.5,32.5,0.0,"ace696","davoodkvm",null,null],
+[1782851894,7668956,"ACE GENESIS MICRO | Micro House",1558,"UPX",682.5,32.5,0.0,"ace696","davoodkvm",null,null],
+[1782851899,7669165,"ACE GENESIS MICRO | Micro House",1563,"UPX",682.5,32.5,0.0,"ace696","davoodkvm",null,null],
+[1782851912,7666988,"ACE SMALL TH V1 BRICK GENESIS | Small Town House",63,"UPX",735.0,35.0,0.0,"ace696","davoodkvm",null,null],
+[1782851918,7667034,"ACE SMALL TH V1 BRICK GENESIS | Small Town House",64,"UPX",735.0,35.0,0.0,"ace696","davoodkvm",null,null],
+[1782851924,7667503,"ACE SMALL TH V2 BRICK GENESIS | Small Town House v2",58,"UPX",735.0,35.0,0.0,"ace696","davoodkvm",null,null],
+[1782851929,7668102,"ACE SMALL TH V2 BRICK GENESIS | Small Town House v2",60,"UPX",735.0,35.0,0.0,"ace696","davoodkvm",null,null],
+[1782851938,7672447,"ACE TOWER - GENESIS | Apartment Building",1178,"UPX",1155.0,55.0,0.0,"ace696","davoodkvm",null,null],
+[1782851944,7669292,"ACE TOWER - GENESIS | Apartment Building",1170,"UPX",1155.0,55.0,0.0,"ace696","davoodkvm",null,null],
+[1782854049,7515940,"GENESIS HB TOWNHOUSE | Town House",867,"UPX",999.6,47.6,0.0,"syspy","saxio89",null,null],
+[1782854091,7312719,"AAST1 - AMERICAN HOT DOG - BLOSSOM | Small Town House",972,"UPX",999.6,47.6,0.0,"saulofm","saxio89",null,null],
+[1782860587,7667432,"Obelisk Genesis Micro | Micro House",22,"UPX",4998.0,238.0,0.0,"nf_holdings","tinyc420",null,null],
+[1782861361,7659703,"ACE SMALL TH V1 BRICK GENESIS | Small Town House",38,"UPX",1995.0,95.0,0.0,"rafajobs","tinyc420",null,null],
+[1782861371,7659502,"ACE SMALL TH V1 BRICK GENESIS | Small Town House",34,"UPX",2310.0,110.0,0.0,"rafajobs","tinyc420",null,null],
+[1782862380,7666283,"Cantara-Micro House FROST | Micro House",80,"UPX",1984.5,94.5,0.0,"hilfe","brazilianemo",null,null],
+[1782862386,7666466,"Cantara-Micro House FROST | Micro House",84,"UPX",1984.5,94.5,0.0,"hilfe","brazilianemo",null,null]
+]}
