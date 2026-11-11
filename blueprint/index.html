@@ -91,6 +91,7 @@ details.card>summary{cursor:pointer;font-weight:700}
 <div class="wrap">
   <header id="site-header"></header>
   <div id="tiles" class="tiles"></div>
+  <section class="card" id="dash" style="margin-bottom:12px"></section>
   <section class="card" id="trains" style="margin-bottom:12px"></section>
   <section class="card" id="ctl" style="margin-bottom:12px"></section>
   <section class="card" id="mapcard"><h2 class="fold" data-fold="mapcard" id="mapH"></h2>
@@ -131,11 +132,14 @@ Site.register({
     tH:'Spark trains', tN:'The short list: the smallest structure for every trove Quailwood does not give yet, plus the two smallest for each chased trove. Tick the ones this train builds, in order: each one is a round, and every rider builds one.',
     tNew:'＋ New train', tName:'Train name', tSpark:'Spark per rider', tRiders:'Riders', tDel:'Delete this train', tTrain:'Train {n}',
     cGives:'Adds', cGround:'Ground', cSph:'Spark hours', cCap:'Takes up to', cOn:'On this train', spk:'{n} spark', days:'{n} days', tOver:'over its limit: only {n} of the {m} spark count', tUnk:'spark hours unknown', tDone:'already planned',
-    tSum:'{k} rounds of {r} builds: {n} builds, {h} spark hours. In a round every rider stakes {s} spark on each of the {r} builds, so each rider needs {e} spark. Rounds one after another: about {a} days.', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
+    tSum:'{k} rounds of {r} builds: {n} builds one after another, {h} spark hours, about {a} days. Only one build runs at a time, so every rider needs just {s} spark and moves it to each new build.',
+    tChan:'Discord channel id', tOrder:'The order inside each round is drawn at random every time you place the train.',
+    dH:'Trains at a glance', dNoTrain:'No train is on the map yet. Tick structures on a train and put it on the map.', dBuilt:'{a} of {b} built', dNow:'Now', dNext:'Next', dWait:'not started yet', dPct:'{p}% done', dEnds:'finishes {d}', dSpeed:'{a} of {b} spark on it',
+    dMove:'Move your spark to {addr}: {n} spark still missing.', dStart:'{who} starts this build, then everyone moves their spark to it.', dAllDone:'Every build of this train is finished.', dRefresh:'Check Upland again', dChecking:'Checking Upland…', dChecked:'Checked {d}.', dFail:'Upland did not answer; showing the plan only.', dRiders:'{n} riders', dNoChan:'no channel yet', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
     tPlace:'Put this train on the map', tPlaceN:'Round by round, every rider builds the same structure on their own lot. Placing again redoes this train only.', tPlaced:'{n} placed.', tNoFit:'No lot found for: {names}.',
     plH:'The plan', plN:'Structures placed and buildings marked to tear down. Each player can check their rows, move a build to another of their addresses, and tick it once they agree. Saved in this browser: download the file to pass it on.',
     plAll:'Everyone', plOk:'Agreed', plMoveBad:'{s} does not fit at {a}; it stays where it was.', plSave:'Download the plan file', plLoad:'Load a plan file', plLoaded:'Plan loaded.', plBadFile:'That file is not a Blueprint plan.',
-    tNewBig:'＋ Big-lot train', tBigName:'Big lots', tBigN:'Big-lot train: the list below starts with the big structures worth the most troves, biggest first, then the short list. Each rider builds on their biggest lot with room. Add big ones first, then small ones to fill the gaps.',
+    tNewBig:'＋ Big-lot train', tBigName:'Big lots', tFitsFor:'fits for {names}', tBigBusy:'Checking what fits: {a} of {b}…', tBigN:'Big-lot train: the list below starts with the big structures worth the most troves that really fit on a rider’s lot, biggest first, then the short list. Each rider builds on their biggest lot with room. Add big ones first, then small ones to fill the gaps.',
     tMode:'Build on', tSmall:'each rider’s smallest lot that fits', tBig:'each rider’s biggest lot with room', tAdd:'Add any structure to this train',
     swH:'House swaps: Luxury Ranch House to Town House', swN:'Our lots with a Luxury Ranch House, and how many of the small short-list structures fit together beside the house now and beside a Town House. Planning a swap marks the house to tear down and places the Town House.', swNow:'Fit now', swTown:'With a Town House', swGain:'Gain', swPlan:'Plan the swap', swBusy:'Working it out: {a} of {b} lots…', swNoTown:'no room for a Town House', plNone:'Nothing planned yet. Tap a lot and add a structure.', plWhere:'Where', plClear:'Clear the plan', plDrops:'To tear down', plShow:'Show',
     updated:'Read from Upland on {d}.', hits:'{n} lots match.', hit1:'1 lot matches.'
@@ -163,11 +167,14 @@ Site.register({
     tH:'Trenes de spark', tN:'La lista corta: la estructura más chica para cada trove que Quailwood aún no da, más las dos más chicas de cada trove buscado. Marca las que construye este tren, en orden: cada una es una ronda y cada pasajero construye una.',
     tNew:'＋ Tren nuevo', tName:'Nombre del tren', tSpark:'Spark por pasajero', tRiders:'Pasajeros', tDel:'Borrar este tren', tTrain:'Tren {n}',
     cGives:'Agrega', cGround:'Terreno', cSph:'Horas de spark', cCap:'Admite hasta', cOn:'En este tren', spk:'{n} spark', days:'{n} días', tOver:'pasa su límite: solo cuentan {n} de los {m} spark', tUnk:'horas de spark desconocidas', tDone:'ya está en el plan',
-    tSum:'{k} rondas de {r} construcciones: {n} construcciones, {h} horas de spark. En cada ronda cada pasajero pone {s} spark en cada una de las {r}, así que necesita {e} spark. Rondas una tras otra: unos {a} días.', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
+    tSum:'{k} rondas de {r} construcciones: {n} construcciones una tras otra, {h} horas de spark, unos {a} días. Solo corre una construcción a la vez, así que cada pasajero necesita solo {s} spark y lo mueve a cada construcción nueva.',
+    tChan:'Id del canal de Discord', tOrder:'El orden dentro de cada ronda se sortea cada vez que colocas el tren.',
+    dH:'Los trenes de un vistazo', dNoTrain:'Aún no hay ningún tren en el mapa. Marca estructuras en un tren y ponlo en el mapa.', dBuilt:'{a} de {b} construidas', dNow:'Ahora', dNext:'Sigue', dWait:'aún no empieza', dPct:'{p}% hecho', dEnds:'termina {d}', dSpeed:'{a} de {b} spark puestos',
+    dMove:'Mueve tu spark a {addr}: faltan {n} spark.', dStart:'{who} empieza esta construcción y luego todos mueven su spark ahí.', dAllDone:'Todas las construcciones de este tren están terminadas.', dRefresh:'Revisar Upland otra vez', dChecking:'Revisando Upland…', dChecked:'Revisado {d}.', dFail:'Upland no respondió; se muestra solo el plan.', dRiders:'{n} pasajeros', dNoChan:'aún sin canal', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
     tPlace:'Poner este tren en el mapa', tPlaceN:'Ronda por ronda, cada pasajero construye la misma estructura en su propio lote. Colocar de nuevo rehace solo este tren.', tPlaced:'{n} colocadas.', tNoFit:'No se encontró lote para: {names}.',
     plH:'El plan', plN:'Estructuras colocadas y edificios marcados para demoler. Cada jugador puede revisar sus filas, mover una construcción a otra de sus direcciones y marcarla cuando esté de acuerdo. Se guarda en este navegador: descarga el archivo para pasarlo.',
     plAll:'Todos', plOk:'De acuerdo', plMoveBad:'{s} no cabe en {a}; se queda donde estaba.', plSave:'Descargar el archivo del plan', plLoad:'Cargar un archivo de plan', plLoaded:'Plan cargado.', plBadFile:'Ese archivo no es un plan del Plano.',
-    tNewBig:'＋ Tren de lotes grandes', tBigName:'Lotes grandes', tBigN:'Tren de lotes grandes: la lista empieza con las estructuras grandes que más troves dan, de mayor a menor, y luego la lista corta. Cada pasajero construye en su lote más grande con espacio. Agrega primero las grandes y luego las chicas para llenar huecos.',
+    tNewBig:'＋ Tren de lotes grandes', tBigName:'Lotes grandes', tFitsFor:'cabe para {names}', tBigBusy:'Revisando qué cabe: {a} de {b}…', tBigN:'Tren de lotes grandes: la lista empieza con las estructuras grandes que más troves dan y que de verdad caben en el lote de un pasajero, de mayor a menor, y luego la lista corta. Cada pasajero construye en su lote más grande con espacio. Agrega primero las grandes y luego las chicas para llenar huecos.',
     tMode:'Construir en', tSmall:'el lote más chico de cada pasajero donde quepa', tBig:'el lote más grande de cada pasajero con espacio', tAdd:'Agregar cualquier estructura a este tren',
     swH:'Cambios de casa: Luxury Ranch House por Town House', swN:'Nuestros lotes con Luxury Ranch House, y cuántas de las estructuras chicas de la lista corta caben juntas junto a la casa hoy y junto a una Town House. Planear un cambio marca la casa para demoler y coloca la Town House.', swNow:'Caben hoy', swTown:'Con Town House', swGain:'Ganancia', swPlan:'Planear el cambio', swBusy:'Calculando: {a} de {b} lotes…', swNoTown:'no cabe una Town House', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
     updated:'Leído de Upland el {d}.', hits:'{n} lotes coinciden.', hit1:'1 lote coincide.'
@@ -203,7 +210,7 @@ const chased = k => ((TV[k] || {}).f || []).filter(x => CI.has(x));   // the cha
 let FOLD = store.get('rut:blueprint:fold', {});
 const foldH = (id, html) => `<h2 class="fold" data-fold="${id}">${html}</h2>`;
 function applyFolds(){
-  ['trains', 'ctl', 'mapcard', 'detail', 'plan'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('folded', !!FOLD[id]); });
+  ['dash', 'trains', 'ctl', 'mapcard', 'detail', 'plan'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('folded', !!FOLD[id]); });
   const mh = document.getElementById('mapH'); if(mh) mh.textContent = t('fMap');
 }
 let SPH = new Map(), NHARD = 0, TMSG = '', PF = '', PMSG = '', SWAP = null;
@@ -213,6 +220,11 @@ const capOf = k => FP[k] && FP[k].max ? FP[k].max / 1000 : null;   // Upland giv
 // trains: [{name, spark: per rider, riders: [usernames], picks: [structures]}]
 let TRAINS = store.get('rut:blueprint:trains', null), TI = 0;
 if(!Array.isArray(TRAINS) || !TRAINS.length) TRAINS = [{name:'', spark:10, riders:['mstullis', 'missmarlow', 'talljames'], picks:[]}, {name:'', spark:5, riders:['mstullis', 'missmarlow', 'talljames'], picks:[]}];
+// the Discord channels Rockdrigo made for the Quailwood trains (11 Nov 2026): the first 5 and the first 10 spark train get them
+const CHANNELS = {5:'1570200804063711334', 10:'1570200891657560165'};
+for(const sp of [5, 10]) if(!TRAINS.some(x => x.chan === CHANNELS[sp])){ const x = TRAINS.find(y => y.spark === sp && !y.chan && !y.big); if(x) x.chan = CHANNELS[sp]; }
+const shuffled = a => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+let LIVE = new Map(), LIVEAT = null, LIVEBUSY = false, LIVEFAIL = false;
 TRAINS.forEach(x => { if(!x.id) x.id = Math.random().toString(36).slice(2, 8); });
 const saveTrains = () => store.set('rut:blueprint:trains', TRAINS);
 let TV = {}, TN = [], HEAT = store.get('rut:blueprint:heat', false), BYSIZE = false, S0 = new Map(), S1 = new Map(), HAVE = new Set(), COUNT = new Map();
@@ -525,34 +537,51 @@ function shortList(){
   for(const tr of TRAINS) for(const k of tr.picks) if(FP[k] && !out.has(k)) out.set(k, {k, gives:[], done:true});
   return [...out.values()].sort((x, y) => m2(x.k) - m2(y.k));
 }
+let BIGFIT = {key:'', fits:new Map(), todo:[], i:0};
+function bigStep(){
+  // one structure per step: does it really fit on one of each rider's two roomiest lots?
+  const tr = TRAINS[TI];
+  if(!tr || !tr.big || BIGFIT.i >= BIGFIT.todo.length || BIGFIT.fits.size >= 20) { BIGFIT.i = BIGFIT.todo.length; if(tr && tr.big) trainsCard(); return; }
+  const k = BIGFIT.todo[BIGFIT.i++], need = FP[k].w * FP[k].d / 9;
+  const who = tr.riders.filter(u => LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => freeOf(y) - freeOf(x)).slice(0, 2).some(l => autoFit(l, k)));
+  if(who.length) BIGFIT.fits.set(k, who);
+  if(BIGFIT.i % 5 === 0 && !(document.activeElement && ['tname', 'tadd'].includes(document.activeElement.id))) trainsCard();
+  setTimeout(bigStep, 20);
+}
 function bigList(){
-  // big structures (60 UP2 of ground or more) that give hard, bonus-only or chased troves, the richest first within 20, shown biggest first
-  const m2 = k => FP[k].w * FP[k].d, worth = k => TV[k].h.length + TV[k].b.length + 3 * chased(k).length;
-  return Object.keys(TV).filter(k => FP[k] && !FP[k].living && m2(k) / 9 >= 60 && worth(k) > 0).sort((x, y) => worth(y) - worth(x) || m2(x) - m2(y)).slice(0, 20)
-    .sort((x, y) => m2(y) - m2(x)).map(k => ({k, gives:[...TV[k].h, ...TV[k].b, ...chased(k)].filter((v, i, a) => a.indexOf(v) === i).slice(0, 8)}));
+  // big structures (60 UP2 of ground or more) that give hard, bonus-only or chased troves and fit on a rider's lot: the 20 richest, biggest first
+  const tr = TRAINS[TI], m2 = k => FP[k].w * FP[k].d, worth = k => TV[k].h.length + TV[k].b.length + 3 * chased(k).length;
+  const key = tr.riders.join(',') + '|' + PLAN.adds.length + '|' + PLAN.drops.length + '|' + CHASE.join(',');
+  if(BIGFIT.key !== key){
+    BIGFIT = {key, fits:new Map(), i:0, todo:Object.keys(TV).filter(k => FP[k] && !FP[k].living && m2(k) / 9 >= 60 && worth(k) > 0).sort((x, y) => worth(y) - worth(x) || m2(x) - m2(y))};
+    setTimeout(bigStep, 20);
+  }
+  return [...BIGFIT.fits.keys()].sort((x, y) => m2(y) - m2(x)).map(k => ({k, who:BIGFIT.fits.get(k), gives:[...TV[k].h, ...TV[k].b, ...chased(k)].filter((v, i, a) => a.indexOf(v) === i).slice(0, 8)}));
 }
 function trainsCard(){
   const el = document.getElementById('trains');
   if(!LOTS.length){ el.innerHTML = ''; return; }
   TI = Math.min(TI, TRAINS.length - 1);
   const tr = TRAINS[TI], R = tr.riders.length, all = R * tr.spark, small = shortList();
-  const list = tr.big ? [...bigList(), ...small.filter(x => !bigList().some(b => b.k === x.k))] : small;
+  const bigs = tr.big ? bigList() : [];
+  const list = tr.big ? [...bigs, ...small.filter(x => !bigs.some(b => b.k === x.k))] : small;
   const eff = k => { const c = capOf(k); return c == null ? all : Math.min(c, all); };
-  const rows = list.map(({k, gives, done}) => {
+  const rows = list.map(({k, gives, who}) => {
     const f = FP[k], h = sphOf(k), c = capOf(k), on = tr.picks.includes(k), e = eff(k);
     const st = !R ? '' : h == null ? esc(t('tUnk')) : `<b>${esc(t('days', {n:(h / e / 24).toFixed(1)}))}</b> · ${esc(t('spk', {n:n0(e)}))}` + (c != null && all > c ? `<div class="trv">✕ ${esc(t('tOver', {n:n0(c), m:n0(all)}))}</div>` : '');
     return `<tr class="${on ? 'sel' : ''}"><td class="ck"><input type="checkbox" data-pick="${esc(k)}"${on ? ' checked' : ''} aria-label="${esc(f.name)}">${on ? `<div class="trv">${esc(t('tRound', {n:tr.picks.indexOf(k) + 1}))}</div>` : ''}</td>
-      <td>${named(k, esc(f.name), gives.length ? `<div class="trv">${esc(gives.map(x => TN[x]).join(', '))}</div>` : '')}</td>
+      <td>${named(k, esc(f.name), (gives.length ? `<div class="trv">${esc(gives.map(x => TN[x]).join(', '))}</div>` : '') + (who ? `<div class="trv"><b>${esc(t('tFitsFor', {names:who.map(nameOf).join(', ')}))}</b></div>` : ''))}</td>
       <td class="n">${(f.w * f.d / 9).toFixed(0)} UP2</td><td class="n">${h == null ? '?' : n0(h)}</td><td class="n">${c == null ? '?' : esc(t('spk', {n:n0(c)}))}</td><td>${st}</td></tr>`; });
   const picks = tr.picks.filter(k => FP[k]), known = picks.filter(k => sphOf(k) != null), hours = known.reduce((a, k) => a + sphOf(k), 0);
   const each = known.map(k => sphOf(k) / eff(k) / 24);
   const sum = !R ? t('tNoRiders') : !picks.length ? t('tSumNone') : t('tSum', {k:picks.length, r:R, n:picks.length * R, h:n0(hours * R) + (known.length < picks.length ? '+' : ''), s:tr.spark,
-    a:n0(each.reduce((a, d) => a + d, 0)), e:n0(R * tr.spark)});
+    a:n0(R * each.reduce((a, d) => a + d, 0))});
   el.innerHTML = `${foldH('trains', esc(t('tH')))}<p class="hint" style="margin:0 0 8px">${esc(t('tN'))}</p>
     <div class="chips2">${TRAINS.map((x, i) => `<button type="button" data-act="train" data-n="${i}" class="${i === TI ? 'on' : ''}">${esc(x.name || t('tTrain', {n:i + 1}))} · ${x.spark} <span class="tag">${x.picks.length}</span></button>`).join('')}<button type="button" data-act="newtrain">${esc(t('tNew'))}</button><button type="button" data-act="newbig">${esc(t('tNewBig'))}</button></div>
-    ${tr.big ? `<p class="hint" style="margin:0 0 8px"><b>${esc(t('tBigN'))}</b></p>` : ''}
+    ${tr.big ? `<p class="hint" style="margin:0 0 8px"><b>${esc(t('tBigN'))}</b>${BIGFIT.i < BIGFIT.todo.length ? ' ' + esc(t('tBigBusy', {a:BIGFIT.i, b:BIGFIT.todo.length})) : ''}</p>` : ''}
     <div class="trow"><label>${esc(t('tName'))} <input type="text" id="tname" value="${esc(tr.name)}" placeholder="${esc(t('tTrain', {n:TI + 1}))}"></label>
       <label>${esc(t('tSpark'))} <select id="tspark">${[1, 3, 5, 10, 15, 20, 30].map(v => `<option${v === tr.spark ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
+      <label>${esc(t('tChan'))} <input type="text" id="tchan" value="${esc(tr.chan || '')}" inputmode="numeric" style="width:12rem"></label>
       <label>${esc(t('tMode'))} <select id="tmode"><option value="0"${tr.big ? '' : ' selected'}>${esc(t('tSmall'))}</option><option value="1"${tr.big ? ' selected' : ''}>${esc(t('tBig'))}</option></select></label>
       ${TRAINS.length > 1 ? `<button type="button" class="btn small" data-act="deltrain">${esc(t('tDel'))}</button>` : ''}</div>
     <div class="small muted">${esc(t('tRiders'))}</div>
@@ -560,23 +589,82 @@ function trainsCard(){
     ${tbl([[''], [t('cStruct')], [t('cGround'), 'n'], [t('cSph'), 'n'], [t('cCap'), 'n'], [t('cOn')]], rows)}
     <div class="chase" style="margin:10px 0 0"><input id="tadd" list="structNames" placeholder="${esc(t('tAdd'))}" aria-label="${esc(t('tAdd'))}" style="width:18rem"><datalist id="structNames">${Object.values(FP).filter(f => !f.living).map(f => f.name).sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
     <div class="sum">${esc(sum)}</div>
-    <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))}</span></div>
+    <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))} ${esc(t('tOrder'))}</span></div>
     ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}`;
 }
 function placeTrain(){
-  // round by round: every rider builds the same structure on their own smallest lot where it fits
+  // round by round: every rider builds the same structure on their own lot, in an order drawn at random for each round
   const tr = TRAINS[TI], miss = [], label = tr.name || t('tTrain', {n:TI + 1});
   PLAN.adds = PLAN.adds.filter(q => q.tid !== tr.id);   // placing again redoes this train
   let done = 0;
   tr.picks.filter(k => FP[k]).forEach((k, i) => {
     const need = FP[k].w * FP[k].d / 9;
-    for(const u of tr.riders){
+    for(const u of shuffled(tr.riders)){
       const lots = LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => tr.big ? freeOf(y) - freeOf(x) : x.area - y.area).slice(0, tr.big ? 6 : 999);
-      const hit = lots.some(l => { const fit = autoFit(l, k); if(fit) PLAN.adds.push({id:l.id, k, ...fit, t:label + ' · ' + t('tRound', {n:i + 1}), tid:tr.id}); return !!fit; });
-      if(hit) done++; else miss.push(FP[k].name + ' (' + nameOf(u) + ')');
+      const hit = lots.some(l => { const fit = autoFit(l, k); if(fit){ done++; PLAN.adds.push({id:l.id, k, ...fit, t:label + ' · ' + t('tRound', {n:i + 1}) + ' · #' + done, tid:tr.id, r:i + 1, seq:done}); } return !!fit; });
+      if(!hit) miss.push(FP[k].name + ' (' + nameOf(u) + ')');
     }
   });
+  LIVE.delete(tr.id);
   TMSG = t('tPlaced', {n:done}) + (miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : '');
+}
+// ---------- the trains at a glance, with the build in progress read from Upland ----------
+const trainItems = tr => PLAN.adds.filter(q => q.tid === tr.id).sort((x, y) => (x.seq || 0) - (y.seq || 0));
+const fmtWhen = d => new Date(d).toLocaleString(Site.locale(), {day:'numeric', month:'short', hour:'numeric', minute:'2-digit', ...(new Date(d).getFullYear() !== new Date().getFullYear() ? {year:'numeric'} : {})});
+function dashCard(){
+  const el = document.getElementById('dash');
+  if(!el || !LOTS.length) return;
+  const cards = TRAINS.map((tr, i) => {
+    const items = trainItems(tr);
+    if(!items.length) return '';
+    const R = tr.riders.length, live = LIVE.get(tr.id) || {done:0, cur:null}, at = Math.min(live.done, items.length), cur = items[at], nxt = items[at + 1];
+    const line = q => { const l = BYID.get(q.id); return `<b>${esc(FP[q.k].name)}</b> · ${esc(l.addr)} · ${COL[l.who] ? dotOf(l.who) + ' ' : ''}${esc(nameOf(l.who))}`; };
+    let now = '', remind = '';
+    if(!cur) now = `<p class="small" style="margin:6px 0 0">✓ ${esc(t('dAllDone'))}</p>`;
+    else{
+      const l = BYID.get(cur.id), c = live.cur, cap = capOf(cur.k), want = cap == null ? R * tr.spark : Math.min(cap, R * tr.spark);
+      now = `<div class="small" style="margin:6px 0 0"><span class="tag">${esc(t('dNow'))}</span> ${line(cur)} <a class="btn small" target="_blank" rel="noopener" href="${UPLAND(cur.id)}">${esc(t('dOpen'))} ↗</a>
+        <div class="trv" style="max-width:none">${c ? [c.pct != null ? t('dPct', {p:Math.floor(c.pct)}) : '', c.eta ? t('dEnds', {d:fmtWhen(c.eta)}) : '', t('dSpeed', {a:(Math.round(c.speed * 10) / 10).toLocaleString(Site.locale()), b:n0(want)})].filter(Boolean).map(esc).join(' · ') : esc(t('dWait'))}</div></div>`;
+      remind = c ? (c.speed < want - 0.5 ? t('dMove', {addr:l.addr, n:(Math.round((want - c.speed) * 10) / 10).toLocaleString(Site.locale())}) : '') : t('dStart', {who:nameOf(l.who)});
+    }
+    return `<div class="card" style="padding:10px 12px"><b>${esc(tr.name || t('tTrain', {n:i + 1}))}</b> <span class="tag">${tr.spark} spark</span> <span class="tag">${esc(t('dRiders', {n:R}))}</span> <span class="tag">${esc(t('dBuilt', {a:at, b:items.length}))}</span> ${tr.chan ? '' : `<span class="tag">${esc(t('dNoChan'))}</span>`}
+      ${now}${nxt ? `<div class="small" style="margin:4px 0 0"><span class="tag">${esc(t('dNext'))}</span> ${line(nxt)}</div>` : ''}
+      ${remind ? `<p class="small" style="margin:6px 0 0"><b>➜ ${esc(remind)}</b></p>` : ''}</div>`; }).filter(Boolean);
+  const status = LIVEBUSY ? t('dChecking') : LIVEFAIL ? t('dFail') : LIVEAT ? t('dChecked', {d:fmtWhen(LIVEAT)}) : '';
+  el.innerHTML = `${foldH('dash', esc(t('dH')))}${cards.length ? `<div class="two" style="margin-top:0">${cards.join('')}</div>
+    <div class="row" style="margin-top:8px"><button type="button" class="btn small" data-act="dashload"${LIVEBUSY ? ' disabled' : ''}>${esc(t('dRefresh'))}</button><span class="small muted">${esc(status)}</span></div>` : `<p class="muted small" style="margin:0">${esc(t('dNoTrain'))}</p>`}`;
+}
+async function dashLoad(){
+  // for each train, walk its builds in order until one is not finished; a few gentle reads of Upland's public property record
+  if(LIVEBUSY) return;
+  LIVEBUSY = true; LIVEFAIL = false; dashCard();
+  const known = store.get('rut:blueprint:built', {});
+  try{
+    for(const tr of TRAINS){
+      const items = trainItems(tr);
+      let done = 0, cur = null, reads = 0;
+      for(const q of items){
+        const sig = tr.id + ':' + q.id + ':' + q.k + ':' + q.seq;
+        if(known[sig]){ done++; continue; }
+        if(reads++ >= 6) break;
+        const r = await fetch('https://api.prod.upland.me/api/properties/' + q.id);
+        if(!r.ok) throw new Error('Upland ' + r.status);
+        const bs = ((await r.json()).buildings || []).filter(b => key(b.buildingName || '') === q.k);
+        const going = bs.find(b => b.constructionStatus === 'processing'), built = bs.some(b => b.constructionStatus === 'completed');
+        if(going && going.construction){
+          const c = going.construction, speed = Number(c.stackedSparks || 0) + (Array.isArray(c.boosters) ? c.boosters.reduce((a, x) => a + Number(x.sparks || x.stackedSparks || 0), 0) : 0);
+          const total = Number(c.totalSparksRequired || 0), got = Number(c.progressInSparks || 0) + speed * Math.max(0, Date.now() - new Date(c.startedAt).getTime()) / 36e5;
+          cur = {pct:total ? Math.min(100, got / total * 100) : null, eta:c.finishedAt || null, speed:speed / 1000};   // Upland counts in sparklets
+          break;
+        }
+        if(built){ known[sig] = 1; done++; await new Promise(ok => setTimeout(ok, 400)); continue; }
+        break;   // not started
+      }
+      if(items.length) LIVE.set(tr.id, {done, cur});
+    }
+    store.set('rut:blueprint:built', known); LIVEAT = Date.now();
+  }catch{ LIVEFAIL = true; }
+  LIVEBUSY = false; dashCard();
 }
 function planCard(){
   const el = document.getElementById('plan');
@@ -642,8 +730,11 @@ function act(b){
   NOTE = '';
   PMSG = '';
   if(a === 'pf'){ PF = b.getAttribute('data-v'); planCard(); return; }
+  if(a === 'dashload'){ dashLoad(); return; }
   if(a === 'saveplan'){
-    const blob = new Blob([JSON.stringify({format:'quailbert-blueprint-plan-v1', hood:D.hood, savedAt:new Date().toISOString(), plan:PLAN, trains:TRAINS}, null, 1)], {type:'application/json'});
+    // builds: the plain list the bot follows (one build at a time, in this order within each train)
+    const builds = TRAINS.flatMap(tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {train:tr.id, channel:tr.chan || null, seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id, agreed:!!q.c}; }));
+    const blob = new Blob([JSON.stringify({format:'quailbert-blueprint-plan-v2', hood:D.hood, savedAt:new Date().toISOString(), plan:PLAN, trains:TRAINS, builds}, null, 1)], {type:'application/json'});
     const x = document.createElement('a'); x.href = URL.createObjectURL(blob); x.download = 'quailwood-plan.json'; x.click(); setTimeout(() => URL.revokeObjectURL(x.href), 2000); return;
   }
   if(a === 'swap'){
@@ -698,7 +789,7 @@ function act(b){
     document.querySelector('.mapbox').scrollIntoView({block:'nearest'});
   }else if(a === 'clearplan'){ PLAN = {adds:[], drops:[]}; SEL = -1; }
   else if(a === 'unchase'){ CHASE = CHASE.filter(x => x !== b.getAttribute('data-v')); store.set('rut:blueprint:chase', CHASE); ctl(); }
-  savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables(); trainsCard();
+  savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables(); trainsCard(); dashCard();
 }
 function tables(){
   const by = new Map();
@@ -719,7 +810,7 @@ function tables(){
 function draw(){
   if(!D){ document.getElementById('detail').innerHTML = `<p class="muted" style="margin:0">${esc(t(D === null ? 'loading' : 'none'))}</p>`; applyFolds(); return; }
   document.body.classList.toggle('cb', CB);
-  tiles(); trainsCard(); ctl(); legend(); drawMap(); detail(); planCard(); tables(); swapCard(); applyFolds();
+  tiles(); dashCard(); trainsCard(); ctl(); legend(); drawMap(); detail(); planCard(); tables(); swapCard(); applyFolds();
 }
 function light(type, v){
   HL = HL && HL.type === type && HL.v === v ? null : {type, v};
@@ -808,6 +899,7 @@ function wire(){
       savePlan(); rescore(); draw();
     }
     if(cf != null){ PLAN.adds[+cf].c = e.target.checked; savePlan(); planCard(); }
+    if(e.target.id === 'tchan'){ TRAINS[TI].chan = e.target.value.replace(/\D/g, ''); saveTrains(); trainsCard(); dashCard(); }
     if(e.target.id === 'tmode'){ TRAINS[TI].big = e.target.value === '1'; saveTrains(); trainsCard(); }
     if(e.target.id === 'tadd'){
       const hit = Object.entries(FP).find(([, f]) => !f.living && f.name.toLowerCase() === e.target.value.trim().toLowerCase());
@@ -860,6 +952,7 @@ async function boot(){
     }
   }
   rescore(); draw();
+  if(PLAN.adds.some(q => q.tid)) dashLoad();
 }
 boot();
 </script>
