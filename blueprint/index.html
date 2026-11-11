@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sir Quailbert’s Blueprint</title>
+<meta name="description" content="A map of Quailwood drawn from Upland’s own lot outlines: who owns each lot, what stands on it and how much ground is still free.">
+<link rel="stylesheet" href="../shared/theme.css">
+<style>
+.chips2{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.chips2 button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:.8125rem;display:inline-flex;align-items:center;gap:6px}
+.chips2 button.on{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text);font-weight:700}
+.dot{display:inline-block;width:.75rem;height:.75rem;border-radius:3px;flex:none;border:1px solid rgba(0,0,0,.25)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.875rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-size:.75rem;color:var(--muted);font-weight:600;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.pick{cursor:pointer}
+tr.pick:hover td{background:var(--surface-2)}
+tr.sel td{background:var(--surface-2);font-weight:700}
+.tag{display:inline-block;font-size:.6875rem;font-weight:700;border-radius:999px;padding:2px 8px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(8.5rem,1fr));gap:10px;margin:0 0 12px}
+.tiles .card{padding:10px 12px}
+.tiles .big{font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ctl input[type=search]{flex:1 1 12rem;min-width:0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.875rem}
+.mapbox{position:relative;border:1px solid var(--border);border-radius:12px;background:var(--surface);overflow:hidden}
+#map{display:block;width:100%;height:min(70vh,640px);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#map.drag{cursor:grabbing}
+#map *{vector-effect:non-scaling-stroke}
+.lot{stroke:var(--border);stroke-width:1;cursor:pointer}
+.lot.other{fill:var(--surface-2)}
+.lot.free{fill:none;stroke:var(--muted);stroke-dasharray:3 3}
+.lot.dim{opacity:.22}
+.lot.hit{stroke:var(--text);stroke-width:2}
+.lot.cur{stroke:var(--bad);stroke-width:3}
+.bld{pointer-events:none;fill:var(--text);stroke:none}
+.bld.liv{fill-opacity:.3}
+.bld.wip{fill-opacity:.12;stroke:var(--text);stroke-width:1;stroke-dasharray:2 2}
+.bld.dim{opacity:.15}
+.bld.gone{fill:none;stroke:var(--text);stroke-width:1;stroke-dasharray:1 3;opacity:.7}
+.plan{fill:var(--surface);stroke:var(--text);stroke-width:3;cursor:move}
+.plan.sel{stroke-width:5}
+.plan.bad{fill-opacity:.35;stroke-dasharray:6 4}
+.planx{pointer-events:none;stroke:var(--text);stroke-width:2;fill:none}
+body.cb .lot.cur{stroke:var(--text);stroke-width:5}
+.ring{fill:none;stroke:var(--text);stroke-width:1.5;pointer-events:none}
+.ring.r80{stroke-dasharray:8 5}
+.ring.r100{stroke-dasharray:2 5}
+.lot.heat{fill:#0072B2}
+.sw.heat{background:linear-gradient(90deg,rgba(0,114,178,.08),rgba(0,114,178,1));width:3rem;border:1px solid var(--border)}
+.sw.rg{border:1.5px solid var(--text);border-radius:50%;width:.8rem;height:.8rem;background:none}
+.trv{font-size:.75rem;color:var(--muted);margin-top:2px;max-width:26rem}
+.opts{display:flex;gap:6px 16px;flex-wrap:wrap}
+.rot{display:inline-flex;gap:4px;flex-wrap:wrap}
+.rot button{min-width:2.4rem}
+#pick{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.875rem;margin:0 0 6px}
+h3{font-size:.9375rem;margin:14px 0 6px}
+label.chk{display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;cursor:pointer}
+.zoom{position:absolute;right:8px;top:8px;display:flex;flex-direction:column;gap:4px}
+.zoom button{width:2.25rem;height:2.25rem;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:1.1rem;cursor:pointer;line-height:1}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:.75rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.sw{display:inline-block;width:1.1rem;height:.7rem;border-radius:2px}
+.sw.srv{background:var(--text)} .sw.liv{background:var(--text);opacity:.3} .sw.wip{border:1px dashed var(--text)} .sw.oth{background:var(--surface-2);border:1px solid var(--border)} .sw.fre{border:1px dashed var(--muted)}
+#detail h2{margin:0 0 2px;font-size:1.05rem}
+.kv{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:.875rem;margin:4px 0 8px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,20rem),1fr));gap:12px;margin-top:12px}
+details.card>summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="site-header"></header>
+  <div id="tiles" class="tiles"></div>
+  <section class="card" id="ctl" style="margin-bottom:12px"></section>
+  <div class="mapbox"><svg id="map" role="img"></svg>
+    <div class="zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="fit" aria-label="Whole map">⤢</button></div></div>
+  <div class="legend" id="legend"></div>
+  <section class="card" id="detail" style="margin-top:12px"></section>
+  <section class="card" id="plan" style="margin-top:12px"></section>
+  <div class="two" id="tables"></div>
+  <footer id="site-footer"></footer>
+</div>
+<script src="../shared/site.js"></script>
+<script>
+"use strict";
+const {t, esc, store} = Site;
+Site.register({
+  en:{
+    title:'Sir Quailbert’s Blueprint', subtitle:'Quailwood, lot by lot: who owns it, what stands on it, and how much ground is still free.',
+    loading:'Loading the map…', none:'The map data could not be loaded.',
+    tLots:'lots', tOwners:'owners', tFree:'not minted', tBld:'buildings', tSrv:'service structures', tLiv:'homes', tWip:'under construction', tOurs:'lots held by the builders',
+    search:'Find an address, an owner or a structure', builders:'Builders', all:'Everyone', clear:'Clear',
+    lgSrv:'service structure', lgLiv:'home', lgWip:'under construction', lgOth:'other owners', lgFree:'not minted',
+    dPick:'Tap a lot to see who owns it and what stands on it.', dOwner:'Owner', dNone:'not minted', dArea:'{n} UP2', dFree:'{n} UP2 of free ground', dEmpty:'Nothing built here.', dOpen:'Open in Upland',
+    cStruct:'Structure', cKind:'Kind', cSize:'Footprint', cState:'State', built:'built', wip:'under construction', srv:'service', liv:'home', unk:'size unknown',
+    bH:'The builders', bN:'Free ground is the lot minus the footprints of what stands on it. Tap a row to light up that player’s lots.',
+    cWho:'Player', cLots:'Lots', cUp2:'UP2', cFreeUp2:'Free UP2', cBld:'Buildings', cEmpty:'Empty lots',
+    oH:'Every owner in Quailwood', sH:'What Quailwood already holds', sN:'Tap a structure to light up the lots that carry it.', cCount:'Count', cLotsWith:'Lots',
+    heatOn:'Heat: hard troves in reach of each lot', lgHeat:'few to many hard troves in reach (most: {n})', lgRing:'reach: sure to 60 m, fading to 100 m',
+    rNow:'Standing here reaches about {a} hard troves now, and {b} with the plan.', rList:'In reach with the plan', rNone:'No hard trove is in reach of this lot.',
+    cHard:'Hard troves', cBonus:'Bonus-only troves', cHas:'In Quailwood', vNew:'{a} new of {b}', pSize:'Smallest first', pRank:'Best first: the most hard troves Quailwood does not give yet, then bonus-only troves, then the smallest.',
+    hH:'Best places to stand', hN:'Lots with the most hard troves in reach. A trove counts in full up to 60 m and less and less up to 100 m.', cNow:'Now', cPlan:'With the plan',
+    cbOn:'Colours for red-green colour blindness', cbTip:'Four colours that stay apart, plain or striped, and no meaning carried by red or green alone.',
+    xDrop:'Tear down', xKeep:'Keep', gone:'to tear down', pHere:'Planned on this lot', pAdd:'Add a structure here', pFind:'Type a structure name', pHomes:'Also homes', pPlace:'Place', pBig:'too big for the free ground', pMore:'{n} more: type to narrow the list.',
+    pOk:'fits', pBad:'does not fit: drag or turn it', pNoRoom:'No free spot was found, so it sits in the middle: drag or turn it, or tear something down.', pTurn:'Turn', pAlign:'Square to the lot', pRemove:'Remove', pDrag:'Drag it on the map to move it.',
+    plH:'The plan', plN:'Structures you placed and buildings marked to tear down. Saved in this browser.', plNone:'Nothing planned yet. Tap a lot and add a structure.', plWhere:'Where', plClear:'Clear the plan', plDrops:'To tear down', plShow:'Show',
+    updated:'Read from Upland on {d}.', hits:'{n} lots match.', hit1:'1 lot matches.'
+  },
+  es:{
+    title:'El Plano de Sir Quailbert', subtitle:'Quailwood, lote por lote: de quién es, qué tiene construido y cuánto terreno queda libre.',
+    loading:'Cargando el mapa…', none:'No se pudieron cargar los datos del mapa.',
+    tLots:'lotes', tOwners:'dueños', tFree:'sin mintear', tBld:'edificios', tSrv:'estructuras de servicio', tLiv:'casas', tWip:'en construcción', tOurs:'lotes de los constructores',
+    search:'Busca una dirección, un dueño o una estructura', builders:'Constructores', all:'Todos', clear:'Quitar',
+    lgSrv:'estructura de servicio', lgLiv:'casa', lgWip:'en construcción', lgOth:'otros dueños', lgFree:'sin mintear',
+    dPick:'Toca un lote para ver de quién es y qué tiene construido.', dOwner:'Dueño', dNone:'sin mintear', dArea:'{n} UP2', dFree:'{n} UP2 de terreno libre', dEmpty:'Aquí no hay nada construido.', dOpen:'Abrir en Upland',
+    cStruct:'Estructura', cKind:'Tipo', cSize:'Planta', cState:'Estado', built:'construida', wip:'en construcción', srv:'servicio', liv:'casa', unk:'tamaño desconocido',
+    bH:'Los constructores', bN:'El terreno libre es el lote menos la planta de lo que tiene construido. Toca una fila para iluminar los lotes de ese jugador.',
+    cWho:'Jugador', cLots:'Lotes', cUp2:'UP2', cFreeUp2:'UP2 libres', cBld:'Edificios', cEmpty:'Lotes vacíos',
+    oH:'Todos los dueños de Quailwood', sH:'Lo que Quailwood ya tiene', sN:'Toca una estructura para iluminar los lotes que la tienen.', cCount:'Cantidad', cLotsWith:'Lotes',
+    heatOn:'Calor: troves difíciles al alcance de cada lote', lgHeat:'pocos a muchos troves difíciles al alcance (máximo: {n})', lgRing:'alcance: seguro hasta 60 m, se pierde hacia 100 m',
+    rNow:'Parado aquí alcanzas unos {a} troves difíciles hoy, y {b} con el plan.', rList:'Al alcance con el plan', rNone:'Ningún trove difícil queda al alcance de este lote.',
+    cHard:'Troves difíciles', cBonus:'Troves solo de bono', cHas:'En Quailwood', vNew:'{a} nuevos de {b}', pSize:'Primero las más chicas', pRank:'Primero las mejores: más troves difíciles que Quailwood aún no da, luego troves solo de bono, luego las más chicas.',
+    hH:'Los mejores lugares para pararse', hN:'Lotes con más troves difíciles al alcance. Un trove cuenta completo hasta 60 m y cada vez menos hasta 100 m.', cNow:'Hoy', cPlan:'Con el plan',
+    cbOn:'Colores para daltonismo rojo-verde', cbTip:'Cuatro colores que no se confunden, lisos o rayados, y nada depende solo del rojo o el verde.',
+    xDrop:'Demoler', xKeep:'Conservar', gone:'por demoler', pHere:'Planeado en este lote', pAdd:'Agregar una estructura aquí', pFind:'Escribe el nombre de una estructura', pHomes:'También casas', pPlace:'Colocar', pBig:'muy grande para el terreno libre', pMore:'{n} más: escribe para acortar la lista.',
+    pOk:'cabe', pBad:'no cabe: arrástrala o gírala', pNoRoom:'No se encontró un lugar libre, así que quedó en el centro: arrástrala, gírala o demuele algo.', pTurn:'Girar', pAlign:'Alinear al lote', pRemove:'Quitar', pDrag:'Arrástrala en el mapa para moverla.',
+    plH:'El plan', plN:'Estructuras que colocaste y edificios marcados para demoler. Se guarda en este navegador.', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
+    updated:'Leído de Upland el {d}.', hits:'{n} lotes coinciden.', hit1:'1 lote coincide.'
+  },
+  en_cunk:{
+    title:'Sir Quailbert’s Blueprint: A Survey of Quailwood, Which Is a Place', subtitle:'Every plot, who claims it, what has been put on it, and how much of it remains stubbornly empty.',
+    dPick:'Prod a plot to learn who owns it and what they have done to it.'
+  },
+  es_cunk:{
+    title:'El Plano de Sir Quailbert: un estudio de Quailwood, que es un lugar', subtitle:'Cada terreno, quién lo reclama, qué le pusieron encima y cuánto sigue tercamente vacío.',
+    dPick:'Pica un terreno para saber de quién es y qué le hicieron.'
+  }
+});
+
+const NAMES = {rockdrigo:'Rockdrigo', mstullis:'MsTullis', missmarlow:'MissMarlow', talljames:'TallJames', wamawa:'Wamawa', bielykvietok:'Bielykvietok', realistix:'Realistix', huskyb:'HuskyB'};
+const COLORS = ['#2f7ed8', '#e0703a', '#3aa76d', '#c94f9b', '#8a6fd1', '#c9a227', '#2bb3b3', '#d14b4b'];
+const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
+const n0 = x => Math.round(x).toLocaleString(Site.locale());
+const key = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().replace(/ 1$/, '');
+const nameOf = u => NAMES[u] || u;
+
+const CBBASE = ['#0072B2', '#F0E442', '#D55E00', '#56B4E9'];   // told apart with red-green colour blindness; the second four are the same, striped
+let D = null, FP = {}, LOTS = [], BYID = new Map(), GROUP = [], COL = {}, VIEW = null, HOME = null, CUR = null, HL = null, Q = '';
+let CB = store.get('rut:blueprint:cb', false), SEL = -1, PQ = '', HOMES = false, NOTE = '', DRAG = null;
+// the plan: adds = [{id: lot, k: structure, x, y: metres from the lot's centre, a: turn}], drops = ['lot:index:structure', ...]
+let PLAN = store.get('rut:blueprint:plan', {adds:[], drops:[]});
+if(!PLAN || !Array.isArray(PLAN.adds) || !Array.isArray(PLAN.drops)) PLAN = {adds:[], drops:[]};
+const savePlan = () => store.set('rut:blueprint:plan', PLAN);
+let TV = {}, TN = [], HEAT = store.get('rut:blueprint:heat', false), BYSIZE = false, S0 = new Map(), S1 = new Map(), HAVE = new Set(), COUNT = new Map();
+// chance that a structure this far from the property you stand on is in reach (measured: sure to 60 m, none from 100 m)
+const REACH = [[60, 1], [70, .63], [80, .46], [90, .3], [100, 0]];
+function reachW(d){
+  if(d <= 60) return 1;
+  if(d >= 100) return 0;
+  for(let i = 1; i < REACH.length; i++) if(d <= REACH[i][0]){ const [d0, w0] = REACH[i - 1], [d1, w1] = REACH[i]; return w0 + (w1 - w0) * (d - d0) / (d1 - d0); }
+  return 0;
+}
+const mid = poly => [poly.reduce((a, q) => a + q[0], 0) / poly.length, poly.reduce((a, q) => a + q[1], 0) / poly.length];
+function sources(plan){
+  // every structure that gives a hard trove: [x, y, hard troves]; with the plan, without what is torn down and with what is placed
+  const out = [];
+  for(const l of LOTS) for(const b of l.bs){ const v = TV[b.k]; if(v && v.h.length && b.poly && !(plan && isGone(l, b.i, b))) out.push([...mid(b.poly), v.h]); }
+  if(plan) for(const q of PLAN.adds){ const v = TV[q.k]; if(v && v.h.length) out.push([...mid(planPoly(q)), v.h]); }
+  return out;
+}
+function reachOf(l, src){
+  // {trove: chance it is in reach when standing on this lot}
+  const miss = new Map();
+  for(const [x, y, h] of src){
+    const w = reachW(Math.hypot(x - l.cx, y - l.cy));
+    if(w > 0) for(const ti of h) miss.set(ti, (miss.get(ti) ?? 1) * (1 - w));
+  }
+  return new Map([...miss].map(([ti, m]) => [ti, 1 - m]));
+}
+const total = m => [...m.values()].reduce((a, v) => a + v, 0);
+function rescore(){
+  const a = sources(false), b = sources(true);
+  if(!S0.size) for(const l of LOTS) S0.set(l.id, total(reachOf(l, a)));
+  S1 = new Map(LOTS.map(l => [l.id, total(reachOf(l, b))]));
+  // what Quailwood gives once the plan is built: hard and bonus-only troves, and how many of each structure
+  HAVE = new Set(); COUNT = new Map();
+  const add = k => { COUNT.set(k, (COUNT.get(k) || 0) + 1); const v = TV[k]; if(v){ v.h.forEach(x => HAVE.add(x)); v.b.forEach(x => HAVE.add(x)); } };
+  for(const l of LOTS) for(const bd of l.bs) if(!isGone(l, bd.i, bd)) add(bd.k);
+  for(const q of PLAN.adds) add(q.k);
+}
+const gi = u => GROUP.indexOf(u);
+const striped = u => CB && gi(u) >= 4;
+const colorOf = u => CB ? CBBASE[gi(u) % 4] : COL[u];
+const dotOf = u => `<span class="dot" style="background:${striped(u) ? `repeating-linear-gradient(45deg,${colorOf(u)} 0 3px,var(--surface) 3px 5px)` : colorOf(u)}"></span>`;
+const dropKey = (l, i, b) => l.id + ':' + i + ':' + b.k;
+const isGone = (l, i, b) => PLAN.drops.includes(dropKey(l, i, b));
+
+// ---------- geometry: metres east (x) and south (y) of the middle of the neighbourhood ----------
+function prepare(){
+  GROUP = D.group || Object.keys(NAMES);
+  GROUP.forEach((u, i) => { COL[u] = COLORS[i % COLORS.length]; });
+  const lat0 = D.rows.reduce((a, r) => a + r[3], 0) / D.rows.length, lng0 = D.rows.reduce((a, r) => a + r[4], 0) / D.rows.length;
+  const kx = 111320 * Math.cos(lat0 * Math.PI / 180), ky = 110540;
+  const X = lng => (lng - lng0) * kx, Y = lat => -(lat - lat0) * ky;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  LOTS = D.rows.map(r => {
+    const pts = r[6].map(([lng, lat]) => [X(lng), Y(lat)]);
+    pts.forEach(([x, y]) => { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); });
+    let used = 0;
+    const bs = r[7].map((b, i) => {
+      const f = FP[key(b[0])], cx = X(b[3]), cy = Y(b[2]), ca = Math.cos(b[4]), sa = Math.sin(b[4]), s = b[5] || 1;
+      if(f) used += f.w * f.d * s * s;
+      // the footprint turned as Upland turns it (north up, so the y of the page is flipped)
+      const poly = f ? f.poly.map(([px, py]) => [cx + (px * ca + py * sa) * s, cy - (px * sa - py * ca) * s]) : null;
+      return {i, name:b[0], k:key(b[0]), built:!!b[1], f, poly, liv:!!(f && f.living), m2:f ? f.w * f.d * s * s : 0};
+    });
+    return {id:r[0], addr:r[1], area:r[2] || 0, who:r[5], pts, bs, free:Math.max(0, (r[2] || 0) - used / 9),
+            cx:X(r[4]), cy:Y(r[3]), text:(r[1] + ' ' + r[5] + ' ' + nameOf(r[5]) + ' ' + r[7].map(b => b[0]).join(' ')).toLowerCase()};
+  });
+  BYID = new Map(LOTS.map(l => [l.id, l]));
+  PLAN.adds = PLAN.adds.filter(p => BYID.has(p.id) && FP[p.k]);
+  const pad = 20;
+  HOME = {x:x0 - pad, y:y0 - pad, w:x1 - x0 + 2 * pad, h:y1 - y0 + 2 * pad};
+  VIEW = {...HOME};
+}
+const path = pts => 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L') + 'Z';
+
+// ---------- placing: a footprint must lie inside the lot and clear of every other building ----------
+function inPoly(x, y, pts){
+  let c = false;
+  for(let i = 0, j = pts.length - 1; i < pts.length; j = i++){
+    const [x1, y1] = pts[i], [x2, y2] = pts[j];
+    if((y1 > y) !== (y2 > y) && x < (x2 - x1) * (y - y1) / (y2 - y1) + x1) c = !c;
+  }
+  return c;
+}
+function cross(a, b, c, d){
+  const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0;
+}
+function overlap(A, B){
+  for(const P of [A, B]) for(let i = 0, j = P.length - 1; i < P.length; j = i++){
+    const nx = -(P[i][1] - P[j][1]), ny = P[i][0] - P[j][0];
+    let a0 = 1e9, a1 = -1e9, b0 = 1e9, b1 = -1e9;
+    for(const [x, y] of A){ const v = x * nx + y * ny; a0 = Math.min(a0, v); a1 = Math.max(a1, v); }
+    for(const [x, y] of B){ const v = x * nx + y * ny; b0 = Math.min(b0, v); b1 = Math.max(b1, v); }
+    if(a1 <= b0 || b1 <= a0) return false;
+  }
+  return true;
+}
+// a little slack (0.2 m a side), as Upland itself lets neighbours touch
+function shrink(poly){
+  const mx = poly.reduce((a, p) => a + p[0], 0) / poly.length, my = poly.reduce((a, p) => a + p[1], 0) / poly.length;
+  return poly.map(([x, y]) => { const d = Math.hypot(x - mx, y - my) || 1, k = Math.max(0, d - 0.28) / d; return [mx + (x - mx) * k, my + (y - my) * k]; });
+}
+function polyAt(l, k, x, y, a){
+  const f = FP[k], cx = l.cx + x, cy = l.cy + y, ca = Math.cos(a), sa = Math.sin(a);
+  return f.poly.map(([px, py]) => [cx + px * ca + py * sa, cy - (px * sa - py * ca)]);
+}
+const planPoly = p => polyAt(BYID.get(p.id), p.k, p.x, p.y, p.a);
+function blockers(l, except){
+  const out = l.bs.filter(b => b.poly && !isGone(l, b.i, b)).map(b => shrink(b.poly));
+  PLAN.adds.forEach((p, n) => { if(p.id === l.id && n !== except) out.push(shrink(planPoly(p))); });
+  return out;
+}
+function fitsAt(l, poly, blocks){
+  const q = shrink(poly);
+  for(const [x, y] of q) if(!inPoly(x, y, l.pts)) return false;
+  for(let i = 0, j = 3; i < 4; j = i++) for(let a = 0, b = l.pts.length - 1; a < l.pts.length; b = a++) if(cross(q[i], q[j], l.pts[a], l.pts[b])) return false;
+  for(const o of blocks) if(overlap(q, o)) return false;
+  return true;
+}
+const planOk = n => { const p = PLAN.adds[n], l = BYID.get(p.id); return fitsAt(l, planPoly(p), blockers(l, n)); };
+function lotAngles(l){
+  // turns that set the footprint square to the lot's longest sides
+  const edges = l.pts.map((p, i) => { const q = l.pts[(i + 1) % l.pts.length]; return [Math.hypot(q[0] - p[0], q[1] - p[1]), Math.atan2(-(q[1] - p[1]), q[0] - p[0])]; }).sort((a, b) => b[0] - a[0]);
+  const out = [], H = Math.PI / 2;
+  for(const [, a] of edges){
+    const m = ((a % H) + H) % H;
+    if(!out.some(o => Math.min(Math.abs(o - m), H - Math.abs(o - m)) < 0.035)) out.push(m);
+    if(out.length >= 5) break;
+  }
+  return out.length ? out : [0];
+}
+function edgeDist(x, y, pts){
+  let best = 1e9;
+  for(let i = 0, j = pts.length - 1; i < pts.length; j = i++){
+    const [ax, ay] = pts[j], dx = pts[i][0] - ax, dy = pts[i][1] - ay, L = dx * dx + dy * dy;
+    const u = L ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L)) : 0;
+    best = Math.min(best, Math.hypot(x - ax - u * dx, y - ay - u * dy));
+  }
+  return best;
+}
+function autoFit(l, k){
+  // a free spot for the structure, tucked against the lot's edge so the middle stays free; null when none is found
+  const f = FP[k], blocks = blockers(l, -1), xs = l.pts.map(p => p[0]), ys = l.pts.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const step = Math.min(4, Math.max(0.5, Math.min(x1 - x0, y1 - y0) / 40));
+  const mx = f.poly.reduce((a, p) => a + p[0], 0) / f.poly.length, my = f.poly.reduce((a, p) => a + p[1], 0) / f.poly.length;
+  let best = null, bestScore = 1e9;
+  const turns = lotAngles(l).flatMap(a => Math.abs(f.w - f.d) < 0.05 ? [a] : [a, a + Math.PI / 2]);
+  for(const a of turns){
+    const ca = Math.cos(a), sa = Math.sin(a), ox = mx * ca + my * sa, oy = -(mx * sa - my * ca);
+    for(let gx = x0 + step / 2; gx < x1; gx += step) for(let gy = y0 + step / 2; gy < y1; gy += step){
+      if(!inPoly(gx, gy, l.pts)) continue;
+      const x = gx - ox - l.cx, y = gy - oy - l.cy, poly = polyAt(l, k, x, y, a);
+      if(!fitsAt(l, poly, blocks)) continue;
+      const score = poly.reduce((s, p) => s + edgeDist(p[0], p[1], l.pts), 0);
+      if(score < bestScore){ bestScore = score; best = {x, y, a}; }
+    }
+  }
+  return best;
+}
+const freeOf = l => Math.max(0, l.area - (l.bs.reduce((a, b) => a + (isGone(l, b.i, b) ? 0 : b.m2), 0) + PLAN.adds.reduce((a, p) => a + (p.id === l.id ? FP[p.k].w * FP[p.k].d : 0), 0)) / 9);
+
+// ---------- what is lit up ----------
+function isHit(l){
+  if(Q && !l.text.includes(Q)) return false;
+  if(!HL) return !!Q;
+  if(HL.type === 'who') return l.who === HL.v;
+  if(HL.type === 'builders') return GROUP.includes(l.who);
+  if(HL.type === 'struct') return l.bs.some(b => b.k === HL.v);
+  return false;
+}
+const active = () => !!(HL || Q);
+
+function drawMap(){
+  const svg = document.getElementById('map');
+  if(!LOTS.length){ svg.innerHTML = ''; return; }
+  const on = active(), top = Math.max(1, ...S1.values());
+  let lots = '', blds = '';
+  for(const l of LOTS){
+    const hit = on && isHit(l), dim = on && !hit;
+    const cls = 'lot' + (HEAT ? ' heat' : l.who ? (COL[l.who] ? '' : ' other') : ' free') + (dim ? ' dim' : '') + (hit ? ' hit' : '') + (CUR === l.id ? ' cur' : '');
+    if(HEAT){ lots += `<path class="${cls}" data-id="${l.id}" d="${path(l.pts)}" fill-opacity="${(0.06 + 0.94 * (S1.get(l.id) || 0) / top).toFixed(2)}"><title>${esc(l.addr)} · ${(S1.get(l.id) || 0).toFixed(1)}</title></path>`; }
+    else
+    lots += `<path class="${cls}" data-id="${l.id}" d="${path(l.pts)}"${COL[l.who] ? ` fill="${striped(l.who) ? `url(#st${gi(l.who) % 4})` : colorOf(l.who)}" fill-opacity="${CB ? '.8' : '.55'}"` : ''}><title>${esc(l.addr)}${l.who ? ' · ' + esc(nameOf(l.who)) : ''}</title></path>`;
+    for(const b of l.bs) if(b.poly) blds += `<path class="bld${isGone(l, b.i, b) ? ' gone' : (b.liv ? ' liv' : '') + (b.built ? '' : ' wip')}${dim ? ' dim' : ''}" d="${path(b.poly)}"/>`;
+  }
+  const defs = '<defs>' + CBBASE.map((c, i) => `<pattern id="st${i}" class="stripe" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="${c}"/><rect width="3" height="8" fill="var(--surface)"/></pattern>`).join('') + '</defs>';
+  const c = BYID.get(CUR), rings = c ? [60, 80, 100].map(r => `<circle class="ring r${r}" cx="${c.cx.toFixed(1)}" cy="${c.cy.toFixed(1)}" r="${r}"/>`).join('') : '';
+  svg.innerHTML = defs + lots + blds + PLAN.adds.map((p, n) => planSvg(n)).join('') + rings;
+  setView();
+}
+function planSvg(n){
+  const poly = planPoly(PLAN.adds[n]), ok = planOk(n);
+  // a plan that does not fit is dashed and crossed out, so it never depends on colour
+  return `<g data-g="${n}"><path class="plan${ok ? '' : ' bad'}${n === SEL ? ' sel' : ''}" data-p="${n}" d="${path(poly)}"><title>${esc(FP[PLAN.adds[n].k].name)}</title></path>${ok ? '' : `<path class="planx" d="M${poly[0][0].toFixed(1)} ${poly[0][1].toFixed(1)}L${poly[2][0].toFixed(1)} ${poly[2][1].toFixed(1)}M${poly[1][0].toFixed(1)} ${poly[1][1].toFixed(1)}L${poly[3][0].toFixed(1)} ${poly[3][1].toFixed(1)}"/>`}</g>`;
+}
+function setView(){
+  const svg = document.getElementById('map'), r = svg.getBoundingClientRect();
+  svg.setAttribute('viewBox', [VIEW.x, VIEW.y, VIEW.w, VIEW.h].map(v => v.toFixed(1)).join(' '));
+  const k = Math.max(VIEW.w / (r.width || 1), VIEW.h / (r.height || 1));   // stripes keep the same width on screen at any zoom
+  svg.querySelectorAll('.stripe').forEach(p => p.setAttribute('patternTransform', `rotate(45) scale(${k.toFixed(3)})`));
+}
+function zoomAt(f, px, py){
+  // f < 1 zooms in; (px, py) is the point of the map that stays put
+  const w = Math.min(HOME.w * 1.5, Math.max(25, VIEW.w * f)), k = w / VIEW.w;
+  VIEW = {x:px - (px - VIEW.x) * k, y:py - (py - VIEW.y) * k, w, h:VIEW.h * k};
+  setView();
+}
+function toMap(e){
+  const svg = document.getElementById('map'), r = svg.getBoundingClientRect();
+  const s = Math.max(VIEW.w / r.width, VIEW.h / r.height);   // the map is fitted inside the box
+  const ox = (r.width * s - VIEW.w) / 2, oy = (r.height * s - VIEW.h) / 2;
+  return {x:VIEW.x - ox + (e.clientX - r.left) * s, y:VIEW.y - oy + (e.clientY - r.top) * s, s};
+}
+function showLot(l){
+  const w = Math.max(120, Math.sqrt(l.area * 9) * 5), box = document.getElementById('map').getBoundingClientRect();
+  const h = w * (box.height / box.width || 1);
+  VIEW = {x:l.cx - w / 2, y:l.cy - h / 2, w, h};
+}
+
+// ---------- the parts of the page ----------
+function tiles(){
+  const owners = new Set(LOTS.map(l => l.who).filter(Boolean)), all = LOTS.flatMap(l => l.bs);
+  const items = [[LOTS.length, 'tLots'], [owners.size, 'tOwners'], [LOTS.filter(l => !l.who).length, 'tFree'], [LOTS.filter(l => GROUP.includes(l.who)).length, 'tOurs'],
+                 [all.filter(b => !b.liv).length, 'tSrv'], [all.filter(b => b.liv).length, 'tLiv'], [all.filter(b => !b.built).length, 'tWip']];
+  document.getElementById('tiles').innerHTML = items.map(([n, k]) => `<div class="card"><div class="big">${n0(n)}</div><div class="small muted">${esc(t(k))}</div></div>`).join('');
+}
+function ctl(){
+  const chip = (type, v, label, color) => `<button type="button" data-t="${type}" data-v="${esc(v)}" class="${HL && HL.type === type && HL.v === v ? 'on' : ''}">${color ? dotOf(v) : ''}${esc(label)}</button>`;
+  const el = document.getElementById('ctl'), had = document.activeElement && document.activeElement.id === 'q';
+  el.innerHTML = `<div class="ctl"><input type="search" id="q" placeholder="${esc(t('search'))}" value="${esc(Q)}" aria-label="${esc(t('search'))}">
+      ${active() ? `<span class="small muted">${esc((n => n === 1 ? t('hit1') : t('hits', {n:n0(n)}))(LOTS.filter(isHit).length))}</span><button type="button" class="btn small" id="clear">${esc(t('clear'))}</button>` : ''}</div>
+    <div class="chips2">${chip('builders', '', t('builders'))}${GROUP.map(u => chip('who', u, nameOf(u), COL[u])).join('')}</div>
+    <div class="opts"><label class="chk"><input type="checkbox" id="heat"${HEAT ? ' checked' : ''}> ${esc(t('heatOn'))}</label>
+    <label class="chk" title="${esc(t('cbTip'))}"><input type="checkbox" id="cb"${CB ? ' checked' : ''}> ${esc(t('cbOn'))}</label></div>`;
+  if(had){ const q = document.getElementById('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+}
+function legend(){
+  document.getElementById('legend').innerHTML = `<span><i class="sw srv"></i>${esc(t('lgSrv'))}</span><span><i class="sw liv"></i>${esc(t('lgLiv'))}</span><span><i class="sw wip"></i>${esc(t('lgWip'))}</span>
+    ${HEAT ? `<span><i class="sw heat"></i>${esc(t('lgHeat', {n:Math.max(0, ...S1.values()).toFixed(1)}))}</span>` : `<span><i class="sw oth"></i>${esc(t('lgOth'))}</span><span><i class="sw fre"></i>${esc(t('lgFree'))}</span>`}<span><i class="sw rg"></i>${esc(t('lgRing'))}</span><span>${esc(t('updated', {d:new Date(D.updatedAt).toLocaleDateString(Site.locale(), {day:'numeric', month:'short', year:'numeric'})}))}</span>`;
+}
+function tbl(head, rows){
+  return `<div class="tablewrap"><table><thead><tr>${head.map(([h, c]) => `<th class="${c || ''}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+function detail(){
+  const el = document.getElementById('detail'), l = BYID.get(CUR);
+  if(!l){ el.innerHTML = `<p class="muted" style="margin:0">${esc(t('dPick'))}</p>`; return; }
+  const size = f => `${f.w.toFixed(1)} × ${f.d.toFixed(1)} m · ${(f.w * f.d / 9).toFixed(1)} UP2`;
+  const rows = l.bs.slice().sort((a, b) => a.liv - b.liv || a.name.localeCompare(b.name)).map(b => { const gone = isGone(l, b.i, b); return `<tr><td><b>${gone ? '<s>' + esc(b.name) + '</s>' : esc(b.name)}</b></td><td>${esc(t(b.liv ? 'liv' : 'srv'))}</td>
+    <td class="n">${b.f ? size(b.f) : esc(t('unk'))}</td><td>${esc(t(gone ? 'gone' : b.built ? 'built' : 'wip'))}</td><td><button type="button" class="btn small" data-act="drop" data-i="${b.i}">${esc(t(gone ? 'xKeep' : 'xDrop'))}</button></td></tr>`; });
+  const mine = PLAN.adds.map((p, n) => [p, n]).filter(([p]) => p.id === l.id).map(([p, n]) => { const ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td><b>${esc(FP[p.k].name)}</b><div class="small muted">${size(FP[p.k])}</div></td>
+    <td><span class="tag">${ok ? '✓ ' + esc(t('pOk')) : '✕ ' + esc(t('pBad'))}</span></td>
+    <td><span class="rot">${[-15, -1, 1, 15].map(d => `<button type="button" class="btn small" data-act="rot" data-n="${n}" data-d="${d}" aria-label="${esc(t('pTurn'))} ${d}°">${d > 0 ? '+' : '−'}${Math.abs(d)}°</button>`).join('')}<button type="button" class="btn small" data-act="align" data-n="${n}">${esc(t('pAlign'))}</button><button type="button" class="btn small" data-act="rm" data-n="${n}">${esc(t('pRemove'))}</button></span></td></tr>`; });
+  el.innerHTML = `<h2>${esc(l.addr)}</h2>
+    <div class="kv"><span>${esc(t('dOwner'))}: <b>${l.who ? `${COL[l.who] ? dotOf(l.who) + ' ' : ''}${esc(nameOf(l.who))}` : esc(t('dNone'))}</b></span>
+      <span><b>${esc(t('dArea', {n:n0(l.area)}))}</b></span><span>${esc(t('dFree', {n:n0(freeOf(l))}))}</span>
+      <a class="btn small" target="_blank" rel="noopener" href="${UPLAND(l.id)}">${esc(t('dOpen'))} ↗</a></div>
+    ${rows.length ? tbl([[t('cStruct')], [t('cKind')], [t('cSize'), 'n'], [t('cState')], ['']], rows) : `<p class="muted small" style="margin:0 0 8px">${esc(t('dEmpty'))}</p>`}
+    ${mine.length ? `<h3>${esc(t('pHere'))}</h3><p class="hint" style="margin:0 0 6px">${esc(t('pDrag'))}</p>${tbl([[t('cStruct')], [t('cState')], [t('pTurn')]], mine)}` : ''}
+    ${NOTE ? `<p class="small" style="margin:8px 0 0"><b>${esc(NOTE)}</b></p>` : ''}
+    ${reachHtml(l)}
+    <h3>${esc(t('pAdd'))}</h3>
+    <p class="hint" style="margin:0 0 6px">${esc(t('pRank'))}</p>
+    <input type="search" id="pick" placeholder="${esc(t('pFind'))}" value="${esc(PQ)}" aria-label="${esc(t('pFind'))}">
+    <div class="opts" style="margin-bottom:6px"><label class="chk"><input type="checkbox" id="bysize"${BYSIZE ? ' checked' : ''}> ${esc(t('pSize'))}</label>
+    <label class="chk"><input type="checkbox" id="homes"${HOMES ? ' checked' : ''}> ${esc(t('pHomes'))}</label></div>
+    <div id="pickList"></div>`;
+  pickList();
+}
+function reachHtml(l){
+  const m = reachOf(l, sources(true)), list = [...m].sort((a, b) => b[1] - a[1] || TN[a[0]].localeCompare(TN[b[0]]));
+  return `<p class="small" style="margin:10px 0 0">${esc(t('rNow', {a:(S0.get(l.id) || 0).toFixed(1), b:(S1.get(l.id) || 0).toFixed(1)}))}</p>
+    <div class="trv" style="max-width:none">${list.length ? `${esc(t('rList'))}: ` + list.map(([ti, w]) => esc(TN[ti]) + (w < 0.995 ? ` ${Math.round(w * 100)}%` : '')).join(', ') : esc(t('rNone'))}</div>`;
+}
+function pickList(){
+  const el = document.getElementById('pickList'), l = BYID.get(CUR);
+  if(!el || !l) return;
+  const q = key(PQ), free = freeOf(l), m2 = f => f.w * f.d;
+  const val = k => { const v = TV[k] || {h:[], b:[]}; return {v, nh:v.h.filter(x => !HAVE.has(x)), nb:v.b.filter(x => !HAVE.has(x))}; };
+  const all = Object.entries(FP).filter(([k, f]) => (HOMES || !f.living) && (!q || k.includes(q))).map(([k, f]) => ({k, f, big:m2(f) / 9 > free, ...val(k)}));
+  all.sort((a, b) => a.big - b.big || (BYSIZE ? 0 : b.nh.length - a.nh.length || b.nb.length - a.nb.length || b.v.h.length - a.v.h.length) || m2(a.f) - m2(b.f) || a.f.name.localeCompare(b.f.name));
+  const names = xs => xs.map(x => TN[x]).join(', ');
+  const cell = (nw, allx) => allx.length ? `<span title="${esc(names(allx))}">${esc(t('vNew', {a:nw.length, b:allx.length}))}</span>` : '<span class="muted">–</span>';
+  const rows = all.slice(0, 30).map(({k, f, big, v, nh, nb}) => `<tr><td><b>${esc(f.name)}</b>${nh.length ? `<div class="trv">${esc(names(nh))}</div>` : ''}</td>
+    <td class="n">${cell(nh, v.h)}</td><td class="n">${cell(nb, v.b)}</td><td class="n">${COUNT.get(k) || 0}</td><td class="n">${f.w.toFixed(1)} × ${f.d.toFixed(1)} m · ${(m2(f) / 9).toFixed(1)} UP2</td>
+    <td>${big ? `<span class="small muted">${esc(t('pBig'))}</span>` : `<button type="button" class="btn small primary" data-act="place" data-k="${esc(k)}">${esc(t('pPlace'))}</button>`}</td></tr>`);
+  el.innerHTML = tbl([[t('cStruct')], [t('cHard'), 'n'], [t('cBonus'), 'n'], [t('cHas'), 'n'], [t('cSize'), 'n'], ['']], rows) + (all.length > 30 ? `<p class="small muted" style="margin:6px 0 0">${esc(t('pMore', {n:n0(all.length - 30)}))}</p>` : '');
+}
+function planCard(){
+  const el = document.getElementById('plan');
+  if(!LOTS.length){ el.innerHTML = ''; return; }
+  const rows = PLAN.adds.map((p, n) => { const l = BYID.get(p.id), f = FP[p.k], ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td><b>${esc(f.name)}</b></td><td>${esc(l.addr)}</td><td>${l.who ? (COL[l.who] ? dotOf(l.who) + ' ' : '') + esc(nameOf(l.who)) : esc(t('dNone'))}</td>
+    <td class="n">${(f.w * f.d / 9).toFixed(1)} UP2</td><td><span class="tag">${ok ? '✓ ' + esc(t('pOk')) : '✕ ' + esc(t('pBad'))}</span></td>
+    <td><button type="button" class="btn small" data-act="go" data-n="${n}">${esc(t('plShow'))}</button> <button type="button" class="btn small" data-act="rm" data-n="${n}">${esc(t('pRemove'))}</button></td></tr>`; });
+  const drops = PLAN.drops.map(d => { const [id, i] = d.split(':'), l = BYID.get(id), b = l && l.bs[+i]; return b ? `<tr><td><b>${esc(b.name)}</b></td><td>${esc(l.addr)}</td><td>${l.who ? esc(nameOf(l.who)) : ''}</td><td><button type="button" class="btn small" data-act="golot" data-id="${id}">${esc(t('plShow'))}</button></td></tr>` : ''; }).filter(Boolean);
+  el.innerHTML = `<h2 style="margin:0 0 4px">${esc(t('plH'))} <span class="tag">${rows.length}</span></h2><p class="hint" style="margin:0 0 8px">${esc(t('plN'))}</p>
+    ${rows.length ? tbl([[t('cStruct')], [t('plWhere')], [t('dOwner')], [t('cSize'), 'n'], [t('cState')], ['']], rows) : `<p class="muted small" style="margin:0">${esc(t('plNone'))}</p>`}
+    ${drops.length ? `<h3>${esc(t('plDrops'))} <span class="tag">${drops.length}</span></h3>${tbl([[t('cStruct')], [t('plWhere')], [t('dOwner')], ['']], drops)}` : ''}
+    ${rows.length || drops.length ? `<div class="row" style="margin-top:8px"><button type="button" class="btn small" data-act="clearplan">${esc(t('plClear'))}</button></div>` : ''}`;
+}
+function act(b){
+  const a = b.getAttribute('data-act'), n = +b.getAttribute('data-n'), l = BYID.get(CUR);
+  NOTE = '';
+  if(a === 'drop' && l){
+    const bd = l.bs[+b.getAttribute('data-i')], k = dropKey(l, bd.i, bd), at = PLAN.drops.indexOf(k);
+    if(at < 0) PLAN.drops.push(k); else PLAN.drops.splice(at, 1);
+  }else if(a === 'place' && l){
+    const k = b.getAttribute('data-k'), fit = autoFit(l, k);
+    if(fit) PLAN.adds.push({id:l.id, k, ...fit});
+    else{
+      // no room found: put it in the middle of the lot, crossed out, for the player to sort out
+      const f = FP[k], a0 = lotAngles(l)[0], mx = (f.poly[0][0] + f.poly[2][0]) / 2, my = (f.poly[0][1] + f.poly[2][1]) / 2;
+      const gx = l.pts.reduce((s, q) => s + q[0], 0) / l.pts.length, gy = l.pts.reduce((s, q) => s + q[1], 0) / l.pts.length;
+      PLAN.adds.push({id:l.id, k, a:a0, x:gx - (mx * Math.cos(a0) + my * Math.sin(a0)) - l.cx, y:gy + (mx * Math.sin(a0) - my * Math.cos(a0)) - l.cy});
+      NOTE = t('pNoRoom');
+    }
+    SEL = PLAN.adds.length - 1;
+  }else if(a === 'rm'){ PLAN.adds.splice(n, 1); SEL = -1; }
+  else if(a === 'rot' || a === 'align'){
+    const p = PLAN.adds[n], f = FP[p.k], pl = BYID.get(p.id), mx = (f.poly[0][0] + f.poly[2][0]) / 2, my = (f.poly[0][1] + f.poly[2][1]) / 2;
+    const mid = a0 => [p.x + mx * Math.cos(a0) + my * Math.sin(a0), p.y - (mx * Math.sin(a0) - my * Math.cos(a0))];
+    const [wx, wy] = mid(p.a);   // turn about the middle of the footprint, not about Upland's own point
+    if(a === 'rot') p.a += +b.getAttribute('data-d') * Math.PI / 180;
+    else{ const H = Math.PI / 2, opts = lotAngles(pl).flatMap(x => [x, x + H]).sort((x, y) => x - y), cur = ((p.a % Math.PI) + Math.PI) % Math.PI; p.a = opts.find(x => x > cur + 0.01) ?? opts[0]; }
+    const [nx, ny] = mid(p.a); p.x += wx - nx; p.y += wy - ny; SEL = n;
+  }else if(a === 'go' || a === 'golot'){
+    const lot = BYID.get(a === 'go' ? PLAN.adds[n].id : b.getAttribute('data-id'));
+    CUR = lot.id; SEL = a === 'go' ? n : -1; showLot(lot);
+    document.querySelector('.mapbox').scrollIntoView({block:'nearest'});
+  }else if(a === 'clearplan'){ PLAN = {adds:[], drops:[]}; SEL = -1; }
+  savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables();
+}
+function tables(){
+  const by = new Map();
+  for(const l of LOTS){
+    if(!l.who) continue;
+    const o = by.get(l.who) || {lots:0, up2:0, free:0, bld:0, empty:0};
+    o.lots++; o.up2 += l.area; o.free += freeOf(l); o.bld += l.bs.length; o.empty += l.bs.length ? 0 : 1;
+    by.set(l.who, o);
+  }
+  const head = [[t('cWho')], [t('cLots'), 'n'], [t('cUp2'), 'n'], [t('cFreeUp2'), 'n'], [t('cBld'), 'n'], [t('cEmpty'), 'n']];
+  const row = ([u, o]) => `<tr class="pick${HL && HL.type === 'who' && HL.v === u ? ' sel' : ''}" data-t="who" data-v="${esc(u)}"><td>${COL[u] ? dotOf(u) + ' ' : ''}${esc(nameOf(u))}</td>
+    <td class="n">${n0(o.lots)}</td><td class="n">${n0(o.up2)}</td><td class="n">${n0(o.free)}</td><td class="n">${n0(o.bld)}</td><td class="n">${n0(o.empty)}</td></tr>`;
+  const ours = GROUP.filter(u => by.has(u)).map(u => [u, by.get(u)]).sort((a, b) => b[1].lots - a[1].lots);
+  const rest = [...by].filter(([u]) => !GROUP.includes(u)).sort((a, b) => b[1].lots - a[1].lots || a[0].localeCompare(b[0]));
+  const st = new Map();
+  for(const l of LOTS){
+    const seen = new Set();
+    for(const b of l.bs){
+      const s = st.get(b.k) || {name:b.name, n:0, lots:0, liv:b.liv};
+      s.n++; if(!seen.has(b.k)){ s.lots++; seen.add(b.k); }
+      st.set(b.k, s);
+    }
+  }
+  const srows = [...st].sort((a, b) => a[1].liv - b[1].liv || b[1].n - a[1].n || a[1].name.localeCompare(b[1].name)).map(([k, s]) =>
+    `<tr class="pick${HL && HL.type === 'struct' && HL.v === k ? ' sel' : ''}" data-t="struct" data-v="${esc(k)}"><td>${esc(s.name)}</td><td>${esc(t(s.liv ? 'liv' : 'srv'))}</td><td class="n">${n0(s.n)}</td><td class="n">${n0(s.lots)}</td></tr>`);
+  const keep = id => (document.getElementById(id) || {}).open ? ' open' : '';
+  const hot = LOTS.slice().sort((a, b) => S1.get(b.id) - S1.get(a.id)).slice(0, 15).map(l => `<tr><td>${esc(l.addr)}</td><td>${l.who ? (COL[l.who] ? dotOf(l.who) + ' ' : '') + esc(nameOf(l.who)) : esc(t('dNone'))}</td>
+    <td class="n">${S0.get(l.id).toFixed(1)}</td><td class="n"><b>${S1.get(l.id).toFixed(1)}</b></td><td><button type="button" class="btn small" data-act="golot" data-id="${l.id}">${esc(t('plShow'))}</button></td></tr>`);
+  document.getElementById('tables').innerHTML = `<section class="card"><h2 style="margin:0 0 4px">${esc(t('hH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('hN'))}</p>${tbl([[t('plWhere')], [t('dOwner')], [t('cNow'), 'n'], [t('cPlan'), 'n'], ['']], hot)}</section>
+    <section class="card"><h2 style="margin:0 0 4px">${esc(t('bH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('bN'))}</p>${tbl(head, ours.map(row))}</section>
+    <details class="card" id="dStruct"${keep('dStruct')}><summary>${esc(t('sH'))} <span class="tag">${st.size}</span></summary><p class="hint" style="margin:6px 0 8px">${esc(t('sN'))}</p>${tbl([[t('cStruct')], [t('cKind')], [t('cCount'), 'n'], [t('cLotsWith'), 'n']], srows)}</details>
+    <details class="card" id="dOwners"${keep('dOwners')}><summary>${esc(t('oH'))} <span class="tag">${by.size}</span></summary><div style="margin-top:8px">${tbl(head, [...ours, ...rest].map(row))}</div></details>`;
+}
+function draw(){
+  if(!D){ document.getElementById('detail').innerHTML = `<p class="muted" style="margin:0">${esc(t(D === null ? 'loading' : 'none'))}</p>`; return; }
+  document.body.classList.toggle('cb', CB);
+  tiles(); ctl(); legend(); drawMap(); detail(); planCard(); tables();
+}
+function light(type, v){
+  HL = HL && HL.type === type && HL.v === v ? null : {type, v};
+  ctl(); drawMap(); tables();
+}
+
+// ---------- taps, drags and zoom ----------
+function wire(){
+  const svg = document.getElementById('map'), pts = new Map();
+  let moved = 0, pinch = 0;
+  svg.addEventListener('pointerdown', e => {
+    const pn = e.target.getAttribute && e.target.getAttribute('data-p');
+    if(pn != null && !pts.size){   // a planned structure: drag it instead of the map
+      DRAG = {n:+pn, x:e.clientX, y:e.clientY, id:e.pointerId}; SEL = +pn; CUR = PLAN.adds[+pn].id; NOTE = '';
+      svg.setPointerCapture(e.pointerId); return;
+    }
+    pts.set(e.pointerId, e); moved = 0; pinch = 0; svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener('pointermove', e => {
+    if(DRAG && e.pointerId === DRAG.id){
+      const s2 = toMap(e).s, p = PLAN.adds[DRAG.n];
+      p.x += (e.clientX - DRAG.x) * s2; p.y += (e.clientY - DRAG.y) * s2; DRAG.x = e.clientX; DRAG.y = e.clientY;
+      const g = svg.querySelector(`[data-g="${DRAG.n}"]`);
+      if(g) g.outerHTML = planSvg(DRAG.n);
+      return;
+    }
+    const was = pts.get(e.pointerId);
+    if(!was) return;
+    if(pts.size === 1){
+      const s = toMap(e).s, dx = e.clientX - was.clientX, dy = e.clientY - was.clientY;
+      moved += Math.abs(dx) + Math.abs(dy);
+      if(moved > 4){ svg.classList.add('drag'); VIEW.x -= dx * s; VIEW.y -= dy * s; setView(); }
+    }
+    pts.set(e.pointerId, e);
+    if(pts.size === 2){
+      const [a, b] = [...pts.values()], d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+      const mid = toMap({clientX:(a.clientX + b.clientX) / 2, clientY:(a.clientY + b.clientY) / 2});
+      if(pinch && d) zoomAt(pinch / d, mid.x, mid.y);
+      pinch = d; moved = 99;
+    }
+  });
+  const up = e => {
+    if(DRAG && e.pointerId === DRAG.id){ DRAG = null; savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables(); return; }
+    const had = pts.delete(e.pointerId);
+    svg.classList.remove('drag'); pinch = 0;
+    if(had && moved <= 4 && e.type === 'pointerup'){
+      const el = document.elementFromPoint(e.clientX, e.clientY), id = el && el.getAttribute && el.getAttribute('data-id');
+      CUR = id && id !== CUR ? id : null; SEL = -1; NOTE = '';
+      drawMap(); detail(); planCard();
+    }
+  };
+  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+  svg.addEventListener('wheel', e => { e.preventDefault(); const p = toMap(e); zoomAt(e.deltaY > 0 ? 1.2 : 1 / 1.2, p.x, p.y); }, {passive:false});
+  document.querySelector('.zoom').addEventListener('click', e => {
+    const z = e.target.getAttribute('data-z');
+    if(z === 'fit'){ VIEW = {...HOME}; setView(); }
+    else if(z) zoomAt(z === 'in' ? 1 / 1.5 : 1.5, VIEW.x + VIEW.w / 2, VIEW.y + VIEW.h / 2);
+  });
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-t]');
+    const ab = e.target.closest('[data-act]');
+    if(ab){ act(ab); return; }
+    if(b){ light(b.getAttribute('data-t'), b.getAttribute('data-v')); return; }
+    if(e.target.id === 'clear'){ HL = null; Q = ''; ctl(); drawMap(); tables(); }
+  });
+  document.addEventListener('change', e => {
+    if(e.target.id === 'cb'){ CB = e.target.checked; store.set('rut:blueprint:cb', CB); draw(); }
+    if(e.target.id === 'homes'){ HOMES = e.target.checked; pickList(); }
+    if(e.target.id === 'bysize'){ BYSIZE = e.target.checked; pickList(); }
+    if(e.target.id === 'heat'){ HEAT = e.target.checked; store.set('rut:blueprint:heat', HEAT); legend(); drawMap(); }
+  });
+  document.addEventListener('input', e => {
+    if(e.target.id === 'pick'){ PQ = e.target.value; pickList(); return; }
+    if(e.target.id !== 'q') return;
+    Q = e.target.value.trim().toLowerCase();
+    const hits = Q ? LOTS.filter(isHit) : [];
+    if(hits.length === 1){ CUR = hits[0].id; SEL = -1; showLot(hits[0]); detail(); }
+    ctl(); drawMap();
+  });
+}
+
+async function getJson(url){ try{ const r = await fetch(url); return r.ok ? await r.json() : null; }catch{ return null; } }
+async function boot(){
+  Site.mount({onChange:draw});
+  draw();
+  wire();
+  const [m, f, tv] = await Promise.all([getJson('../data/structures/map/quailwood.json'), getJson('../data/structures/footprints.json'), getJson('../data/structures/trove-value.json')]);
+  TV = (tv || {}).structures || {}; TN = (tv || {}).troves || [];
+  if(!m || !m.rows){ D = undefined; draw(); return; }
+  FP = (f || {}).structures || {};
+  D = m; prepare(); rescore(); draw();
+}
+boot();
+</script>
+</body>
+</html>

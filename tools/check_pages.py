@@ -2,13 +2,13 @@
 """Catches the two mistakes that have broken the big single-file pages: a function declared twice (the later one silently wins) and a text key
 repeated inside one language block (the later one silently wins). Also checks that the inline script parses.
 
-  python3 tools/check_pages.py            # troves/, trove-helper/ and rounds/
+  python3 tools/check_pages.py            # troves/, trove-helper/, rounds/ and blueprint/
 """
 import re
 import subprocess
 import sys
 
-PAGES = ['troves/index.html', 'trove-helper/index.html', 'rounds/index.html']
+PAGES = ['troves/index.html', 'trove-helper/index.html', 'rounds/index.html', 'blueprint/index.html']
 
 
 def check(path):
