@@ -64,6 +64,11 @@ td.ck{width:1%}
 td.ck input{width:1.25rem;height:1.25rem}
 .sum{background:var(--surface-2);border-radius:8px;padding:8px 12px;font-size:.875rem;margin:10px 0}
 td select{max-width:14rem;padding:5px 6px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.8125rem}
+h2.fold{cursor:pointer;margin:0 0 6px;font-size:1.05rem;user-select:none}
+h2.fold::before{content:'▾ ';color:var(--muted)}
+.folded > h2.fold{margin:0}
+.folded > h2.fold::before{content:'▸ '}
+.folded > *:not(h2.fold){display:none !important}
 .opts{display:flex;gap:6px 16px;flex-wrap:wrap}
 .rot{display:inline-flex;gap:4px;flex-wrap:wrap}
 .rot button{min-width:2.4rem}
@@ -88,9 +93,10 @@ details.card>summary{cursor:pointer;font-weight:700}
   <div id="tiles" class="tiles"></div>
   <section class="card" id="trains" style="margin-bottom:12px"></section>
   <section class="card" id="ctl" style="margin-bottom:12px"></section>
+  <section class="card" id="mapcard"><h2 class="fold" data-fold="mapcard" id="mapH"></h2>
   <div class="mapbox"><svg id="map" role="img"></svg>
     <div class="zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="fit" aria-label="Whole map">⤢</button></div></div>
-  <div class="legend" id="legend"></div>
+  <div class="legend" id="legend"></div></section>
   <section class="card" id="detail" style="margin-top:12px"></section>
   <section class="card" id="plan" style="margin-top:12px"></section>
   <div class="two" id="tables"></div>
@@ -118,6 +124,7 @@ Site.register({
     rNow:'Standing here reaches about {a} hard troves now, and {b} with the plan.', rList:'In reach with the plan', rNone:'No hard trove is in reach of this lot.',
     cHard:'Hard troves', cBonus:'Bonus-only troves', cHas:'In Quailwood', vNew:'{a} new of {b}', pSize:'Smallest first', pRank:'Best first: structures that give a chased trove, then the most hard troves Quailwood does not give yet, then bonus-only troves, then the smallest.',
     hH:'Best places to stand', hN:'Lots with the most in reach: each hard trove once, plus every structure that gives a chased trove. Full count up to 60 m, less and less up to 100 m.', cNow:'Now', cPlan:'With the plan',
+    fMap:'Map', fCtl:'Find and view', fLot:'Selected lot',
     cbOn:'Colours for red-green colour blindness', cbTip:'Four colours that stay apart, plain or striped, and no meaning carried by red or green alone.',
     xDrop:'Tear down', xKeep:'Keep', gone:'to tear down', pHere:'Planned on this lot', pAdd:'Add a structure here', pFind:'Type a structure name', pHomes:'Also homes', pPlace:'Place', pBig:'too big for the free ground', pMore:'{n} more: type to narrow the list.',
     pOk:'fits', pBad:'does not fit: drag or turn it', pNoRoom:'No free spot was found, so it sits in the middle: drag or turn it, or tear something down.', pTurn:'Turn', pAlign:'Square to the lot', pRemove:'Remove', pDrag:'Drag it on the map to move it.',
@@ -128,6 +135,7 @@ Site.register({
     tPlace:'Put this train on the map', tPlaceN:'Round by round, every rider builds the same structure on their own lot. Placing again redoes this train only.', tPlaced:'{n} placed.', tNoFit:'No lot found for: {names}.',
     plH:'The plan', plN:'Structures placed and buildings marked to tear down. Each player can check their rows, move a build to another of their addresses, and tick it once they agree. Saved in this browser: download the file to pass it on.',
     plAll:'Everyone', plOk:'Agreed', plMoveBad:'{s} does not fit at {a}; it stays where it was.', plSave:'Download the plan file', plLoad:'Load a plan file', plLoaded:'Plan loaded.', plBadFile:'That file is not a Blueprint plan.',
+    tNewBig:'＋ Big-lot train', tBigName:'Big lots', tBigN:'Big-lot train: the list below starts with the big structures worth the most troves, biggest first, then the short list. Each rider builds on their biggest lot with room. Add big ones first, then small ones to fill the gaps.',
     tMode:'Build on', tSmall:'each rider’s smallest lot that fits', tBig:'each rider’s biggest lot with room', tAdd:'Add any structure to this train',
     swH:'House swaps: Luxury Ranch House to Town House', swN:'Our lots with a Luxury Ranch House, and how many of the small short-list structures fit together beside the house now and beside a Town House. Planning a swap marks the house to tear down and places the Town House.', swNow:'Fit now', swTown:'With a Town House', swGain:'Gain', swPlan:'Plan the swap', swBusy:'Working it out: {a} of {b} lots…', swNoTown:'no room for a Town House', plNone:'Nothing planned yet. Tap a lot and add a structure.', plWhere:'Where', plClear:'Clear the plan', plDrops:'To tear down', plShow:'Show',
     updated:'Read from Upland on {d}.', hits:'{n} lots match.', hit1:'1 lot matches.'
@@ -148,6 +156,7 @@ Site.register({
     rNow:'Parado aquí alcanzas unos {a} troves difíciles hoy, y {b} con el plan.', rList:'Al alcance con el plan', rNone:'Ningún trove difícil queda al alcance de este lote.',
     cHard:'Troves difíciles', cBonus:'Troves solo de bono', cHas:'En Quailwood', vNew:'{a} nuevos de {b}', pSize:'Primero las más chicas', pRank:'Primero las mejores: las que dan un trove buscado, luego más troves difíciles que Quailwood aún no da, luego troves solo de bono, luego las más chicas.',
     hH:'Los mejores lugares para pararse', hN:'Lotes con más al alcance: cada trove difícil una vez, más cada estructura que da un trove buscado. Cuenta completo hasta 60 m y cada vez menos hasta 100 m.', cNow:'Hoy', cPlan:'Con el plan',
+    fMap:'Mapa', fCtl:'Buscar y ver', fLot:'Lote elegido',
     cbOn:'Colores para daltonismo rojo-verde', cbTip:'Cuatro colores que no se confunden, lisos o rayados, y nada depende solo del rojo o el verde.',
     xDrop:'Demoler', xKeep:'Conservar', gone:'por demoler', pHere:'Planeado en este lote', pAdd:'Agregar una estructura aquí', pFind:'Escribe el nombre de una estructura', pHomes:'También casas', pPlace:'Colocar', pBig:'muy grande para el terreno libre', pMore:'{n} más: escribe para acortar la lista.',
     pOk:'cabe', pBad:'no cabe: arrástrala o gírala', pNoRoom:'No se encontró un lugar libre, así que quedó en el centro: arrástrala, gírala o demuele algo.', pTurn:'Girar', pAlign:'Alinear al lote', pRemove:'Quitar', pDrag:'Arrástrala en el mapa para moverla.',
@@ -158,6 +167,7 @@ Site.register({
     tPlace:'Poner este tren en el mapa', tPlaceN:'Ronda por ronda, cada pasajero construye la misma estructura en su propio lote. Colocar de nuevo rehace solo este tren.', tPlaced:'{n} colocadas.', tNoFit:'No se encontró lote para: {names}.',
     plH:'El plan', plN:'Estructuras colocadas y edificios marcados para demoler. Cada jugador puede revisar sus filas, mover una construcción a otra de sus direcciones y marcarla cuando esté de acuerdo. Se guarda en este navegador: descarga el archivo para pasarlo.',
     plAll:'Todos', plOk:'De acuerdo', plMoveBad:'{s} no cabe en {a}; se queda donde estaba.', plSave:'Descargar el archivo del plan', plLoad:'Cargar un archivo de plan', plLoaded:'Plan cargado.', plBadFile:'Ese archivo no es un plan del Plano.',
+    tNewBig:'＋ Tren de lotes grandes', tBigName:'Lotes grandes', tBigN:'Tren de lotes grandes: la lista empieza con las estructuras grandes que más troves dan, de mayor a menor, y luego la lista corta. Cada pasajero construye en su lote más grande con espacio. Agrega primero las grandes y luego las chicas para llenar huecos.',
     tMode:'Construir en', tSmall:'el lote más chico de cada pasajero donde quepa', tBig:'el lote más grande de cada pasajero con espacio', tAdd:'Agregar cualquier estructura a este tren',
     swH:'Cambios de casa: Luxury Ranch House por Town House', swN:'Nuestros lotes con Luxury Ranch House, y cuántas de las estructuras chicas de la lista corta caben juntas junto a la casa hoy y junto a una Town House. Planear un cambio marca la casa para demoler y coloca la Town House.', swNow:'Caben hoy', swTown:'Con Town House', swGain:'Ganancia', swPlan:'Planear el cambio', swBusy:'Calculando: {a} de {b} lotes…', swNoTown:'no cabe una Town House', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
     updated:'Leído de Upland el {d}.', hits:'{n} lotes coinciden.', hit1:'1 lote coincide.'
@@ -190,6 +200,12 @@ let IMG = new Map(), CHASE = store.get('rut:blueprint:chase', ['Lens']), CI = ne
 const thumb = k => IMG.has(k) ? `<img class="sthumb" loading="lazy" alt="" src="../data/structures/images/${IMG.get(k)}" onerror="this.remove()">` : '';
 const named = (k, name, extra) => `<div class="nm">${thumb(k)}<div><b>${name}</b>${extra || ''}</div></div>`;
 const chased = k => ((TV[k] || {}).f || []).filter(x => CI.has(x));   // the chased troves this structure gives
+let FOLD = store.get('rut:blueprint:fold', {});
+const foldH = (id, html) => `<h2 class="fold" data-fold="${id}">${html}</h2>`;
+function applyFolds(){
+  ['trains', 'ctl', 'mapcard', 'detail', 'plan'].forEach(id => { const el = document.getElementById(id); if(el) el.classList.toggle('folded', !!FOLD[id]); });
+  const mh = document.getElementById('mapH'); if(mh) mh.textContent = t('fMap');
+}
 let SPH = new Map(), NHARD = 0, TMSG = '', PF = '', PMSG = '', SWAP = null;
 const ALIAS = {'court house':'courthouse', 'movie theatre':'movie theater', 'bowling':'bowling alley', 'performing arts center':'performing arts', 'electronic store':'electronics store', 'auto repair':'auto repair shop'};
 const sphOf = k => SPH.get(k) ?? SPH.get(ALIAS[k]) ?? null;
@@ -434,7 +450,7 @@ function tiles(){
 function ctl(){
   const chip = (type, v, label, color) => `<button type="button" data-t="${type}" data-v="${esc(v)}" class="${HL && HL.type === type && HL.v === v ? 'on' : ''}">${color ? dotOf(v) : ''}${esc(label)}</button>`;
   const el = document.getElementById('ctl'), had = document.activeElement && document.activeElement.id === 'q';
-  el.innerHTML = `<div class="ctl"><input type="search" id="q" placeholder="${esc(t('search'))}" value="${esc(Q)}" aria-label="${esc(t('search'))}">
+  el.innerHTML = `${foldH('ctl', esc(t('fCtl')))}<div class="ctl"><input type="search" id="q" placeholder="${esc(t('search'))}" value="${esc(Q)}" aria-label="${esc(t('search'))}">
       ${active() ? `<span class="small muted">${esc((n => n === 1 ? t('hit1') : t('hits', {n:n0(n)}))(LOTS.filter(isHit).length))}</span><button type="button" class="btn small" id="clear">${esc(t('clear'))}</button>` : ''}</div>
     <div class="chips2">${chip('builders', '', t('builders'))}${GROUP.map(u => chip('who', u, nameOf(u), COL[u])).join('')}</div>
     <div class="chase"><span class="muted">${esc(t('chH'))}:</span>${CHASE.map(n => `<span class="tag">${esc(n)}<button type="button" data-act="unchase" data-v="${esc(n)}" aria-label="${esc(t('chTip'))} ${esc(n)}">✕</button></span>`).join('')}
@@ -452,14 +468,14 @@ function tbl(head, rows){
 }
 function detail(){
   const el = document.getElementById('detail'), l = BYID.get(CUR);
-  if(!l){ el.innerHTML = `<p class="muted" style="margin:0">${esc(t('dPick'))}</p>`; return; }
+  if(!l){ el.innerHTML = `${foldH('detail', esc(t('fLot')))}<p class="muted" style="margin:0">${esc(t('dPick'))}</p>`; return; }
   const size = f => `${f.w.toFixed(1)} × ${f.d.toFixed(1)} m · ${(f.w * f.d / 9).toFixed(1)} UP2`;
   const rows = l.bs.slice().sort((a, b) => a.liv - b.liv || a.name.localeCompare(b.name)).map(b => { const gone = isGone(l, b.i, b); return `<tr><td>${named(b.k, gone ? '<s>' + esc(b.name) + '</s>' : esc(b.name))}</td><td>${esc(t(b.liv ? 'liv' : 'srv'))}</td>
     <td class="n">${b.f ? size(b.f) : esc(t('unk'))}</td><td>${esc(t(gone ? 'gone' : b.built ? 'built' : 'wip'))}</td><td><button type="button" class="btn small" data-act="drop" data-i="${b.i}">${esc(t(gone ? 'xKeep' : 'xDrop'))}</button></td></tr>`; });
   const mine = PLAN.adds.map((p, n) => [p, n]).filter(([p]) => p.id === l.id).map(([p, n]) => { const ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td>${named(p.k, esc(FP[p.k].name), `<div class="small muted">${size(FP[p.k])}</div>`)}</td>
     <td><span class="tag">${ok ? '✓ ' + esc(t('pOk')) : '✕ ' + esc(t('pBad'))}</span></td>
     <td><span class="rot">${[-15, -1, 1, 15].map(d => `<button type="button" class="btn small" data-act="rot" data-n="${n}" data-d="${d}" aria-label="${esc(t('pTurn'))} ${d}°">${d > 0 ? '+' : '−'}${Math.abs(d)}°</button>`).join('')}<button type="button" class="btn small" data-act="align" data-n="${n}">${esc(t('pAlign'))}</button><button type="button" class="btn small" data-act="rm" data-n="${n}">${esc(t('pRemove'))}</button></span></td></tr>`; });
-  el.innerHTML = `<h2>${esc(l.addr)}</h2>
+  el.innerHTML = `${foldH('detail', esc(t('fLot')) + ': ' + esc(l.addr))}
     <div class="kv"><span>${esc(t('dOwner'))}: <b>${l.who ? `${COL[l.who] ? dotOf(l.who) + ' ' : ''}${esc(nameOf(l.who))}` : esc(t('dNone'))}</b></span>
       <span><b>${esc(t('dArea', {n:n0(l.area)}))}</b></span><span>${esc(t('dFree', {n:n0(freeOf(l))}))}</span>
       <a class="btn small" target="_blank" rel="noopener" href="${UPLAND(l.id)}">${esc(t('dOpen'))} ↗</a></div>
@@ -509,11 +525,18 @@ function shortList(){
   for(const tr of TRAINS) for(const k of tr.picks) if(FP[k] && !out.has(k)) out.set(k, {k, gives:[], done:true});
   return [...out.values()].sort((x, y) => m2(x.k) - m2(y.k));
 }
+function bigList(){
+  // big structures (60 UP2 of ground or more) that give hard, bonus-only or chased troves, the richest first within 20, shown biggest first
+  const m2 = k => FP[k].w * FP[k].d, worth = k => TV[k].h.length + TV[k].b.length + 3 * chased(k).length;
+  return Object.keys(TV).filter(k => FP[k] && !FP[k].living && m2(k) / 9 >= 60 && worth(k) > 0).sort((x, y) => worth(y) - worth(x) || m2(x) - m2(y)).slice(0, 20)
+    .sort((x, y) => m2(y) - m2(x)).map(k => ({k, gives:[...TV[k].h, ...TV[k].b, ...chased(k)].filter((v, i, a) => a.indexOf(v) === i).slice(0, 8)}));
+}
 function trainsCard(){
   const el = document.getElementById('trains');
   if(!LOTS.length){ el.innerHTML = ''; return; }
   TI = Math.min(TI, TRAINS.length - 1);
-  const tr = TRAINS[TI], R = tr.riders.length, all = R * tr.spark, list = shortList();
+  const tr = TRAINS[TI], R = tr.riders.length, all = R * tr.spark, small = shortList();
+  const list = tr.big ? [...bigList(), ...small.filter(x => !bigList().some(b => b.k === x.k))] : small;
   const eff = k => { const c = capOf(k); return c == null ? all : Math.min(c, all); };
   const rows = list.map(({k, gives, done}) => {
     const f = FP[k], h = sphOf(k), c = capOf(k), on = tr.picks.includes(k), e = eff(k);
@@ -525,8 +548,9 @@ function trainsCard(){
   const each = known.map(k => sphOf(k) / eff(k) / 24);
   const sum = !R ? t('tNoRiders') : !picks.length ? t('tSumNone') : t('tSum', {k:picks.length, r:R, n:picks.length * R, h:n0(hours * R) + (known.length < picks.length ? '+' : ''), s:tr.spark,
     a:n0(each.reduce((a, d) => a + d, 0)), e:n0(R * tr.spark)});
-  el.innerHTML = `<h2 style="margin:0 0 4px">${esc(t('tH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('tN'))}</p>
-    <div class="chips2">${TRAINS.map((x, i) => `<button type="button" data-act="train" data-n="${i}" class="${i === TI ? 'on' : ''}">${esc(x.name || t('tTrain', {n:i + 1}))} · ${x.spark} <span class="tag">${x.picks.length}</span></button>`).join('')}<button type="button" data-act="newtrain">${esc(t('tNew'))}</button></div>
+  el.innerHTML = `${foldH('trains', esc(t('tH')))}<p class="hint" style="margin:0 0 8px">${esc(t('tN'))}</p>
+    <div class="chips2">${TRAINS.map((x, i) => `<button type="button" data-act="train" data-n="${i}" class="${i === TI ? 'on' : ''}">${esc(x.name || t('tTrain', {n:i + 1}))} · ${x.spark} <span class="tag">${x.picks.length}</span></button>`).join('')}<button type="button" data-act="newtrain">${esc(t('tNew'))}</button><button type="button" data-act="newbig">${esc(t('tNewBig'))}</button></div>
+    ${tr.big ? `<p class="hint" style="margin:0 0 8px"><b>${esc(t('tBigN'))}</b></p>` : ''}
     <div class="trow"><label>${esc(t('tName'))} <input type="text" id="tname" value="${esc(tr.name)}" placeholder="${esc(t('tTrain', {n:TI + 1}))}"></label>
       <label>${esc(t('tSpark'))} <select id="tspark">${[1, 3, 5, 10, 15, 20, 30].map(v => `<option${v === tr.spark ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
       <label>${esc(t('tMode'))} <select id="tmode"><option value="0"${tr.big ? '' : ' selected'}>${esc(t('tSmall'))}</option><option value="1"${tr.big ? ' selected' : ''}>${esc(t('tBig'))}</option></select></label>
@@ -572,7 +596,7 @@ function planCard(){
     <td><button type="button" class="btn small" data-act="go" data-n="${n}">${esc(t('plShow'))}</button> <button type="button" class="btn small" data-act="rm" data-n="${n}">${esc(t('pRemove'))}</button></td></tr>`; }).filter(Boolean);
   const drops = PLAN.drops.map(d => { const [id, i] = d.split(':'), l = BYID.get(id), b = l && l.bs[+i]; return b && (!PF || l.who === PF) ? `<tr><td><b>${esc(b.name)}</b></td><td>${esc(l.addr)}</td><td>${l.who ? esc(nameOf(l.who)) : ''}</td><td><button type="button" class="btn small" data-act="golot" data-id="${id}">${esc(t('plShow'))}</button></td></tr>` : ''; }).filter(Boolean);
   const agreed = PLAN.adds.filter(p => p.c).length;
-  el.innerHTML = `<h2 style="margin:0 0 4px">${esc(t('plH'))} <span class="tag">${PLAN.adds.length}</span> <span class="tag">✓ ${agreed}</span></h2><p class="hint" style="margin:0 0 8px">${esc(t('plN'))}</p>
+  el.innerHTML = `${foldH('plan', `${esc(t('plH'))} <span class="tag">${PLAN.adds.length}</span> <span class="tag">✓ ${agreed}</span>`)}<p class="hint" style="margin:0 0 8px">${esc(t('plN'))}</p>
     ${whos.length > 1 ? `<div class="chips2"><button type="button" data-act="pf" data-v="" class="${PF ? '' : 'on'}">${esc(t('plAll'))}</button>${whos.map(u => `<button type="button" data-act="pf" data-v="${esc(u)}" class="${PF === u ? 'on' : ''}">${COL[u] ? dotOf(u) : ''}${esc(nameOf(u))} <span class="tag">${PLAN.adds.filter(p => BYID.get(p.id).who === u).length}</span></button>`).join('')}</div>` : ''}
     ${rows.length ? tbl([[t('cStruct')], [t('plWhere')], [t('dOwner')], [t('cSize'), 'n'], [t('cState')], [t('plOk')], ['']], rows) : `<p class="muted small" style="margin:0">${esc(t('plNone'))}</p>`}
     ${drops.length ? `<h3>${esc(t('plDrops'))} <span class="tag">${drops.length}</span></h3>${tbl([[t('cStruct')], [t('plWhere')], [t('dOwner')], ['']], drops)}` : ''}
@@ -629,6 +653,12 @@ function act(b){
     if(fit && !PLAN.adds.some(q => q.id === lot.id && q.k === 'town house')) PLAN.adds.push({id:lot.id, k:'town house', ...fit});
     CUR = lot.id; SEL = -1; showLot(lot);
     savePlan(); rescore(); draw(); return;
+  }
+  if(a === 'newbig'){
+    // riders: the builders who hold a lot of 1,000 UP2 or more
+    const riders = GROUP.filter(u => LOTS.some(l => l.who === u && l.area >= 1000));
+    TRAINS.push({id:Math.random().toString(36).slice(2, 8), name:t('tBigName'), spark:20, riders, picks:[], big:true}); TI = TRAINS.length - 1; TMSG = '';
+    saveTrains(); trainsCard(); return;
   }
   if(['train', 'newtrain', 'deltrain', 'rider', 'placetrain'].includes(a)){
     const tr = TRAINS[TI], v = b.getAttribute('data-v');
@@ -687,9 +717,9 @@ function tables(){
   document.getElementById('tables').innerHTML = `<details class="card" id="dOwners"${keep('dOwners')}><summary>${esc(t('oH'))} <span class="tag">${by.size}</span></summary><div style="margin-top:8px">${tbl(head, [...ours, ...rest].map(row))}</div></details>`;
 }
 function draw(){
-  if(!D){ document.getElementById('detail').innerHTML = `<p class="muted" style="margin:0">${esc(t(D === null ? 'loading' : 'none'))}</p>`; return; }
+  if(!D){ document.getElementById('detail').innerHTML = `<p class="muted" style="margin:0">${esc(t(D === null ? 'loading' : 'none'))}</p>`; applyFolds(); return; }
   document.body.classList.toggle('cb', CB);
-  tiles(); trainsCard(); ctl(); legend(); drawMap(); detail(); planCard(); tables(); swapCard();
+  tiles(); trainsCard(); ctl(); legend(); drawMap(); detail(); planCard(); tables(); swapCard(); applyFolds();
 }
 function light(type, v){
   HL = HL && HL.type === type && HL.v === v ? null : {type, v};
@@ -750,6 +780,12 @@ function wire(){
   });
   document.addEventListener('click', e => {
     const b = e.target.closest('[data-t]');
+    const fh = e.target.closest('[data-fold]');
+    if(fh && !e.target.closest('button, a, input, select, label')){
+      const id = fh.getAttribute('data-fold'); FOLD[id] = !FOLD[id]; store.set('rut:blueprint:fold', FOLD); applyFolds();
+      if(id === 'mapcard' && !FOLD[id]) setView();
+      return;
+    }
     const ab = e.target.closest('[data-act]');
     if(ab){ act(ab); return; }
     if(b){ light(b.getAttribute('data-t'), b.getAttribute('data-v')); return; }
