@@ -8,7 +8,7 @@
        outline   [[lng, lat], ...] of the lot (first point not repeated)
        buildings [[name, state (1 built, 0 under construction), lat, lng, turn (radians), scale, model id], ...]
 2. Keeps data/structures/footprints.json: for each structure, the footprint Upland draws for it, in metres around the building's
-   own point ({key: {name, model, poly, w, d, living, n}}). With --fill it also reads one property for each structure of the
+   own point ({key: {name, model, poly, w, d, living, n, min, max, step}}; min, max and step are the spark limits in sparklets). With --fill it also reads one property for each structure of the
    world scan that has no footprint yet (the property lists of the city scan say where each one stands).
 
   python3 tools/collect_map.py --hoods quailwood
@@ -56,10 +56,14 @@ def note_footprints(p, prints):
         k = key(name)
         xs, ys = [q[0] for q in poly], [q[1] for q in poly]
         e = prints.get(k)
+        d = b.get('details') or {}
+        if e is not None and d.get('maxStackedSparks') and 'max' not in e:   # spark limits, in sparklets as Upland gives them
+            e.update({'min': d.get('minStackedSparks'), 'max': d.get('maxStackedSparks'), 'step': d.get('stepSparks')})
         if e is None:
             prints[k] = {'name': name.strip(), 'model': b.get('modelId'), 'poly': [[round(x, 2), round(y, 2)] for x, y in poly[:-1]],
                          'w': round(max(xs) - min(xs), 2), 'd': round(max(ys) - min(ys), 2),
-                         'living': 1 if b.get('isAvailableForHomeAddressApplying') else 0, 'n': 1}
+                         'living': 1 if b.get('isAvailableForHomeAddressApplying') else 0, 'n': 1,
+                         'min': d.get('minStackedSparks'), 'max': d.get('maxStackedSparks'), 'step': d.get('stepSparks')}
         else:
             e['n'] += 1
 
@@ -123,7 +127,7 @@ def main():
         log(f'{h}: {len(rows)} lots, {sum(len(r[7]) for r in rows)} buildings, {failed} failed')
     if args.fill:
         want = {key(e['name']): e['name'] for e in load('troves/world.json', {}).get('structures', {}).values()}
-        todo = {k for k in want if k not in prints}
+        todo = {k for k in want if k not in prints or not prints[k].get('max')}   # also the ones read before the spark limits were kept
         where = {}
         for f in sorted(glob.glob(SCAN + '*properties.jsonl')):
             for line in open(f):
@@ -137,14 +141,15 @@ def main():
         log(f'{len(todo)} structures without a footprint, {len(where)} of them seen in the city scan')
         tried = 0
         for attempt in range(3):   # a property may have changed since the scan: try up to three per structure
-            ids = [v[attempt] for k, v in sorted(where.items()) if k not in prints and len(v) > attempt][:max(0, args.fill - tried)]
+            ids = [v[attempt] for k, v in sorted(where.items()) if not (prints.get(k) or {}).get('max') and len(v) > attempt][:max(0, args.fill - tried)]
             if not ids:
                 break
             tried += len(ids)
             for p in read_many(ids, pacer, args.workers, deadline):
                 if p:
                     note_footprints(p, prints)
-        log(f'{tried} properties read; still without a footprint: {sorted(want[k] for k in todo if k not in prints)}')
+        left = sorted(want[k] for k in todo if not (prints.get(k) or {}).get('max'))
+        log(f'{tried} properties read; still without a footprint or spark limits: {left}')
     save('structures/footprints.json', {'updatedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
                                         'note': 'Footprint of each structure in metres around its own point, as Upland draws it. n = times seen.',
                                         'structures': dict(sorted(prints.items()))})

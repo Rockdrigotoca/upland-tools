@@ -2,7 +2,8 @@
 """What each structure is worth for troves, for Sir Quailbert's Blueprint: data/structures/trove-value.json.
 
   {"troves": [names], "structures": {key: {"name", "h": hard troves found there, "b": troves only a bonus drop gives that it can drop,
-                                           "n": troves found there in all, "c": troves crafted there}}}   (h and b index into troves)
+                                           "f": every trove found there, "c": troves crafted there},
+   "hard": how many of the first troves are hard or bonus-only}   (h, b and f index into troves; the hard and bonus-only ones come first)
 
 A trove is hard when 12 places or fewer give it (data/helper/hard.json). Keys are the same as in data/structures/footprints.json.
 
@@ -29,26 +30,28 @@ def main():
         return idx[n]
 
     def entry(s):
-        return out.setdefault(key(s), {'name': s, 'h': [], 'b': [], 'n': 0, 'c': 0})
+        return out.setdefault(key(s), {'name': s, 'h': [], 'b': [], 'f': [], 'c': 0})
 
-    for r in places['troves']:
-        for s in r[2]:
-            e = entry(s)
-            e['n'] += 1
-            if r[0] in hard['troves']:
-                e['h'].append(ti(r[0]))
-        for s in r[4]:
-            entry(s)['c'] += 1
+    for r in places['troves']:   # hard troves first, so their numbers stay low
+        if r[0] in hard['troves']:
+            for st in r[2]:
+                entry(st)['h'].append(ti(r[0]))
     for trove, structs in hard['bonus'].items():
-        for s in structs:
-            entry(s)['b'].append(ti(trove))
+        for st in structs:
+            entry(st)['b'].append(ti(trove))
+    n_hard = len(names)
+    for r in places['troves']:
+        for st in r[2]:
+            entry(st)['f'].append(ti(r[0]))
+        for st in r[4]:
+            entry(st)['c'] += 1
     for k, e in out.items():
-        e['h'], e['b'] = sorted(set(e['h'])), sorted(set(e['b']))
+        e['h'], e['b'], e['f'] = sorted(set(e['h'])), sorted(set(e['b'])), sorted(set(e['f']))
         if k in prints:
             e['name'] = prints[k]['name']
-    save('structures/trove-value.json', {'updated': places.get('updated', ''), 'troves': names, 'structures': dict(sorted(out.items()))})
+    save('structures/trove-value.json', {'updated': places.get('updated', ''), 'hard': n_hard, 'troves': names, 'structures': dict(sorted(out.items()))})
     lost = sorted(e['name'] for k, e in out.items() if k not in prints and (e['h'] or e['b']))
-    print(f'{len(out)} structures, {len(names)} hard or bonus-only troves; worth something but without a footprint: {len(lost)}', file=sys.stderr)
+    print(f'{len(out)} structures, {n_hard} hard or bonus-only troves of {len(names)}; worth something but without a footprint: {len(lost)}', file=sys.stderr)
     print('  ' + ', '.join(lost), file=sys.stderr)
 
 

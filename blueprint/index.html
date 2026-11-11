@@ -52,6 +52,17 @@ body.cb .lot.cur{stroke:var(--text);stroke-width:5}
 .sw.heat{background:linear-gradient(90deg,rgba(0,114,178,.08),rgba(0,114,178,1));width:3rem;border:1px solid var(--border)}
 .sw.rg{border:1.5px solid var(--text);border-radius:50%;width:.8rem;height:.8rem;background:none}
 .trv{font-size:.75rem;color:var(--muted);margin-top:2px;max-width:26rem}
+.sthumb{width:2.75rem;height:2.75rem;object-fit:contain;flex:none;border-radius:6px;background:var(--surface-2)}
+.nm{display:flex;gap:8px;align-items:center}
+.chase{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px;font-size:.8125rem}
+.chase input{padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.8125rem;width:11rem;max-width:100%}
+.chase .tag button{border:0;background:none;color:inherit;cursor:pointer;padding:0 0 0 4px;font-size:.8125rem}
+.trow{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:center;margin:0 0 10px;font-size:.8125rem}
+.trow input[type=text]{padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.8125rem;width:9rem}
+.trow select{padding:6px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--text);font-size:.8125rem}
+td.ck{width:1%}
+td.ck input{width:1.25rem;height:1.25rem}
+.sum{background:var(--surface-2);border-radius:8px;padding:8px 12px;font-size:.875rem;margin:10px 0}
 .opts{display:flex;gap:6px 16px;flex-wrap:wrap}
 .rot{display:inline-flex;gap:4px;flex-wrap:wrap}
 .rot button{min-width:2.4rem}
@@ -74,6 +85,7 @@ details.card>summary{cursor:pointer;font-weight:700}
 <div class="wrap">
   <header id="site-header"></header>
   <div id="tiles" class="tiles"></div>
+  <section class="card" id="trains" style="margin-bottom:12px"></section>
   <section class="card" id="ctl" style="margin-bottom:12px"></section>
   <div class="mapbox"><svg id="map" role="img"></svg>
     <div class="zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">−</button><button type="button" data-z="fit" aria-label="Whole map">⤢</button></div></div>
@@ -99,13 +111,19 @@ Site.register({
     bH:'The builders', bN:'Free ground is the lot minus the footprints of what stands on it. Tap a row to light up that player’s lots.',
     cWho:'Player', cLots:'Lots', cUp2:'UP2', cFreeUp2:'Free UP2', cBld:'Buildings', cEmpty:'Empty lots',
     oH:'Every owner in Quailwood', sH:'What Quailwood already holds', sN:'Tap a structure to light up the lots that carry it.', cCount:'Count', cLotsWith:'Lots',
-    heatOn:'Heat: hard troves in reach of each lot', lgHeat:'few to many hard troves in reach (most: {n})', lgRing:'reach: sure to 60 m, fading to 100 m',
+    chH:'Also chase', chAdd:'Add a trove, e.g. Lens', chTip:'Stop chasing', cChase:'Chased', rChase:'Chased troves ({names}): about {n} structures that give them are in reach with the plan.',
+    heatOn:'Heat: hard and chased troves in reach of each lot', lgHeat:'few to many in reach (most: {n})', lgRing:'reach: sure to 60 m, fading to 100 m',
     rNow:'Standing here reaches about {a} hard troves now, and {b} with the plan.', rList:'In reach with the plan', rNone:'No hard trove is in reach of this lot.',
-    cHard:'Hard troves', cBonus:'Bonus-only troves', cHas:'In Quailwood', vNew:'{a} new of {b}', pSize:'Smallest first', pRank:'Best first: the most hard troves Quailwood does not give yet, then bonus-only troves, then the smallest.',
-    hH:'Best places to stand', hN:'Lots with the most hard troves in reach. A trove counts in full up to 60 m and less and less up to 100 m.', cNow:'Now', cPlan:'With the plan',
+    cHard:'Hard troves', cBonus:'Bonus-only troves', cHas:'In Quailwood', vNew:'{a} new of {b}', pSize:'Smallest first', pRank:'Best first: structures that give a chased trove, then the most hard troves Quailwood does not give yet, then bonus-only troves, then the smallest.',
+    hH:'Best places to stand', hN:'Lots with the most in reach: each hard trove once, plus every structure that gives a chased trove. Full count up to 60 m, less and less up to 100 m.', cNow:'Now', cPlan:'With the plan',
     cbOn:'Colours for red-green colour blindness', cbTip:'Four colours that stay apart, plain or striped, and no meaning carried by red or green alone.',
     xDrop:'Tear down', xKeep:'Keep', gone:'to tear down', pHere:'Planned on this lot', pAdd:'Add a structure here', pFind:'Type a structure name', pHomes:'Also homes', pPlace:'Place', pBig:'too big for the free ground', pMore:'{n} more: type to narrow the list.',
     pOk:'fits', pBad:'does not fit: drag or turn it', pNoRoom:'No free spot was found, so it sits in the middle: drag or turn it, or tear something down.', pTurn:'Turn', pAlign:'Square to the lot', pRemove:'Remove', pDrag:'Drag it on the map to move it.',
+    tH:'Spark trains', tN:'The short list: the smallest structure for every trove Quailwood does not give yet, plus the two smallest for each chased trove. Tick the ones this train builds, in order: each one is a round, and every rider builds one.',
+    tNew:'＋ New train', tName:'Train name', tSpark:'Spark per rider', tRiders:'Riders', tDel:'Delete this train', tTrain:'Train {n}',
+    cGives:'Adds', cGround:'Ground', cSph:'Spark hours', cCap:'Takes up to', cOn:'On this train', spk:'{n} spark', days:'{n} days', tOver:'over its limit: only {n} of the {m} spark count', tUnk:'spark hours unknown', tDone:'already planned',
+    tSum:'{k} rounds of {r} builds: {n} builds, {h} spark hours. In a round every rider stakes {s} spark on each of the {r} builds, so each rider needs {e} spark. Rounds one after another: about {a} days.', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
+    tPlace:'Put this train on the map', tPlaceN:'Round by round, every rider builds the same structure on their own smallest lot where it fits. Placing again redoes this train only.', tPlaced:'{n} placed.', tNoFit:'No lot found for: {names}.',
     plH:'The plan', plN:'Structures you placed and buildings marked to tear down. Saved in this browser.', plNone:'Nothing planned yet. Tap a lot and add a structure.', plWhere:'Where', plClear:'Clear the plan', plDrops:'To tear down', plShow:'Show',
     updated:'Read from Upland on {d}.', hits:'{n} lots match.', hit1:'1 lot matches.'
   },
@@ -120,13 +138,19 @@ Site.register({
     bH:'Los constructores', bN:'El terreno libre es el lote menos la planta de lo que tiene construido. Toca una fila para iluminar los lotes de ese jugador.',
     cWho:'Jugador', cLots:'Lotes', cUp2:'UP2', cFreeUp2:'UP2 libres', cBld:'Edificios', cEmpty:'Lotes vacíos',
     oH:'Todos los dueños de Quailwood', sH:'Lo que Quailwood ya tiene', sN:'Toca una estructura para iluminar los lotes que la tienen.', cCount:'Cantidad', cLotsWith:'Lotes',
-    heatOn:'Calor: troves difíciles al alcance de cada lote', lgHeat:'pocos a muchos troves difíciles al alcance (máximo: {n})', lgRing:'alcance: seguro hasta 60 m, se pierde hacia 100 m',
+    chH:'Buscar también', chAdd:'Agrega un trove, p. ej. Lens', chTip:'Dejar de buscar', cChase:'Buscados', rChase:'Troves buscados ({names}): con el plan quedan al alcance unas {n} estructuras que los dan.',
+    heatOn:'Calor: troves difíciles y buscados al alcance de cada lote', lgHeat:'pocos a muchos al alcance (máximo: {n})', lgRing:'alcance: seguro hasta 60 m, se pierde hacia 100 m',
     rNow:'Parado aquí alcanzas unos {a} troves difíciles hoy, y {b} con el plan.', rList:'Al alcance con el plan', rNone:'Ningún trove difícil queda al alcance de este lote.',
-    cHard:'Troves difíciles', cBonus:'Troves solo de bono', cHas:'En Quailwood', vNew:'{a} nuevos de {b}', pSize:'Primero las más chicas', pRank:'Primero las mejores: más troves difíciles que Quailwood aún no da, luego troves solo de bono, luego las más chicas.',
-    hH:'Los mejores lugares para pararse', hN:'Lotes con más troves difíciles al alcance. Un trove cuenta completo hasta 60 m y cada vez menos hasta 100 m.', cNow:'Hoy', cPlan:'Con el plan',
+    cHard:'Troves difíciles', cBonus:'Troves solo de bono', cHas:'En Quailwood', vNew:'{a} nuevos de {b}', pSize:'Primero las más chicas', pRank:'Primero las mejores: las que dan un trove buscado, luego más troves difíciles que Quailwood aún no da, luego troves solo de bono, luego las más chicas.',
+    hH:'Los mejores lugares para pararse', hN:'Lotes con más al alcance: cada trove difícil una vez, más cada estructura que da un trove buscado. Cuenta completo hasta 60 m y cada vez menos hasta 100 m.', cNow:'Hoy', cPlan:'Con el plan',
     cbOn:'Colores para daltonismo rojo-verde', cbTip:'Cuatro colores que no se confunden, lisos o rayados, y nada depende solo del rojo o el verde.',
     xDrop:'Demoler', xKeep:'Conservar', gone:'por demoler', pHere:'Planeado en este lote', pAdd:'Agregar una estructura aquí', pFind:'Escribe el nombre de una estructura', pHomes:'También casas', pPlace:'Colocar', pBig:'muy grande para el terreno libre', pMore:'{n} más: escribe para acortar la lista.',
     pOk:'cabe', pBad:'no cabe: arrástrala o gírala', pNoRoom:'No se encontró un lugar libre, así que quedó en el centro: arrástrala, gírala o demuele algo.', pTurn:'Girar', pAlign:'Alinear al lote', pRemove:'Quitar', pDrag:'Arrástrala en el mapa para moverla.',
+    tH:'Trenes de spark', tN:'La lista corta: la estructura más chica para cada trove que Quailwood aún no da, más las dos más chicas de cada trove buscado. Marca las que construye este tren, en orden: cada una es una ronda y cada pasajero construye una.',
+    tNew:'＋ Tren nuevo', tName:'Nombre del tren', tSpark:'Spark por pasajero', tRiders:'Pasajeros', tDel:'Borrar este tren', tTrain:'Tren {n}',
+    cGives:'Agrega', cGround:'Terreno', cSph:'Horas de spark', cCap:'Admite hasta', cOn:'En este tren', spk:'{n} spark', days:'{n} días', tOver:'pasa su límite: solo cuentan {n} de los {m} spark', tUnk:'horas de spark desconocidas', tDone:'ya está en el plan',
+    tSum:'{k} rondas de {r} construcciones: {n} construcciones, {h} horas de spark. En cada ronda cada pasajero pone {s} spark en cada una de las {r}, así que necesita {e} spark. Rondas una tras otra: unos {a} días.', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
+    tPlace:'Poner este tren en el mapa', tPlaceN:'Ronda por ronda, cada pasajero construye la misma estructura en su lote más chico donde quepa. Colocar de nuevo rehace solo este tren.', tPlaced:'{n} colocadas.', tNoFit:'No se encontró lote para: {names}.',
     plH:'El plan', plN:'Estructuras que colocaste y edificios marcados para demoler. Se guarda en este navegador.', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
     updated:'Leído de Upland el {d}.', hits:'{n} lotes coinciden.', hit1:'1 lote coincide.'
   },
@@ -154,6 +178,19 @@ let CB = store.get('rut:blueprint:cb', false), SEL = -1, PQ = '', HOMES = false,
 let PLAN = store.get('rut:blueprint:plan', {adds:[], drops:[]});
 if(!PLAN || !Array.isArray(PLAN.adds) || !Array.isArray(PLAN.drops)) PLAN = {adds:[], drops:[]};
 const savePlan = () => store.set('rut:blueprint:plan', PLAN);
+let IMG = new Map(), CHASE = store.get('rut:blueprint:chase', ['Lens']), CI = new Set(), C1 = new Map();
+const thumb = k => IMG.has(k) ? `<img class="sthumb" loading="lazy" alt="" src="../data/structures/images/${IMG.get(k)}" onerror="this.remove()">` : '';
+const named = (k, name, extra) => `<div class="nm">${thumb(k)}<div><b>${name}</b>${extra || ''}</div></div>`;
+const chased = k => ((TV[k] || {}).f || []).filter(x => CI.has(x));   // the chased troves this structure gives
+let SPH = new Map(), NHARD = 0, TMSG = '';
+const ALIAS = {'court house':'courthouse', 'movie theatre':'movie theater', 'bowling':'bowling alley', 'performing arts center':'performing arts', 'electronic store':'electronics store', 'auto repair':'auto repair shop'};
+const sphOf = k => SPH.get(k) ?? SPH.get(ALIAS[k]) ?? null;
+const capOf = k => FP[k] && FP[k].max ? FP[k].max / 1000 : null;   // Upland gives the limit in sparklets
+// trains: [{name, spark: per rider, riders: [usernames], picks: [structures]}]
+let TRAINS = store.get('rut:blueprint:trains', null), TI = 0;
+if(!Array.isArray(TRAINS) || !TRAINS.length) TRAINS = [{name:'', spark:10, riders:['mstullis', 'missmarlow', 'talljames'], picks:[]}, {name:'', spark:5, riders:['mstullis', 'missmarlow', 'talljames'], picks:[]}];
+TRAINS.forEach(x => { if(!x.id) x.id = Math.random().toString(36).slice(2, 8); });
+const saveTrains = () => store.set('rut:blueprint:trains', TRAINS);
 let TV = {}, TN = [], HEAT = store.get('rut:blueprint:heat', false), BYSIZE = false, S0 = new Map(), S1 = new Map(), HAVE = new Set(), COUNT = new Map();
 // chance that a structure this far from the property you stand on is in reach (measured: sure to 60 m, none from 100 m)
 const REACH = [[60, 1], [70, .63], [80, .46], [90, .3], [100, 0]];
@@ -165,10 +202,11 @@ function reachW(d){
 }
 const mid = poly => [poly.reduce((a, q) => a + q[0], 0) / poly.length, poly.reduce((a, q) => a + q[1], 0) / poly.length];
 function sources(plan){
-  // every structure that gives a hard trove: [x, y, hard troves]; with the plan, without what is torn down and with what is placed
+  // every structure that gives a hard or a chased trove: [x, y, hard troves, chased troves it gives]; with the plan, without what is torn down and with what is placed
   const out = [];
-  for(const l of LOTS) for(const b of l.bs){ const v = TV[b.k]; if(v && v.h.length && b.poly && !(plan && isGone(l, b.i, b))) out.push([...mid(b.poly), v.h]); }
-  if(plan) for(const q of PLAN.adds){ const v = TV[q.k]; if(v && v.h.length) out.push([...mid(planPoly(q)), v.h]); }
+  const use = (k, poly) => { const v = TV[k], c = chased(k).length; if(v && (v.h.length || c)) out.push([...mid(poly), v.h, c]); };
+  for(const l of LOTS) for(const b of l.bs) if(b.poly && !(plan && isGone(l, b.i, b))) use(b.k, b.poly);
+  if(plan) for(const q of PLAN.adds) use(q.k, planPoly(q));
   return out;
 }
 function reachOf(l, src){
@@ -181,10 +219,14 @@ function reachOf(l, src){
   return new Map([...miss].map(([ti, m]) => [ti, 1 - m]));
 }
 const total = m => [...m.values()].reduce((a, v) => a + v, 0);
+// structures in reach that give a chased trove (one that gives two counts twice)
+const chaseOf = (l, src) => src.reduce((a, [x, y, , c]) => a + (c ? c * reachW(Math.hypot(x - l.cx, y - l.cy)) : 0), 0);
 function rescore(){
+  CI = new Set(CHASE.map(n => TN.indexOf(n)).filter(i => i >= 0));
   const a = sources(false), b = sources(true);
-  if(!S0.size) for(const l of LOTS) S0.set(l.id, total(reachOf(l, a)));
-  S1 = new Map(LOTS.map(l => [l.id, total(reachOf(l, b))]));
+  S0 = new Map(LOTS.map(l => [l.id, total(reachOf(l, a)) + chaseOf(l, a)]));
+  C1 = new Map(LOTS.map(l => [l.id, chaseOf(l, b)]));
+  S1 = new Map(LOTS.map(l => [l.id, total(reachOf(l, b)) + C1.get(l.id)]));
   // what Quailwood gives once the plan is built: hard and bonus-only troves, and how many of each structure
   HAVE = new Set(); COUNT = new Map();
   const add = k => { COUNT.set(k, (COUNT.get(k) || 0) + 1); const v = TV[k]; if(v){ v.h.forEach(x => HAVE.add(x)); v.b.forEach(x => HAVE.add(x)); } };
@@ -387,6 +429,8 @@ function ctl(){
   el.innerHTML = `<div class="ctl"><input type="search" id="q" placeholder="${esc(t('search'))}" value="${esc(Q)}" aria-label="${esc(t('search'))}">
       ${active() ? `<span class="small muted">${esc((n => n === 1 ? t('hit1') : t('hits', {n:n0(n)}))(LOTS.filter(isHit).length))}</span><button type="button" class="btn small" id="clear">${esc(t('clear'))}</button>` : ''}</div>
     <div class="chips2">${chip('builders', '', t('builders'))}${GROUP.map(u => chip('who', u, nameOf(u), COL[u])).join('')}</div>
+    <div class="chase"><span class="muted">${esc(t('chH'))}:</span>${CHASE.map(n => `<span class="tag">${esc(n)}<button type="button" data-act="unchase" data-v="${esc(n)}" aria-label="${esc(t('chTip'))} ${esc(n)}">✕</button></span>`).join('')}
+      <input id="chase" list="troveNames" placeholder="${esc(t('chAdd'))}" aria-label="${esc(t('chAdd'))}"><datalist id="troveNames">${TN.slice().sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
     <div class="opts"><label class="chk"><input type="checkbox" id="heat"${HEAT ? ' checked' : ''}> ${esc(t('heatOn'))}</label>
     <label class="chk" title="${esc(t('cbTip'))}"><input type="checkbox" id="cb"${CB ? ' checked' : ''}> ${esc(t('cbOn'))}</label></div>`;
   if(had){ const q = document.getElementById('q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
@@ -402,9 +446,9 @@ function detail(){
   const el = document.getElementById('detail'), l = BYID.get(CUR);
   if(!l){ el.innerHTML = `<p class="muted" style="margin:0">${esc(t('dPick'))}</p>`; return; }
   const size = f => `${f.w.toFixed(1)} × ${f.d.toFixed(1)} m · ${(f.w * f.d / 9).toFixed(1)} UP2`;
-  const rows = l.bs.slice().sort((a, b) => a.liv - b.liv || a.name.localeCompare(b.name)).map(b => { const gone = isGone(l, b.i, b); return `<tr><td><b>${gone ? '<s>' + esc(b.name) + '</s>' : esc(b.name)}</b></td><td>${esc(t(b.liv ? 'liv' : 'srv'))}</td>
+  const rows = l.bs.slice().sort((a, b) => a.liv - b.liv || a.name.localeCompare(b.name)).map(b => { const gone = isGone(l, b.i, b); return `<tr><td>${named(b.k, gone ? '<s>' + esc(b.name) + '</s>' : esc(b.name))}</td><td>${esc(t(b.liv ? 'liv' : 'srv'))}</td>
     <td class="n">${b.f ? size(b.f) : esc(t('unk'))}</td><td>${esc(t(gone ? 'gone' : b.built ? 'built' : 'wip'))}</td><td><button type="button" class="btn small" data-act="drop" data-i="${b.i}">${esc(t(gone ? 'xKeep' : 'xDrop'))}</button></td></tr>`; });
-  const mine = PLAN.adds.map((p, n) => [p, n]).filter(([p]) => p.id === l.id).map(([p, n]) => { const ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td><b>${esc(FP[p.k].name)}</b><div class="small muted">${size(FP[p.k])}</div></td>
+  const mine = PLAN.adds.map((p, n) => [p, n]).filter(([p]) => p.id === l.id).map(([p, n]) => { const ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td>${named(p.k, esc(FP[p.k].name), `<div class="small muted">${size(FP[p.k])}</div>`)}</td>
     <td><span class="tag">${ok ? '✓ ' + esc(t('pOk')) : '✕ ' + esc(t('pBad'))}</span></td>
     <td><span class="rot">${[-15, -1, 1, 15].map(d => `<button type="button" class="btn small" data-act="rot" data-n="${n}" data-d="${d}" aria-label="${esc(t('pTurn'))} ${d}°">${d > 0 ? '+' : '−'}${Math.abs(d)}°</button>`).join('')}<button type="button" class="btn small" data-act="align" data-n="${n}">${esc(t('pAlign'))}</button><button type="button" class="btn small" data-act="rm" data-n="${n}">${esc(t('pRemove'))}</button></span></td></tr>`; });
   el.innerHTML = `<h2>${esc(l.addr)}</h2>
@@ -425,7 +469,8 @@ function detail(){
 }
 function reachHtml(l){
   const m = reachOf(l, sources(true)), list = [...m].sort((a, b) => b[1] - a[1] || TN[a[0]].localeCompare(TN[b[0]]));
-  return `<p class="small" style="margin:10px 0 0">${esc(t('rNow', {a:(S0.get(l.id) || 0).toFixed(1), b:(S1.get(l.id) || 0).toFixed(1)}))}</p>
+  const hardNow = total(reachOf(l, sources(false)));
+  return `<p class="small" style="margin:10px 0 0">${esc(t('rNow', {a:hardNow.toFixed(1), b:total(m).toFixed(1)}))}${CI.size ? ' ' + esc(t('rChase', {names:CHASE.join(', '), n:(C1.get(l.id) || 0).toFixed(1)})) : ''}</p>
     <div class="trv" style="max-width:none">${list.length ? `${esc(t('rList'))}: ` + list.map(([ti, w]) => esc(TN[ti]) + (w < 0.995 ? ` ${Math.round(w * 100)}%` : '')).join(', ') : esc(t('rNone'))}</div>`;
 }
 function pickList(){
@@ -433,19 +478,76 @@ function pickList(){
   if(!el || !l) return;
   const q = key(PQ), free = freeOf(l), m2 = f => f.w * f.d;
   const val = k => { const v = TV[k] || {h:[], b:[]}; return {v, nh:v.h.filter(x => !HAVE.has(x)), nb:v.b.filter(x => !HAVE.has(x))}; };
-  const all = Object.entries(FP).filter(([k, f]) => (HOMES || !f.living) && (!q || k.includes(q))).map(([k, f]) => ({k, f, big:m2(f) / 9 > free, ...val(k)}));
-  all.sort((a, b) => a.big - b.big || (BYSIZE ? 0 : b.nh.length - a.nh.length || b.nb.length - a.nb.length || b.v.h.length - a.v.h.length) || m2(a.f) - m2(b.f) || a.f.name.localeCompare(b.f.name));
+  const all = Object.entries(FP).filter(([k, f]) => (HOMES || !f.living) && (!q || k.includes(q))).map(([k, f]) => ({k, f, big:m2(f) / 9 > free, ch:chased(k), ...val(k)}));
+  all.sort((a, b) => a.big - b.big || (BYSIZE ? 0 : b.ch.length - a.ch.length || b.nh.length - a.nh.length || b.nb.length - a.nb.length || b.v.h.length - a.v.h.length) || m2(a.f) - m2(b.f) || a.f.name.localeCompare(b.f.name));
   const names = xs => xs.map(x => TN[x]).join(', ');
   const cell = (nw, allx) => allx.length ? `<span title="${esc(names(allx))}">${esc(t('vNew', {a:nw.length, b:allx.length}))}</span>` : '<span class="muted">–</span>';
-  const rows = all.slice(0, 30).map(({k, f, big, v, nh, nb}) => `<tr><td><b>${esc(f.name)}</b>${nh.length ? `<div class="trv">${esc(names(nh))}</div>` : ''}</td>
-    <td class="n">${cell(nh, v.h)}</td><td class="n">${cell(nb, v.b)}</td><td class="n">${COUNT.get(k) || 0}</td><td class="n">${f.w.toFixed(1)} × ${f.d.toFixed(1)} m · ${(m2(f) / 9).toFixed(1)} UP2</td>
+  const rows = all.slice(0, 30).map(({k, f, big, v, nh, nb, ch}) => `<tr><td>${named(k, esc(f.name), nh.length ? `<div class="trv">${esc(names(nh))}</div>` : '')}</td>
+    <td>${ch.length ? `<b>${esc(names(ch))}</b>` : '<span class="muted">–</span>'}</td><td class="n">${cell(nh, v.h)}</td><td class="n">${cell(nb, v.b)}</td><td class="n">${COUNT.get(k) || 0}</td><td class="n">${f.w.toFixed(1)} × ${f.d.toFixed(1)} m · ${(m2(f) / 9).toFixed(1)} UP2</td>
     <td>${big ? `<span class="small muted">${esc(t('pBig'))}</span>` : `<button type="button" class="btn small primary" data-act="place" data-k="${esc(k)}">${esc(t('pPlace'))}</button>`}</td></tr>`);
-  el.innerHTML = tbl([[t('cStruct')], [t('cHard'), 'n'], [t('cBonus'), 'n'], [t('cHas'), 'n'], [t('cSize'), 'n'], ['']], rows) + (all.length > 30 ? `<p class="small muted" style="margin:6px 0 0">${esc(t('pMore', {n:n0(all.length - 30)}))}</p>` : '');
+  el.innerHTML = tbl([[t('cStruct')], [t('cChase')], [t('cHard'), 'n'], [t('cBonus'), 'n'], [t('cHas'), 'n'], [t('cSize'), 'n'], ['']], rows) + (all.length > 30 ? `<p class="small muted" style="margin:6px 0 0">${esc(t('pMore', {n:n0(all.length - 30)}))}</p>` : '');
+}
+function shortList(){
+  // the smallest structure for each trove Quailwood (with the plan) does not give, and the two smallest for each chased trove
+  const m2 = k => FP[k].w * FP[k].d, svc = Object.keys(TV).filter(k => FP[k] && !FP[k].living), out = new Map();
+  const add = (k, ti) => { const e = out.get(k) || {k, gives:[]}; if(!e.gives.includes(ti)) e.gives.push(ti); out.set(k, e); };
+  for(let ti = 0; ti < NHARD; ti++){
+    if(HAVE.has(ti)) continue;
+    const ks = svc.filter(k => TV[k].h.includes(ti) || TV[k].b.includes(ti)).sort((x, y) => m2(x) - m2(y));
+    if(ks.length) add(ks[0], ti);
+  }
+  for(const ti of CI) svc.filter(k => TV[k].f.includes(ti)).sort((x, y) => m2(x) - m2(y)).slice(0, 2).forEach(k => add(k, ti));
+  // a structure ticked on a train stays listed even once the plan covers its troves
+  for(const tr of TRAINS) for(const k of tr.picks) if(FP[k] && !out.has(k)) out.set(k, {k, gives:[], done:true});
+  return [...out.values()].sort((x, y) => m2(x.k) - m2(y.k));
+}
+function trainsCard(){
+  const el = document.getElementById('trains');
+  if(!LOTS.length){ el.innerHTML = ''; return; }
+  TI = Math.min(TI, TRAINS.length - 1);
+  const tr = TRAINS[TI], R = tr.riders.length, all = R * tr.spark, list = shortList();
+  const eff = k => { const c = capOf(k); return c == null ? all : Math.min(c, all); };
+  const rows = list.map(({k, gives, done}) => {
+    const f = FP[k], h = sphOf(k), c = capOf(k), on = tr.picks.includes(k), e = eff(k);
+    const st = !R ? '' : h == null ? esc(t('tUnk')) : `<b>${esc(t('days', {n:(h / e / 24).toFixed(1)}))}</b> · ${esc(t('spk', {n:n0(e)}))}` + (c != null && all > c ? `<div class="trv">✕ ${esc(t('tOver', {n:n0(c), m:n0(all)}))}</div>` : '');
+    return `<tr class="${on ? 'sel' : ''}"><td class="ck"><input type="checkbox" data-pick="${esc(k)}"${on ? ' checked' : ''} aria-label="${esc(f.name)}">${on ? `<div class="trv">${esc(t('tRound', {n:tr.picks.indexOf(k) + 1}))}</div>` : ''}</td>
+      <td>${named(k, esc(f.name), gives.length ? `<div class="trv">${esc(gives.map(x => TN[x]).join(', '))}</div>` : done ? `<div class="trv">${esc(t('tDone'))}</div>` : '')}</td>
+      <td class="n">${(f.w * f.d / 9).toFixed(0)} UP2</td><td class="n">${h == null ? '?' : n0(h)}</td><td class="n">${c == null ? '?' : esc(t('spk', {n:n0(c)}))}</td><td>${st}</td></tr>`; });
+  const picks = tr.picks.filter(k => FP[k]), known = picks.filter(k => sphOf(k) != null), hours = known.reduce((a, k) => a + sphOf(k), 0);
+  const each = known.map(k => sphOf(k) / eff(k) / 24);
+  const sum = !R ? t('tNoRiders') : !picks.length ? t('tSumNone') : t('tSum', {k:picks.length, r:R, n:picks.length * R, h:n0(hours * R) + (known.length < picks.length ? '+' : ''), s:tr.spark,
+    a:n0(each.reduce((a, d) => a + d, 0)), e:n0(R * tr.spark)});
+  el.innerHTML = `<h2 style="margin:0 0 4px">${esc(t('tH'))}</h2><p class="hint" style="margin:0 0 8px">${esc(t('tN'))}</p>
+    <div class="chips2">${TRAINS.map((x, i) => `<button type="button" data-act="train" data-n="${i}" class="${i === TI ? 'on' : ''}">${esc(x.name || t('tTrain', {n:i + 1}))} · ${x.spark} <span class="tag">${x.picks.length}</span></button>`).join('')}<button type="button" data-act="newtrain">${esc(t('tNew'))}</button></div>
+    <div class="trow"><label>${esc(t('tName'))} <input type="text" id="tname" value="${esc(tr.name)}" placeholder="${esc(t('tTrain', {n:TI + 1}))}"></label>
+      <label>${esc(t('tSpark'))} <select id="tspark">${[1, 3, 5, 10, 15, 20, 30].map(v => `<option${v === tr.spark ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
+      ${TRAINS.length > 1 ? `<button type="button" class="btn small" data-act="deltrain">${esc(t('tDel'))}</button>` : ''}</div>
+    <div class="small muted">${esc(t('tRiders'))}</div>
+    <div class="chips2">${GROUP.map(u => `<button type="button" data-act="rider" data-v="${u}" class="${tr.riders.includes(u) ? 'on' : ''}">${dotOf(u)}${esc(nameOf(u))}</button>`).join('')}</div>
+    ${tbl([[''], [t('cStruct')], [t('cGround'), 'n'], [t('cSph'), 'n'], [t('cCap'), 'n'], [t('cOn')]], rows)}
+    <div class="sum">${esc(sum)}</div>
+    <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))}</span></div>
+    ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}`;
+}
+function placeTrain(){
+  // round by round: every rider builds the same structure on their own smallest lot where it fits
+  const tr = TRAINS[TI], miss = [], label = tr.name || t('tTrain', {n:TI + 1});
+  PLAN.adds = PLAN.adds.filter(q => q.tid !== tr.id);   // placing again redoes this train
+  let done = 0;
+  tr.picks.filter(k => FP[k]).forEach((k, i) => {
+    const need = FP[k].w * FP[k].d / 9;
+    for(const u of tr.riders){
+      const lots = LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => x.area - y.area);
+      const hit = lots.some(l => { const fit = autoFit(l, k); if(fit) PLAN.adds.push({id:l.id, k, ...fit, t:label + ' · ' + t('tRound', {n:i + 1}), tid:tr.id}); return !!fit; });
+      if(hit) done++; else miss.push(FP[k].name + ' (' + nameOf(u) + ')');
+    }
+  });
+  TMSG = t('tPlaced', {n:done}) + (miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : '');
 }
 function planCard(){
   const el = document.getElementById('plan');
   if(!LOTS.length){ el.innerHTML = ''; return; }
-  const rows = PLAN.adds.map((p, n) => { const l = BYID.get(p.id), f = FP[p.k], ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td><b>${esc(f.name)}</b></td><td>${esc(l.addr)}</td><td>${l.who ? (COL[l.who] ? dotOf(l.who) + ' ' : '') + esc(nameOf(l.who)) : esc(t('dNone'))}</td>
+  const rows = PLAN.adds.map((p, n) => { const l = BYID.get(p.id), f = FP[p.k], ok = planOk(n); return `<tr class="${n === SEL ? 'sel' : ''}"><td>${named(p.k, esc(f.name), p.t ? `<div class="trv">${esc(p.t)}</div>` : '')}</td><td>${esc(l.addr)}</td><td>${l.who ? (COL[l.who] ? dotOf(l.who) + ' ' : '') + esc(nameOf(l.who)) : esc(t('dNone'))}</td>
     <td class="n">${(f.w * f.d / 9).toFixed(1)} UP2</td><td><span class="tag">${ok ? '✓ ' + esc(t('pOk')) : '✕ ' + esc(t('pBad'))}</span></td>
     <td><button type="button" class="btn small" data-act="go" data-n="${n}">${esc(t('plShow'))}</button> <button type="button" class="btn small" data-act="rm" data-n="${n}">${esc(t('pRemove'))}</button></td></tr>`; });
   const drops = PLAN.drops.map(d => { const [id, i] = d.split(':'), l = BYID.get(id), b = l && l.bs[+i]; return b ? `<tr><td><b>${esc(b.name)}</b></td><td>${esc(l.addr)}</td><td>${l.who ? esc(nameOf(l.who)) : ''}</td><td><button type="button" class="btn small" data-act="golot" data-id="${id}">${esc(t('plShow'))}</button></td></tr>` : ''; }).filter(Boolean);
@@ -457,6 +559,16 @@ function planCard(){
 function act(b){
   const a = b.getAttribute('data-act'), n = +b.getAttribute('data-n'), l = BYID.get(CUR);
   NOTE = '';
+  if(['train', 'newtrain', 'deltrain', 'rider', 'placetrain'].includes(a)){
+    const tr = TRAINS[TI], v = b.getAttribute('data-v');
+    if(a !== 'placetrain') TMSG = '';
+    if(a === 'train') TI = n;
+    else if(a === 'newtrain'){ TRAINS.push({id:Math.random().toString(36).slice(2, 8), name:'', spark:tr.spark, riders:[...tr.riders], picks:[]}); TI = TRAINS.length - 1; }
+    else if(a === 'deltrain'){ TRAINS.splice(TI, 1); TI = 0; }
+    else if(a === 'rider') tr.riders = GROUP.filter(u => u === v ? !tr.riders.includes(u) : tr.riders.includes(u));
+    else if(tr.riders.length){ placeTrain(); savePlan(); rescore(); saveTrains(); draw(); return; }
+    saveTrains(); trainsCard(); return;
+  }
   if(a === 'drop' && l){
     const bd = l.bs[+b.getAttribute('data-i')], k = dropKey(l, bd.i, bd), at = PLAN.drops.indexOf(k);
     if(at < 0) PLAN.drops.push(k); else PLAN.drops.splice(at, 1);
@@ -484,7 +596,8 @@ function act(b){
     CUR = lot.id; SEL = a === 'go' ? n : -1; showLot(lot);
     document.querySelector('.mapbox').scrollIntoView({block:'nearest'});
   }else if(a === 'clearplan'){ PLAN = {adds:[], drops:[]}; SEL = -1; }
-  savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables();
+  else if(a === 'unchase'){ CHASE = CHASE.filter(x => x !== b.getAttribute('data-v')); store.set('rut:blueprint:chase', CHASE); ctl(); }
+  savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables(); trainsCard();
 }
 function tables(){
   const by = new Map();
@@ -521,7 +634,7 @@ function tables(){
 function draw(){
   if(!D){ document.getElementById('detail').innerHTML = `<p class="muted" style="margin:0">${esc(t(D === null ? 'loading' : 'none'))}</p>`; return; }
   document.body.classList.toggle('cb', CB);
-  tiles(); ctl(); legend(); drawMap(); detail(); planCard(); tables();
+  tiles(); trainsCard(); ctl(); legend(); drawMap(); detail(); planCard(); tables();
 }
 function light(type, v){
   HL = HL && HL.type === type && HL.v === v ? null : {type, v};
@@ -564,7 +677,7 @@ function wire(){
     }
   });
   const up = e => {
-    if(DRAG && e.pointerId === DRAG.id){ DRAG = null; savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables(); return; }
+    if(DRAG && e.pointerId === DRAG.id){ DRAG = null; savePlan(); rescore(); legend(); drawMap(); detail(); planCard(); tables(); trainsCard(); return; }
     const had = pts.delete(e.pointerId);
     svg.classList.remove('drag'); pinch = 0;
     if(had && moved <= 4 && e.type === 'pointerup'){
@@ -591,6 +704,14 @@ function wire(){
     if(e.target.id === 'cb'){ CB = e.target.checked; store.set('rut:blueprint:cb', CB); draw(); }
     if(e.target.id === 'homes'){ HOMES = e.target.checked; pickList(); }
     if(e.target.id === 'bysize'){ BYSIZE = e.target.checked; pickList(); }
+    const pk = e.target.getAttribute('data-pick');
+    if(pk){ const tr = TRAINS[TI]; tr.picks = e.target.checked ? [...tr.picks, pk] : tr.picks.filter(x => x !== pk); TMSG = ''; saveTrains(); trainsCard(); }
+    if(e.target.id === 'tspark'){ TRAINS[TI].spark = +e.target.value; saveTrains(); trainsCard(); }
+    if(e.target.id === 'tname'){ TRAINS[TI].name = e.target.value.trim(); saveTrains(); trainsCard(); }
+    if(e.target.id === 'chase'){
+      const n = TN.find(x => x.toLowerCase() === e.target.value.trim().toLowerCase());
+      if(n && !CHASE.includes(n)){ CHASE.push(n); store.set('rut:blueprint:chase', CHASE); rescore(); draw(); }
+    }
     if(e.target.id === 'heat'){ HEAT = e.target.checked; store.set('rut:blueprint:heat', HEAT); legend(); drawMap(); }
   });
   document.addEventListener('input', e => {
@@ -609,7 +730,9 @@ async function boot(){
   draw();
   wire();
   const [m, f, tv] = await Promise.all([getJson('../data/structures/map/quailwood.json'), getJson('../data/structures/footprints.json'), getJson('../data/structures/trove-value.json')]);
-  TV = (tv || {}).structures || {}; TN = (tv || {}).troves || [];
+  getJson('../data/structures/images.json').then(im => { IMG = new Map(Object.entries((im || {}).files || {}).map(([n, f]) => [key(n), f])); if(D) draw(); });
+  TV = (tv || {}).structures || {}; TN = (tv || {}).troves || []; NHARD = (tv || {}).hard || 0;
+  getJson('../data/structures/master.json').then(ms => { SPH = new Map(((ms || {}).structures || []).filter(x => x.sph).map(x => [key(x.name), x.sph])); if(D) trainsCard(); });
   if(!m || !m.rows){ D = undefined; draw(); return; }
   FP = (f || {}).structures || {};
   D = m; prepare(); rescore(); draw();
