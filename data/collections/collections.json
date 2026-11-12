@@ -699,5 +699,16 @@
 {"id":757,"name":"HERENGRACHT","amount":3,"category":3,"yield_boost":2.13,"one_time_reward":7500,"city_id":141,"requirements":"Own any 3 properties on HERENGRACHT."},
 {"id":747,"name":"JORDAAN","amount":3,"category":2,"yield_boost":1.57,"one_time_reward":1600,"city_id":141,"requirements":"Own any 3 properties in the JORDAAN neighborhood."},
 {"id":390,"name":"Avenida de Mayo","amount":3,"category":4,"yield_boost":2.53,"one_time_reward":16100,"city_id":51,"requirements":"Own 3 Properties on Avenida de Mayo"},
-{"id":394,"name":"Avenida Varela","amount":3,"category":3,"yield_boost":2.2,"one_time_reward":8600,"city_id":51,"requirements":"Own 3 Properties on Avenida Varela"}
+{"id":394,"name":"Avenida Varela","amount":3,"category":3,"yield_boost":2.2,"one_time_reward":8600,"city_id":51,"requirements":"Own 3 Properties on Avenida Varela"},
+{"id":761,"name":"Istanbul","amount":3,"category":1,"yield_boost":1.25,"one_time_reward":450,"city_id":144,"requirements":"Own 3 properties in Istanbul."},
+{"id":768,"name":"TAHTAKALE","amount":3,"category":4,"yield_boost":2.4,"one_time_reward":11700,"city_id":144,"requirements":"Own any 3 properties in the TAHTAKALE neighborhood."},
+{"id":764,"name":"CANKURTARAN","amount":3,"category":3,"yield_boost":2.21,"one_time_reward":8800,"city_id":144,"requirements":"Own any 3 properties in the CANKURTARAN neighborhood."},
+{"id":766,"name":"SULEYMANIYE","amount":3,"category":3,"yield_boost":2.29,"one_time_reward":10000,"city_id":144,"requirements":"Own any 3 properties in the SULEYMANIYE neighborhood."},
+{"id":767,"name":"SULTAN AHMET","amount":3,"category":3,"yield_boost":2.27,"one_time_reward":9700,"city_id":144,"requirements":"Own any 3 properties in the SULTAN AHMET neighborhood."},
+{"id":769,"name":"YEDIKULE","amount":3,"category":2,"yield_boost":1.85,"one_time_reward":3300,"city_id":144,"requirements":"Own any 3 properties in the YEDIKULE neighborhood."},
+{"id":770,"name":"ZEYREK","amount":3,"category":2,"yield_boost":1.81,"one_time_reward":3000,"city_id":144,"requirements":"Own any 3 properties in the ZEYREK neighborhood."},
+{"id":772,"name":"MESE HODOS","amount":3,"category":3,"yield_boost":2.23,"one_time_reward":9100,"city_id":144,"requirements":"Own any 3 properties on DIVANYOLU CADDE, YENICERILER CADDE or ORDU CADDE."},
+{"id":774,"name":"FEVZIPASA CADDE","amount":3,"category":2,"yield_boost":1.8,"one_time_reward":3000,"city_id":144,"requirements":"Own any 3 properties on FEVZIPASA CADDE."},
+{"id":775,"name":"TURGUT OZAL MILLET CADDE","amount":3,"category":2,"yield_boost":1.88,"one_time_reward":3500,"city_id":144,"requirements":"Own any 3 properties on TURGUT OZAL MILLET CADDE."},
+{"id":776,"name":"City of Three Empires","amount":3,"category":5,"yield_boost":2.69,"one_time_reward":20700,"city_id":144,"requirements":"Own 3 City of Three Empires properties in Istanbul as curated by the Upland team (this list is final and is not subject to change)"}
 ]}
