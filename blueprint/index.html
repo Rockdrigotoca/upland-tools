@@ -132,10 +132,12 @@ Site.register({
     tH:'Spark trains', tN:'The short list: the smallest structure for every trove Quailwood does not give yet, plus the two smallest for each chased trove. Tick the ones this train builds, in order: each one is a round, and every rider builds one.',
     tNew:'＋ New train', tName:'Train name', tSpark:'Spark per rider', tRiders:'Riders', tDel:'Delete this train', tTrain:'Train {n}',
     cGives:'Adds', cGround:'Ground', cSph:'Spark hours', cCap:'Takes up to', cOn:'On this train', spk:'{n} spark', days:'{n} days', tOver:'over its limit: only {n} of the {m} spark count', tUnk:'spark hours unknown', tDone:'already planned',
-    tSum:'{k} rounds of {r} builds: {n} builds one after another, {h} spark hours, about {a} days. Only one build runs at a time, so every rider needs just {s} spark and moves it to each new build.',
+    tSum:'{k} rounds of {r} builds: {n} builds one after another, {h} spark hours, about {a} days. Start all the builds of a round on the same day with the minimum spark; the train’s {s} spark per rider sits on one build at a time and moves on as each one finishes.',
+    pushBtn:'Push this train to Discord', pushOk:'Pushed: {n} builds. Sir Quailbert announced it in the channel and will announce each restake.', pushFail:'The push failed ({why}). Open the link from /train plan in that channel again.', pushBusy:'Pushing…', pushNoKey:'To push this train, run /train plan in its Discord channel and open the link it gives you.', pushNoPlan:'Put this train on the map first.',
+    tDrawn:'Round 1 order, drawn at random: {names}.',
     tChan:'Discord channel id', tOrder:'The order inside each round is drawn at random every time you place the train.',
     dH:'Trains at a glance', dNoTrain:'No train is on the map yet. Tick structures on a train and put it on the map.', dBuilt:'{a} of {b} built', dNow:'Now', dNext:'Next', dWait:'not started yet', dPct:'{p}% done', dEnds:'finishes {d}', dSpeed:'{a} of {b} spark on it',
-    dMove:'Move your spark to {addr}: {n} spark still missing.', dStart:'{who} starts this build, then everyone moves their spark to it.', dAllDone:'Every build of this train is finished.', dRefresh:'Check Upland again', dChecking:'Checking Upland…', dChecked:'Checked {d}.', dFail:'Upland did not answer; showing the plan only.', dRiders:'{n} riders', dNoChan:'no channel yet', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
+    dMove:'Move your spark to {addr}: {n} spark still missing.', dStart:'Start all the builds of this round today with the minimum spark, then everyone puts their spark on {who}’s build.', dAllDone:'Every build of this train is finished.', dRefresh:'Check Upland again', dChecking:'Checking Upland…', dChecked:'Checked {d}.', dFail:'Upland did not answer; showing the plan only.', dRiders:'{n} riders', dNoChan:'no channel yet', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
     tPlace:'Put this train on the map', tPlaceN:'Round by round, every rider builds the same structure on their own lot. Placing again redoes this train only.', tPlaced:'{n} placed.', tNoFit:'No lot found for: {names}.',
     plH:'The plan', plN:'Structures placed and buildings marked to tear down. Each player can check their rows, move a build to another of their addresses, and tick it once they agree. Saved in this browser: download the file to pass it on.',
     plAll:'Everyone', plOk:'Agreed', plMoveBad:'{s} does not fit at {a}; it stays where it was.', plSave:'Download the plan file', plLoad:'Load a plan file', plLoaded:'Plan loaded.', plBadFile:'That file is not a Blueprint plan.',
@@ -167,10 +169,12 @@ Site.register({
     tH:'Trenes de spark', tN:'La lista corta: la estructura más chica para cada trove que Quailwood aún no da, más las dos más chicas de cada trove buscado. Marca las que construye este tren, en orden: cada una es una ronda y cada pasajero construye una.',
     tNew:'＋ Tren nuevo', tName:'Nombre del tren', tSpark:'Spark por pasajero', tRiders:'Pasajeros', tDel:'Borrar este tren', tTrain:'Tren {n}',
     cGives:'Agrega', cGround:'Terreno', cSph:'Horas de spark', cCap:'Admite hasta', cOn:'En este tren', spk:'{n} spark', days:'{n} días', tOver:'pasa su límite: solo cuentan {n} de los {m} spark', tUnk:'horas de spark desconocidas', tDone:'ya está en el plan',
-    tSum:'{k} rondas de {r} construcciones: {n} construcciones una tras otra, {h} horas de spark, unos {a} días. Solo corre una construcción a la vez, así que cada pasajero necesita solo {s} spark y lo mueve a cada construcción nueva.',
+    tSum:'{k} rondas de {r} construcciones: {n} construcciones una tras otra, {h} horas de spark, unos {a} días. Empiecen todas las construcciones de una ronda el mismo día con el spark mínimo; los {s} spark del tren por pasajero están en una a la vez y pasan a la siguiente cuando termina cada una.',
+    pushBtn:'Subir este tren a Discord', pushOk:'Subido: {n} construcciones. Sir Quailbert lo anunció en el canal y avisará cada vez que haya que mover el spark.', pushFail:'No se pudo subir ({why}). Vuelve a abrir el enlace de /train plan en ese canal.', pushBusy:'Subiendo…', pushNoKey:'Para subir este tren, usa /train plan en su canal de Discord y abre el enlace que te da.', pushNoPlan:'Primero pon este tren en el mapa.',
+    tDrawn:'Orden de la ronda 1, sorteado al azar: {names}.',
     tChan:'Id del canal de Discord', tOrder:'El orden dentro de cada ronda se sortea cada vez que colocas el tren.',
     dH:'Los trenes de un vistazo', dNoTrain:'Aún no hay ningún tren en el mapa. Marca estructuras en un tren y ponlo en el mapa.', dBuilt:'{a} de {b} construidas', dNow:'Ahora', dNext:'Sigue', dWait:'aún no empieza', dPct:'{p}% hecho', dEnds:'termina {d}', dSpeed:'{a} de {b} spark puestos',
-    dMove:'Mueve tu spark a {addr}: faltan {n} spark.', dStart:'{who} empieza esta construcción y luego todos mueven su spark ahí.', dAllDone:'Todas las construcciones de este tren están terminadas.', dRefresh:'Revisar Upland otra vez', dChecking:'Revisando Upland…', dChecked:'Revisado {d}.', dFail:'Upland no respondió; se muestra solo el plan.', dRiders:'{n} pasajeros', dNoChan:'aún sin canal', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
+    dMove:'Mueve tu spark a {addr}: faltan {n} spark.', dStart:'Empiecen hoy todas las construcciones de esta ronda con el spark mínimo y luego todos ponen su spark en la de {who}.', dAllDone:'Todas las construcciones de este tren están terminadas.', dRefresh:'Revisar Upland otra vez', dChecking:'Revisando Upland…', dChecked:'Revisado {d}.', dFail:'Upland no respondió; se muestra solo el plan.', dRiders:'{n} pasajeros', dNoChan:'aún sin canal', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
     tPlace:'Poner este tren en el mapa', tPlaceN:'Ronda por ronda, cada pasajero construye la misma estructura en su propio lote. Colocar de nuevo rehace solo este tren.', tPlaced:'{n} colocadas.', tNoFit:'No se encontró lote para: {names}.',
     plH:'El plan', plN:'Estructuras colocadas y edificios marcados para demoler. Cada jugador puede revisar sus filas, mover una construcción a otra de sus direcciones y marcarla cuando esté de acuerdo. Se guarda en este navegador: descarga el archivo para pasarlo.',
     plAll:'Todos', plOk:'De acuerdo', plMoveBad:'{s} no cabe en {a}; se queda donde estaba.', plSave:'Descargar el archivo del plan', plLoad:'Cargar un archivo de plan', plLoaded:'Plan cargado.', plBadFile:'Ese archivo no es un plan del Plano.',
@@ -224,7 +228,13 @@ if(!Array.isArray(TRAINS) || !TRAINS.length) TRAINS = [{name:'', spark:10, rider
 const CHANNELS = {5:'1570200804063711334', 10:'1570200891657560165'};
 for(const sp of [5, 10]) if(!TRAINS.some(x => x.chan === CHANNELS[sp])){ const x = TRAINS.find(y => y.spark === sp && !y.chan && !y.big); if(x) x.chan = CHANNELS[sp]; }
 const shuffled = a => { const b = [...a]; for(let i = b.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-let LIVE = new Map(), LIVEAT = null, LIVEBUSY = false, LIVEFAIL = false;
+let LIVE = new Map(), LIVEAT = null, LIVEBUSY = false, LIVEFAIL = false, PUSHMSG = '';
+// the push key from /train plan arrives in the link's # part; it is kept in this browser only and taken out of the address bar
+let PUSHKEYS = store.get('rut:blueprint:pushkeys', {});
+try{
+  const m = /#plan=(\d+)\.([a-f0-9]+)&api=([^&]+)/.exec(location.hash);
+  if(m){ const api = decodeURIComponent(m[3]); if(/^https:\/\/[a-z0-9.-]+$/i.test(api) || /^http:\/\/localhost:\d+$/.test(api)){ PUSHKEYS[m[1]] = {key:m[2], api}; store.set('rut:blueprint:pushkeys', PUSHKEYS); } history.replaceState(null, '', location.pathname + location.search); }
+}catch{}
 TRAINS.forEach(x => { if(!x.id) x.id = Math.random().toString(36).slice(2, 8); });
 const saveTrains = () => store.set('rut:blueprint:trains', TRAINS);
 let TV = {}, TN = [], HEAT = store.get('rut:blueprint:heat', false), BYSIZE = false, S0 = new Map(), S1 = new Map(), HAVE = new Set(), COUNT = new Map();
@@ -590,25 +600,44 @@ function trainsCard(){
     <div class="chase" style="margin:10px 0 0"><input id="tadd" list="structNames" placeholder="${esc(t('tAdd'))}" aria-label="${esc(t('tAdd'))}" style="width:18rem"><datalist id="structNames">${Object.values(FP).filter(f => !f.living).map(f => f.name).sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
     <div class="sum">${esc(sum)}</div>
     <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))} ${esc(t('tOrder'))}</span></div>
-    ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}`;
+    ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}
+    ${tr.chan ? `<div class="row" style="margin-top:8px"><button type="button" class="btn small primary" data-act="pushtrain"${PUSHMSG === t('pushBusy') ? ' disabled' : ''}>${esc(t('pushBtn'))}</button></div>` : ''}
+    ${PUSHMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(PUSHMSG)}</b></p>` : ''}`;
 }
 function placeTrain(){
   // round by round: every rider builds the same structure on their own lot, in an order drawn at random for each round
   const tr = TRAINS[TI], miss = [], label = tr.name || t('tTrain', {n:TI + 1});
   PLAN.adds = PLAN.adds.filter(q => q.tid !== tr.id);   // placing again redoes this train
-  let done = 0;
+  let done = 0, last = null, first = [];
   tr.picks.filter(k => FP[k]).forEach((k, i) => {
     const need = FP[k].w * FP[k].d / 9;
-    for(const u of shuffled(tr.riders)){
+    let order = shuffled(tr.riders);
+    if(last && order.length > 1 && order[0] === last) order.push(order.shift());   // never the same rider closing one round and opening the next
+    if(!i) first = order;
+    last = order[order.length - 1];
+    for(const u of order){
       const lots = LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => tr.big ? freeOf(y) - freeOf(x) : x.area - y.area).slice(0, tr.big ? 6 : 999);
       const hit = lots.some(l => { const fit = autoFit(l, k); if(fit){ done++; PLAN.adds.push({id:l.id, k, ...fit, t:label + ' · ' + t('tRound', {n:i + 1}) + ' · #' + done, tid:tr.id, r:i + 1, seq:done}); } return !!fit; });
       if(!hit) miss.push(FP[k].name + ' (' + nameOf(u) + ')');
     }
   });
   LIVE.delete(tr.id);
-  TMSG = t('tPlaced', {n:done}) + (miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : '');
+  TMSG = t('tPlaced', {n:done}) + ' ' + t('tDrawn', {names:first.map(nameOf).join(', ')}) + (miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : '');
 }
 // ---------- the trains at a glance, with the build in progress read from Upland ----------
+const trainBuilds = tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id}; });
+async function pushTrain(){
+  const tr = TRAINS[TI], pk = tr.chan && PUSHKEYS[tr.chan], builds = trainBuilds(tr);
+  if(!pk) { PUSHMSG = t('pushNoKey'); trainsCard(); return; }
+  if(!builds.length) { PUSHMSG = t('pushNoPlan'); trainsCard(); return; }
+  PUSHMSG = t('pushBusy'); trainsCard();
+  try{
+    const r = await fetch(pk.api + '/plan/push', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({channel:tr.chan, key:pk.key, name:tr.name || t('tTrain', {n:TI + 1}), spark:tr.spark, builds})});
+    const j = await r.json().catch(() => ({}));
+    PUSHMSG = r.ok ? t('pushOk', {n:j.builds ?? builds.length}) : t('pushFail', {why:j.error || r.status});
+  }catch(e){ PUSHMSG = t('pushFail', {why:'network'}); }
+  trainsCard();
+}
 const trainItems = tr => PLAN.adds.filter(q => q.tid === tr.id).sort((x, y) => (x.seq || 0) - (y.seq || 0));
 const fmtWhen = d => new Date(d).toLocaleString(Site.locale(), {day:'numeric', month:'short', hour:'numeric', minute:'2-digit', ...(new Date(d).getFullYear() !== new Date().getFullYear() ? {year:'numeric'} : {})});
 function dashCard(){
@@ -731,9 +760,10 @@ function act(b){
   PMSG = '';
   if(a === 'pf'){ PF = b.getAttribute('data-v'); planCard(); return; }
   if(a === 'dashload'){ dashLoad(); return; }
+  if(a === 'pushtrain'){ pushTrain(); return; }
   if(a === 'saveplan'){
     // builds: the plain list the bot follows (one build at a time, in this order within each train)
-    const builds = TRAINS.flatMap(tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {train:tr.id, channel:tr.chan || null, seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id, agreed:!!q.c}; }));
+    const builds = TRAINS.flatMap(tr => trainBuilds(tr).map(b => ({train:tr.id, channel:tr.chan || null, ...b})));
     const blob = new Blob([JSON.stringify({format:'quailbert-blueprint-plan-v2', hood:D.hood, savedAt:new Date().toISOString(), plan:PLAN, trains:TRAINS, builds}, null, 1)], {type:'application/json'});
     const x = document.createElement('a'); x.href = URL.createObjectURL(blob); x.download = 'quailwood-plan.json'; x.click(); setTimeout(() => URL.revokeObjectURL(x.href), 2000); return;
   }
@@ -754,6 +784,7 @@ function act(b){
   if(['train', 'newtrain', 'deltrain', 'rider', 'placetrain'].includes(a)){
     const tr = TRAINS[TI], v = b.getAttribute('data-v');
     if(a !== 'placetrain') TMSG = '';
+    PUSHMSG = '';
     if(a === 'train') TI = n;
     else if(a === 'newtrain'){ TRAINS.push({id:Math.random().toString(36).slice(2, 8), name:'', spark:tr.spark, riders:[...tr.riders], picks:[], big:!!tr.big}); TI = TRAINS.length - 1; }
     else if(a === 'deltrain'){ TRAINS.splice(TI, 1); TI = 0; }
