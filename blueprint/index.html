@@ -135,6 +135,7 @@ Site.register({
     tSum:'{k} rounds of {r} builds: {n} builds one after another, {h} spark hours, about {a} days. Start all the builds of a round on the same day with the minimum spark; the train’s {s} spark per rider sits on one build at a time and moves on as each one finishes.',
     pushBtn:'Push this train to Discord', pushOk:'Pushed: {n} builds. Sir Quailbert announced it in the channel and will announce each restake.', pushFail:'The push failed ({why}). Open the link from /train plan in that channel again.', pushBusy:'Pushing…', pushNoKey:'To push this train, run /train plan in its Discord channel and open the link it gives you.', pushNoPlan:'Put this train on the map first.',
     tDrawn:'Round 1 order, drawn at random: {names}.',
+    tExtend:'➕ Add new riders or structures to the running train', tExtendN:'Tick the new structure or switch on the new rider, then press this. Nothing already placed moves. A new rider starts with the structure the train is on now and follows every round after it, last in each round; a new structure becomes a new round at the end. Then push.', tExtended:'Added {n} builds from round {r}.{miss}', tExtendNone:'Nothing to add: every rider already has a build in every round from round {r}.',
     tChan:'Discord channel id', tOrder:'The order inside each round is drawn at random every time you place the train.',
     dH:'Trains at a glance', dNoTrain:'No train is on the map yet. Tick structures on a train and put it on the map.', dBuilt:'{a} of {b} built', dNow:'Now', dNext:'Next', dWait:'not started yet', dPct:'{p}% done', dEnds:'finishes {d}', dSpeed:'{a} of {b} spark on it',
     dMove:'Move your spark to {addr}: {n} spark still missing.', dStart:'Start all the builds of this round today with the minimum spark, then everyone puts their spark on {who}’s build.', dAllDone:'Every build of this train is finished.', dRefresh:'Check Upland again', dChecking:'Checking Upland…', dChecked:'Checked {d}.', dFail:'Upland did not answer; showing the plan only.', dRiders:'{n} riders', dNoChan:'no channel yet', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
@@ -172,6 +173,7 @@ Site.register({
     tSum:'{k} rondas de {r} construcciones: {n} construcciones una tras otra, {h} horas de spark, unos {a} días. Empiecen todas las construcciones de una ronda el mismo día con el spark mínimo; los {s} spark del tren por pasajero están en una a la vez y pasan a la siguiente cuando termina cada una.',
     pushBtn:'Subir este tren a Discord', pushOk:'Subido: {n} construcciones. Sir Quailbert lo anunció en el canal y avisará cada vez que haya que mover el spark.', pushFail:'No se pudo subir ({why}). Vuelve a abrir el enlace de /train plan en ese canal.', pushBusy:'Subiendo…', pushNoKey:'Para subir este tren, usa /train plan en su canal de Discord y abre el enlace que te da.', pushNoPlan:'Primero pon este tren en el mapa.',
     tDrawn:'Orden de la ronda 1, sorteado al azar: {names}.',
+    tExtend:'➕ Agregar pasajeros o estructuras al tren en marcha', tExtendN:'Marca la estructura nueva o activa al pasajero nuevo y pulsa esto. Nada de lo ya colocado se mueve. Un pasajero nuevo empieza con la estructura en la que va el tren y sigue todas las rondas después, al final de cada ronda; una estructura nueva se vuelve una ronda nueva al final. Luego súbelo.', tExtended:'Se agregaron {n} construcciones desde la ronda {r}.{miss}', tExtendNone:'No hay nada que agregar: todos los pasajeros ya tienen construcción en cada ronda desde la ronda {r}.',
     tChan:'Id del canal de Discord', tOrder:'El orden dentro de cada ronda se sortea cada vez que colocas el tren.',
     dH:'Los trenes de un vistazo', dNoTrain:'Aún no hay ningún tren en el mapa. Marca estructuras en un tren y ponlo en el mapa.', dBuilt:'{a} de {b} construidas', dNow:'Ahora', dNext:'Sigue', dWait:'aún no empieza', dPct:'{p}% hecho', dEnds:'termina {d}', dSpeed:'{a} de {b} spark puestos',
     dMove:'Mueve tu spark a {addr}: faltan {n} spark.', dStart:'Empiecen hoy todas las construcciones de esta ronda con el spark mínimo y luego todos ponen su spark en la de {who}.', dAllDone:'Todas las construcciones de este tren están terminadas.', dRefresh:'Revisar Upland otra vez', dChecking:'Revisando Upland…', dChecked:'Revisado {d}.', dFail:'Upland no respondió; se muestra solo el plan.', dRiders:'{n} pasajeros', dNoChan:'aún sin canal', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
@@ -600,29 +602,64 @@ function trainsCard(){
     <div class="chase" style="margin:10px 0 0"><input id="tadd" list="structNames" placeholder="${esc(t('tAdd'))}" aria-label="${esc(t('tAdd'))}" style="width:18rem"><datalist id="structNames">${Object.values(FP).filter(f => !f.living).map(f => f.name).sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
     <div class="sum">${esc(sum)}</div>
     <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))} ${esc(t('tOrder'))}</span></div>
+    ${trainItems(tr).length ? `<div class="row" style="margin-top:6px"><button type="button" class="btn small" data-act="extendtrain">${esc(t('tExtend'))}</button><span class="small muted">${esc(t('tExtendN'))}</span></div>` : ''}
     ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}
     ${tr.chan ? `<div class="row" style="margin-top:8px"><button type="button" class="btn small primary" data-act="pushtrain"${PUSHMSG === t('pushBusy') ? ' disabled' : ''}>${esc(t('pushBtn'))}</button></div>` : ''}
     ${PUSHMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(PUSHMSG)}</b></p>` : ''}`;
+}
+function placeOne(tr, k, u, r, label){
+  // one build: this rider's smallest (or, on a big-lot train, biggest) lot where the structure fits; false when none does
+  const need = FP[k].w * FP[k].d / 9;
+  const lots = LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => tr.big ? freeOf(y) - freeOf(x) : x.area - y.area).slice(0, tr.big ? 6 : 999);
+  return lots.some(l => { const fit = autoFit(l, k); if(fit) PLAN.adds.push({id:l.id, k, ...fit, t:label + ' · ' + t('tRound', {n:r}), tid:tr.id, r, seq:0}); return !!fit; });
+}
+function renumber(tr, label){
+  // seq follows round, then the order already there; builds just added (seq 0) close their round
+  const items = PLAN.adds.filter(q => q.tid === tr.id).map((q, n) => ({q, n})).sort((x, y) => x.q.r - y.q.r || (x.q.seq || 1e9) - (y.q.seq || 1e9) || x.n - y.n);
+  items.forEach(({q}, i) => { q.seq = i + 1; q.t = label + ' · ' + t('tRound', {n:q.r}) + ' · #' + q.seq; });
 }
 function placeTrain(){
   // round by round: every rider builds the same structure on their own lot, in an order drawn at random for each round
   const tr = TRAINS[TI], miss = [], label = tr.name || t('tTrain', {n:TI + 1});
   PLAN.adds = PLAN.adds.filter(q => q.tid !== tr.id);   // placing again redoes this train
-  let done = 0, last = null, first = [];
+  let last = null, first = [];
   tr.picks.filter(k => FP[k]).forEach((k, i) => {
-    const need = FP[k].w * FP[k].d / 9;
     let order = shuffled(tr.riders);
     if(last && order.length > 1 && order[0] === last) order.push(order.shift());   // never the same rider closing one round and opening the next
     if(!i) first = order;
     last = order[order.length - 1];
-    for(const u of order){
-      const lots = LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => tr.big ? freeOf(y) - freeOf(x) : x.area - y.area).slice(0, tr.big ? 6 : 999);
-      const hit = lots.some(l => { const fit = autoFit(l, k); if(fit){ done++; PLAN.adds.push({id:l.id, k, ...fit, t:label + ' · ' + t('tRound', {n:i + 1}) + ' · #' + done, tid:tr.id, r:i + 1, seq:done}); } return !!fit; });
-      if(!hit) miss.push(FP[k].name + ' (' + nameOf(u) + ')');
-    }
+    for(const u of order) if(!placeOne(tr, k, u, i + 1, label)) miss.push(FP[k].name + ' (' + nameOf(u) + ')');
   });
+  renumber(tr, label);
   LIVE.delete(tr.id);
-  TMSG = t('tPlaced', {n:done}) + ' ' + t('tDrawn', {names:first.map(nameOf).join(', ')}) + (miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : '');
+  TMSG = t('tPlaced', {n:trainItems(tr).length}) + ' ' + t('tDrawn', {names:first.map(nameOf).join(', ')}) + (miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : '');
+}
+// A running train grows without moving anything: a new rider joins at the structure the train is on now and follows every round after it
+// (last in each round); a new structure becomes a new round at the end. The round the train is on comes from the bot's pushed plan, else from Upland.
+async function extendTrain(){
+  const tr = TRAINS[TI], label = tr.name || t('tTrain', {n:TI + 1}), picks = tr.picks.filter(k => FP[k]);
+  let from = 1;
+  const pk = tr.chan && PUSHKEYS[tr.chan];
+  if(pk){
+    try{
+      const j = await (await fetch(pk.api + '/plan/state?channel=' + tr.chan)).json(), b = (j.builds || []).find(x => x.seq === j.current);
+      if(b) from = b.round; else if(j.builds && j.builds.length && j.current == null) from = Math.max(...j.builds.map(x => x.round)) + 1;   // everything is finished: only new rounds
+    }catch{}
+  }
+  if(from === 1 && LIVE.get(tr.id)){ const items = trainItems(tr), at = LIVE.get(tr.id).done; if(items.length) from = at >= items.length ? items[items.length - 1].r + 1 : items[at].r; }
+  const miss = []; let added = 0, last = null;
+  picks.forEach((k, i) => {
+    const r = i + 1;
+    if(r < from) return;
+    const have = new Set(trainItems(tr).filter(q => q.r === r).map(q => BYID.get(q.id).who));
+    let order = shuffled(tr.riders.filter(u => !have.has(u)));
+    const prevLast = trainItems(tr).filter(q => q.r === r - 1).slice(-1).map(q => BYID.get(q.id).who)[0];
+    if(!have.size && prevLast && order.length > 1 && order[0] === prevLast) order.push(order.shift());   // a whole new round: never the same rider closing one and opening the next
+    for(const u of order){ if(placeOne(tr, k, u, r, label)) added++; else miss.push(FP[k].name + ' (' + nameOf(u) + ')'); }
+  });
+  renumber(tr, label);
+  TMSG = added ? t('tExtended', {n:added, r:from, miss:miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : ''}) : (miss.length ? t('tNoFit', {names:miss.join(', ')}) : t('tExtendNone', {r:from}));
+  savePlan(); rescore(); draw();
 }
 // ---------- the trains at a glance, with the build in progress read from Upland ----------
 const trainBuilds = tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id}; });
@@ -673,7 +710,7 @@ async function dashLoad(){
       const items = trainItems(tr);
       let done = 0, cur = null, reads = 0;
       for(const q of items){
-        const sig = tr.id + ':' + q.id + ':' + q.k + ':' + q.seq;
+        const sig = tr.id + ':' + q.id + ':' + q.k;   // a build keeps its mark when the train grows and the numbers shift
         if(known[sig]){ done++; continue; }
         if(reads++ >= 6) break;
         const r = await fetch('https://api.prod.upland.me/api/properties/' + q.id);
@@ -761,6 +798,7 @@ function act(b){
   if(a === 'pf'){ PF = b.getAttribute('data-v'); planCard(); return; }
   if(a === 'dashload'){ dashLoad(); return; }
   if(a === 'pushtrain'){ pushTrain(); return; }
+  if(a === 'extendtrain'){ extendTrain(); return; }
   if(a === 'saveplan'){
     // builds: the plain list the bot follows (one build at a time, in this order within each train)
     const builds = TRAINS.flatMap(tr => trainBuilds(tr).map(b => ({train:tr.id, channel:tr.chan || null, ...b})));
