@@ -136,6 +136,7 @@ Site.register({
     pushBtn:'Push this train to Discord', pushOk:'Pushed: {n} builds. Sir Quailbert announced it in the channel and will announce each restake.', pushFail:'The push failed ({why}). Open the link from /train plan in that channel again.', pushNoPost:'The plan was saved, but Discord would not let me post: {why}. If the channel is private, add Sir Quailbert to it (Edit Channel → Permissions → Add members or roles), then push again.', pushBusy:'Pushing…', pushNoKey:'To push this train, run /train plan in its Discord channel and open the link it gives you.', pushNoPlan:'Put this train on the map first.',
     tDrawn:'Round 1 order, drawn at random: {names}.',
     tExtend:'➕ Add new riders or structures to the running train', tExtendN:'Tick the new structure or switch on the new rider, then press this. Nothing already placed moves. A new rider starts with the structure the train is on now and follows every round after it, last in each round; a new structure becomes a new round at the end. Then push.', tExtended:'Added {n} builds from round {r}.{miss}', tExtendNone:'Nothing to add: every rider already has a build in every round from round {r}.',
+    apDiscord:'Their Discord username or id (optional)', apLinked:' Discord: {d}: the bot links them to this rider when you push.', apUnlink:'Remove the Discord link', apLinksH:'Discord links', pushLinked:' Discord linked: {names}.', pushUnlinked:' Not found in the server (type their exact Discord username or id): {names}.',
     apAdd:'Add a player who is not in the list: Upland username', apScan:'🔍 Read their lots from Upland and add', apN:'Not in the list? Type their Upland username and press the button. The page reads their Quailwood lots from Upland right now (who owns each lot and what stands on it) and adds them as a rider. For someone already in the list it refreshes their lots.',
     apBusy:'Reading {u} from Upland…', apNoUser:'Upland does not know a player called {u}.', apFail:'Upland did not answer ({why}). Nothing changed.', apNone:'{u} owns no lot in Quailwood, so they cannot build here.',
     apDone:'{u}: {n} lots in Quailwood, {a} UP2 ({f} UP2 free).', apSold:' {n} lots the map still showed as theirs have changed hands.', apUnk:' {n} buildings have no footprint yet, so the fit test cannot see them.', apFailed:' {n} lots could not be read and keep what the map had; press the button again.',
@@ -191,6 +192,7 @@ Site.register({
     tMode:'Construir en', tSmall:'el lote más chico de cada pasajero donde quepa', tBig:'el lote más grande de cada pasajero con espacio', tAdd:'Agregar cualquier estructura a este tren',
     swH:'Cambios de casa: Luxury Ranch House por Town House', swN:'Nuestros lotes con Luxury Ranch House, y cuántas de las estructuras chicas de la lista corta caben juntas junto a la casa hoy y junto a una Town House. Planear un cambio marca la casa para demoler y coloca la Town House.', swNow:'Caben hoy', swTown:'Con Town House', swGain:'Ganancia', swPlan:'Planear el cambio', swBusy:'Calculando: {a} de {b} lotes…', swNoTown:'no cabe una Town House', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
     tExtend:'➕ Agregar pasajeros o estructuras al tren en marcha', tExtendN:'Marca la estructura nueva o activa al pasajero nuevo y pulsa esto. Nada de lo ya colocado se mueve. Un pasajero nuevo empieza con la estructura en la que va el tren y sigue todas las rondas siguientes, al final de cada una; una estructura nueva es una ronda nueva al final. Luego sube el plan.', tExtended:'Se agregaron {n} construcciones desde la ronda {r}.{miss}', tExtendNone:'Nada que agregar: cada pasajero ya tiene una construcción en cada ronda desde la ronda {r}.',
+    apDiscord:'Su usuario o id de Discord (opcional)', apLinked:' Discord: {d}: el bot lo vincula con este pasajero cuando subas el plan.', apUnlink:'Quitar el vínculo de Discord', apLinksH:'Vínculos de Discord', pushLinked:' Discord vinculado: {names}.', pushUnlinked:' No se encontró en el servidor (escribe su usuario exacto de Discord o su id): {names}.',
     apAdd:'Agrega un jugador que no está en la lista: usuario de Upland', apScan:'🔍 Leer sus lotes en Upland y agregarlo', apN:'¿No está en la lista? Escribe su usuario de Upland y pulsa el botón. La página lee ahora mismo sus lotes de Quailwood en Upland (de quién es cada lote y qué tiene construido) y lo agrega como pasajero. Si ya está en la lista, actualiza sus lotes.',
     apBusy:'Leyendo a {u} en Upland…', apNoUser:'Upland no conoce a ningún jugador llamado {u}.', apFail:'Upland no respondió ({why}). No cambió nada.', apNone:'{u} no tiene ningún lote en Quailwood, así que no puede construir aquí.',
     apDone:'{u}: {n} lotes en Quailwood, {a} UP2 ({f} UP2 libres).', apSold:' {n} lotes que el mapa aún mostraba como suyos cambiaron de dueño.', apUnk:' {n} edificios aún no tienen planta, así que la prueba de espacio no los ve.', apFailed:' {n} lotes no se pudieron leer y conservan lo del mapa; pulsa el botón otra vez.',
@@ -578,7 +580,7 @@ function bigStep(){
   const k = BIGFIT.todo[BIGFIT.i++], need = FP[k].w * FP[k].d / 9;
   const who = tr.riders.filter(u => LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => freeOf(y) - freeOf(x)).slice(0, 2).some(l => autoFit(l, k)));
   if(who.length) BIGFIT.fits.set(k, who);
-  if(BIGFIT.i % 5 === 0 && !(document.activeElement && ['tname', 'tadd', 'addplayer'].includes(document.activeElement.id))) trainsCard();
+  if(BIGFIT.i % 5 === 0 && !(document.activeElement && ['tname', 'tadd', 'addplayer', 'adddiscord'].includes(document.activeElement.id))) trainsCard();
   setTimeout(bigStep, 20);
 }
 function bigList(){
@@ -624,7 +626,8 @@ function trainsCard(){
     <div class="small muted">${esc(t('tRiders'))}</div>
     <div class="chips2">${GROUP.map(u => `<button type="button" data-act="rider" data-v="${u}" class="${tr.riders.includes(u) ? 'on' : ''}">${dotOf(u)}${esc(nameOf(u))}</button>`).join('')}</div>
     ${pend.length ? `<p class="small" style="margin:8px 0 0"><b>➜ ${esc(t('apPend', {names:pend.map(nameOf).join(', ')}))}</b></p>` : ''}
-    <div class="chase" style="margin:8px 0 0"><input id="addplayer" list="ownerNames" placeholder="${esc(t('apAdd'))}" aria-label="${esc(t('apAdd'))}" style="width:18rem" autocomplete="off"><datalist id="ownerNames">${[...new Set(LOTS.map(l => l.who))].filter(u => u && u !== '?' && !GROUP.includes(u)).sort().map(u => `<option value="${esc(u)}">`).join('')}</datalist><button type="button" class="btn small" data-act="scanplayer"${SCANBUSY ? ' disabled' : ''}>${esc(t('apScan'))}</button></div>
+    <div class="chase" style="margin:8px 0 0"><input id="addplayer" list="ownerNames" placeholder="${esc(t('apAdd'))}" aria-label="${esc(t('apAdd'))}" style="width:18rem" autocomplete="off"><datalist id="ownerNames">${[...new Set(LOTS.map(l => l.who))].filter(u => u && u !== '?' && !GROUP.includes(u)).sort().map(u => `<option value="${esc(u)}">`).join('')}</datalist><input id="adddiscord" placeholder="${esc(t('apDiscord'))}" aria-label="${esc(t('apDiscord'))}" style="width:16rem" autocomplete="off"><button type="button" class="btn small" data-act="scanplayer"${SCANBUSY ? ' disabled' : ''}>${esc(t('apScan'))}</button></div>
+    ${Object.keys(tr.links || {}).length ? `<div class="chase"><span class="muted">${esc(t('apLinksH'))}:</span>${Object.entries(tr.links).map(([u, d]) => `<span class="tag">${esc(nameOf(u))} → ${esc(d)}<button type="button" data-act="unlink" data-v="${esc(u)}" aria-label="${esc(t('apUnlink'))} ${esc(nameOf(u))}">✕</button></span>`).join('')}</div>` : ''}
     <p class="hint" style="margin:0 0 6px">${esc(t('apN'))}</p>${SCANMSG ? `<p class="small" style="margin:4px 0 8px"><b>${esc(SCANMSG)}</b></p>` : ''}
     ${tbl([[''], [t('cStruct')], [t('cGround'), 'n'], [t('cSph'), 'n'], [t('cCap'), 'n'], [t('cOn')]], rows)}
     <div class="chase" style="margin:10px 0 0"><input id="tadd" list="structNames" placeholder="${esc(t('tAdd'))}" aria-label="${esc(t('tAdd'))}" style="width:18rem"><datalist id="structNames">${Object.values(FP).filter(f => !f.living).map(f => f.name).sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
@@ -704,7 +707,7 @@ function applyScans(){
   }
   store.set('rut:blueprint:scans', SCANS);
 }
-async function scanPlayer(raw){
+async function scanPlayer(raw, discord){
   const name = String(raw || '').trim().replace(/^@/, ''), u = name.toLowerCase();
   if(!u || SCANBUSY || !D) return;
   if(!/^[a-z0-9_.-]+$/.test(u)){ SCANMSG = t('apNoUser', {u:name}); trainsCard(); return; }
@@ -734,9 +737,11 @@ async function scanPlayer(raw){
     if(!GROUP.includes(u)){ EXTRA.push({u, n:name}); NAMES[u] = NAMES[u] || name; store.set('rut:blueprint:riders', EXTRA); }
     const keep = VIEW; prepare(); VIEW = keep;
     if(!tr.riders.includes(u)){ tr.riders = GROUP.filter(x => x === u || tr.riders.includes(x)); saveTrains(); }
+    const dc = String(discord || '').trim().slice(0, 60);
+    if(dc){ tr.links = tr.links || {}; tr.links[u] = dc; saveTrains(); }
     BIGFIT = {key:'', fits:new Map(), todo:[], i:0};
     const lots = ids.map(id => BYID.get(id)), unk = ids.reduce((a, id) => a + rows.get(id)[7].filter(b => !FP[key(b[0])]).length, 0);
-    SCANMSG = t('apDone', {u:nameOf(u), n:lots.length, a:n0(lots.reduce((a, l) => a + l.area, 0)), f:n0(lots.reduce((a, l) => a + freeOf(l), 0))}) + (sold.length ? t('apSold', {n:sold.length}) : '') + (unk ? t('apUnk', {n:unk}) : '') + (failed ? t('apFailed', {n:failed}) : '') + t(trainItems(tr).length ? 'apNextRun' : 'apNextPlain');
+    SCANMSG = t('apDone', {u:nameOf(u), n:lots.length, a:n0(lots.reduce((a, l) => a + l.area, 0)), f:n0(lots.reduce((a, l) => a + freeOf(l), 0))}) + (sold.length ? t('apSold', {n:sold.length}) : '') + (unk ? t('apUnk', {n:unk}) : '') + (failed ? t('apFailed', {n:failed}) : '') + (dc ? t('apLinked', {d:dc}) : '') + t(trainItems(tr).length ? 'apNextRun' : 'apNextPlain');
     rescore(); draw();
   }catch(e){ SCANMSG = t('apFail', {why:e.message || 'network'}); }
   finally{ SCANBUSY = false; trainsCard(); }
@@ -749,9 +754,9 @@ async function pushTrain(){
   if(!builds.length) { PUSHMSG = t('pushNoPlan'); trainsCard(); return; }
   PUSHMSG = t('pushBusy'); trainsCard();
   try{
-    const r = await fetch(pk.api + '/plan/push', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({channel:tr.chan, key:pk.key, name:tr.name || t('tTrain', {n:TI + 1}), spark:tr.spark, blueprint:{holder:bpName(bpOf(tr).holder), contact:bpName(bpOf(tr).contact)}, builds})});
+    const r = await fetch(pk.api + '/plan/push', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({channel:tr.chan, key:pk.key, name:tr.name || t('tTrain', {n:TI + 1}), spark:tr.spark, blueprint:{holder:bpName(bpOf(tr).holder), contact:bpName(bpOf(tr).contact)}, links:Object.entries(tr.links || {}).map(([rider, discord]) => ({rider, discord})), builds})});
     const j = await r.json().catch(() => ({}));
-    PUSHMSG = r.ok ? (j.posted === false ? t('pushNoPost', {why:j.postError || 'unknown'}) : t('pushOk', {n:j.builds ?? builds.length})) : t('pushFail', {why:j.error || r.status});
+    PUSHMSG = r.ok ? (j.posted === false ? t('pushNoPost', {why:j.postError || 'unknown'}) : t('pushOk', {n:j.builds ?? builds.length})) + (j.links && j.links.ok.length ? t('pushLinked', {names:j.links.ok.map(nameOf).join(', ')}) : '') + (j.links && j.links.failed.length ? t('pushUnlinked', {names:j.links.failed.map(nameOf).join(', ')}) : '') : t('pushFail', {why:j.error || r.status});
   }catch(e){ PUSHMSG = t('pushFail', {why:'network'}); }
   trainsCard();
 }
@@ -882,7 +887,8 @@ function act(b){
   if(a === 'dashload'){ dashLoad(); return; }
   if(a === 'pushtrain'){ pushTrain(); return; }
   if(a === 'extendtrain'){ extendTrain(); return; }
-  if(a === 'scanplayer'){ scanPlayer((document.getElementById('addplayer') || {}).value); return; }
+  if(a === 'scanplayer'){ scanPlayer((document.getElementById('addplayer') || {}).value, (document.getElementById('adddiscord') || {}).value); return; }
+  if(a === 'unlink'){ const tr = TRAINS[TI], u = b.getAttribute('data-v'); if(tr.links) delete tr.links[u]; saveTrains(); trainsCard(); return; }
   if(a === 'saveplan'){
     // builds: the plain list the bot follows (one build at a time, in this order within each train)
     const builds = TRAINS.flatMap(tr => trainBuilds(tr).map(b => ({train:tr.id, channel:tr.chan || null, ...b})));
@@ -1036,7 +1042,7 @@ function wire(){
     if(e.target.id === 'clear'){ HL = null; Q = ''; ctl(); drawMap(); tables(); }
   });
   document.getElementById('swap').addEventListener('toggle', e => { if(e.target.open && LOTS.length) swapStart(); });
-  document.addEventListener('keydown', e => { if(e.key === 'Enter' && e.target.id === 'addplayer'){ e.preventDefault(); scanPlayer(e.target.value); } });
+  document.addEventListener('keydown', e => { if(e.key === 'Enter' && (e.target.id === 'addplayer' || e.target.id === 'adddiscord')){ e.preventDefault(); scanPlayer((document.getElementById('addplayer') || {}).value, (document.getElementById('adddiscord') || {}).value); } });
   document.addEventListener('change', e => {
     if(e.target.id === 'cb'){ CB = e.target.checked; store.set('rut:blueprint:cb', CB); draw(); }
     if(e.target.id === 'homes'){ HOMES = e.target.checked; pickList(); }
