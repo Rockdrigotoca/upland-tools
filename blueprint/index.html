@@ -747,7 +747,7 @@ async function scanPlayer(raw, discord){
   finally{ SCANBUSY = false; trainsCard(); }
 }
 // ---------- the trains at a glance, with the build in progress read from Upland ----------
-const trainBuilds = tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id}; });
+const trainBuilds = tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id, cap:capOf(q.k)}; });   // cap: the most spark the structure takes, so the bot can split the train's spark
 async function pushTrain(){
   const tr = TRAINS[TI], pk = tr.chan && PUSHKEYS[tr.chan], builds = trainBuilds(tr);
   if(!pk) { PUSHMSG = t('pushNoKey'); trainsCard(); return; }
