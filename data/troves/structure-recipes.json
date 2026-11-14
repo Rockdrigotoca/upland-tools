@@ -5,8 +5,8 @@
 "Neighborhood Market":{"Jam Jar":["Raspberry","Blackberry","Honey"]},
 "Pho Whoa":{"High Spirits":["Cheers","Fireworks","Holiday Ham"],"Chicken Soup":["Hearty Broth","Onion","Carrot","Kind Word"]},
 "Fire Station":{"Blowtorch":["Ingot","Copper Wire","Fuse","Coal Lump"]},
-"Jewelry":{"Ruby":["Rough Gem","Sandpaper"]},
-"Auto Repair":{"Charcoal":["Oak Log","Clay","Coal Lump"],"Tool Chest":["Oak Log","Hinge","Nail"]},
+"Jewelry":{"Ruby":["Rough Gem","Sandpaper"],"Diamond":["Sapphire","Blowtorch"]},
+"Auto Repair":{"Charcoal":["Oak Log","Clay","Coal Lump"],"Tool Chest":["Oak Log","Hinge","Nail"],"Ingot":["Hammer","Anvil","Iron Ore"],"Soldering Iron":["Copper Wire","Power Drill","Iron Ore"]},
 "European Modular Apartments: Galerie d'Art Edition":{"Chisel Set":["Iron Ore","Twine"],"Sapphire":["Geode","Chisel Set"]},
 "Bank":{"Gold Coin":["Silver Coin","Fools Gold"],"Gold Ring":["Silver Coin","Fools Gold","Sandpaper"]},
 "UPhone Store":{"Copper Wire":["Copper Nugget","Coil Spring"]},
@@ -14,11 +14,17 @@
 "Classic Hotel":{"City Key":["Gold Coin","Deadbolt","Family Crest"]},
 "Art Museum":{"Sapphire":["Geode","Chisel Set"]},
 "Junior College":{"Family Crest":["Oak Log","Copper Nugget","Scout Patch"]},
-"Court House":{"Wedding Ring":["Gold Coin","Love Letter","Sandpaper"]},
-"Pub":{"Burger":["Beef","Cheese Wheel","Lettuce"]},
+"Court House":{"Wedding Ring":["Gold Coin","Love Letter","Sandpaper"],"Solemn Vow":["Pinky Promise","Wax Seal"]},
+"Pub":{"Burger":["Beef","Cheese Wheel","Lettuce"],"Casino Chip":["Gold Coin","Lucky Penny"]},
 "Supermarket":{"Lentil":["Barley","Dollar Bill"]},
 "Tire shop":{"Calipers":["Copper Nugget","Screw"]},
 "Ice Rink":{"Frisbee":["Duct Tape","Twine"]},
-"Regional Hospital":{"House Call":["Bandage","Helping Hand","Key Ring"]}
+"Regional Hospital":{"House Call":["Bandage","Helping Hand","Key Ring"]},
+"Coffee Stand":{"Hello Again":["Warm Hug","Postcard"]},
+"Newspaper Stand":{"Camera":["Lens","Battery Pack","Clay"]},
+"Motel":{"Special Guest":["New Friend","Hello Again","Blue Ribbon"],"Grand Reunion":["Best Friend","Special Guest","Scrapbook"]},
+"Butcher Shop":{"Horn":["Lamb","Sandpaper"]},
+"Hospital":{"Stethoscope":["Headphones","Healing Kit"]},
+"Clinic":{"Stethoscope":["Headphones","Healing Kit"]}
 }
 }
