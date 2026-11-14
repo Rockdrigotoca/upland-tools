@@ -136,6 +136,12 @@ Site.register({
     pushBtn:'Push this train to Discord', pushOk:'Pushed: {n} builds. Sir Quailbert announced it in the channel and will announce each restake.', pushFail:'The push failed ({why}). Open the link from /train plan in that channel again.', pushNoPost:'The plan was saved, but Discord would not let me post: {why}. If the channel is private, add Sir Quailbert to it (Edit Channel → Permissions → Add members or roles), then push again.', pushBusy:'Pushing…', pushNoKey:'To push this train, run /train plan in its Discord channel and open the link it gives you.', pushNoPlan:'Put this train on the map first.',
     tDrawn:'Round 1 order, drawn at random: {names}.',
     tExtend:'➕ Add new riders or structures to the running train', tExtendN:'Tick the new structure or switch on the new rider, then press this. Nothing already placed moves. A new rider starts with the structure the train is on now and follows every round after it, last in each round; a new structure becomes a new round at the end. Then push.', tExtended:'Added {n} builds from round {r}.{miss}', tExtendNone:'Nothing to add: every rider already has a build in every round from round {r}.',
+    apAdd:'Add a player who is not in the list: Upland username', apScan:'🔍 Read their lots from Upland and add', apN:'Not in the list? Type their Upland username and press the button. The page reads their Quailwood lots from Upland right now (who owns each lot and what stands on it) and adds them as a rider. For someone already in the list it refreshes their lots.',
+    apBusy:'Reading {u} from Upland…', apNoUser:'Upland does not know a player called {u}.', apFail:'Upland did not answer ({why}). Nothing changed.', apNone:'{u} owns no lot in Quailwood, so they cannot build here.',
+    apDone:'{u}: {n} lots in Quailwood, {a} UP2 ({f} UP2 free).', apSold:' {n} lots the map still showed as theirs have changed hands.', apUnk:' {n} buildings have no footprint yet, so the fit test cannot see them.', apFailed:' {n} lots could not be read and keep what the map had; press the button again.',
+    apNextRun:' Added to this train’s riders. Now press “➕ Add new riders or structures to the running train”, then push.', apNextPlain:' Added to this train’s riders.',
+    apPend:'{names}: not on this train’s plan yet. Press “➕ Add new riders or structures to the running train” (it only adds builds, nothing moves), then push. Do not use “Put this train on the map”: that redoes the whole train.',
+    apRedo:'Put this train on the map again? This redoes the whole train: every build is drawn again and may move. To add a rider or a structure to a running train, cancel and use “➕ Add new riders or structures to the running train”.',
     tChan:'Discord channel id', tOrder:'The order inside each round is drawn at random every time you place the train.',
     dH:'Trains at a glance', dNoTrain:'No train is on the map yet. Tick structures on a train and put it on the map.', dBuilt:'{a} of {b} built', dNow:'Now', dNext:'Next', dWait:'not started yet', dPct:'{p}% done', dEnds:'finishes {d}', dSpeed:'{a} of {b} spark on it',
     dMove:'Move your spark to {addr}: {n} spark still missing.', dStart:'Start all the builds of this round today with the minimum spark, then everyone puts their spark on {who}’s build.', dAllDone:'Every build of this train is finished.', dRefresh:'Check Upland again', dChecking:'Checking Upland…', dChecked:'Checked {d}.', dFail:'Upland did not answer; showing the plan only.', dRiders:'{n} riders', dNoChan:'no channel yet', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
@@ -183,6 +189,13 @@ Site.register({
     tNewBig:'＋ Tren de lotes grandes', tBigName:'Lotes grandes', tFitsFor:'cabe para {names}', tBigBusy:'Revisando qué cabe: {a} de {b}…', tBigN:'Tren de lotes grandes: la lista empieza con las estructuras grandes que más troves dan y que de verdad caben en el lote de un pasajero, de mayor a menor, y luego la lista corta. Cada pasajero construye en su lote más grande con espacio. Agrega primero las grandes y luego las chicas para llenar huecos.',
     tMode:'Construir en', tSmall:'el lote más chico de cada pasajero donde quepa', tBig:'el lote más grande de cada pasajero con espacio', tAdd:'Agregar cualquier estructura a este tren',
     swH:'Cambios de casa: Luxury Ranch House por Town House', swN:'Nuestros lotes con Luxury Ranch House, y cuántas de las estructuras chicas de la lista corta caben juntas junto a la casa hoy y junto a una Town House. Planear un cambio marca la casa para demoler y coloca la Town House.', swNow:'Caben hoy', swTown:'Con Town House', swGain:'Ganancia', swPlan:'Planear el cambio', swBusy:'Calculando: {a} de {b} lotes…', swNoTown:'no cabe una Town House', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
+    tExtend:'➕ Agregar pasajeros o estructuras al tren en marcha', tExtendN:'Marca la estructura nueva o activa al pasajero nuevo y pulsa esto. Nada de lo ya colocado se mueve. Un pasajero nuevo empieza con la estructura en la que va el tren y sigue todas las rondas siguientes, al final de cada una; una estructura nueva es una ronda nueva al final. Luego sube el plan.', tExtended:'Se agregaron {n} construcciones desde la ronda {r}.{miss}', tExtendNone:'Nada que agregar: cada pasajero ya tiene una construcción en cada ronda desde la ronda {r}.',
+    apAdd:'Agrega un jugador que no está en la lista: usuario de Upland', apScan:'🔍 Leer sus lotes en Upland y agregarlo', apN:'¿No está en la lista? Escribe su usuario de Upland y pulsa el botón. La página lee ahora mismo sus lotes de Quailwood en Upland (de quién es cada lote y qué tiene construido) y lo agrega como pasajero. Si ya está en la lista, actualiza sus lotes.',
+    apBusy:'Leyendo a {u} en Upland…', apNoUser:'Upland no conoce a ningún jugador llamado {u}.', apFail:'Upland no respondió ({why}). No cambió nada.', apNone:'{u} no tiene ningún lote en Quailwood, así que no puede construir aquí.',
+    apDone:'{u}: {n} lotes en Quailwood, {a} UP2 ({f} UP2 libres).', apSold:' {n} lotes que el mapa aún mostraba como suyos cambiaron de dueño.', apUnk:' {n} edificios aún no tienen planta, así que la prueba de espacio no los ve.', apFailed:' {n} lotes no se pudieron leer y conservan lo del mapa; pulsa el botón otra vez.',
+    apNextRun:' Agregado a los pasajeros de este tren. Ahora pulsa “➕ Agregar pasajeros o estructuras al tren en marcha” y luego sube el plan.', apNextPlain:' Agregado a los pasajeros de este tren.',
+    apPend:'{names}: aún no está en el plan de este tren. Pulsa “➕ Agregar pasajeros o estructuras al tren en marcha” (solo agrega construcciones, nada se mueve) y luego sube el plan. No uses “Poner este tren en el mapa”: rehace todo el tren.',
+    apRedo:'¿Poner este tren en el mapa otra vez? Esto rehace todo el tren: cada construcción se dibuja de nuevo y puede moverse. Para agregar un pasajero o una estructura a un tren en marcha, cancela y usa “➕ Agregar pasajeros o estructuras al tren en marcha”.',
     updated:'Leído de Upland el {d}.', hits:'{n} lotes coinciden.', hit1:'1 lote coincide.'
   },
   en_cunk:{
@@ -200,6 +213,12 @@ const COLORS = ['#2f7ed8', '#e0703a', '#3aa76d', '#c94f9b', '#8a6fd1', '#c9a227'
 const UPLAND = id => 'https://play.upland.me/?prop_id=' + id;
 const n0 = x => Math.round(x).toLocaleString(Site.locale());
 const key = s => String(s).normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().replace(/ 1$/, '');
+// players added from the page who are not in the map file's list of builders, and the lots read from Upland for them (the map file is a snapshot)
+let EXTRA = store.get('rut:blueprint:riders', []), SCANS = store.get('rut:blueprint:scans', {}), SCANMSG = '', SCANBUSY = false;
+if(!Array.isArray(EXTRA)) EXTRA = [];
+EXTRA = EXTRA.filter(x => x && typeof x.u === 'string' && /^[a-z0-9_.-]+$/.test(x.u));
+if(!SCANS || typeof SCANS !== 'object' || Array.isArray(SCANS)) SCANS = {};
+EXTRA.forEach(x => { NAMES[x.u] = NAMES[x.u] || String(x.n || x.u).slice(0, 40); });
 const nameOf = u => NAMES[u] || u;
 
 const CBBASE = ['#0072B2', '#F0E442', '#D55E00', '#56B4E9'];   // told apart with red-green colour blindness; the second four are the same, striped
@@ -290,7 +309,8 @@ const isGone = (l, i, b) => PLAN.drops.includes(dropKey(l, i, b));
 
 // ---------- geometry: metres east (x) and south (y) of the middle of the neighbourhood ----------
 function prepare(){
-  GROUP = D.group || Object.keys(NAMES);
+  GROUP = [...(D.group || Object.keys(NAMES))];
+  for(const x of EXTRA) if(!GROUP.includes(x.u)) GROUP.push(x.u);
   GROUP.forEach((u, i) => { COL[u] = COLORS[i % COLORS.length]; });
   const lat0 = D.rows.reduce((a, r) => a + r[3], 0) / D.rows.length, lng0 = D.rows.reduce((a, r) => a + r[4], 0) / D.rows.length;
   const kx = 111320 * Math.cos(lat0 * Math.PI / 180), ky = 110540;
@@ -557,7 +577,7 @@ function bigStep(){
   const k = BIGFIT.todo[BIGFIT.i++], need = FP[k].w * FP[k].d / 9;
   const who = tr.riders.filter(u => LOTS.filter(l => l.who === u && freeOf(l) >= need).sort((x, y) => freeOf(y) - freeOf(x)).slice(0, 2).some(l => autoFit(l, k)));
   if(who.length) BIGFIT.fits.set(k, who);
-  if(BIGFIT.i % 5 === 0 && !(document.activeElement && ['tname', 'tadd'].includes(document.activeElement.id))) trainsCard();
+  if(BIGFIT.i % 5 === 0 && !(document.activeElement && ['tname', 'tadd', 'addplayer'].includes(document.activeElement.id))) trainsCard();
   setTimeout(bigStep, 20);
 }
 function bigList(){
@@ -575,6 +595,7 @@ function trainsCard(){
   if(!LOTS.length){ el.innerHTML = ''; return; }
   TI = Math.min(TI, TRAINS.length - 1);
   const tr = TRAINS[TI], R = tr.riders.length, all = R * tr.spark, small = shortList();
+  const placed = trainItems(tr), pend = placed.length ? tr.riders.filter(u => !placed.some(q => (BYID.get(q.id) || {}).who === u)) : [];   // riders switched on who have no build in this running train yet
   const bigs = tr.big ? bigList() : [];
   const list = tr.big ? [...bigs, ...small.filter(x => !bigs.some(b => b.k === x.k))] : small;
   const eff = k => { const c = capOf(k); return c == null ? all : Math.min(c, all); };
@@ -598,11 +619,14 @@ function trainsCard(){
       ${TRAINS.length > 1 ? `<button type="button" class="btn small" data-act="deltrain">${esc(t('tDel'))}</button>` : ''}</div>
     <div class="small muted">${esc(t('tRiders'))}</div>
     <div class="chips2">${GROUP.map(u => `<button type="button" data-act="rider" data-v="${u}" class="${tr.riders.includes(u) ? 'on' : ''}">${dotOf(u)}${esc(nameOf(u))}</button>`).join('')}</div>
+    ${pend.length ? `<p class="small" style="margin:8px 0 0"><b>➜ ${esc(t('apPend', {names:pend.map(nameOf).join(', ')}))}</b></p>` : ''}
+    <div class="chase" style="margin:8px 0 0"><input id="addplayer" list="ownerNames" placeholder="${esc(t('apAdd'))}" aria-label="${esc(t('apAdd'))}" style="width:18rem" autocomplete="off"><datalist id="ownerNames">${[...new Set(LOTS.map(l => l.who))].filter(u => u && u !== '?' && !GROUP.includes(u)).sort().map(u => `<option value="${esc(u)}">`).join('')}</datalist><button type="button" class="btn small" data-act="scanplayer"${SCANBUSY ? ' disabled' : ''}>${esc(t('apScan'))}</button></div>
+    <p class="hint" style="margin:0 0 6px">${esc(t('apN'))}</p>${SCANMSG ? `<p class="small" style="margin:4px 0 8px"><b>${esc(SCANMSG)}</b></p>` : ''}
     ${tbl([[''], [t('cStruct')], [t('cGround'), 'n'], [t('cSph'), 'n'], [t('cCap'), 'n'], [t('cOn')]], rows)}
     <div class="chase" style="margin:10px 0 0"><input id="tadd" list="structNames" placeholder="${esc(t('tAdd'))}" aria-label="${esc(t('tAdd'))}" style="width:18rem"><datalist id="structNames">${Object.values(FP).filter(f => !f.living).map(f => f.name).sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
     <div class="sum">${esc(sum)}</div>
     <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))} ${esc(t('tOrder'))}</span></div>
-    ${trainItems(tr).length ? `<div class="row" style="margin-top:6px"><button type="button" class="btn small" data-act="extendtrain">${esc(t('tExtend'))}</button><span class="small muted">${esc(t('tExtendN'))}</span></div>` : ''}
+    ${trainItems(tr).length ? `<div class="row" style="margin-top:6px"><button type="button" class="btn small${pend.length ? ' primary' : ''}" data-act="extendtrain">${esc(t('tExtend'))}</button><span class="small muted">${esc(t('tExtendN'))}</span></div>` : ''}
     ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}
     ${tr.chan ? `<div class="row" style="margin-top:8px"><button type="button" class="btn small primary" data-act="pushtrain"${PUSHMSG === t('pushBusy') ? ' disabled' : ''}>${esc(t('pushBtn'))}</button></div>` : ''}
     ${PUSHMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(PUSHMSG)}</b></p>` : ''}`;
@@ -660,6 +684,58 @@ async function extendTrain(){
   renumber(tr, label);
   TMSG = added ? t('tExtended', {n:added, r:from, miss:miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : ''}) : (miss.length ? t('tNoFit', {names:miss.join(', ')}) : t('tExtendNone', {r:from}));
   savePlan(); rescore(); draw();
+}
+// ---------- a player who is not in the list: read their Quailwood lots from Upland right now ----------
+// Upland's profile lists every property a player owns (checked against the map for all eight builders: the same lots), so the
+// lots of Quailwood they own are known at once; each is read for what stands on it. Kept in this browser until a newer map file replaces it.
+const UPAPI = 'https://api.prod.upland.me/api/';
+const rowBuildings = p => (p.buildings || []).filter(b => b.buildingName).map(b => [String(b.buildingName).trim(), b.constructionStatus === 'completed' ? 1 : 0, +(+b.lat || 0).toFixed(7), +(+b.lng || 0).toFixed(7), +(+((b.rotate || [])[1]) || 0).toFixed(5), b.scale || 1, b.modelId]);
+const ownerOf = p => String(p.owner_username || '').toLowerCase() || (p.owner ? '?' : '');
+function applyScans(){
+  const byId = new Map(D.rows.map(r => [r[0], r])), snap = Date.parse(D.updatedAt || '') || 0;
+  for(const [id, s] of Object.entries(SCANS)){
+    const r = byId.get(id);
+    if(!r || !(Date.parse(s.at) > snap) || typeof s.who !== 'string' || !Array.isArray(s.bs)){ delete SCANS[id]; continue; }   // a newer map file replaces what was read earlier
+    r[5] = s.who; r[7] = s.bs;
+  }
+  store.set('rut:blueprint:scans', SCANS);
+}
+async function scanPlayer(raw){
+  const name = String(raw || '').trim().replace(/^@/, ''), u = name.toLowerCase();
+  if(!u || SCANBUSY || !D) return;
+  if(!/^[a-z0-9_.-]+$/.test(u)){ SCANMSG = t('apNoUser', {u:name}); trainsCard(); return; }
+  const tr = TRAINS[TI];
+  SCANBUSY = true; SCANMSG = t('apBusy', {u:name}); trainsCard();
+  try{
+    const pr = await fetch(UPAPI + 'profile/' + encodeURIComponent(u));
+    if(pr.status === 404){ SCANMSG = t('apNoUser', {u:name}); return; }
+    if(!pr.ok) throw new Error('Upland ' + pr.status);
+    const prof = await pr.json();
+    if(!Array.isArray(prof.properties)) throw new Error('no property list');
+    const mine = new Set(prof.properties.map(p => String(p.property_id))), rows = new Map(D.rows.map(r => [r[0], r]));
+    const ids = [...mine].filter(id => rows.has(id)), sold = D.rows.filter(r => r[5] === u && !mine.has(r[0])).map(r => r[0]);
+    if(!ids.length){ SCANMSG = t('apNone', {u:name}); if(!sold.length) return; }
+    const list = [...ids, ...sold], got = new Map(); let next = 0, failed = 0;
+    await Promise.all(Array.from({length:5}, async () => {
+      while(next < list.length){
+        const id = list[next++];
+        try{ const r = await fetch(UPAPI + 'properties/' + id); if(!r.ok) throw new Error(r.status); got.set(id, await r.json()); }catch{ failed++; }
+      }
+    }));
+    const at = new Date().toISOString();
+    for(const id of ids){ const r = rows.get(id), p = got.get(id); r[5] = u; if(p) r[7] = rowBuildings(p); SCANS[id] = {at, who:u, bs:r[7]}; }
+    for(const id of sold){ const r = rows.get(id), p = got.get(id); r[5] = p ? ownerOf(p) : '?'; if(p) r[7] = rowBuildings(p); SCANS[id] = {at, who:r[5], bs:r[7]}; }
+    store.set('rut:blueprint:scans', SCANS);
+    if(!ids.length) return;
+    if(!GROUP.includes(u)){ EXTRA.push({u, n:name}); NAMES[u] = NAMES[u] || name; store.set('rut:blueprint:riders', EXTRA); }
+    const keep = VIEW; prepare(); VIEW = keep;
+    if(!tr.riders.includes(u)){ tr.riders = GROUP.filter(x => x === u || tr.riders.includes(x)); saveTrains(); }
+    BIGFIT = {key:'', fits:new Map(), todo:[], i:0};
+    const lots = ids.map(id => BYID.get(id)), unk = ids.reduce((a, id) => a + rows.get(id)[7].filter(b => !FP[key(b[0])]).length, 0);
+    SCANMSG = t('apDone', {u:nameOf(u), n:lots.length, a:n0(lots.reduce((a, l) => a + l.area, 0)), f:n0(lots.reduce((a, l) => a + freeOf(l), 0))}) + (sold.length ? t('apSold', {n:sold.length}) : '') + (unk ? t('apUnk', {n:unk}) : '') + (failed ? t('apFailed', {n:failed}) : '') + t(trainItems(tr).length ? 'apNextRun' : 'apNextPlain');
+    rescore(); draw();
+  }catch(e){ SCANMSG = t('apFail', {why:e.message || 'network'}); }
+  finally{ SCANBUSY = false; trainsCard(); }
 }
 // ---------- the trains at a glance, with the build in progress read from Upland ----------
 const trainBuilds = tr => trainItems(tr).map(q => { const l = BYID.get(q.id); return {seq:q.seq, round:q.r, rider:l.who, structure:FP[q.k].name, address:l.addr, prop_id:l.id}; });
@@ -799,6 +875,7 @@ function act(b){
   if(a === 'dashload'){ dashLoad(); return; }
   if(a === 'pushtrain'){ pushTrain(); return; }
   if(a === 'extendtrain'){ extendTrain(); return; }
+  if(a === 'scanplayer'){ scanPlayer((document.getElementById('addplayer') || {}).value); return; }
   if(a === 'saveplan'){
     // builds: the plain list the bot follows (one build at a time, in this order within each train)
     const builds = TRAINS.flatMap(tr => trainBuilds(tr).map(b => ({train:tr.id, channel:tr.chan || null, ...b})));
@@ -827,7 +904,7 @@ function act(b){
     else if(a === 'newtrain'){ TRAINS.push({id:Math.random().toString(36).slice(2, 8), name:'', spark:tr.spark, riders:[...tr.riders], picks:[], big:!!tr.big}); TI = TRAINS.length - 1; }
     else if(a === 'deltrain'){ TRAINS.splice(TI, 1); TI = 0; }
     else if(a === 'rider') tr.riders = GROUP.filter(u => u === v ? !tr.riders.includes(u) : tr.riders.includes(u));
-    else if(tr.riders.length){ placeTrain(); savePlan(); rescore(); saveTrains(); draw(); return; }
+    else if(tr.riders.length){ if(trainItems(tr).length && !confirm(t('apRedo'))) return; placeTrain(); savePlan(); rescore(); saveTrains(); draw(); return; }
     saveTrains(); trainsCard(); return;
   }
   if(a === 'drop' && l){
@@ -952,6 +1029,7 @@ function wire(){
     if(e.target.id === 'clear'){ HL = null; Q = ''; ctl(); drawMap(); tables(); }
   });
   document.getElementById('swap').addEventListener('toggle', e => { if(e.target.open && LOTS.length) swapStart(); });
+  document.addEventListener('keydown', e => { if(e.key === 'Enter' && e.target.id === 'addplayer'){ e.preventDefault(); scanPlayer(e.target.value); } });
   document.addEventListener('change', e => {
     if(e.target.id === 'cb'){ CB = e.target.checked; store.set('rut:blueprint:cb', CB); draw(); }
     if(e.target.id === 'homes'){ HOMES = e.target.checked; pickList(); }
@@ -1012,7 +1090,7 @@ async function boot(){
   getJson('../data/structures/master.json').then(ms => { SPH = new Map(((ms || {}).structures || []).filter(x => x.sph).map(x => [key(x.name), x.sph])); if(D) trainsCard(); });
   if(!m || !m.rows){ D = undefined; draw(); return; }
   FP = (f || {}).structures || {};
-  D = m; prepare();
+  D = m; applyScans(); prepare();
   if(!PLAN.adds.length && !PLAN.drops.length){   // nothing of your own yet: start from the plan published with the site, if there is one
     const pub = await getJson('../data/structures/plan/quailwood.json');
     if(pub && pub.plan && Array.isArray(pub.plan.adds)){
