@@ -2,6 +2,23 @@
 "format":"upland-structure-recipes-v1",
 "note":"Recipes a structure was seen to offer in the game (the structure holds one recipe per trove). Added by hand as they are reported.",
 "structures":{
-"Neighborhood Market":{"Jam Jar":["Raspberry","Blackberry","Honey"]}
+"Neighborhood Market":{"Jam Jar":["Raspberry","Blackberry","Honey"]},
+"Pho Whoa":{"High Spirits":["Cheers","Fireworks","Holiday Ham"],"Chicken Soup":["Hearty Broth","Onion","Carrot","Kind Word"]},
+"Fire Station":{"Blowtorch":["Ingot","Copper Wire","Fuse","Coal Lump"]},
+"Jewelry":{"Ruby":["Rough Gem","Sandpaper"]},
+"Auto Repair":{"Charcoal":["Oak Log","Clay","Coal Lump"],"Tool Chest":["Oak Log","Hinge","Nail"]},
+"European Modular Apartments: Galerie d'Art Edition":{"Chisel Set":["Iron Ore","Twine"],"Sapphire":["Geode","Chisel Set"]},
+"Bank":{"Gold Coin":["Silver Coin","Fools Gold"],"Gold Ring":["Silver Coin","Fools Gold","Sandpaper"]},
+"UPhone Store":{"Copper Wire":["Copper Nugget","Coil Spring"]},
+"The Golden Vault Bank":{"Gold Bar":["Gold Ring","Anvil"]},
+"Classic Hotel":{"City Key":["Gold Coin","Deadbolt","Family Crest"]},
+"Art Museum":{"Sapphire":["Geode","Chisel Set"]},
+"Junior College":{"Family Crest":["Oak Log","Copper Nugget","Scout Patch"]},
+"Court House":{"Wedding Ring":["Gold Coin","Love Letter","Sandpaper"]},
+"Pub":{"Burger":["Beef","Cheese Wheel","Lettuce"]},
+"Supermarket":{"Lentil":["Barley","Dollar Bill"]},
+"Tire shop":{"Calipers":["Copper Nugget","Screw"]},
+"Ice Rink":{"Frisbee":["Duct Tape","Twine"]},
+"Regional Hospital":{"House Call":["Bandage","Helping Hand","Key Ring"]}
 }
 }
