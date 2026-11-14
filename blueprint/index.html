@@ -142,6 +142,7 @@ Site.register({
     apNextRun:' Added to this train’s riders. Now press “➕ Add new riders or structures to the running train”, then push.', apNextPlain:' Added to this train’s riders.',
     apPend:'{names}: not on this train’s plan yet. Press “➕ Add new riders or structures to the running train” (it only adds builds, nothing moves), then push. Do not use “Put this train on the map”: that redoes the whole train.',
     apRedo:'Put this train on the map again? This redoes the whole train: every build is drawn again and may move. To add a rider or a structure to a running train, cancel and use “➕ Add new riders or structures to the running train”.',
+    bpH:'Blueprints held by', bpC:'Organise the fee with', bpN:'Shown to riders when they join the train in Discord: whose blueprints this train builds with (members pay a discounted fee for them) and who arranges it. Leave both empty to say nothing.',
     tChan:'Discord channel id', tOrder:'The order inside each round is drawn at random every time you place the train.',
     dH:'Trains at a glance', dNoTrain:'No train is on the map yet. Tick structures on a train and put it on the map.', dBuilt:'{a} of {b} built', dNow:'Now', dNext:'Next', dWait:'not started yet', dPct:'{p}% done', dEnds:'finishes {d}', dSpeed:'{a} of {b} spark on it',
     dMove:'Move your spark to {addr}: {n} spark still missing.', dStart:'Start all the builds of this round today with the minimum spark, then everyone puts their spark on {who}’s build.', dAllDone:'Every build of this train is finished.', dRefresh:'Check Upland again', dChecking:'Checking Upland…', dChecked:'Checked {d}.', dFail:'Upland did not answer; showing the plan only.', dRiders:'{n} riders', dNoChan:'no channel yet', tSumNone:'Tick structures in the order you want to build them.', tNoRiders:'Pick at least one rider.', tRound:'round {n}',
@@ -179,6 +180,7 @@ Site.register({
     tSum:'{k} rondas de {r} construcciones: {n} construcciones una tras otra, {h} horas de spark, unos {a} días. Empiecen todas las construcciones de una ronda el mismo día con el spark mínimo; los {s} spark del tren por pasajero están en una a la vez y pasan a la siguiente cuando termina cada una.',
     pushBtn:'Subir este tren a Discord', pushOk:'Subido: {n} construcciones. Sir Quailbert lo anunció en el canal y avisará cada vez que haya que mover el spark.', pushFail:'No se pudo subir ({why}). Vuelve a abrir el enlace de /train plan en ese canal.', pushNoPost:'El plan se guardó, pero Discord no me dejó publicar: {why}. Si el canal es privado, agrega a Sir Quailbert (Editar canal → Permisos → Agregar miembros o roles) y sube el plan otra vez.', pushBusy:'Subiendo…', pushNoKey:'Para subir este tren, usa /train plan en su canal de Discord y abre el enlace que te da.', pushNoPlan:'Primero pon este tren en el mapa.',
     tDrawn:'Orden de la ronda 1, sorteado al azar: {names}.',
+    bpH:'Blueprints de', bpC:'Organizar la tarifa con', bpN:'Se muestra a los pasajeros cuando se unen al tren en Discord: con los blueprints de quién construye este tren (los miembros pagan una tarifa con descuento) y quién lo organiza. Deja ambos vacíos para no decir nada.',
     tChan:'Id del canal de Discord', tOrder:'El orden dentro de cada ronda se sortea cada vez que colocas el tren.',
     dH:'Los trenes de un vistazo', dNoTrain:'Aún no hay ningún tren en el mapa. Marca estructuras en un tren y ponlo en el mapa.', dBuilt:'{a} de {b} construidas', dNow:'Ahora', dNext:'Sigue', dWait:'aún no empieza', dPct:'{p}% hecho', dEnds:'termina {d}', dSpeed:'{a} de {b} spark puestos',
     dMove:'Mueve tu spark a {addr}: faltan {n} spark.', dStart:'Empiecen hoy todas las construcciones de esta ronda con el spark mínimo y luego todos ponen su spark en la de {who}.', dAllDone:'Todas las construcciones de este tren están terminadas.', dRefresh:'Revisar Upland otra vez', dChecking:'Revisando Upland…', dChecked:'Revisado {d}.', dFail:'Upland no respondió; se muestra solo el plan.', dRiders:'{n} pasajeros', dNoChan:'aún sin canal', tSumNone:'Marca estructuras en el orden en que quieres construirlas.', tNoRiders:'Elige al menos un pasajero.', tRound:'ronda {n}',
@@ -614,8 +616,11 @@ function trainsCard(){
     <div class="trow"><label>${esc(t('tName'))} <input type="text" id="tname" value="${esc(tr.name)}" placeholder="${esc(t('tTrain', {n:TI + 1}))}"></label>
       <label>${esc(t('tSpark'))} <select id="tspark">${[1, 3, 5, 10, 15, 20, 30].map(v => `<option${v === tr.spark ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
       <label>${esc(t('tChan'))} <input type="text" id="tchan" value="${esc(tr.chan || '')}" inputmode="numeric" style="width:12rem"></label>
+      <label>${esc(t('bpH'))} <input type="text" id="tbph" list="bpNames" value="${esc(bpOf(tr).holder)}" style="width:9rem" autocomplete="off"></label>
+      <label>${esc(t('bpC'))} <input type="text" id="tbpc" list="bpNames" value="${esc(bpOf(tr).contact)}" style="width:9rem" autocomplete="off"></label><datalist id="bpNames">${GROUP.map(u => `<option value="${esc(nameOf(u))}">`).join('')}</datalist>
       <label>${esc(t('tMode'))} <select id="tmode"><option value="0"${tr.big ? '' : ' selected'}>${esc(t('tSmall'))}</option><option value="1"${tr.big ? ' selected' : ''}>${esc(t('tBig'))}</option></select></label>
       ${TRAINS.length > 1 ? `<button type="button" class="btn small" data-act="deltrain">${esc(t('tDel'))}</button>` : ''}</div>
+    <p class="hint" style="margin:0 0 6px">${esc(t('bpN'))}</p>
     <div class="small muted">${esc(t('tRiders'))}</div>
     <div class="chips2">${GROUP.map(u => `<button type="button" data-act="rider" data-v="${u}" class="${tr.riders.includes(u) ? 'on' : ''}">${dotOf(u)}${esc(nameOf(u))}</button>`).join('')}</div>
     ${pend.length ? `<p class="small" style="margin:8px 0 0"><b>➜ ${esc(t('apPend', {names:pend.map(nameOf).join(', ')}))}</b></p>` : ''}
@@ -744,12 +749,15 @@ async function pushTrain(){
   if(!builds.length) { PUSHMSG = t('pushNoPlan'); trainsCard(); return; }
   PUSHMSG = t('pushBusy'); trainsCard();
   try{
-    const r = await fetch(pk.api + '/plan/push', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({channel:tr.chan, key:pk.key, name:tr.name || t('tTrain', {n:TI + 1}), spark:tr.spark, builds})});
+    const r = await fetch(pk.api + '/plan/push', {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({channel:tr.chan, key:pk.key, name:tr.name || t('tTrain', {n:TI + 1}), spark:tr.spark, blueprint:{holder:bpName(bpOf(tr).holder), contact:bpName(bpOf(tr).contact)}, builds})});
     const j = await r.json().catch(() => ({}));
     PUSHMSG = r.ok ? (j.posted === false ? t('pushNoPost', {why:j.postError || 'unknown'}) : t('pushOk', {n:j.builds ?? builds.length})) : t('pushFail', {why:j.error || r.status});
   }catch(e){ PUSHMSG = t('pushFail', {why:'network'}); }
   trainsCard();
 }
+// whose blueprints a train builds with, and who arranges the discounted fee: Quailwood's trains start with MissMarlow and MsTullis
+const bpOf = tr => ({holder:tr.bph ?? (tr.chan ? 'MissMarlow' : ''), contact:tr.bpc ?? (tr.chan ? 'MsTullis' : '')});
+const bpName = v => { const u = String(v || '').trim(), hit = GROUP.find(x => x === u.toLowerCase() || nameOf(x).toLowerCase() === u.toLowerCase()); return hit ? nameOf(hit) : u; };
 const trainItems = tr => PLAN.adds.filter(q => q.tid === tr.id).sort((x, y) => (x.seq || 0) - (y.seq || 0));
 const fmtWhen = d => new Date(d).toLocaleString(Site.locale(), {day:'numeric', month:'short', hour:'numeric', minute:'2-digit', ...(new Date(d).getFullYear() !== new Date().getFullYear() ? {year:'numeric'} : {})});
 function dashCard(){
@@ -1046,6 +1054,7 @@ function wire(){
     }
     if(cf != null){ PLAN.adds[+cf].c = e.target.checked; savePlan(); planCard(); }
     if(e.target.id === 'tchan'){ TRAINS[TI].chan = e.target.value.replace(/\D/g, ''); saveTrains(); trainsCard(); dashCard(); }
+    if(e.target.id === 'tbph' || e.target.id === 'tbpc'){ TRAINS[TI][e.target.id === 'tbph' ? 'bph' : 'bpc'] = e.target.value.trim().slice(0, 40); saveTrains(); }
     if(e.target.id === 'tmode'){ TRAINS[TI].big = e.target.value === '1'; saveTrains(); trainsCard(); }
     if(e.target.id === 'tadd'){
       const hit = Object.entries(FP).find(([, f]) => !f.living && f.name.toLowerCase() === e.target.value.trim().toLowerCase());
