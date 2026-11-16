@@ -135,7 +135,8 @@ Site.register({
     tSum:'{k} rounds of {r} builds: {n} builds one after another, {h} spark hours, about {a} days. Start all the builds of a round on the same day with the minimum spark; the train’s {s} spark per rider sits on one build at a time and moves on as each one finishes.',
     pushBtn:'Push this train to Discord', pushOk:'Pushed: {n} builds. Sir Quailbert announced it in the channel and will announce each restake.', pushFail:'The push failed ({why}). Open the link from /train plan in that channel again.', pushNoPost:'The plan was saved, but Discord would not let me post: {why}. If the channel is private, add Sir Quailbert to it (Edit Channel → Permissions → Add members or roles), then push again.', pushBusy:'Pushing…', pushNoKey:'To push this train, run /train plan in its Discord channel and open the link it gives you.', pushNoPlan:'Put this train on the map first.',
     tDrawn:'Round 1 order, drawn at random: {names}.',
-    tExtend:'➕ Add new riders or structures to the running train', tExtendN:'Tick the new structure or switch on the new rider, then press this. Nothing already placed moves. A new rider starts with the structure the train is on now and follows every round after it, last in each round; a new structure becomes a new round at the end. Then push.', tExtended:'Added {n} builds from round {r}.{miss}', tExtendNone:'Nothing to add: every rider already has a build in every round from round {r}.',
+    tExtend:'➕ Add new riders or structures to the running train', tExtendN:'Tick the new structure or switch on the new rider, then press this. Builds already placed keep their order. A new rider starts with the structure the train is on now and follows every round after it, at a random place in each round (in the round the train is on, after the build holding the spark); a new structure becomes a new round at the end. Then push.', tExtended:'Added {n} builds from round {r}.{miss}', tExtendNone:'Nothing to add: every rider already has a build in every round from round {r}.',
+    tPos:'Places drawn at random: {list}.', tRedraw:'🎲 Draw new places', tRedrawPick:'Re-draw the places of…', tRedrawN:'For a rider who was added at the end of the rounds: moves the builds that have not started to new random places. Nothing built, and not the build holding the spark, moves.', tRedrawNone:'{name} has no build that can still move.', tRedrawDone:'New places drawn: {list}.', tRedrawAsk:'Draw new random places for {name}’s builds that have not started? Other riders keep their order. Push afterwards.',
     apDiscord:'Their Discord username or id (optional)', apLinked:' Discord: {d}: the bot links them to this rider when you push.', apUnlink:'Remove the Discord link', apLinksH:'Discord links', pushLinked:' Discord linked: {names}.', pushUnlinked:' Not found in the server (type their exact Discord username or id): {names}.',
     apAdd:'Add a player who is not in the list: Upland username', apScan:'🔍 Read their lots from Upland and add', apN:'Not in the list? Type their Upland username and press the button. The page reads their Quailwood lots from Upland right now (who owns each lot and what stands on it) and adds them as a rider. For someone already in the list it refreshes their lots.',
     apBusy:'Reading {u} from Upland…', apNoUser:'Upland does not know a player called {u}.', apFail:'Upland did not answer ({why}). Nothing changed.', apNone:'{u} owns no lot in Quailwood, so they cannot build here.',
@@ -191,7 +192,8 @@ Site.register({
     tNewBig:'＋ Tren de lotes grandes', tBigName:'Lotes grandes', tFitsFor:'cabe para {names}', tBigBusy:'Revisando qué cabe: {a} de {b}…', tBigN:'Tren de lotes grandes: la lista empieza con las estructuras grandes que más troves dan y que de verdad caben en el lote de un pasajero, de mayor a menor, y luego la lista corta. Cada pasajero construye en su lote más grande con espacio. Agrega primero las grandes y luego las chicas para llenar huecos.',
     tMode:'Construir en', tSmall:'el lote más chico de cada pasajero donde quepa', tBig:'el lote más grande de cada pasajero con espacio', tAdd:'Agregar cualquier estructura a este tren',
     swH:'Cambios de casa: Luxury Ranch House por Town House', swN:'Nuestros lotes con Luxury Ranch House, y cuántas de las estructuras chicas de la lista corta caben juntas junto a la casa hoy y junto a una Town House. Planear un cambio marca la casa para demoler y coloca la Town House.', swNow:'Caben hoy', swTown:'Con Town House', swGain:'Ganancia', swPlan:'Planear el cambio', swBusy:'Calculando: {a} de {b} lotes…', swNoTown:'no cabe una Town House', plNone:'Aún no hay nada planeado. Toca un lote y agrega una estructura.', plWhere:'Dónde', plClear:'Borrar el plan', plDrops:'Por demoler', plShow:'Ver',
-    tExtend:'➕ Agregar pasajeros o estructuras al tren en marcha', tExtendN:'Marca la estructura nueva o activa al pasajero nuevo y pulsa esto. Nada de lo ya colocado se mueve. Un pasajero nuevo empieza con la estructura en la que va el tren y sigue todas las rondas siguientes, al final de cada una; una estructura nueva es una ronda nueva al final. Luego sube el plan.', tExtended:'Se agregaron {n} construcciones desde la ronda {r}.{miss}', tExtendNone:'Nada que agregar: cada pasajero ya tiene una construcción en cada ronda desde la ronda {r}.',
+    tExtend:'➕ Agregar pasajeros o estructuras al tren en marcha', tExtendN:'Marca la estructura nueva o activa al pasajero nuevo y pulsa esto. Lo ya colocado conserva su orden. Un pasajero nuevo empieza con la estructura en la que va el tren y sigue todas las rondas siguientes, en un lugar al azar de cada una (en la ronda actual, después de la construcción que lleva el spark); una estructura nueva es una ronda nueva al final. Luego sube el plan.', tExtended:'Se agregaron {n} construcciones desde la ronda {r}.{miss}', tExtendNone:'Nada que agregar: cada pasajero ya tiene una construcción en cada ronda desde la ronda {r}.',
+    tPos:'Lugares sorteados: {list}.', tRedraw:'🎲 Sortear lugares nuevos', tRedrawPick:'Sortear de nuevo los lugares de…', tRedrawN:'Para un pasajero que se agregó al final de las rondas: mueve las construcciones que no han empezado a lugares nuevos al azar. Nada de lo construido, ni la construcción que lleva el spark, se mueve.', tRedrawNone:'{name} no tiene ninguna construcción que se pueda mover.', tRedrawDone:'Lugares nuevos sorteados: {list}.', tRedrawAsk:'¿Sortear lugares nuevos para las construcciones de {name} que no han empezado? Los demás conservan su orden. Sube el plan después.',
     apDiscord:'Su usuario o id de Discord (opcional)', apLinked:' Discord: {d}: el bot lo vincula con este pasajero cuando subas el plan.', apUnlink:'Quitar el vínculo de Discord', apLinksH:'Vínculos de Discord', pushLinked:' Discord vinculado: {names}.', pushUnlinked:' No se encontró en el servidor (escribe su usuario exacto de Discord o su id): {names}.',
     apAdd:'Agrega un jugador que no está en la lista: usuario de Upland', apScan:'🔍 Leer sus lotes en Upland y agregarlo', apN:'¿No está en la lista? Escribe su usuario de Upland y pulsa el botón. La página lee ahora mismo sus lotes de Quailwood en Upland (de quién es cada lote y qué tiene construido) y lo agrega como pasajero. Si ya está en la lista, actualiza sus lotes.',
     apBusy:'Leyendo a {u} en Upland…', apNoUser:'Upland no conoce a ningún jugador llamado {u}.', apFail:'Upland no respondió ({why}). No cambió nada.', apNone:'{u} no tiene ningún lote en Quailwood, así que no puede construir aquí.',
@@ -633,7 +635,8 @@ function trainsCard(){
     <div class="chase" style="margin:10px 0 0"><input id="tadd" list="structNames" placeholder="${esc(t('tAdd'))}" aria-label="${esc(t('tAdd'))}" style="width:18rem"><datalist id="structNames">${Object.values(FP).filter(f => !f.living).map(f => f.name).sort().map(n => `<option value="${esc(n)}">`).join('')}</datalist></div>
     <div class="sum">${esc(sum)}</div>
     <div class="row"><button type="button" class="btn small primary" data-act="placetrain"${picks.length && R ? '' : ' disabled'}>${esc(t('tPlace'))}</button><span class="small muted">${esc(t('tPlaceN'))} ${esc(t('tOrder'))}</span></div>
-    ${trainItems(tr).length ? `<div class="row" style="margin-top:6px"><button type="button" class="btn small${pend.length ? ' primary' : ''}" data-act="extendtrain">${esc(t('tExtend'))}</button><span class="small muted">${esc(t('tExtendN'))}</span></div>` : ''}
+    ${trainItems(tr).length ? `<div class="row" style="margin-top:6px"><button type="button" class="btn small${pend.length ? ' primary' : ''}" data-act="extendtrain">${esc(t('tExtend'))}</button><span class="small muted">${esc(t('tExtendN'))}</span></div>
+    <div class="row" style="margin-top:6px"><select id="redrawsel" aria-label="${esc(t('tRedrawPick'))}"><option value="">${esc(t('tRedrawPick'))}</option>${tr.riders.map(u => `<option value="${esc(u)}">${esc(nameOf(u))}</option>`).join('')}</select><button type="button" class="btn small" data-act="redraw">${esc(t('tRedraw'))}</button><span class="small muted">${esc(t('tRedrawN'))}</span></div>` : ''}
     ${TMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(TMSG)}</b></p>` : ''}
     ${tr.chan ? `<div class="row" style="margin-top:8px"><button type="button" class="btn small primary" data-act="pushtrain"${PUSHMSG === t('pushBusy') ? ' disabled' : ''}>${esc(t('pushBtn'))}</button></div>` : ''}
     ${PUSHMSG ? `<p class="small" style="margin:8px 0 0"><b>${esc(PUSHMSG)}</b></p>` : ''}`;
@@ -667,29 +670,70 @@ function placeTrain(){
 }
 // A running train grows without moving anything: a new rider joins at the structure the train is on now and follows every round after it
 // (last in each round); a new structure becomes a new round at the end. The round the train is on comes from the bot's pushed plan, else from Upland.
-async function extendTrain(){
-  const tr = TRAINS[TI], label = tr.name || t('tTrain', {n:TI + 1}), picks = tr.picks.filter(k => FP[k]);
-  let from = 1;
+// Where a running train stands: the round it is on and the build holding the spark, from the bot's pushed plan, else from Upland.
+async function runningPoint(tr){
+  let from = 1, curSeq = null;
   const pk = tr.chan && PUSHKEYS[tr.chan];
   if(pk){
     try{
       const j = await (await fetch(pk.api + '/plan/state?channel=' + tr.chan)).json(), b = (j.builds || []).find(x => x.seq === j.current);
-      if(b) from = b.round; else if(j.builds && j.builds.length && j.current == null) from = Math.max(...j.builds.map(x => x.round)) + 1;   // everything is finished: only new rounds
+      if(b){ from = b.round; curSeq = b.seq; } else if(j.builds && j.builds.length && j.current == null) from = Math.max(...j.builds.map(x => x.round)) + 1;   // everything is finished: only new rounds
     }catch{}
   }
-  if(from === 1 && LIVE.get(tr.id)){ const items = trainItems(tr), at = LIVE.get(tr.id).done; if(items.length) from = at >= items.length ? items[items.length - 1].r + 1 : items[at].r; }
-  const miss = []; let added = 0, last = null;
+  const items = trainItems(tr);
+  let cur = curSeq != null ? items.find(q => q.seq === curSeq) || null : null;
+  if(from === 1 && LIVE.get(tr.id)){ const at = LIVE.get(tr.id).done; if(items.length){ if(at >= items.length) from = items[items.length - 1].r + 1; else { from = items[at].r; cur = items[at]; } } }
+  if(cur) from = cur.r;
+  return {from, cur};
+}
+// Puts rider u into round r at a random place among the builds already there. In the round the train is on, only after the build that holds the
+// spark (the ones before it are done); never last in one round and first in the next. Returns where it went, or null when no lot fits.
+function addAtRandom(tr, k, u, r, label, cur){
+  const L = trainItems(tr).filter(q => q.r === r);
+  if(!placeOne(tr, k, u, r, label)) return null;
+  const q = PLAN.adds[PLAN.adds.length - 1], lo = cur && cur.r === r ? L.indexOf(cur) + 1 : 0;
+  const prevLast = trainItems(tr).filter(x => x.r === r - 1).slice(-1).map(x => BYID.get(x.id).who)[0];
+  let slots = []; for(let p = lo; p <= L.length; p++) slots.push(p);
+  if(prevLast === u && slots.length > 1) slots = slots.filter(p => p !== 0);
+  const p = slots[Math.floor(Math.random() * slots.length)];
+  q.seq = !L.length ? 0 : p === 0 ? L[0].seq - 0.5 : L[p - 1].seq + 0.5;   // between its neighbours; renumber makes it a whole number again
+  renumber(tr, label);
+  return {p, n:L.length + 1};
+}
+const whereText = (u, list) => nameOf(u) + ': ' + list.map(x => t('tRound', {n:x.r}) + ' #' + (x.p + 1) + '/' + x.n).join(', ');
+async function extendTrain(){
+  const tr = TRAINS[TI], label = tr.name || t('tTrain', {n:TI + 1}), picks = tr.picks.filter(k => FP[k]);
+  const {from, cur} = await runningPoint(tr);
+  const miss = [], where = new Map(); let added = 0;
   picks.forEach((k, i) => {
     const r = i + 1;
     if(r < from) return;
     const have = new Set(trainItems(tr).filter(q => q.r === r).map(q => BYID.get(q.id).who));
     let order = shuffled(tr.riders.filter(u => !have.has(u)));
+    if(have.size){   // a round that already has riders: each new rider lands at a random place in it
+      for(const u of order){ const w = addAtRandom(tr, k, u, r, label, cur); if(w){ added++; where.set(u, [...(where.get(u) || []), {r, ...w}]); } else miss.push(FP[k].name + ' (' + nameOf(u) + ')'); }
+      return;
+    }
     const prevLast = trainItems(tr).filter(q => q.r === r - 1).slice(-1).map(q => BYID.get(q.id).who)[0];
-    if(!have.size && prevLast && order.length > 1 && order[0] === prevLast) order.push(order.shift());   // a whole new round: never the same rider closing one and opening the next
+    if(prevLast && order.length > 1 && order[0] === prevLast) order.push(order.shift());   // a whole new round: never the same rider closing one and opening the next
     for(const u of order){ if(placeOne(tr, k, u, r, label)) added++; else miss.push(FP[k].name + ' (' + nameOf(u) + ')'); }
   });
   renumber(tr, label);
-  TMSG = added ? t('tExtended', {n:added, r:from, miss:miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : ''}) : (miss.length ? t('tNoFit', {names:miss.join(', ')}) : t('tExtendNone', {r:from}));
+  const pos = where.size ? ' ' + t('tPos', {list:[...where].map(([u, l]) => whereText(u, l)).join(' · ')}) : '';
+  TMSG = added ? t('tExtended', {n:added, r:from, miss:miss.length ? ' ' + t('tNoFit', {names:miss.join(', ')}) : ''}) + pos : (miss.length ? t('tNoFit', {names:miss.join(', ')}) : t('tExtendNone', {r:from}));
+  savePlan(); rescore(); draw();
+}
+// A rider who was added at the end of the rounds: draw new random places for the builds that have not started (never the one on the spark or earlier)
+async function redrawRider(u){
+  const tr = TRAINS[TI], label = tr.name || t('tTrain', {n:TI + 1});
+  if(!u) return;
+  const {from, cur} = await runningPoint(tr);
+  const mine = trainItems(tr).filter(q => BYID.get(q.id).who === u && q.r >= from && q !== cur && (q.r > from || !cur || q.seq > cur.seq));
+  if(!mine.length){ TMSG = t('tRedrawNone', {name:nameOf(u)}); trainsCard(); return; }
+  PLAN.adds = PLAN.adds.filter(q => !mine.includes(q)); renumber(tr, label);
+  const where = [], failed = [];
+  for(const q of mine){ const w = addAtRandom(tr, q.k, u, q.r, label, cur); if(w) where.push({r:q.r, ...w}); else { PLAN.adds.push(q); failed.push(FP[q.k].name); renumber(tr, label); } }
+  TMSG = t('tRedrawDone', {list:whereText(u, where)}) + (failed.length ? ' ' + t('tNoFit', {names:failed.join(', ')}) : '');
   savePlan(); rescore(); draw();
 }
 // ---------- a player who is not in the list: read their Quailwood lots from Upland right now ----------
@@ -887,6 +931,7 @@ function act(b){
   if(a === 'dashload'){ dashLoad(); return; }
   if(a === 'pushtrain'){ pushTrain(); return; }
   if(a === 'extendtrain'){ extendTrain(); return; }
+  if(a === 'redraw'){ const u = (document.getElementById('redrawsel') || {}).value; if(u && confirm(t('tRedrawAsk', {name:nameOf(u)}))) redrawRider(u); return; }
   if(a === 'scanplayer'){ scanPlayer((document.getElementById('addplayer') || {}).value, (document.getElementById('adddiscord') || {}).value); return; }
   if(a === 'unlink'){ const tr = TRAINS[TI], u = b.getAttribute('data-v'); if(tr.links) delete tr.links[u]; saveTrains(); trainsCard(); return; }
   if(a === 'saveplan'){
