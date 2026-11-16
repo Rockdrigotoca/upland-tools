@@ -2,7 +2,7 @@
 """Summarise what was sold, from the downloaded inbox in data/messages/.
 
 Sale messages: purchase_in_secondary_market (someone bought one of my items;
-ownerUsername on the asset is the buyer) and sub_merch_item_sold (shop sales).
+ownerUsername on the asset is the buyer) and my_sub_merch_item_sold (my item sold in another shop).
 Sales at exactly 1 UPX are treated as gifts: counted apart, left out of totals.
 Writes data/messages/sales_by_item.csv, sales_all.csv and sales_report.md
 (all git-ignored, private).
@@ -11,7 +11,7 @@ import csv, glob, json, collections
 from pathlib import Path
 
 D = Path(__file__).resolve().parent.parent / "data" / "messages"
-SALE_TYPES = {"purchase_in_secondary_market", "sub_merch_item_sold"}
+SALE_TYPES = {"purchase_in_secondary_market", "my_sub_merch_item_sold"}  # sub_merch_item_sold = sub-vendors in my shops, not mine
 GROUPS = {  # asset category code -> reporting group
     "outdoordecor": "Assets / Outdoor Decor", "structornmt": "Ornaments",
     "seeds": "Seeds", "landvehicle": "Vehicles / Go-karts",

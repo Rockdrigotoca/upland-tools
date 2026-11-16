@@ -49,6 +49,14 @@ details.grp > summary .sub{font-weight:400;color:var(--muted);font-size:.8125rem
     <div id="items"></div>
     <h2 id="hRecent" style="margin-top:20px"></h2>
     <div class="tablewrap" id="recent"></div>
+    <h2 id="hShops" style="margin-top:28px"></h2><p class="note" id="shopNote"></p>
+    <div class="kpis" id="shopKpis"></div>
+    <div class="cols">
+      <section><h3 id="hVendors"></h3><div class="tablewrap" id="vendors"></div></section>
+      <section><h3 id="hShopTab"></h3><div class="tablewrap" id="shops"></div></section>
+    </div>
+    <h3 id="hShopItems"></h3><div class="tablewrap" id="shopItems"></div>
+    <h3 id="hShopRecent"></h3><div class="tablewrap" id="shopRecent"></div>
   </main>
   <footer id="site-footer"></footer>
 </div>
@@ -64,7 +72,7 @@ Site.register({
     title:'Rockdrigo’s Sales', subtitle:'Everything sold, how much it made, and from what.',
     loading:'Counting the sales…', errLoad:'The sales data could not be loaded.',
     pYear:'This year', p1:'Last month', p2:'Last 2 months', p3:'Last 3 months', pAll:'All time',
-    gAll:'Everything', gdeco:'Outdoor Decor', gorn:'Ornaments', gveh:'Vehicles / Go-karts', gseeds:'Seeds', gother:'Other',
+    gAll:'Everything', gdeco:'Outdoor Decor', gorn:'Ornaments', gveh:'Vehicles / Go-karts', gseeds:'Seeds', gblk:'Block Explorers', gess:'Essentials', glegit:'Legits & Passes', guppie:'Uppies', gmemento:'Mementos', gother:'Other',
     search:'Find an item…', covers:'Messages from {a} to {b}; {n} sales in total. Data up to {u}.',
     kUpx:'UPX earned', kSales:'Paid sales (UPX and USD)', kAvg:'Average sale', kBest:'Biggest sale', kGifts:'Gifts (1 UPX)', kUsd:'Sold for USD',
     vsPrev:'{d} vs the previous period ({n} UPX)', same:'same as before', nothing:'Nothing in this period.',
@@ -72,13 +80,13 @@ Site.register({
     hGroups:'By category', colGroup:'Category', colSold:'Sold', colUpx:'UPX', colShare:'Share', colGifts:'Gifts',
     hItems:'Item by item', colItem:'Item', colAvg:'Average', colMin:'Lowest', colMax:'Highest', colLast:'Last sold', colUsd:'USD sales',
     hGifts:'Sold for exactly 1 UPX', giftNote:'Counted as gifts: they are not in any total.', colCount:'Count',
-    hRecent:'Latest sales', colWhen:'When', colPrice:'Price', items:'items', none:'none'
+    hShops:'Sold by other players in your shops', shopNote:'The sub-vendors’ own items, sold at their prices in your shops. They are not your sales, so they are in no total above. Follows the period, category and search filters.', colShop:'Shop', hVendors:'By sub-vendor', hShopTab:'By shop', hShopItems:'What sold', hShopRecent:'Latest sales in your shops', colVendor:'Sub-vendor', kShopSales:'Sales in your shops', kShopUpx:'UPX moved', kVendors:'Sub-vendors who sold', kShopBest:'Biggest sale', hRecent:'Latest sales', colWhen:'When', colPrice:'Price', items:'items', none:'none'
   },
   es:{
     title:'Las Ventas de Rockdrigo', subtitle:'Todo lo vendido, cuánto dejó y de qué.',
     loading:'Contando las ventas…', errLoad:'No se pudieron cargar los datos de ventas.',
     pYear:'Este año', p1:'Último mes', p2:'Últimos 2 meses', p3:'Últimos 3 meses', pAll:'Todo',
-    gAll:'Todo', gdeco:'Decoración exterior', gorn:'Ornamentos', gveh:'Vehículos / Go-karts', gseeds:'Semillas', gother:'Otros',
+    gAll:'Todo', gdeco:'Decoración exterior', gorn:'Ornamentos', gveh:'Vehículos / Go-karts', gseeds:'Semillas', gblk:'Block Explorers', gess:'Esenciales', glegit:'Legits y Pases', guppie:'Uppies', gmemento:'Recuerdos', gother:'Otros',
     search:'Buscar un artículo…', covers:'Mensajes de {a} a {b}; {n} ventas en total. Datos hasta {u}.',
     kUpx:'UPX ganados', kSales:'Ventas pagadas (UPX y USD)', kAvg:'Venta promedio', kBest:'Mayor venta', kGifts:'Regalos (1 UPX)', kUsd:'Vendido en USD',
     vsPrev:'{d} frente al periodo anterior ({n} UPX)', same:'igual que antes', nothing:'Nada en este periodo.',
@@ -86,7 +94,7 @@ Site.register({
     hGroups:'Por categoría', colGroup:'Categoría', colSold:'Vendidos', colUpx:'UPX', colShare:'Parte', colGifts:'Regalos',
     hItems:'Artículo por artículo', colItem:'Artículo', colAvg:'Promedio', colMin:'Más bajo', colMax:'Más alto', colLast:'Última venta', colUsd:'Ventas en USD',
     hGifts:'Vendidos por exactamente 1 UPX', giftNote:'Se cuentan como regalos: no están en ningún total.', colCount:'Cantidad',
-    hRecent:'Últimas ventas', colWhen:'Cuándo', colPrice:'Precio', items:'artículos', none:'ninguno'
+    hShops:'Vendido por otros jugadores en tus tiendas', shopNote:'Artículos de los sub-vendedores, vendidos a su precio en tus tiendas. No son ventas tuyas, así que no están en ningún total de arriba. Sigue los filtros de periodo, categoría y búsqueda.', colShop:'Tienda', hVendors:'Por sub-vendedor', hShopTab:'Por tienda', hShopItems:'Qué se vendió', hShopRecent:'Últimas ventas en tus tiendas', colVendor:'Sub-vendedor', kShopSales:'Ventas en tus tiendas', kShopUpx:'UPX movidos', kVendors:'Sub-vendedores con ventas', kShopBest:'Mayor venta', hRecent:'Últimas ventas', colWhen:'Cuándo', colPrice:'Precio', items:'artículos', none:'ninguno'
   },
   en_cunk:{
     title:'Rockdrigo’s Sales: A History of Letting Go', subtitle:'Every item that left, and what the world agreed to pay for its absence.',
@@ -100,10 +108,11 @@ Site.register({
   }
 });
 
-const GROUPS = ['deco', 'orn', 'veh', 'seeds', 'other'];
-const groupOf = c => ({outdoordecor:'deco', structornmt:'orn', landvehicle:'veh', seeds:'seeds'}[c] || 'other');
+const GROUPS = ['deco', 'orn', 'veh', 'seeds', 'blk', 'ess', 'legit', 'uppie', 'memento', 'other'];
+const groupOf = c => ({outdoordecor:'deco', structornmt:'orn', landvehicle:'veh', seeds:'seeds', blkexplorer:'blk', essential:'ess',
+  lorelegit:'legit', racinglegits:'legit', sparkletwarz:'legit', mangueira:'legit', seasonpass:'legit', uppie:'uppie', memento:'memento'}[c] || 'other');
 const DAY = 86400000;
-let DATA = null, ROWS = [];
+let DATA = null, ROWS = [], SHOP = [];
 let period = Site.store.get('rut:sales:period', 'year');
 let group = Site.store.get('rut:sales:group', 'all');
 let query = '';
@@ -170,10 +179,11 @@ function render(){
   const inPeriod = inRange(ROWS.filter(r => !ql || r.item.toLowerCase().includes(ql)), a.getTime(), b.getTime() + 1);
   const tot = stats(inPeriod).upx || 1;
   $('#hGroups').textContent = t('hGroups');
-  $('#byGroup').innerHTML = `<table><thead><tr><th>${esc(t('colGroup'))}</th><th class="num n">${esc(t('colSold'))}</th><th class="num n">${esc(t('colUpx'))}</th><th>${esc(t('colShare'))}</th><th class="num n">${esc(t('colGifts'))}</th></tr></thead><tbody>` +
+  $('#byGroup').innerHTML = `<table><thead><tr><th>${esc(t('colGroup'))}</th><th class="num n">${esc(t('colSold'))}</th><th class="num n">${esc(t('colUpx'))}</th><th>${esc(t('colShare'))}</th><th class="num n">${esc(t('colUsd'))}</th><th class="num n">${esc(t('colGifts'))}</th></tr></thead><tbody>` +
     GROUPS.map(g => {
       const gs = stats(inPeriod.filter(r => r.g === g));
-      return `<tr><td>${esc(t('g' + g))}</td><td class="num n">${nf(gs.paid.length + gs.usd.length)}</td><td class="num n">${nf(gs.upx)}</td><td data-v="${gs.upx}"><div class="share" title="${nf(gs.upx / tot * 100, 0)}%"><i style="width:${gs.upx / tot * 100}%"></i></div><span class="small muted">${nf(gs.upx / tot * 100, 0)}%</span></td><td class="num n">${nf(gs.gifts.length)}</td></tr>`;
+      if(!gs.paid.length && !gs.usd.length && !gs.gifts.length) return '';
+      return `<tr><td>${esc(t('g' + g))}</td><td class="num n">${nf(gs.paid.length + gs.usd.length)}</td><td class="num n">${nf(gs.upx)}</td><td data-v="${gs.upx}"><div class="share" title="${nf(gs.upx / tot * 100, 0)}%"><i style="width:${gs.upx / tot * 100}%"></i></div><span class="small muted">${nf(gs.upx / tot * 100, 0)}%</span></td><td class="num n">${gs.usd.length ? '$' + nf(sum(gs.usd.map(r => r.amt)), 2) : ''}</td><td class="num n">${nf(gs.gifts.length)}</td></tr>`;
     }).join('') + '</tbody></table>';
 
   // Gifts
@@ -196,12 +206,31 @@ function render(){
     const total = sum(rows.map(r => r.amt));
     const body = [...by].sort((x, y) => sum(y[1].upx) - sum(x[1].upx)).map(([it, e]) => {
       const u = e.upx;
-      return `<tr><td>${esc(it)}${g === 'other' ? ` <span class="muted small">(${esc(e.cat)})</span>` : ''}</td><td class="num n">${nf(u.length + e.usd.length)}</td><td class="num n">${nf(sum(u))}</td><td class="num n">${u.length ? nf(sum(u) / u.length) : '–'}</td><td class="num n">${u.length ? nf(Math.min(...u)) : '–'}</td><td class="num n">${u.length ? nf(Math.max(...u)) : '–'}</td><td class="num n" data-v="${e.last}">${esc(fmtDate(e.last))}</td><td class="num n">${e.usd.length ? nf(e.usd.length) + ' · $' + nf(sum(e.usd), 2) : ''}</td></tr>`;
+      return `<tr><td>${esc(it)}${g === 'other' || g === 'legit' ? ` <span class="muted small">(${esc(e.cat)})</span>` : ''}</td><td class="num n">${nf(u.length + e.usd.length)}</td><td class="num n">${nf(sum(u))}</td><td class="num n">${u.length ? nf(sum(u) / u.length) : '–'}</td><td class="num n">${u.length ? nf(Math.min(...u)) : '–'}</td><td class="num n">${u.length ? nf(Math.max(...u)) : '–'}</td><td class="num n" data-v="${e.last}">${esc(fmtDate(e.last))}</td><td class="num n">${e.usd.length ? nf(e.usd.length) + ' · $' + nf(sum(e.usd), 2) : ''}</td></tr>`;
     }).join('');
     const isOpen = firstRender ? true : open.has(g);
     return `<details class="grp" data-g="${g}" ${isOpen ? 'open' : ''}><summary><span>${esc(t('g' + g))}</span><span class="sub">${nf(by.size)} ${esc(t('items'))} · ${nf(rows.length + usdRows.length)} · ${nf(total)} UPX</span></summary>
       <div class="tablewrap"><table><thead><tr><th>${esc(t('colItem'))}</th><th class="num n">${esc(t('colSold'))}</th><th class="num n">${esc(t('colUpx'))}</th><th class="num n">${esc(t('colAvg'))}</th><th class="num n">${esc(t('colMin'))}</th><th class="num n">${esc(t('colMax'))}</th><th class="num n">${esc(t('colLast'))}</th><th class="num n">${esc(t('colUsd'))}</th></tr></thead><tbody>${body}</tbody></table></div></details>`;
   }).join('') || `<div class="empty">${esc(t('nothing'))}</div>`;
+
+  // Other players' sales in my shops (sub-vendors), kept apart from my own
+  $('#hShops').textContent = t('hShops'); $('#shopNote').textContent = t('shopNote');
+  ['hVendors', 'hShopTab', 'hShopItems', 'hShopRecent'].forEach(id => $('#' + id).textContent = t(id));
+  const hs = inRange(SHOP.filter(r => (group === 'all' || r.g === group) && (!ql || r.item.toLowerCase().includes(ql))), a.getTime(), b.getTime() + 1);
+  const hUpx = hs.filter(r => r.cur === 'UPX'), hUsd = hs.filter(r => r.cur === 'USD');
+  const hBest = hUpx.reduce((m, r) => !m || r.amt > m.amt ? r : m, null);
+  $('#shopKpis').innerHTML = kpi(nf(hs.length), t('kShopSales')) +
+    kpi(nf(sum(hUpx.map(r => r.amt))) + ' UPX', t('kShopUpx'), hUsd.length ? `<div class="delta">+ $${nf(sum(hUsd.map(r => r.amt)), 2)}</div>` : '') +
+    kpi(nf(new Set(hs.map(r => r.vendor)).size), t('kVendors')) +
+    kpi(hBest ? nf(hBest.amt) : '–', t('kShopBest'), hBest ? `<div class="delta">${esc(hBest.item)}</div>` : '');
+  const grp = key => { const m = new Map(); hs.forEach(r => { const k = key(r); if(!m.has(k)) m.set(k, {n: 0, upx: 0, usd: 0, last: 0}); const e = m.get(k); e.n++; if(r.cur === 'USD') e.usd += r.amt; else e.upx += r.amt; e.last = Math.max(e.last, r.ts); }); return [...m].sort((x, y) => y[1].upx - x[1].upx || y[1].n - x[1].n); };
+  const money = e => nf(e.upx) + (e.usd ? ' + $' + nf(e.usd, 2) : '');
+  const tbl = (head, rows) => rows.length ? `<table><thead><tr>${head}</tr></thead><tbody>${rows.join('')}</tbody></table>` : `<div class="empty">${esc(t('nothing'))}</div>`;
+  const th = (k, num) => `<th${num ? ' class="num n"' : ''}>${esc(t(k))}</th>`;
+  $('#vendors').innerHTML = tbl(th('colVendor') + th('colSold', 1) + th('colUpx', 1) + th('colLast', 1), grp(r => r.vendor || '?').map(([k, e]) => `<tr><td>${esc(k)}</td><td class="num n">${nf(e.n)}</td><td class="num n">${money(e)}</td><td class="num n" data-v="${e.last}">${esc(fmtDate(e.last))}</td></tr>`));
+  $('#shops').innerHTML = tbl(th('colShop') + th('colSold', 1) + th('colUpx', 1), grp(r => r.shop || '?').map(([k, e]) => `<tr><td>${esc(k)}</td><td class="num n">${nf(e.n)}</td><td class="num n">${money(e)}</td></tr>`));
+  $('#shopItems').innerHTML = tbl(th('colItem') + th('colGroup') + th('colSold', 1) + th('colUpx', 1), grp(r => r.g + '|' + r.item).map(([k, e]) => { const i = k.indexOf('|'); return `<tr><td>${esc(k.slice(i + 1))}</td><td>${esc(t('g' + k.slice(0, i)))}</td><td class="num n">${nf(e.n)}</td><td class="num n">${money(e)}</td></tr>`; }));
+  $('#shopRecent').innerHTML = tbl(th('colWhen') + th('colItem') + th('colVendor') + th('colShop') + th('colPrice', 1), [...hs].sort((x, y) => y.ts - x.ts).slice(0, 30).map(r => `<tr><td data-v="${r.ts}">${esc(fmtDate(r.ts))}</td><td>${esc(r.item)}</td><td>${esc(r.vendor)}</td><td>${esc(r.shop)}</td><td class="num n">${r.cur === 'USD' ? '$' + nf(r.amt, 2) : nf(r.amt) + ' UPX'}</td></tr>`));
 
   // Latest sales
   $('#hRecent').textContent = t('hRecent');
@@ -254,7 +283,9 @@ async function load(){
     if(!r.ok) throw new Error(r.status);
     DATA = await r.json();
   }catch(err){ $('#status').textContent = t('errLoad'); $('#status').classList.add('err'); return; }
-  ROWS = DATA.rows.map(([d, cat, item, amt, cur]) => ({ts: new Date(d).getTime(), g: groupOf(cat), cat, item, amt, cur}));
+  const all = DATA.rows.map(([d, cat, item, amt, cur, src, shop, vendor]) => ({ts: new Date(d).getTime(), g: groupOf(cat), cat, item, amt, cur, src, shop, vendor: vendor || ''}));
+  ROWS = all.filter(r => r.src !== 'h');   // my own sales
+  SHOP = all.filter(r => r.src === 'h');   // sub-vendors' items sold in my shops: not my income
   $('#app').classList.remove('hidden');
   render();
 }
