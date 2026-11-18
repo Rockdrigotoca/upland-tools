@@ -11,6 +11,7 @@ Scripts used to plan the crafting sessions and hunting routes. They were written
 | `what_is_left.py` | Which locked troves are craftable now, what each lacks. |
 | `runs_needed.py` | Hunting runs (100 sends) needed to cover the missing raw items, from the real yield per send. |
 | `queens_hunt_route.py` | Queens hunting route (3 files of 40), scored by the visits you really made. |
+| `hunt_route.py` | Any city, any need list: `hunt_route.py <city id> <tag> '{"Coal Lump":18,...}' [files]` (Queens 4, Los Angeles 32). History comes from hunts.json. |
 | `coffee_hunt_route.py` | Single-trove hunting route for any city (used for Coffee Bean in Queens and Los Angeles). |
 | `best_city_for_materials.py` | Compares cities for Amethyst, Sand, Coal Lump and Quartz. |
 
@@ -24,3 +25,5 @@ Scripts used to plan the crafting sessions and hunting routes. They were written
 - Coffee Bean cannot be crafted. Chocolate Bar needs 3 Cacao Pod = 15 beans. Chisel Set and Holiday Ham have no known Queens source.
 - For Amethyst and Quartz the best city is Los Angeles; Sand is best in Queens; Coal Lump is about equal everywhere. An LA test route (40 properties) is the way to validate before committing to LA.
 - Later: improve routes from visit history, validate the LA test route, then plan the real crafts of the Quailwood build-up.
+
+- 2026-11-18: Holiday Ham is crafted at Community Center (Pork 5, Honey 5, Hooray 5); Chisel Set at Art Gallery / Art Museum (Iron Ore 2, Twine 1). That makes Emerald and Sunday Dinner craftable with no hunting. Hardware Store version (Flint 2, Horsehair 1) waits for your own store to be finished.
