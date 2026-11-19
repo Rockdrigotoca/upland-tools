@@ -700,6 +700,7 @@
 {"id":747,"name":"JORDAAN","amount":3,"category":2,"yield_boost":1.57,"one_time_reward":1600,"city_id":141,"requirements":"Own any 3 properties in the JORDAAN neighborhood."},
 {"id":390,"name":"Avenida de Mayo","amount":3,"category":4,"yield_boost":2.53,"one_time_reward":16100,"city_id":51,"requirements":"Own 3 Properties on Avenida de Mayo"},
 {"id":394,"name":"Avenida Varela","amount":3,"category":3,"yield_boost":2.2,"one_time_reward":8600,"city_id":51,"requirements":"Own 3 Properties on Avenida Varela"},
+{"id":773,"name":"KENNEDY CADDE","amount":3,"category":4,"yield_boost":2.57,"one_time_reward":17200,"city_id":144,"requirements":"Own any 3 properties on KENNEDY CADDE."},
 {"id":761,"name":"Istanbul","amount":3,"category":1,"yield_boost":1.25,"one_time_reward":450,"city_id":144,"requirements":"Own 3 properties in Istanbul."},
 {"id":768,"name":"TAHTAKALE","amount":3,"category":4,"yield_boost":2.4,"one_time_reward":11700,"city_id":144,"requirements":"Own any 3 properties in the TAHTAKALE neighborhood."},
 {"id":764,"name":"CANKURTARAN","amount":3,"category":3,"yield_boost":2.21,"one_time_reward":8800,"city_id":144,"requirements":"Own any 3 properties in the CANKURTARAN neighborhood."},
