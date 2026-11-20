@@ -8,6 +8,7 @@ Scripts used to plan the crafting sessions and hunting routes. They were written
 | `plan_queens_session.py` | Plans a craft session in Queens for a list of target troves: cheapest recipe by missing items, shared stock, set-cover of properties, random + local search of the stop order, per-stop merge of crafts. Writes the data the page template embeds. |
 | `plan_quailwood_session.py` | Same idea for Quailwood (Bakersfield): build-up of the intermediates for the next troves, your properties first (free), then the others by fee. |
 | `page_template_*.html` | The standalone page. Replace `__DATA__` with the planner's JSON. Buttons: copy address, copy recipe name, text size, dark mode. |
+| `city_check.py`, `plan_city_session.py` | What can be crafted in any city now (`city_check.py 70 -- 'A,B'`), and a session page for it: `plan_city_session.py <city id> '<City, ST>' 'targets' out.json` (page template `page_template_city.html`). With `BUILDUP=1` it adds every craft the city can do now toward the targets, the first targets getting their ingredients first. |
 | `what_is_left.py` | Which locked troves are craftable now, what each lacks. |
 | `runs_needed.py` | Hunting runs (100 sends) needed to cover the missing raw items, from the real yield per send. |
 | `queens_hunt_route.py` | Queens hunting route (3 files of 40), scored by the visits you really made. |

@@ -44,29 +44,44 @@ TARGETS=TARGETS_ARG
 V=lambda *a:tuple(sorted(a))
 SITES[('Chisel Set',V(('Iron Ore',2),('Twine',1)))].update({'art gallery':'seen','art museum':'seen'})
 SITES[('Holiday Ham',V(('Pork',5),('Honey',5),('Hooray',5)))].update({'community center':'seen'})
-# 1) what is really missing: try every order of the 6 targets, keep the one needing the fewest ingredients you do not hold
-import itertools
-best=None
-for perm in itertools.permutations(TARGETS):
-    st=collections.Counter(STOCK); miss=collections.Counter(); plan=[]
-    for t in perm:
-        m,c=pl(t,1,st,8,()); miss+=m
-        for x,qq in m.items(): pass
-    tot=sum(miss.values())
-    if best is None or (tot,len(plan))<best[0]: best=((tot,0),perm,dict(miss))
-print('best order',best)
-TARGETS=list(best[1]); ASSUMED=best[2]
-# replan with the missing units added to the stock (they are the ones assumed)
-for _ in range(6):
-    S2=collections.Counter(STOCK)
-    for k,v in ASSUMED.items(): S2[k]+=v
-    st=collections.Counter(S2); extra=collections.Counter(); PLAN=[]
+BUILDUP=bool(os.environ.get('BUILDUP'))   # BUILDUP=1: every craft the city can do now toward the targets (first targets get their ingredients first), nothing assumed
+if BUILDUP:
+    st0=collections.Counter(STOCK); raw_plan=[]; MISSING=collections.Counter(); ASSUMED={}
     for t in TARGETS:
-        m,c=pl(t,1,st,8,()); extra+=m; PLAN+=[(i,v,'unlock '+t) for i,v in c]
-    if not sum(extra.values()): break
-    for k,v in extra.items(): ASSUMED[k]=ASSUMED.get(k,0)+v
-print('assumed',ASSUMED)
-for k,v in ASSUMED.items(): STOCK[k]+=v
+        m,c=pl(t,1,st0,8,()); MISSING+=m; raw_plan+=[(i,v,'unlock '+t) for i,v in c]
+    av=collections.Counter(STOCK); PLAN=[]; pend=list(raw_plan); prog=True
+    while prog:
+        prog=False
+        for c in list(pend):
+            it,v,pu=c
+            if all(av[x]>=qq for x,qq in v):
+                for x,qq in v: av[x]-=qq
+                av[it]+=1; PLAN.append(c); pend.remove(c); prog=True
+    print('planned',len(raw_plan),'doable now',len(PLAN),'| still missing for the targets',dict(MISSING))
+else:
+    # 1) what is really missing: try every order of the 6 targets, keep the one needing the fewest ingredients you do not hold
+    import itertools
+    best=None
+    for perm in itertools.permutations(TARGETS):
+        st=collections.Counter(STOCK); miss=collections.Counter(); plan=[]
+        for t in perm:
+            m,c=pl(t,1,st,8,()); miss+=m
+            for x,qq in m.items(): pass
+        tot=sum(miss.values())
+        if best is None or (tot,len(plan))<best[0]: best=((tot,0),perm,dict(miss))
+    print('best order',best)
+    TARGETS=list(best[1]); ASSUMED=best[2]
+    # replan with the missing units added to the stock (they are the ones assumed)
+    for _ in range(6):
+        S2=collections.Counter(STOCK)
+        for k,v in ASSUMED.items(): S2[k]+=v
+        st=collections.Counter(S2); extra=collections.Counter(); PLAN=[]
+        for t in TARGETS:
+            m,c=pl(t,1,st,8,()); extra+=m; PLAN+=[(i,v,'unlock '+t) for i,v in c]
+        if not sum(extra.values()): break
+        for k,v in extra.items(): ASSUMED[k]=ASSUMED.get(k,0)+v
+    print('assumed',ASSUMED)
+    for k,v in ASSUMED.items(): STOCK[k]+=v
 print('crafts',len(PLAN))
 # 2) properties
 OWN=None
