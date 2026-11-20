@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rockdrigo's Craft Session: ${CITY}</title>
+<style>
+:root{
+  --bg:#f4f1ea; --panel:#ffffff; --ink:#1b1b1f; --mute:#5c5c66; --line:#d8d3c8;
+  --blue:#0b5cad; --blue-bg:#e3effb; --orange:#a85a00; --orange-bg:#fff0d9; --purple:#7a2a8c; --purple-bg:#f5e6fa;
+  --done:#0b5cad; --shadow:0 2px 0 rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161a; --panel:#1e2127; --ink:#f1f1f4; --mute:#a9acb6; --line:#363a44;
+    --blue:#7db8ff; --blue-bg:#17304d; --orange:#ffb454; --orange-bg:#40290c; --purple:#e0a3f2; --purple-bg:#3a1d45;
+    --done:#7db8ff; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14161a; --panel:#1e2127; --ink:#f1f1f4; --mute:#a9acb6; --line:#363a44;
+  --blue:#7db8ff; --blue-bg:#17304d; --orange:#ffb454; --orange-bg:#40290c; --purple:#e0a3f2; --purple-bg:#3a1d45;
+  --done:#7db8ff; --shadow:none;
+}
+*{box-sizing:border-box}
+html{font-size:20px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;height:100vh;overflow:hidden}
+#app{height:100vh;display:grid;grid-template-rows:auto 1fr auto}
+header{display:flex;align-items:center;gap:1rem;padding:.6rem 1.2rem;border-bottom:2px solid var(--line);background:var(--panel)}
+header h1{font-size:1.05rem;margin:0;white-space:nowrap}
+.prog{flex:1;display:flex;gap:3px;align-items:center;flex-wrap:nowrap;overflow:hidden}
+.dot{flex:1;min-width:10px;height:.9rem;border-radius:3px;background:var(--line);border:0;padding:0;cursor:pointer}
+.dot.done{background:var(--done)}
+.dot.cur{outline:3px solid var(--ink);outline-offset:1px}
+.tools{display:flex;gap:.4rem;align-items:center}
+.tools button,.tools select{font:inherit;font-size:.8rem;padding:.25rem .6rem;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:.4rem;cursor:pointer}
+main{padding:1rem 1.2rem;overflow:hidden;display:grid;gap:1rem;grid-template-columns:1.05fr 2.3fr 1.1fr;min-height:0}
+main.single{grid-template-columns:1fr}
+.col{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:.8rem}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:.8rem;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.card,.step{flex:none}
+.card h2{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 .5rem;color:var(--mute)}
+.big{font-size:1.9rem;font-weight:750;line-height:1.1;margin:.1rem 0}
+.hood{font-size:1rem;color:var(--mute);font-weight:600}
+.chip{display:inline-block;padding:.12rem .55rem;border-radius:999px;border:2px solid var(--line);font-size:.78rem;margin:.15rem .2rem .15rem 0;font-weight:600}
+.chip.use{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+.chip.own{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+.chip.fee{background:var(--orange-bg);border-color:var(--orange);color:var(--orange)}
+.pid{font-family:ui-monospace,Menlo,monospace;font-size:.95rem;background:var(--bg);border:2px solid var(--line);border-radius:.4rem;padding:.25rem .5rem;display:inline-block;cursor:pointer}
+.cp{font:inherit;font-weight:700;font-size:.85rem;border:2px solid var(--blue);background:var(--blue-bg);color:var(--blue);border-radius:.45rem;padding:.2rem .6rem;cursor:pointer;margin-left:.4rem;white-space:nowrap}
+.cp.ok{background:var(--blue);color:var(--bg)}
+.fb{border:2px dashed var(--line);border-radius:.5rem;padding:.45rem .6rem;margin-top:.45rem;font-size:.92rem}
+.fb b{font-weight:760}.fb .why{font-size:.8rem;color:var(--mute)}
+.hold{font-size:.88rem;margin-top:.4rem;padding:.3rem .5rem;border-left:4px solid var(--blue);background:var(--bg)}
+.alt{font-size:.85rem;margin-top:.45rem;color:var(--mute)}
+.alt div{margin-top:.2rem}
+.step{border:2px solid var(--line);border-radius:.7rem;padding:.8rem 1rem;margin-bottom:.8rem;background:var(--panel)}
+.step.done{border-color:var(--blue);background:var(--blue-bg)}
+.step .top{display:flex;gap:.8rem;align-items:flex-start}
+.step input[type=checkbox]{width:2rem;height:2rem;margin-top:.15rem;accent-color:var(--blue);flex:none}
+.title{font-size:1.5rem;font-weight:780;line-height:1.15}
+.where{font-size:.85rem;color:var(--mute);font-weight:600;margin-top:.1rem}
+.recipe{margin:.5rem 0 .2rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.4rem}
+.ing{border:2px solid var(--line);border-radius:.5rem;padding:.35rem .6rem;font-size:.95rem;background:var(--bg)}
+.ing b{font-size:1.1rem}
+.ing .nums{color:var(--mute);font-size:.85rem}
+.ing.low{border-color:var(--orange);background:var(--orange-bg)}
+.ing.low .nums{color:var(--orange);font-weight:700}
+.tag{display:inline-block;font-size:.75rem;font-weight:700;padding:.1rem .5rem;border-radius:.3rem;margin-right:.4rem;border:2px solid}
+.tag.unlock{color:var(--blue);border-color:var(--blue);background:var(--blue-bg)}
+.tag.need{color:var(--mute);border-color:var(--line)}
+.tag.bank{color:var(--purple);border-color:var(--purple);background:var(--purple-bg)}
+.ev{font-size:.8rem;font-weight:650}
+.ev.seen{color:var(--blue)} .ev.up{color:var(--orange)}
+.avoid{border-left:6px solid var(--purple);background:var(--purple-bg);padding:.4rem .7rem;margin:.35rem 0;border-radius:.3rem;font-size:.88rem}
+.avoid .x{font-weight:800;color:var(--purple)}
+ul{margin:.2rem 0;padding-left:1.2rem}
+li{margin:.25rem 0}
+.warn{border-left:6px solid var(--orange);background:var(--orange-bg);padding:.4rem .7rem;border-radius:.3rem;font-size:.9rem;margin:.3rem 0}
+footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 1.2rem;border-top:2px solid var(--line);background:var(--panel)}
+.nav{font:inherit;font-size:1.25rem;font-weight:750;padding:.6rem 1.6rem;border-radius:.6rem;border:3px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer}
+:root[data-theme="dark"] .nav, :root:not([data-theme="light"]) .nav{color:#10253d}
+:root .nav.ghost{background:var(--panel);color:var(--blue)}
+.nav:disabled{opacity:.35;cursor:default}
+.mid{font-size:.95rem;color:var(--mute);text-align:center}
+kbd{font:inherit;font-size:.8rem;border:2px solid var(--line);border-radius:.3rem;padding:0 .35rem;background:var(--bg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.kv{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px dashed var(--line);padding:.25rem 0}
+.empty{color:var(--mute)}
+@media (max-width:1100px){ main{display:block;overflow:auto} .col{display:block;overflow:visible;margin-bottom:1rem} .col>*{margin-bottom:.8rem} html{font-size:17px} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Rockdrigo's Craft Session: ${CITY}</h1>
+    <div class="prog" id="prog"></div>
+    <div class="tools">
+      <button id="ts1" title="Smaller text">A</button><button id="ts2" title="Normal text" style="font-size:1rem">A</button><button id="ts3" title="Larger text" style="font-size:1.2rem">A</button>
+      <button id="theme" title="Light / dark">◐</button>
+      <select id="jump" title="Jump to a stop"></select>
+    </div>
+  </header>
+  <main id="main"></main>
+  <footer>
+    <button class="nav ghost" id="back">← Back</button>
+    <div class="mid" id="mid"></div>
+    <button class="nav" id="next">Next →</button>
+  </footer>
+</div>
+<script>
+const DATA = __DATA__;
+const META = DATA.meta, STOPS = DATA.stops;
+const PAGES = [{t:'over'}].concat(STOPS.map(s=>({t:'stop',s}))).concat([{t:'end'}]);
+const KEY = 'rockdrigo-craft-session-queens-v5';
+let idx = 0, checks = {};
+try{ checks = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){ checks = {}; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(checks)); }catch(e){} }
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ver = v => v.map(x=>`${x[1]>1?x[1]+' × ':''}${esc(x[0])}`).join(' + ');
+const id = (n,g,s) => `${n}-${g}-${s}`;
+function stopDone(st){ let all=true,any=false; st.groups.forEach((g,gi)=>g.steps.forEach((s,si)=>{any=true; if(!checks[id(st.n,gi,si)]) all=false;})); return any&&all; }
+
+function overview(){
+  const unl = META.unlocked.map(u=>`<li><b>${esc(u.t)}</b> <span class="empty">— finished at stop ${u.stop}</span></li>`).join('');
+  const bank = META.banked.map(b=>`<span class="chip">${esc(b.t)} → level ${b.to}</span>`).join('');
+  return `<div class="col"><div class="card"><h2>This session</h2>
+      <div class="big">${META.stops} properties · ${META.crafts} crafts</div>
+      <div class="kv"><span>Send fees</span><b>about ${META.fees} UPX</b></div>
+      <div class="kv"><span>New troves</span><b>${META.unlocked.length} (468 → ${468+META.unlocked.length} of 509)</b></div>
+      <div class="kv"><span>City</span><b>${esc(META.city)}</b></div>
+      <div class="kv"><span>Start</span><b>your own property, free</b></div>
+    </div>
+    <div class="card"><h2>How to use a card</h2><ul>
+      <li>Open the property, go to the <b>structure named</b> on the card.</li>
+      <li><b>Read the recipe the structure offers.</b> It must match the card. If it shows another recipe for the same trove, skip it (see <span class="x" style="color:var(--purple);font-weight:800">✗ Avoid</span>).</li>
+      <li>Tick each craft when done. Ticks are kept in this browser.</li>
+      <li>Use <kbd>←</kbd> <kbd>→</kbd> to move. Crafts are in order: later stops use what earlier stops make.</li>
+    </ul></div></div>
+    <div class="col"><div class="card"><h2>New troves this session</h2><ul>${unl}</ul></div>
+    <div class="card"><h2>Fallbacks</h2><p style="margin:.2rem 0">Every card has a <b>Copy address</b> button, two <b>fallback properties</b> with their own copy buttons, and, when a property has several structures, another property for each structure. Howard Beach is never used.</p></div></div>
+    <div class="col"><div class="card"><h2>Your balance, checked</h2><ul style="margin:.2rem 0;padding-left:1.1rem;font-size:.9rem">
+      <li>Checked against the balance you sent after the last hunt: 468 troves found, 14 Coffee Bean.</li>
+      ${Object.keys(META.assumed||{}).length?`<li class="warnline"><b>⚠ Assumed, not yours yet:</b> ${Object.entries(META.assumed).map(e=>e[1]+' × '+esc(e[0])).join(', ')}. The page counts these as if you held them. The craft that uses them says "counts … you still need to find". Do not do it until you have found them.</li>`:''}
+      <li>Everything else is covered by what you hold now, in this order.</li>
+      <li>Used up at the end: ${META.val.tight.slice(0,8).map(t=>esc(t[0])+' '+t[1]+'→'+t[2]).join(', ')}.</li></ul></div><div class="card"><h2>After the whole session</h2><p class="empty" style="font-size:.85rem;margin:.2rem 0">What changes in your stock (you have → you will have). A 0 is used up. Troves you hold only 1 of are marked ◆: they are used as ingredients, and they stay counted as found.</p>${META.final.map(d=>`<div class="kv"><span>${d[1]===1&&d[2]===0?'◆ ':''}${esc(d[0])}</span><b>${d[1]} → ${d[2]}${d[2]===0?' (used up)':''}</b></div>`).join('')}</div></div></div>`;
+}
+
+function stopView(st){
+  const kinds = st.kinds.map(k=>`<span class="chip ${st.used.includes(k)?'use':''}">${st.used.includes(k)?'★ ':''}${esc(k)}</span>`).join('');
+  const left = `<div class="col"><div class="card">
+      <h2>Property ${st.n} of ${STOPS.length}</h2>
+      <div class="big">${esc(st.addr)}</div><div class="hood">${esc(st.hood)}, ${esc(META.city)}</div>
+      <div style="margin:.5rem 0 0">${cpBtn(fullAddr(st.addr),'Copy address')}${st.again?' <span class="chip">↺ second visit</span>':''}</div>
+      <div style="margin:.6rem 0">${st.own?'<span class="chip own">● Your property</span>':'<span class="chip">▲ Public</span>'}
+      <span class="chip fee">${st.own?'Free':'Send fee '+(st.fee==null?'?':st.fee)+' UPX'}</span></div>
+      <div class="pid" onclick="copyId(this)" title="Click to copy">${esc(st.pid)}</div>
+    </div>
+    <div class="card"><h2>If it is not found: 2 fallbacks</h2>${(st.alts||[]).map(a=>`<div class="fb"><b>${esc(a.addr)}</b>, ${esc(a.hood)} · ${a.fee==null?'fee ?':a.fee+' UPX'}${cpBtn(fullAddr(a.addr),'Copy')}<div class="why">${a.full?'● has every structure you need here':'◐ only has: '+a.covers.map(esc).join(', ')}</div></div>`).join('')||'<div class="empty">No other property found.</div>'}<div class="empty" style="font-size:.78rem;margin-top:.4rem">Use it for the same crafts in the same order. A recipe may differ, so read it first.</div></div>
+    <div class="card"><h2>Structures here</h2><div>${kinds}</div><div class="empty" style="font-size:.8rem">★ = you craft here</div></div>
+    <div class="card"><h2>Total at this stop</h2><div class="big" style="font-size:1.6rem">${st.groups.reduce((a,g)=>a+g.steps.reduce((b,s)=>b+s.count,0),0)} crafts</div>
+      <div class="empty" style="font-size:.85rem">${st.groups.length} structure${st.groups.length>1?'s':''}</div></div></div>`;
+  let mid = '<div class="col">';
+  st.groups.forEach((g,gi)=>{
+    if(g.alts&&g.alts.length&&st.groups.length>1) mid += `<div class="alt"><b>${esc(g.kind)}</b> elsewhere: ${g.alts.map(a=>`<span>${esc(a.addr)} (${esc(a.hood)}, ${a.fee==null?'?':a.fee+' UPX'}) ${cpBtn(fullAddr(a.addr),'Copy')}</span>`).join(' ')}</div>`;
+    g.steps.forEach((s,si)=>{
+      const cid=id(st.n,gi,si), done=!!checks[cid];
+      const ps = s.purposes||[s.purpose];
+      const isNew = ps.includes('unlock '+s.item);
+      const forWhat = ps.filter(p=>p.startsWith('unlock')&&p.slice(7)!==s.item).map(p=>p.slice(7));
+      const tag = (isNew?`<span class="tag unlock">NEW TROVE</span> `:'') + (forWhat.length?`<span class="tag need">for ${forWhat.map(esc).join(', ')}</span>`:'') + (ps.some(p=>!p.startsWith('unlock'))?`<span class="tag bank">BANK → level up</span>`:'');
+      const ing = s.need.map(x=>{const after=x[2]-x[1]; const low=after<=2; return `<div class="ing ${low?'low':''}"><b>${x[1]} × ${esc(x[0])}</b><div class="nums">you have ${x[2]} → ${after} left${low?' ⚠':''}${(META.assumed&&META.assumed[x[0]])?' <b>(counts '+META.assumed[x[0]]+' you still need to find)</b>':''}</div></div>`;}).join('');
+      const alts = s.alts.map(a=>`<div class="avoid"><span class="x">✗ Avoid</span> if it shows <b>${ver(a.ver)}</b>${a.warn.length?` — it would use ${a.warn.map(esc).join(', ')} that you need`:' — works, but it is not the recipe this plan counted'}.</div>`).join('');
+      mid += `<div class="step ${done?'done':''}"><div class="top"><input type="checkbox" ${done?'checked':''} onchange="tick('${cid}',this.checked)"><div style="flex:1">
+        <div class="title">${s.count>1?s.count+' × ':''}${esc(s.item)}</div>
+        <div class="where">at the <b>${esc(g.kind)}</b> · ${tag} <span class="ev ${s.evidence==='seen'?'seen':'up'}">${s.evidence==='seen'?'● recipe seen in your own crafts':'◆ recipe from UPXLand: check it'}</span></div>
+        <div class="recipe">${ing}</div>
+        <div class="hold"><b>${esc(s.item)}:</b> you hold <b>${s.hold}</b> now · this plan makes <b>${s.plan_makes}</b> and uses <b>${s.plan_needs-(isNew?1:0)}</b> as an ingredient${isNew?' (the last one is your new trove)':''}</div>
+        <div style="font-size:.9rem;margin-top:.35rem"><b>Expected recipe:</b> ${ver(s.need.map(x=>[x[0],x[1]/s.count]))} → 1 ${esc(s.item)}${s.count>1?' (do it '+s.count+' times)':''}</div>
+        ${alts}</div></div></div>`;
+    });
+  });
+  mid += '</div>';
+  let right = '<div class="col">'+`<div class="card"><h2>Troves you make here: you have → after</h2>${(st.delta||[]).filter(d=>st.groups.some(g=>g.steps.some(s=>s.item===d[0]))).map(d=>`<div class="kv"><span>${esc(d[0])}</span><b>${d[1]} → ${d[2]}${d[2]===0?' (used up)':''}</b></div>`).join('')||'<div class="empty">No change.</div>'}</div>`+'<div class="card"><h2>Do not craft here</h2>';
+  right += st.skip.length ? st.skip.map(k=>`<div class="avoid"><span class="x">✗ ${esc(k.item)}</span> <span class="empty">(${ver(k.ver)})</span><br>burns ${k.burns.map(esc).join(', ')}</div>`).join('') : '<div class="empty">Nothing risky offered here.</div>';
+  right += '</div>';
+  const bonusKeys = Object.keys(st.bonus||{});
+  right += `<div class="card"><h2>Bonus drops</h2>` + (bonusKeys.length ? bonusKeys.map(t=>`<div class="warn"><b>${esc(t)}</b> can drop as a bonus when you craft at the ${st.bonus[t].map(esc).join(', ')} here (about 2 in 100 crafts).</div>`).join('') : '<div class="empty">No short ingredient drops here.</div>') + '</div></div>';
+  return left+mid+right;
+}
+
+function endView(){
+  return `<div class="col"><div class="card"><h2>Session finished</h2><div class="big">Save your results</div>
+   <ul><li>Open the Troves page and save the balance HAR (<code>trove_balance.har</code>).</li><li>Export the hunting session JSON from the recorder.</li></ul></div></div>
+   <div class="col"><div class="card"><h2>Then</h2><ul><li><b>Next, keep hunting.</b> After this session these are the closest, and what each still lacks: ${META.next.filter(x=>x.crafts>0).slice(0,4).map(x=>'<b>'+esc(x.t)+'</b> ('+(x.n?Object.entries(x.miss).map(e=>e[1]+' × '+esc(e[0])).join(', '):'nothing missing')+')').join('; ')}. The <code>LA_hunt_480_focus_50.csv</code> hunting file still works.</li><li>Send me the new balance and I will re-plan the next session from what is left.</li></ul></div></div><div class="col"></div>`;
+}
+
+function render(){
+  const p = PAGES[idx], m = document.getElementById('main');
+  m.className = ''; m.innerHTML = p.t==='over'?overview(): p.t==='stop'?stopView(p.s): endView();
+  document.getElementById('back').disabled = idx===0;
+  document.getElementById('next').disabled = idx===PAGES.length-1;
+  document.getElementById('mid').innerHTML = (p.t==='over'?'Overview': p.t==='end'?'Finish': 'Stop '+p.s.n+' of '+STOPS.length)+' &nbsp; <kbd>←</kbd> <kbd>→</kbd>';
+  const pr = document.getElementById('prog'); pr.innerHTML='';
+  PAGES.forEach((pg,i)=>{const b=document.createElement('button'); b.className='dot'+(pg.t==='stop'&&stopDone(pg.s)?' done':'')+(i===idx?' cur':''); b.title=pg.t==='stop'?pg.s.addr:pg.t; b.onclick=()=>go(i); pr.appendChild(b);});
+  document.getElementById('jump').value = String(idx);
+  try{ history.replaceState(null,'','#'+idx); }catch(e){}
+}
+function go(i){ idx=Math.max(0,Math.min(PAGES.length-1,i)); render(); }
+function tick(cid,v){ checks[cid]=v; save();
+  const m=document.getElementById('main'); const cols=[...m.querySelectorAll('.col')].map(c=>c.scrollTop); const ms=m.scrollTop, ws=window.scrollY;
+  render();
+  const m2=document.getElementById('main'); [...m2.querySelectorAll('.col')].forEach((c,i)=>{c.scrollTop=cols[i]||0;}); m2.scrollTop=ms; window.scrollTo(0,ws); }
+const fullAddr = (a)=> String(a).toUpperCase()+', '+META.city;
+function copyTxt(btn,txt){ const done=()=>{const o=btn.dataset.l||btn.textContent; btn.dataset.l=o; btn.textContent='Copied ✓'; btn.classList.add('ok'); setTimeout(()=>{btn.textContent=o; btn.classList.remove('ok');},1400);};
+  try{ navigator.clipboard.writeText(txt).then(done,()=>{fb(txt,done);}); }catch(e){ fb(txt,done); } }
+function fb(txt,done){ try{ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); }catch(e){} }
+function cpBtn(txt,label){ return `<button class="cp" data-t="${esc(txt)}" onclick="copyTxt(this,this.getAttribute('data-t'))">${label||'Copy address'}</button>`; }
+function copyId(el){ try{ navigator.clipboard.writeText(el.textContent.trim()); el.style.borderColor='var(--blue)'; }catch(e){} }
+document.getElementById('back').onclick=()=>go(idx-1);
+document.getElementById('next').onclick=()=>go(idx+1);
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='PageDown'){go(idx+1);e.preventDefault();} if(e.key==='ArrowLeft'||e.key==='PageUp'){go(idx-1);e.preventDefault();} });
+const jump=document.getElementById('jump');
+PAGES.forEach((pg,i)=>{const o=document.createElement('option'); o.value=i; o.textContent = pg.t==='over'?'Overview':pg.t==='end'?'Finish':pg.s.n+'. '+pg.s.addr; jump.appendChild(o);});
+jump.onchange=()=>go(+jump.value);
+[16,20,24].forEach((px,i)=>{document.getElementById('ts'+(i+1)).onclick=()=>{document.documentElement.style.fontSize=px+'px'; try{localStorage.setItem(KEY+'-px',px);}catch(e){}};});
+try{const px=localStorage.getItem(KEY+'-px'); if(px) document.documentElement.style.fontSize=px+'px';}catch(e){}
+document.getElementById('theme').onclick=()=>{const r=document.documentElement; const dark=getComputedStyle(r).getPropertyValue('--bg').trim()==='#14161a'; r.setAttribute('data-theme',dark?'light':'dark');};
+const h=parseInt((location.hash||'').slice(1)); if(!isNaN(h)) idx=Math.max(0,Math.min(PAGES.length-1,h));
+render();
+</script>
+</body>
+</html>
