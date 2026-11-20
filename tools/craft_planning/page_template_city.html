@@ -168,11 +168,11 @@ function stopView(st){
       const ps = s.purposes||[s.purpose];
       const isNew = ps.includes('unlock '+s.item);
       const forWhat = ps.filter(p=>p.startsWith('unlock')&&p.slice(7)!==s.item).map(p=>p.slice(7));
-      const tag = (isNew?`<span class="tag unlock">NEW TROVE</span> `:'') + (forWhat.length?`<span class="tag need">for ${forWhat.map(esc).join(', ')}</span>`:'') + (ps.some(p=>!p.startsWith('unlock'))?`<span class="tag bank">BANK → level up</span>`:'');
-      const ing = s.need.map(x=>{const after=x[2]-x[1]; const low=after<=2; return `<div class="ing ${low?'low':''}"><b>${x[1]} × ${esc(x[0])}</b><div class="nums">you have ${x[2]} → ${after} left${low?' ⚠':''}${(META.assumed&&META.assumed[x[0]])?' <b>(counts '+META.assumed[x[0]]+' you still need to find)</b>':''}</div></div>`;}).join('');
+      const tag = (isNew?`<span class="tag unlock">NEW TROVE</span> `:'') + (forWhat.length?forWhat.map(f=>`<span class="tag need">for ${esc(f)}</span>${cpBtn(f,'Copy')} `).join(''):'') + (ps.some(p=>!p.startsWith('unlock'))?`<span class="tag bank">BANK → level up</span>`:'');
+      const ing = s.need.map(x=>{const after=x[2]-x[1]; const low=after<=2; return `<div class="ing ${low?'low':''}"><b>${x[1]} × ${esc(x[0])}</b> ${cpBtn(x[0],'Copy')}<div class="nums">you have ${x[2]} → ${after} left${low?' ⚠':''}${(META.assumed&&META.assumed[x[0]])?' <b>(counts '+META.assumed[x[0]]+' you still need to find)</b>':''}</div></div>`;}).join('');
       const alts = s.alts.map(a=>`<div class="avoid"><span class="x">✗ Avoid</span> if it shows <b>${ver(a.ver)}</b>${a.warn.length?` — it would use ${a.warn.map(esc).join(', ')} that you need`:' — works, but it is not the recipe this plan counted'}.</div>`).join('');
       mid += `<div class="step ${done?'done':''}"><div class="top"><input type="checkbox" ${done?'checked':''} onchange="tick('${cid}',this.checked)"><div style="flex:1">
-        <div class="title">${s.count>1?s.count+' × ':''}${esc(s.item)}</div>
+        <div class="title">${s.count>1?s.count+' × ':''}${esc(s.item)} ${cpBtn(s.item,'Copy name')}</div>
         <div class="where">at the <b>${esc(g.kind)}</b> · ${tag} <span class="ev ${s.evidence==='seen'?'seen':'up'}">${s.evidence==='seen'?'● recipe seen in your own crafts':'◆ recipe from UPXLand: check it'}</span></div>
         <div class="recipe">${ing}</div>
         <div class="hold"><b>${esc(s.item)}:</b> you hold <b>${s.hold}</b> now · this plan makes <b>${s.plan_makes}</b> and uses <b>${s.plan_needs-(isNew?1:0)}</b> as an ingredient${isNew?' (the last one is your new trove)':''}</div>
