@@ -112,7 +112,7 @@ kbd{font:inherit;font-size:.8rem;border:2px solid var(--line);border-radius:.3re
 const DATA = __DATA__;
 const META = DATA.meta, STOPS = DATA.stops;
 const PAGES = [{t:'over'}].concat(STOPS.map(s=>({t:'stop',s}))).concat([{t:'end'}]);
-const KEY = 'rockdrigo-craft-session-queens-v5';
+const KEY = 'rockdrigo-craft-session-__STAMP__';   // one key per generated page, so ticks from another page never show up here
 let idx = 0, checks = {};
 try{ checks = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){ checks = {}; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(checks)); }catch(e){} }
