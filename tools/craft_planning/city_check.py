@@ -21,6 +21,9 @@ for b,d in sr.items():
     for t,names in d.items():
         for v in REC.get(t,[]):
             if sorted(x for x,_ in v)==sorted(names): SITES[(t,v)].add(norm(b))
+import glob
+for f in glob.glob('/Users/rock/Downloads/trove-hunting-session-2026-*.json'):   # recipes seen in your own crafts (the exports kept in Downloads)
+    for c in json.load(open(f)).get('crafts',[]): SITES[(c['recipe'],tuple(sorted((x,q) for x,q in c['ingredients'])))].add(norm(c['building']))
 V=lambda *a:tuple(sorted(a))
 SITES[('Chisel Set',V(('Iron Ore',2),('Twine',1)))]|={'art gallery','art museum'}
 SITES[('Holiday Ham',V(('Pork',5),('Honey',5),('Hooray',5)))]|={'community center'}
@@ -28,7 +31,11 @@ SITES[('Holiday Ham',V(('Maple Syrup',1),('Charcoal',1),('Cheers',1)))]|={'butch
 args=sys.argv[1:]; sep=args.index('--') if '--' in args else len(args)
 CITIES=[int(x) for x in args[:sep]]; TARGETS=[x.strip() for x in (args[sep+1] if len(args)>sep+1 else 'Emerald,Sunday Dinner,Soulmate,Tesla Coil,Lifeline,Hourglass').split(',')]
 K=set()
-for c in CITIES: K|={norm(n) for n in json.load(open(ROOT+'data/troves/places/%d.json'%c))['structs']}
+import glob
+if CITIES==[0]:
+    for f in glob.glob(ROOT+'data/troves/places/*.json'): K|={norm(n) for n in json.load(open(f))['structs']}
+for c in CITIES:
+    if c: K|={norm(n) for n in json.load(open(ROOT+'data/troves/places/%d.json'%c))['structs']}
 def sites(t,v):
     if t=='Compass' and any(x=='Binoculars' for x,_ in v): return set()
     return SITES.get((t,v),set())&K
@@ -57,6 +64,8 @@ if __name__=='__main__':
     print('cities',CITIES,'| structures',len(K))
     for t in TARGETS:
         m,c=need([t]); print('  %-14s crafts %3d  missing %s'%(t,len(c),dict(m) or '-'))
+    import os
+    if os.environ.get('NOPERM') or len(TARGETS)>7: sys.exit(0)
     head=TARGETS[:2]; rest=TARGETS[2:]; best=None
     for p in itertools.permutations(rest):
         m,c=need(head+list(p)); sc=sum(m.values())
