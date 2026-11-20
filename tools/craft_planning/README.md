@@ -9,6 +9,7 @@ Scripts used to plan the crafting sessions and hunting routes. They were written
 | `plan_quailwood_session.py` | Same idea for Quailwood (Bakersfield): build-up of the intermediates for the next troves, your properties first (free), then the others by fee. |
 | `page_template_*.html` | The standalone page. Replace `__DATA__` with the planner's JSON. Buttons: copy address, copy recipe name, text size, dark mode. |
 | `city_check.py`, `plan_city_session.py` | What can be crafted in any city now (`city_check.py 70 -- 'A,B'`), and a session page for it: `plan_city_session.py <city id> '<City, ST>' 'targets' out.json` (page template `page_template_city.html`). With `BUILDUP=1` it adds every craft the city can do now toward the targets, the first targets getting their ingredients first. |
+| `add_recipe_links.py` | Adds the direct link to each structure's recipe screen (`play.upland.me/nft/structures/<id>/structure/recipe`) for every stop and fallback of a session's data, read from Upland's public property records. Run it on the planner's json before filling the page template. |
 | `what_is_left.py` | Which locked troves are craftable now, what each lacks. |
 | `runs_needed.py` | Hunting runs (100 sends) needed to cover the missing raw items, from the real yield per send. |
 | `queens_hunt_route.py` | Queens hunting route (3 files of 40), scored by the visits you really made. |

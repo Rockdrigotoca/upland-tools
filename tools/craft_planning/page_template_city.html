@@ -47,6 +47,7 @@ main.single{grid-template-columns:1fr}
 .chip.own{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
 .chip.fee{background:var(--orange-bg);border-color:var(--orange);color:var(--orange)}
 .pid{font-family:ui-monospace,Menlo,monospace;font-size:.95rem;background:var(--bg);border:2px solid var(--line);border-radius:.4rem;padding:.25rem .5rem;display:inline-block;cursor:pointer}
+.open{display:inline-block;font:inherit;font-weight:700;font-size:.95rem;text-decoration:none;border:2px solid var(--purple);background:var(--purple-bg);color:var(--purple);border-radius:.45rem;padding:.3rem .7rem;margin:.15rem .4rem .15rem 0}
 .cp{font:inherit;font-weight:700;font-size:.85rem;border:2px solid var(--blue);background:var(--blue-bg);color:var(--blue);border-radius:.45rem;padding:.2rem .6rem;cursor:pointer;margin-left:.4rem;white-space:nowrap}
 .cp.ok{background:var(--blue);color:var(--bg)}
 .fb{border:2px dashed var(--line);border-radius:.5rem;padding:.45rem .6rem;margin-top:.45rem;font-size:.92rem}
@@ -151,18 +152,19 @@ function stopView(st){
   const left = `<div class="col"><div class="card">
       <h2>Property ${st.n} of ${STOPS.length}</h2>
       <div class="big">${esc(st.addr)}</div><div class="hood">${esc(st.hood)}, ${esc(META.city)}</div>
+      <div style="margin:.5rem 0 0">${(st.groups||[]).map(g=>recipeLink((st.links||{})[g.kind],g.kind)).join(' ')}</div>
       <div style="margin:.5rem 0 0">${cpBtn(fullAddr(st.addr),'Copy address')}${st.again?' <span class="chip">↺ second visit</span>':''}</div>
       <div style="margin:.6rem 0">${st.own?'<span class="chip own">● Your property</span>':'<span class="chip">▲ Public</span>'}
       <span class="chip fee">${st.own?'Free':'Send fee '+(st.fee==null?'?':st.fee)+' UPX'}</span></div>
       <div class="pid" onclick="copyId(this)" title="Click to copy">${esc(st.pid)}</div>
     </div>
-    <div class="card"><h2>If it is not found: 2 fallbacks</h2>${(st.alts||[]).map(a=>`<div class="fb"><b>${esc(a.addr)}</b>, ${esc(a.hood)} · ${a.fee==null?'fee ?':a.fee+' UPX'}${cpBtn(fullAddr(a.addr),'Copy')}<div class="why">${a.full?'● has every structure you need here':'◐ only has: '+a.covers.map(esc).join(', ')}</div></div>`).join('')||'<div class="empty">No other property found.</div>'}<div class="empty" style="font-size:.78rem;margin-top:.4rem">Use it for the same crafts in the same order. A recipe may differ, so read it first.</div></div>
+    <div class="card"><h2>If it is not found: 2 fallbacks</h2>${(st.alts||[]).map(a=>`<div class="fb"><b>${esc(a.addr)}</b>, ${esc(a.hood)} · ${a.fee==null?'fee ?':a.fee+' UPX'}${cpBtn(fullAddr(a.addr),'Copy')} ${Object.entries(a.links||{}).map(([k,u])=>recipeLink(u,k,true)).join(' ')}<div class="why">${a.full?'● has every structure you need here':'◐ only has: '+a.covers.map(esc).join(', ')}</div></div>`).join('')||'<div class="empty">No other property found.</div>'}<div class="empty" style="font-size:.78rem;margin-top:.4rem">Use it for the same crafts in the same order. A recipe may differ, so read it first.</div></div>
     <div class="card"><h2>Structures here</h2><div>${kinds}</div><div class="empty" style="font-size:.8rem">★ = you craft here</div></div>
     <div class="card"><h2>Total at this stop</h2><div class="big" style="font-size:1.6rem">${st.groups.reduce((a,g)=>a+g.steps.reduce((b,s)=>b+s.count,0),0)} crafts</div>
       <div class="empty" style="font-size:.85rem">${st.groups.length} structure${st.groups.length>1?'s':''}</div></div></div>`;
   let mid = '<div class="col">';
   st.groups.forEach((g,gi)=>{
-    if(g.alts&&g.alts.length&&st.groups.length>1) mid += `<div class="alt"><b>${esc(g.kind)}</b> elsewhere: ${g.alts.map(a=>`<span>${esc(a.addr)} (${esc(a.hood)}, ${a.fee==null?'?':a.fee+' UPX'}) ${cpBtn(fullAddr(a.addr),'Copy')}</span>`).join(' ')}</div>`;
+    if(g.alts&&g.alts.length&&st.groups.length>1) mid += `<div class="alt"><b>${esc(g.kind)}</b> elsewhere: ${g.alts.map(a=>`<span>${esc(a.addr)} (${esc(a.hood)}, ${a.fee==null?'?':a.fee+' UPX'}) ${cpBtn(fullAddr(a.addr),'Copy')} ${Object.entries(a.links||{}).map(([k,u])=>recipeLink(u,k,true)).join(' ')}</span>`).join(' ')}</div>`;
     g.steps.forEach((s,si)=>{
       const cid=id(st.n,gi,si), done=!!checks[cid];
       const ps = s.purposes||[s.purpose];
@@ -215,6 +217,7 @@ const fullAddr = (a)=> String(a).toUpperCase()+', '+META.city;
 function copyTxt(btn,txt){ const done=()=>{const o=btn.dataset.l||btn.textContent; btn.dataset.l=o; btn.textContent='Copied ✓'; btn.classList.add('ok'); setTimeout(()=>{btn.textContent=o; btn.classList.remove('ok');},1400);};
   try{ navigator.clipboard.writeText(txt).then(done,()=>{fb(txt,done);}); }catch(e){ fb(txt,done); } }
 function fb(txt,done){ try{ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); }catch(e){} }
+function recipeLink(url,kind,small){ return url?`<a class="open" href="${esc(url)}" target="_blank" rel="noopener">${small?'Recipe ↗':'Open the '+esc(kind)+' recipe ↗'}</a>`:''; }
 function cpBtn(txt,label){ return `<button class="cp" data-t="${esc(txt)}" onclick="copyTxt(this,this.getAttribute('data-t'))">${label||'Copy address'}</button>`; }
 function copyId(el){ try{ navigator.clipboard.writeText(el.textContent.trim()); el.style.borderColor='var(--blue)'; }catch(e){} }
 document.getElementById('back').onclick=()=>go(idx-1);
