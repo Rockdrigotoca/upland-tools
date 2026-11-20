@@ -217,7 +217,7 @@ const fullAddr = (a)=> String(a).toUpperCase()+', '+META.city;
 function copyTxt(btn,txt){ const done=()=>{const o=btn.dataset.l||btn.textContent; btn.dataset.l=o; btn.textContent='Copied ✓'; btn.classList.add('ok'); setTimeout(()=>{btn.textContent=o; btn.classList.remove('ok');},1400);};
   try{ navigator.clipboard.writeText(txt).then(done,()=>{fb(txt,done);}); }catch(e){ fb(txt,done); } }
 function fb(txt,done){ try{ const ta=document.createElement('textarea'); ta.value=txt; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); done(); }catch(e){} }
-function recipeLink(url,kind,small){ return url?`<a class="open" href="${esc(url)}" target="_blank" rel="noopener">${small?'Recipe ↗':'Open the '+esc(kind)+' recipe ↗'}</a>`:''; }
+function recipeLink(url,kind,small){ return url?cpBtn(url, small?'Copy recipe link':'Copy the '+kind+' recipe link'):''; }
 function cpBtn(txt,label){ return `<button class="cp" data-t="${esc(txt)}" onclick="copyTxt(this,this.getAttribute('data-t'))">${label||'Copy address'}</button>`; }
 function copyId(el){ try{ navigator.clipboard.writeText(el.textContent.trim()); el.style.borderColor='var(--blue)'; }catch(e){} }
 document.getElementById('back').onclick=()=>go(idx-1);
