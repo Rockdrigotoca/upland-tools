@@ -78,6 +78,22 @@ main.single{grid-template-columns:1fr}
 ul{margin:.2rem 0;padding-left:1.2rem}
 li{margin:.25rem 0}
 .warn{border-left:6px solid var(--orange);background:var(--orange-bg);padding:.4rem .7rem;border-radius:.3rem;font-size:.9rem;margin:.3rem 0}
+.cunk{border-left:6px solid var(--purple);background:var(--purple-bg);padding:.6rem .9rem;border-radius:.3rem;font-style:italic;font-size:.95rem;line-height:1.45}
+.cunk b{font-style:normal;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--purple);display:block;margin-bottom:.2rem}
+.nx details{border:2px solid var(--line);border-radius:.6rem;background:var(--panel);margin:.5rem 0}
+.nx summary{cursor:pointer;padding:.6rem .8rem;font-weight:700;list-style:none;display:flex;flex-wrap:wrap;gap:.4rem .9rem;align-items:baseline}
+.nx summary::-webkit-details-marker{display:none}
+.nx summary::before{content:'▸';font-size:1rem}
+.nx details[open]>summary::before{content:'▾'}
+.nx .body{padding:.2rem .9rem .8rem}
+.nx table{border-collapse:collapse;width:100%;font-size:.9rem}
+.nx th,.nx td{text-align:left;padding:.25rem .45rem;border-bottom:1px dashed var(--line)}
+.nx td.n,.nx th.n{text-align:right;font-variant-numeric:tabular-nums}
+.nx .ok{color:var(--blue);font-weight:700} .nx .no{color:var(--orange);font-weight:800}
+.nx .sort{display:flex;flex-wrap:wrap;gap:.4rem;margin:.4rem 0}
+.nx .sort button{font:inherit;font-size:.85rem;padding:.3rem .7rem;border-radius:.4rem;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.nx .sort button.on{border-color:var(--blue);background:var(--blue-bg);font-weight:700}
+.nx .pill{font-size:.78rem;font-weight:700;border:2px solid var(--line);border-radius:.3rem;padding:0 .4rem;color:var(--mute)}
 footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.7rem 1.2rem;border-top:2px solid var(--line);background:var(--panel)}
 .nav{font:inherit;font-size:1.25rem;font-weight:750;padding:.6rem 1.6rem;border-radius:.6rem;border:3px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer}
 :root[data-theme="dark"] .nav, :root:not([data-theme="light"]) .nav{color:#10253d}
@@ -99,6 +115,7 @@ kbd{font:inherit;font-size:.8rem;border:2px solid var(--line);border-radius:.3re
     <div class="tools">
       <button id="ts1" title="Smaller text">A</button><button id="ts2" title="Normal text" style="font-size:1rem">A</button><button id="ts3" title="Larger text" style="font-size:1.2rem">A</button>
       <button id="theme" title="Light / dark">◐</button>
+      <button id="cunkbtn" title="Cunk narration on / off" style="font-size:.85rem">Cunk</button>
       <select id="jump" title="Jump to a stop"></select>
     </div>
   </header>
@@ -112,10 +129,13 @@ kbd{font:inherit;font-size:.8rem;border:2px solid var(--line);border-radius:.3re
 <script>
 const DATA = __DATA__;
 const META = DATA.meta, STOPS = DATA.stops;
-const PAGES = [{t:'over'}].concat(STOPS.map(s=>({t:'stop',s}))).concat([{t:'end'}]);
+const PAGES = [{t:'over'}].concat(STOPS.map(s=>({t:'stop',s}))).concat(DATA.next5?[{t:'next'}]:[]).concat([{t:'end'}]);
 const KEY = 'rockdrigo-craft-session-__STAMP__';   // one key per generated page, so ticks from another page never show up here
 let idx = 0, checks = {};
 try{ checks = JSON.parse(localStorage.getItem(KEY) || '{}'); }catch(e){ checks = {}; }
+let cunkOn = true;
+try{ cunkOn = localStorage.getItem('rockdrigo-cunk')!=='off'; }catch(e){}
+function cunkBox(txt){ return (DATA.cunk && cunkOn && txt) ? `<div class="card cunk"><b>Philomena Cunk</b>${esc(txt)}</div>` : ''; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(checks)); }catch(e){} }
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const ver = v => v.map(x=>`${x[1]>1?x[1]+' × ':''}${esc(x[0])}`).join(' + ');
@@ -125,10 +145,10 @@ function stopDone(st){ let all=true,any=false; st.groups.forEach((g,gi)=>g.steps
 function overview(){
   const unl = META.unlocked.map(u=>`<li><b>${esc(u.t)}</b> <span class="empty">— finished at stop ${u.stop}</span></li>`).join('');
   const bank = META.banked.map(b=>`<span class="chip">${esc(b.t)} → level ${b.to}</span>`).join('');
-  return `<div class="col"><div class="card"><h2>This session</h2>
+  return `<div class="col">${cunkBox(DATA.cunk&&DATA.cunk.intro)}<div class="card"><h2>This session</h2>
       <div class="big">${META.stops} properties · ${META.crafts} crafts</div>
       <div class="kv"><span>Send fees</span><b>about ${META.fees} UPX</b></div>
-      <div class="kv"><span>New troves</span><b>${META.unlocked.length} (468 → ${468+META.unlocked.length} of 509)</b></div>
+      <div class="kv"><span>New troves</span><b>${META.unlocked.length} (${META.val.total} → ${META.val.total+META.unlocked.length} of 509)</b></div>
       <div class="kv"><span>City</span><b>${esc(META.city)}</b></div>
       <div class="kv"><span>Start</span><b>your own property, free</b></div>
     </div>
@@ -139,9 +159,9 @@ function overview(){
       <li>Use <kbd>←</kbd> <kbd>→</kbd> to move. Crafts are in order: later stops use what earlier stops make.</li>
     </ul></div></div>
     <div class="col"><div class="card"><h2>New troves this session</h2><ul>${unl}</ul></div>
-    <div class="card"><h2>Fallbacks</h2><p style="margin:.2rem 0">Every card has a <b>Copy address</b> button, two <b>fallback properties</b> with their own copy buttons, and, when a property has several structures, another property for each structure. Howard Beach is never used.</p></div></div>
+    ${DATA.next5?`<div class="card"><h2>After this</h2><p style="margin:.2rem 0">What the next 5 troves still need once this session is done: <b>${DATA.next5.rank.map(esc).join(', ')}</b>.</p><button class="nav" style="font-size:1rem;padding:.4rem 1rem" onclick="go(PAGES.findIndex(p=>p.t==='next'))">Open the next 5</button></div>`:''}<div class="card"><h2>Fallbacks</h2><p style="margin:.2rem 0">Every card has a <b>Copy address</b> button, two <b>fallback properties</b> with their own copy buttons, and, when a property has several structures, another property for each structure. Howard Beach is never used.</p></div></div>
     <div class="col"><div class="card"><h2>Your balance, checked</h2><ul style="margin:.2rem 0;padding-left:1.1rem;font-size:.9rem">
-      <li>Checked against the balance you sent after the last hunt: 468 troves found, 14 Coffee Bean.</li>
+      <li>Checked against the balance you sent after the last hunt: ${META.val.total} troves found.</li>
       ${Object.keys(META.assumed||{}).length?`<li class="warnline"><b>⚠ Assumed, not yours yet:</b> ${Object.entries(META.assumed).map(e=>e[1]+' × '+esc(e[0])).join(', ')}. The page counts these as if you held them. The craft that uses them says "counts … you still need to find". Do not do it until you have found them.</li>`:''}
       <li>Everything else is covered by what you hold now, in this order.</li>
       <li>Used up at the end: ${META.val.tight.slice(0,8).map(t=>esc(t[0])+' '+t[1]+'→'+t[2]).join(', ')}.</li></ul></div><div class="card"><h2>After the whole session</h2><p class="empty" style="font-size:.85rem;margin:.2rem 0">What changes in your stock (you have → you will have). A 0 is used up. Troves you hold only 1 of are marked ◆: they are used as ingredients, and they stay counted as found.</p>${META.final.map(d=>`<div class="kv"><span>${d[1]===1&&d[2]===0?'◆ ':''}${esc(d[0])}</span><b>${d[1]} → ${d[2]}${d[2]===0?' (used up)':''}</b></div>`).join('')}</div></div></div>`;
@@ -149,7 +169,7 @@ function overview(){
 
 function stopView(st){
   const kinds = st.kinds.map(k=>`<span class="chip ${st.used.includes(k)?'use':''}">${st.used.includes(k)?'★ ':''}${esc(k)}</span>`).join('');
-  const left = `<div class="col"><div class="card">
+  const left = `<div class="col">${cunkBox(DATA.cunk&&DATA.cunk.stops&&DATA.cunk.stops[st.n])}<div class="card">
       <h2>Property ${st.n} of ${STOPS.length}</h2>
       <div class="big">${esc(st.addr)}</div><div class="hood">${esc(st.hood)}, ${esc(META.city)}</div>
       <div style="margin:.5rem 0 0">${(st.groups||[]).map(g=>recipeLink((st.links||{})[g.kind],g.kind)).join(' ')}</div>
@@ -191,18 +211,48 @@ function stopView(st){
   return left+mid+right;
 }
 
+let nxSort='missing'; const nxOpen=new Set();
+function nxT(n,o){ if(o) nxOpen.add(n); else nxOpen.delete(n); }
+function nxSet(k){ nxSort=k; render(); }
+function nxCard(c){
+  const rows = c.ingredients.map(i=>`<tr><td>${esc(i[0])} ${cpBtn(i[0],'Copy')}</td><td class="n">${i[1]}</td><td class="n">${i[2]}</td><td class="n ${i[3]?'no':'ok'}">${i[3]?'✗ '+i[3]+' short':'✓ enough'}</td></tr>`).join('');
+  const chain = c.chain.map(e=>`<li><b>${e[1]>1?e[1]+' × ':''}${esc(e[0])}</b> <span class="empty">= ${ver(e[3])}${e[2].length?' · at '+e[2].map(esc).join(' / '):''}</span></li>`).join('');
+  const comp = (c.competes||[]).length ? `<div class="warn"><b>⚠ Competes with another of the five for:</b> ${c.competes.map(x=>esc(x[0])+' (with '+x[1].map(esc).join(', ')+')').join('; ')}.</div>` : '';
+  return `<details ${nxOpen.has(c.name)?'open':''} ontoggle="nxT('${c.name.replace(/'/g,"\\'")}',this.open)"><summary><span>${c.next5?'#'+c.rank+' ':''}${esc(c.name)}</span>
+    <span class="pill">${c.missing?'✗ '+c.missing+' items short':'✓ nothing short'}</span><span class="pill">${c.units} ingredients</span><span class="pill">${c.crafts} crafts</span></summary>
+    <div class="body"><div style="margin:.2rem 0">${cpBtn(c.name,'Copy name')}</div>${comp}
+    <table><tr><th>Ingredient</th><th class="n">Needs</th><th class="n">You will have</th><th class="n">Status</th></tr>${rows||'<tr><td colspan="4" class="empty">Nothing to take from stock.</td></tr>'}</table>
+    <h2 style="margin:.8rem 0 .2rem">Crafts, in order</h2><ol style="font-size:.88rem;margin:.2rem 0;padding-left:1.2rem">${chain}</ol></div></details>`;
+}
+function nextView(){
+  const N = DATA.next5, key = {missing:c=>[c.missing,c.units], units:c=>[c.units,c.missing], crafts:c=>[c.crafts,c.missing], name:c=>[c.name,0]}[nxSort];
+  const srt = a => a.slice().sort((x,y)=>{const p=key(x),q=key(y); return p[0]<q[0]?-1:p[0]>q[0]?1:(p[1]<q[1]?-1:p[1]>q[1]?1:0);});
+  const first = srt(N.cards.filter(c=>c.next5)), later = srt(N.cards.filter(c=>!c.next5));
+  const btn = (k,l) => `<button class="${nxSort===k?'on':''}" onclick="nxSet('${k}')">${l}</button>`;
+  const comb = N.combined.map(c=>`<tr><td>${esc(c[0])} ${cpBtn(c[0],'Copy')}</td><td class="n">${c[1]}</td><td class="n">${c[2]}</td><td class="n ${c[3]?'no':'ok'}">${c[3]?'✗ '+c[3]+' short':'✓ enough'}</td><td style="font-size:.8rem">${c[4].map(esc).join(', ')}</td></tr>`).join('');
+  return `<div class="col nx"><div class="card"><h2>The next 5, after this session</h2>
+      <p style="margin:.2rem 0;font-size:.9rem">Measured against what you will hold when every craft on these pages is done (${esc(N.basis)}). The five are the locked troves with a known craft site that lack the fewest items.</p>
+      <div class="big" style="font-size:1.3rem">${N.rank.map(esc).join(' · ')}</div></div>
+    <div class="card"><h2>Everything the five need together</h2>
+      <p class="empty" style="font-size:.85rem;margin:.2rem 0">One shared stock, in rank order: an item used by one trove is not counted again for the next. Raw items only; the crafts in between are on each card.</p>
+      <table><tr><th>Item</th><th class="n">Needs</th><th class="n">You will have</th><th class="n">Status</th><th>Needed by</th></tr>${comb}</table></div></div>
+    <div class="col nx"><div class="card"><h2>Sort the cards</h2><div class="sort">${btn('missing','Fewest items short')}${btn('units','Fewest ingredients')}${btn('crafts','Fewest crafts')}${btn('name','A to Z')}</div></div>
+      <h2 style="margin:.4rem 0 0">The next 5</h2>${first.map(nxCard).join('')}
+      ${later.length?`<h2 style="margin:1rem 0 0">Further on (not in the list on the left)</h2>${later.map(nxCard).join('')}`:''}</div>`;
+}
+
 function endView(){
-  return `<div class="col"><div class="card"><h2>Session finished</h2><div class="big">Save your results</div>
+  return `<div class="col">${cunkBox(DATA.cunk&&DATA.cunk.end)}<div class="card"><h2>Session finished</h2><div class="big">Save your results</div>
    <ul><li>Open the Troves page and save the balance HAR (<code>trove_balance.har</code>).</li><li>Export the hunting session JSON from the recorder.</li></ul></div></div>
-   <div class="col"><div class="card"><h2>Then</h2><ul><li><b>Next, keep hunting.</b> After this session these are the closest, and what each still lacks: ${META.next.filter(x=>x.crafts>0).slice(0,4).map(x=>'<b>'+esc(x.t)+'</b> ('+(x.n?Object.entries(x.miss).map(e=>e[1]+' × '+esc(e[0])).join(', '):'nothing missing')+')').join('; ')}. The <code>LA_hunt_480_focus_50.csv</code> hunting file still works.</li><li>Send me the new balance and I will re-plan the next session from what is left.</li></ul></div></div><div class="col"></div>`;
+   <div class="col"><div class="card"><h2>Then</h2><ul><li><b>Next, keep hunting.</b> After this session these are the closest, and what each still lacks: ${META.next.filter(x=>x.crafts>0).slice(0,4).map(x=>'<b>'+esc(x.t)+'</b> ('+(x.n?Object.entries(x.miss).map(e=>e[1]+' × '+esc(e[0])).join(', '):'nothing missing')+')').join('; ')}.</li><li>Send me the new balance and I will re-plan the next session from what is left.</li></ul></div></div><div class="col"></div>`;
 }
 
 function render(){
   const p = PAGES[idx], m = document.getElementById('main');
-  m.className = ''; m.innerHTML = p.t==='over'?overview(): p.t==='stop'?stopView(p.s): endView();
+  m.className = ''; m.innerHTML = p.t==='over'?overview(): p.t==='stop'?stopView(p.s): p.t==='next'?nextView(): endView();
   document.getElementById('back').disabled = idx===0;
   document.getElementById('next').disabled = idx===PAGES.length-1;
-  document.getElementById('mid').innerHTML = (p.t==='over'?'Overview': p.t==='end'?'Finish': 'Stop '+p.s.n+' of '+STOPS.length)+' &nbsp; <kbd>←</kbd> <kbd>→</kbd>';
+  document.getElementById('mid').innerHTML = (p.t==='over'?'Overview': p.t==='next'?'The next 5': p.t==='end'?'Finish': 'Stop '+p.s.n+' of '+STOPS.length)+' &nbsp; <kbd>←</kbd> <kbd>→</kbd>';
   const pr = document.getElementById('prog'); pr.innerHTML='';
   PAGES.forEach((pg,i)=>{const b=document.createElement('button'); b.className='dot'+(pg.t==='stop'&&stopDone(pg.s)?' done':'')+(i===idx?' cur':''); b.title=pg.t==='stop'?pg.s.addr:pg.t; b.onclick=()=>go(i); pr.appendChild(b);});
   document.getElementById('jump').value = String(idx);
@@ -224,10 +274,13 @@ document.getElementById('back').onclick=()=>go(idx-1);
 document.getElementById('next').onclick=()=>go(idx+1);
 document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key==='PageDown'){go(idx+1);e.preventDefault();} if(e.key==='ArrowLeft'||e.key==='PageUp'){go(idx-1);e.preventDefault();} });
 const jump=document.getElementById('jump');
-PAGES.forEach((pg,i)=>{const o=document.createElement('option'); o.value=i; o.textContent = pg.t==='over'?'Overview':pg.t==='end'?'Finish':pg.s.n+'. '+pg.s.addr; jump.appendChild(o);});
+PAGES.forEach((pg,i)=>{const o=document.createElement('option'); o.value=i; o.textContent = pg.t==='over'?'Overview':pg.t==='next'?'The next 5':pg.t==='end'?'Finish':pg.s.n+'. '+pg.s.addr; jump.appendChild(o);});
 jump.onchange=()=>go(+jump.value);
 [16,20,24].forEach((px,i)=>{document.getElementById('ts'+(i+1)).onclick=()=>{document.documentElement.style.fontSize=px+'px'; try{localStorage.setItem(KEY+'-px',px);}catch(e){}};});
 try{const px=localStorage.getItem(KEY+'-px'); if(px) document.documentElement.style.fontSize=px+'px';}catch(e){}
+const cb=document.getElementById('cunkbtn'); if(!DATA.cunk) cb.style.display='none';
+cb.onclick=()=>{cunkOn=!cunkOn; try{localStorage.setItem('rockdrigo-cunk',cunkOn?'on':'off');}catch(e){} cb.style.opacity=cunkOn?1:.5; render();};
+cb.style.opacity=cunkOn?1:.5;
 document.getElementById('theme').onclick=()=>{const r=document.documentElement; const dark=getComputedStyle(r).getPropertyValue('--bg').trim()==='#14161a'; r.setAttribute('data-theme',dark?'light':'dark');};
 const h=parseInt((location.hash||'').slice(1)); if(!isNaN(h)) idx=Math.max(0,Math.min(PAGES.length-1,h));
 render();
