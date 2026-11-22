@@ -5,6 +5,7 @@ ROOT='/Users/rock/code/upland-tools/'
 def norm(s): return re.sub(r' 1$','',re.sub(r'[^a-z0-9]+',' ',s.lower()).strip())
 bal=json.load(open(ROOT+'data/troves/rockdrigo/latest.json'))
 STOCK=collections.Counter({i[0]:i[2] for i in bal['items']}); LEVEL={i[0]:(i[3],i[4]) for i in bal['items']}
+for _k,_v in json.loads(os.environ.get('STOCK_DELTA','{}')).items(): STOCK[_k]+=_v   # crafts done since the balance (e.g. '{"Coal Lump":-5}')
 REC=collections.defaultdict(list)
 for a,ing in bal['recipes']: REC[a].append(tuple(sorted((x,q) for x,q in ing)))
 cs=json.load(open(ROOT+'data/troves/craft-sites.json'))['troves']; sr=json.load(open(ROOT+'data/troves/structure-recipes.json'))['structures']
