@@ -36,7 +36,8 @@ def pl(item,n,stock,depth,path):
             st=collections.Counter(stock); m=collections.Counter(); cr=[]
             for x,qq in v:
                 mm,cc=pl(x,qq,st,depth-1,path+(item,)); m+=mm; cr+=cc
-            sc=(sum(m.values()),len(cr))
+            scar=sum((stock[x]-st[x])/(1+stock[x]) for x in stock if stock[x]>st[x])   # among versions that lack the same, spend the least of what is scarce in your stock
+            sc=(sum(m.values()),round(scar,9),len(cr))
             if best is None or sc<best[0]: best=(sc,m,cr,st,v)
         if best is None: miss[item]+=need; return miss,crafts
         _,m,cr,st,v=best; stock.clear(); stock.update(st); miss+=m; crafts+=cr+[(item,v)]; need-=1
