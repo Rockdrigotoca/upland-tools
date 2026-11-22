@@ -65,7 +65,7 @@ else:
     for perm in itertools.permutations(TARGETS):
         st=collections.Counter(STOCK); miss=collections.Counter(); plan=[]
         for t in perm:
-            m,c=pl(t,1,st,8,()); miss+=m
+            m,c=pl(t,1,st,8,()); miss+=m; st[t]+=1   # the crafted trove is yours to use as an ingredient later
             for x,qq in m.items(): pass
         tot=sum(miss.values())
         if best is None or (tot,len(plan))<best[0]: best=((tot,0),perm,dict(miss))
@@ -77,7 +77,7 @@ else:
         for k,v in ASSUMED.items(): S2[k]+=v
         st=collections.Counter(S2); extra=collections.Counter(); PLAN=[]
         for t in TARGETS:
-            m,c=pl(t,1,st,8,()); extra+=m; PLAN+=[(i,v,'unlock '+t) for i,v in c]
+            m,c=pl(t,1,st,8,()); extra+=m; PLAN+=[(i,v,'unlock '+t) for i,v in c]; st[t]+=1
         if not sum(extra.values()): break
         for k,v in extra.items(): ASSUMED[k]=ASSUMED.get(k,0)+v
     print('assumed',ASSUMED)
@@ -95,6 +95,7 @@ VER={(str(c['prop']),norm(c['building'])) for c in sess}
 BAD={('81313162700822','community center')}
 fees0=json.load(open(ROOT+'data/troves/fees.json'))['fees']
 need=[(it,v,kinds_of(it,v)) for it,v,_ in PLAN]; need_kinds=[n[2] for n in need]
+COVER_SEED=os.environ.get('COVER_SEED','')
 def scoreP(p,idxs):
     ks=set()
     for i in idxs:
@@ -108,6 +109,7 @@ def scoreP(p,idxs):
     fee=0 if p['pid']==OWN else (fees0.get(p['pid']) or 40)
     s=gain/(20+fee+pen)
     if any((p['pid'],k) in VER for k in ks): s*=1.4
+    if COVER_SEED: s*=1+0.25*random.Random('%s%s'%(COVER_SEED,p['pid'])).random()   # COVER_SEED=n: a different (still greedy) stop cover; try a few when stops stay unscheduled
     return s
 route=[]; cov=set(); unc=list(range(len(need)))
 while unc:
