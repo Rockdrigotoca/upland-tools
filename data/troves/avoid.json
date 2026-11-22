@@ -1,0 +1,18 @@
+{
+ "note": "A property whose visit fee went up, or that is not worth visiting, is replaced by another property that reaches it (within 80 m): its stops stand on `use` instead. Add an entry when that happens.",
+ "avoid": [
+  {
+   "pid": "77223379663178",
+   "addr": "230 E 6Th St",
+   "city": 32,
+   "why": "visit fee went from 25 to 50 (2026-11-22)",
+   "use": {
+    "pid": "77223379663194",
+    "addr": "653 Maple Ave",
+    "lat": 34.04294,
+    "lng": -118.24912,
+    "fee": 25
+   }
+  }
+ ]
+}

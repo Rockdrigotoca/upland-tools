@@ -86,10 +86,13 @@ print('crafts',len(PLAN))
 # 2) properties
 OWN=None
 props={}
+STAND={a['pid']:a['use'] for a in json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),'data/troves/avoid.json')))['avoid']}   # never chosen as a stop
 for p in q['props']:
     if HOODS[p[4]]=='HOWARD BEACH': continue
     ks={norm(QN[i]) for i in p[5]}
-    props[str(p[0])]={'pid':str(p[0]),'addr':p[1],'lat':p[2],'lng':p[3],'hood':HOODS[p[4]],'kinds':ks,'raw':[QN[i] for i in p[5]]}
+    u=STAND.get(str(p[0]))
+    pid_=u['pid'] if u else str(p[0])
+    props[pid_]={'pid':pid_,'addr':u['addr'] if u else p[1],'lat':u['lat'] if u else p[2],'lng':u['lng'] if u else p[3],'hood':HOODS[p[4]],'kinds':ks,'raw':[QN[i] for i in p[5]]}
 def km(a,b): return math.hypot((a['lat']-b['lat'])*110.57,(a['lng']-b['lng'])*111.32*math.cos(math.radians(a['lat'])))
 VER={(str(c['prop']),norm(c['building'])) for c in sess}
 BAD={('81313162700822','community center')}
@@ -189,6 +192,7 @@ for it,v,pu in PLAN:
     for x,qq in v: needed_later[x]+=qq
 targets_set=set(TARGETS)
 fees_all=fees0
+for _u in STAND.values(): fees_all[_u['pid']]=_u['fee']
 ALLP={}
 for p_ in q['props']:
     if HOODS[p_[4]]=='HOWARD BEACH': continue

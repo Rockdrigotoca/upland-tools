@@ -18,6 +18,7 @@ def rw(d):
         if d<=d1: return w0+(w1-w0)*(d-d0)/(d1-d0)
 CID=int(sys.argv[1]); TAG=sys.argv[2]; NEED=json.loads(sys.argv[3]); NSTOPS=int(sys.argv[4]) if len(sys.argv)>4 else 50
 EXCL=[x.lower() for x in (json.loads(sys.argv[5]) if len(sys.argv)>5 else [])]
+STAND={a['pid']:a['use'] for a in json.load(open(D+'troves/avoid.json'))['avoid']}
 CAL=0.35; K=3.0   # the model overstates real finds (about 0.35 in Los Angeles); K = weight of the model against the visits she made
 places=json.load(open(D+'troves/places.json')); fees=json.load(open(D+'troves/fees.json'))['fees']; best=json.load(open(D+'troves/reach-best.json'))['best80']
 cd=json.load(open(D+'troves/places/%d.json'%CID)); sn=[norm(x) for x in cd['structs']]
@@ -67,7 +68,8 @@ for x in rows:
                 w=rw(d)
                 if w>0: nb.append((o,w,d))
     x['nb']=nb
-    b=best.get(x['pid']); x['stand'],x['fee']=(str(b[0]),b[1]) if b else (x['pid'],fees.get(x['pid']))
+    b=best.get(x['pid']) or ([STAND[x['pid']]['pid'],STAND[x['pid']]['fee']] if x['pid'] in STAND else None)   # data/troves/avoid.json: stand on the stand-in
+    x['stand'],x['fee']=(str(b[0]),b[1]) if b else (x['pid'],fees.get(x['pid']))
     o=own.get(x['pid']); x['own']=o if o and o[2]<=150 else None
     x['key']=x['own'][0] if x['own'] else x['stand']
 left=dict(NEED); cons=collections.defaultdict(float)
@@ -101,6 +103,6 @@ with open(os.path.join(out,TAG+'.csv'),'w',encoding='utf-8',newline='') as f:
         top=sorted(NEED,key=lambda t:-x['pr'][t]*x['m']/NEED[t])[:3]
         hit='/'.join(top)+(' | seen %dx'%x['n'] if x['n'] else '')
         if x['own']: label,pid='%s (own, free) -> ~%s m to %s [%s]'%(x['own'][1],x['own'][2],x['addr'],hit),x['own'][0]
-        else: label,pid='%s (fee %s) [%s]'%(x['addr'],x['fee'] if x['fee'] is not None else '?',hit),x['stand']
+        else: label,pid='%s (fee %s) [%s]'%(STAND[x['pid']]['addr']+' (stand here, reaches '+x['addr']+')' if x['pid'] in STAND else x['addr'],x['fee'] if x['fee'] is not None else '?',hit),x['stand']
         f.write('"'+label.replace('"',"'")+'",%s,%d,%d\n'%(pid,CID,i))
 print('wrote',os.path.join(out,TAG+'.csv'))

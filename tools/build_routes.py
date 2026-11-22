@@ -45,6 +45,9 @@ def norm(s):
     return re.sub(r' 1$', '', re.sub(r'[^a-z0-9]+', ' ', s.lower()).strip())
 
 
+STAND = {a['pid']: a['use'] for a in json.load(open(os.path.join(D, 'troves/avoid.json')))['avoid']} if os.path.exists(os.path.join(D, 'troves/avoid.json')) else {}
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     places = json.load(open(os.path.join(D, 'troves/places.json')))
@@ -81,7 +84,7 @@ def main():
             if not ts:
                 continue
             pid = str(p[0])
-            b = best.get(pid)
+            b = best.get(pid) or ([STAND[pid]['pid'], STAND[pid]['fee']] if pid in STAND else None)   # data/troves/avoid.json: stand on the stand-in
             stand, fee = (str(b[0]), b[1]) if b else (pid, fees.get(pid))
             rows.append({'pid': pid, 'addr': p[1], 'lat': p[2], 'lng': p[3], 'stand': stand, 'fee': fee, 'ts': ts, 'own': [kind_ix[sn[k]] for k in p[5] if sn[k] in kind_ix]})
         # stops within 80 m of each other

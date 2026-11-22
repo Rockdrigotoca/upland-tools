@@ -54,9 +54,19 @@ def main(sessions):
             for v in versions.get(t, []):
                 if sorted(x for x, _ in v) == sorted(names):
                     sites[(t, key(v))][norm(b)] = 'seen'
+    # Crafts seen in hunting-session exports are kept in data/troves/craft-seen.json, so a run without the exports loses nothing
+    seen_path = os.path.join(T, 'craft-seen.json')
+    seen = json.load(open(seen_path)) if os.path.exists(seen_path) else {}   # {recipe: {ingredients key: [structure keys]}}
     for path in sessions:
         for c in json.load(open(path)).get('crafts', []):
-            sites[(c['recipe'], key(c['ingredients']))][norm(c['building'])] = 'seen'
+            e = seen.setdefault(c['recipe'], {}).setdefault(json.dumps(sorted([x, q] for x, q in c['ingredients'])), [])
+            if norm(c['building']) not in e:
+                e.append(norm(c['building']))
+    for recipe, d in seen.items():
+        for ik, bs in d.items():
+            for b in bs:
+                sites[(recipe, key([tuple(x) for x in json.loads(ik)]))][b] = 'seen'
+    json.dump({r: {k: sorted(v) for k, v in d.items()} for r, d in sorted(seen.items())}, open(seen_path, 'w'), separators=(',', ':'), sort_keys=True)
     # crafts the sources above do not show but Rockdrigo has done
     sites[('Chisel Set', key([('Iron Ore', 2), ('Twine', 1)]))].update({'art gallery': 'seen', 'art museum': 'seen'})
     sites[('Holiday Ham', key([('Pork', 5), ('Honey', 5), ('Hooray', 5)]))].update({'community center': 'seen'})
@@ -76,6 +86,7 @@ def main(sessions):
     print('craft-data.json: %d troves, %d with no known site, %d KB' % (len(troves), len(no_site), os.path.getsize(os.path.join(H, 'craft-data.json')) // 1024))
 
     fees = json.load(open(os.path.join(T, 'fees.json')))['fees']
+    STAND = {a['pid']: a['use'] for a in json.load(open(os.path.join(T, 'avoid.json')))['avoid']}   # stand on the stand-in instead
     BAD = {('81313162700822', 'community center')}   # the property is listed with a Community Center that never showed one
     os.makedirs(os.path.join(H, 'craft'), exist_ok=True)
     for f in sorted(glob.glob(os.path.join(T, 'places', '*.json'))):
@@ -95,6 +106,10 @@ def main(sessions):
             if not ks:
                 continue
             fee = fees.get(str(p[0]))
+            if str(p[0]) in STAND:
+                u = STAND[str(p[0])]
+                props.append([u['pid'], u['addr'], u['lat'], u['lng'], u['fee'], p[4], ks])
+                continue
             props.append([str(p[0]), p[1], p[2], p[3], fee if isinstance(fee, (int, float)) else None, p[4], ks])
         if not props:
             continue
