@@ -81,7 +81,8 @@ def gain(x):
         g+=w*free*o['m']*sum(o['pr'][t]*max(0,left[t])/NEED[t] for t in NEED)
     return g
 def cost(x): return 0 if x['own'] else (x['fee'] if x['fee'] is not None else 50)
-cand=[x for x in rows if not any(e in x['addr'].lower() for e in EXCL)]
+MAXFEE=float(os.environ.get('MAXFEE','1e9'))   # MAXFEE=50: leave out stops whose fee is higher (one find per 125 UPX is a poor trade)
+cand=[x for x in rows if not any(e in x['addr'].lower() for e in EXCL) and (x['own'] or x['fee'] is None or x['fee']<=MAXFEE)]
 picked=[]; got=collections.Counter()
 while cand and len(picked)<NSTOPS:
     x=max(cand,key=lambda x:gain(x)/(1+cost(x)/100))
