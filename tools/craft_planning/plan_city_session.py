@@ -116,7 +116,7 @@ def scoreP(p,idxs):
     gain=sum(1 for i in idxs if (need_kinds[i]&p['kinds'])-{k for k in p['kinds'] if (p['pid'],k) in BAD})
     if not gain: return 0
     usedk=len(ks); noise=len(p['kinds'])-usedk
-    pen=(4 if usedk<2 else 1)*noise
+    pen=0   # properties with many structures are welcome: the extension shows each structure's name, so they are easy to find
     fee=0 if p['pid']==OWN else (fees0.get(p['pid']) or 40)
     s=gain/(20+fee+pen)
     if any((p['pid'],k) in VER for k in ks): s*=1.4
