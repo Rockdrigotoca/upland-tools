@@ -17,6 +17,11 @@ for t,v in cs.items():
         key=(t,tuple(sorted((x,qq) for x,qq in ver['ing'])))
         for a in ver['at']: SITES[key].setdefault(norm(a),'upxland')
 for c in sess: SITES[(c['recipe'],tuple(sorted((x,qq) for x,qq in c['ingredients'])))][norm(c['building'])]='seen'
+_seen_p=ROOT+'data/troves/craft-seen.json'   # crafts seen in earlier exports (kept by build_craft_data.py), so deleted exports lose nothing
+if os.path.exists(_seen_p):
+    for _r,_d in json.load(open(_seen_p)).items():
+        for _ik,_bs in _d.items():
+            for _b in _bs: SITES[(_r,tuple(sorted((x,qq) for x,qq in json.loads(_ik))))][_b]='seen'
 for b,d in sr.items():
     for t,names in d.items():
         for v in REC.get(t,[]):
@@ -24,6 +29,7 @@ for b,d in sr.items():
 def qsites(t,v):
     if t=='Compass' and any(x=='Binoculars' for x,_ in v): return {}
     return {k:e for k,e in SITES.get((t,v),{}).items() if k in QK}
+ORD={(a,tuple(sorted((x,q) for x,q in ing))):[(x,q) for x,q in ing] for a,ing in json.load(open(ROOT+'data/helper/master.json'))['recipes']}
 def kinds_of(item,v): return set(qsites(item,v))
 def pl(item,n,stock,depth,path):
     miss=collections.Counter(); crafts=[]
@@ -34,7 +40,7 @@ def pl(item,n,stock,depth,path):
         for v in REC[item]:
             if not qsites(item,v): continue
             st=collections.Counter(stock); m=collections.Counter(); cr=[]
-            for x,qq in v:
+            for x,qq in ORD.get((item,v),v):   # the ingredients in the order the master list gives them (the bot plans in that order)
                 mm,cc=pl(x,qq,st,depth-1,path+(item,)); m+=mm; cr+=cc
             scar=sum((stock[x]-st[x])/(1+stock[x]) for x in stock if stock[x]>st[x])   # among versions that lack the same, spend the least of what is scarce in your stock
             sc=(sum(m.values()),round(scar,9),len(cr))

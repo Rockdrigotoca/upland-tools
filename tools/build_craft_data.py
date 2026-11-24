@@ -111,6 +111,13 @@ def main(sessions):
                 props.append([u['pid'], u['addr'], u['lat'], u['lng'], u['fee'], p[4], ks])
                 continue
             props.append([str(p[0]), p[1], p[2], p[3], fee if isinstance(fee, (int, float)) else None, p[4], ks])
+        merged = {}   # a stand-in that is also a property of its own: one row, the kinds of both
+        for r in props:
+            if r[0] in merged:
+                merged[r[0]][6] = sorted(set(merged[r[0]][6]) | set(r[6]))
+            else:
+                merged[r[0]] = r
+        props = list(merged.values())
         if not props:
             continue
         out = {'city': int(city), 'name': q.get('name'), 'kinds': kinds, 'hoods': q['hoods'], 'props': props}

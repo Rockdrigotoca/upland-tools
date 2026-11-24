@@ -13,6 +13,32 @@
     "lng": -118.24912,
     "fee": 25
    }
+  },
+  {
+   "pid": "77323136977296",
+   "addr": "7320 Reseda Blvd",
+   "city": 32,
+   "why": "its stand, 7332 Reseda Blvd, went from 25 to 50 (2026-11-24)",
+   "use": {
+    "pid": "77323640293775",
+    "addr": "7340 Reseda Blvd",
+    "lat": 34.20403,
+    "lng": -118.53543,
+    "fee": 25
+   }
+  },
+  {
+   "pid": "77323489298831",
+   "addr": "7332 Reseda Blvd",
+   "city": 32,
+   "why": "visit fee went to 50 (2026-11-24)",
+   "use": {
+    "pid": "77323640293775",
+    "addr": "7340 Reseda Blvd",
+    "lat": 34.20403,
+    "lng": -118.53543,
+    "fee": 25
+   }
   }
  ]
 }

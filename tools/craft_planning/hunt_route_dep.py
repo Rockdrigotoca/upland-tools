@@ -68,7 +68,7 @@ for x in rows:
                 w=rw(d)
                 if w>0: nb.append((o,w,d))
     x['nb']=nb
-    b=best.get(x['pid']) or ([STAND[x['pid']]['pid'],STAND[x['pid']]['fee']] if x['pid'] in STAND else None)   # data/troves/avoid.json: stand on the stand-in
+    b=[STAND[x['pid']]['pid'],STAND[x['pid']]['fee']] if x['pid'] in STAND else best.get(x['pid'])   # data/troves/avoid.json: stand on the stand-in
     x['stand'],x['fee']=(str(b[0]),b[1]) if b else (x['pid'],fees.get(x['pid']))
     o=own.get(x['pid']); x['own']=o if o and o[2]<=150 else None
     x['key']=x['own'][0] if x['own'] else x['stand']
