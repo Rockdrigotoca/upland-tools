@@ -52,8 +52,13 @@ TARGETS=TARGETS_ARG
 V=lambda *a:tuple(sorted(a))
 SITES[('Chisel Set',V(('Iron Ore',2),('Twine',1)))].update({'art gallery':'seen','art museum':'seen'})
 SITES[('Holiday Ham',V(('Pork',5),('Honey',5),('Hooray',5)))].update({'community center':'seen'})
+PLAN_JSON=os.environ.get('PLAN_JSON')   # PLAN_JSON=file: a ready craft list [[item, [[ingredient, qty]...], purpose]...] in order; the planner only places it on stops (purposes 'unlock X' name the targets)
 BUILDUP=bool(os.environ.get('BUILDUP'))   # BUILDUP=1: every craft the city can do now toward the targets (first targets get their ingredients first), nothing assumed
-if BUILDUP:
+if PLAN_JSON:
+    PLAN=[(it,tuple(sorted((x,qq) for x,qq in v)),pu) for it,v,pu in json.load(open(PLAN_JSON))]; MISSING=collections.Counter(); ASSUMED={}
+    TARGETS=[pu[7:] for _,_,pu in PLAN if pu.startswith('unlock ')]
+    print('plan from file',len(PLAN),'crafts')
+elif BUILDUP:
     st0=collections.Counter(STOCK); raw_plan=[]; MISSING=collections.Counter(); ASSUMED={}
     for t in TARGETS:
         m,c=pl(t,1,st0,8,()); MISSING+=m; raw_plan+=[(i,v,'unlock '+t) for i,v in c]
